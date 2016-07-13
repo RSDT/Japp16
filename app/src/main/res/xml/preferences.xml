@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+
+    <PreferenceCategory android:title="@string/pref_cat_account">
+
+        <EditTextPreference
+            android:title="@string/pref_account_username_title"
+            android:key="pref_account_username"
+            android:editable="false"
+            android:summary="@string/pref_account_username_sum"/>
+
+        <EditTextPreference
+            android:title="@string/pref_account_rank_title"
+            android:key="pref_account_rank"
+            android:editable="false"
+            android:summary="@string/pref_account_rank_sum"
+            android:defaultValue="@string/pref_account_rank_def"/>
+
+        <ListPreference
+            android:title="@string/pref_account_icon_title"
+            android:key="pref_account_icon"
+            android:summary="@string/pref_account_icon_sum"
+            android:defaultValue="@string/pref_account_icon_def"
+            android:entries="@array/pref_account_icon"
+            android:entryValues="@array/pref_account_icon_data"/>
+
+        <EditTextPreference
+            android:title="@string/pref_account_key_title"
+            android:key="pref_account_key"
+            android:editable="false"
+            android:summary="@string/pref_account_key_sum"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/pref_cat_map">
+
+    <ListPreference
+        android:title="@string/pref_map_type_title"
+        android:summary="@string/pref_map_type_sum"
+        android:key="pref_map_type"
+        android:entries="@array/pref_map_type_options"
+        android:entryValues="@array/pref_map_type_options_data"
+        android:defaultValue="@string/pref_map_type_options_def"
+        />
+
+    <EditTextPreference
+        android:title="@string/pref_map_hunt_name_title"
+        android:key="pref_map_hunt_name"
+        android:summary="@string/pref_map_hunt_name_sum"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_cat_notifications">
+
+        <CheckBoxPreference
+            android:title="@string/pref_notifications_title"
+            android:key="pref_notifications"
+            android:summary="@string/pref_notifications_sum"
+            android:defaultValue="true"/>
+
+        <MultiSelectListPreference
+            android:dialogTitle="@string/pref_notifications_options_dialog_title"
+            android:key="pref_notifications_options"
+            android:title="@string/pref_notifications_options_title"
+            android:summary="@string/pref_notifications_options_sum"
+            android:entries="@array/pref_notifications_options"
+            android:entryValues="@array/pref_notifications_options_data"
+            android:defaultValue="@array/pref_notifications_options_def"
+            android:dependency="pref_notifications"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_cat_travel">
+
+        <EditTextPreference
+            android:key="pref_travel_zoom"
+            android:title="@string/pref_travel_zoom_title"
+            android:summary="@string/pref_travel_zoom_sum"
+            android:inputType="numberDecimal"
+            android:numeric="decimal"
+            android:defaultValue="20"
+            />
+
+        <EditTextPreference
+            android:key="pref_travel_aoa"
+            android:title="@string/pref_travel_aoa_title"
+            android:summary="@string/pref_travel_aoa_sum"
+            android:inputType="numberDecimal"
+            android:numeric="decimal"
+            android:defaultValue="45"
+            />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/pref_cat_misc">
+
+        <EditTextPreference
+            android:key="pref_misc_walking_speed"
+            android:title="@string/pref_misc_walking_speed_title"
+            android:summary="@string/pref_misc_walking_speed_sum"
+            android:inputType="numberDecimal"
+            android:defaultValue="6.0"
+            />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
