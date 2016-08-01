@@ -17,13 +17,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="end|top"
         fab:menu_animationDelayPerItem="0"
         fab:menu_shadowColor="#444"
         fab:menu_colorNormal="#FFB805"
         fab:menu_colorPressed="#F2AB00"
         fab:menu_colorRipple="#D99200"
-        fab:menu_openDirection="up"
+        fab:menu_openDirection="down"
         app:layout_behavior="nl.rsdt.japp.application.misc.FloatingActionMenuBehavior">
 
         <com.github.clans.fab.FloatingActionButton
@@ -46,6 +46,13 @@
             android:layout_height="wrap_content"
             fab:fab_label="Mark"
             android:src="@drawable/ic_action_place" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_follow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_label="Volg mij"
+            android:src="@drawable/me" />
 
     </com.github.clans.fab.FloatingActionMenu>
 </android.support.design.widget.CoordinatorLayout>

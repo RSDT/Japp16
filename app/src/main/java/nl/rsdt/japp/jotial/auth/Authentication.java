@@ -11,7 +11,6 @@ import com.rsdt.anl.WebResponse;
 
 import java.io.StringReader;
 
-import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.builders.LoginPostDataBuilder;
 import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
@@ -61,7 +60,7 @@ public class Authentication implements WebRequest.OnWebRequestCompletedCallback 
             /**
              * Change the key in the preferences.
              * */
-            SharedPreferences.Editor pEditor = Japp.getPreferences().edit();
+            SharedPreferences.Editor pEditor = JappPreferences.getVisiblePreferences().edit();
             pEditor.putString(JappPreferences.ACCOUNT_KEY, key);
             pEditor.apply();
 

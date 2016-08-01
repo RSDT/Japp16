@@ -10,7 +10,6 @@ import com.rsdt.anl.WebRequest;
 import com.rsdt.anl.WebRequestMethod;
 import com.rsdt.anl.WebResponse;
 
-import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
 
@@ -192,7 +191,7 @@ public class UserInfo implements Parcelable {
                         /**
                          * Store the new data in preferences.
                          * */
-                        SharedPreferences.Editor userEditor = JappPreferences.getUserPreferences().edit();
+                        SharedPreferences.Editor userEditor = JappPreferences.getVisiblePreferences().edit();
                         userEditor.putString(JappPreferences.ACCOUNT_USERNAME, info.gebruikersnaam);
                         userEditor.putString(JappPreferences.ACCOUNT_RANK, info.rank());
                         userEditor.apply();

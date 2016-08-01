@@ -1,11 +1,11 @@
 package nl.rsdt.japp.application;
 
-import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.multidex.MultiDexApplication;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.MapsInitializer;
 
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
@@ -16,18 +16,25 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
  * @since 8-7-2016
  * Description...
  */
-public class Japp extends Application {
+public class Japp extends MultiDexApplication {
 
     private static Japp instance;
 
     public static Japp getInstance() { return instance; }
 
-    public static SharedPreferences getPreferences() { return PreferenceManager.getDefaultSharedPreferences(instance); }
+    public static boolean hasInternetConnection()
+    {
+        ConnectivityManager cm = (ConnectivityManager)instance.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cm.getActiveNetworkInfo();
+        return info != null && info.isConnectedOrConnecting();
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
+
+        MapsInitializer.initialize(this);
 
         Deelgebied.initialize(this.getResources());
 

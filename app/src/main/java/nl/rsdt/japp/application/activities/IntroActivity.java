@@ -1,4 +1,4 @@
-package nl.rsdt.japp.application;
+package nl.rsdt.japp.application.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,10 +23,10 @@ public class IntroActivity extends AppIntro {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addSlide(AppIntroFragment.newInstance("Welkom", "Welkom bij de Jotihunt app voor de RP", R.drawable.rp_logo, Color.parseColor("#993333")));
+        addSlide(AppIntroFragment.newInstance("Welkom", "Welkom bij de Jotihunt app voor de RP", R.drawable.rp_logo_500x500, Color.parseColor("#993333")));
         addSlide(AppIntroFragment.newInstance("Kaart", "Bekijk de vossen, scouting-groepen, foto-opdrachten en de andere hunters op de kaart", R.drawable.ic_menu_camera, Color.parseColor("#66ccff")));
         addSlide(AppIntroFragment.newInstance("Waarnemen & melden", "Spot of hunt een vos via de app", R.drawable.ic_menu_camera, Color.parseColor("#99cc00")));
-
+        addSlide(AppIntroFragment.newInstance("Zoeken", "Zoek een Scoutinggroeg op of een andere hunter", R.drawable.ic_menu_camera, Color.parseColor("#99cc00")));
 
         // OPTIONAL METHODS
         // Override bar/separator color.

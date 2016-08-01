@@ -2,15 +2,14 @@ package nl.rsdt.japp.application;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 
-import nl.rsdt.japp.jotial.io.AppData;
 
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
  * @since 13-7-2016
- * Description...
+ * Class for preferences
  */
 public class JappPreferences {
 
@@ -40,9 +39,12 @@ public class JappPreferences {
 
     public static final String ACCOUNT_KEY = "pref_account_key";
 
+    public static final String ADVANCED_FOTO_INTERVAL = "pref_advanced_foto_interval";
 
-    public static SharedPreferences getUserPreferences() {
-        return Japp.getPreferences();
+
+
+    public static SharedPreferences getVisiblePreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(Japp.getInstance());
     }
 
     public static SharedPreferences getAppPreferences() {
@@ -54,19 +56,21 @@ public class JappPreferences {
     }
 
     public static String getAccountUsername() {
-        return getUserPreferences().getString(ACCOUNT_USERNAME, "unknown");
+        return getVisiblePreferences().getString(ACCOUNT_USERNAME, "unknown");
     }
 
     public static String getAccountRank() {
-        return getUserPreferences().getString(ACCOUNT_RANK, "Guest");
+        return getVisiblePreferences().getString(ACCOUNT_RANK, "Guest");
     }
 
     public static int getAccountIcon() {
-        return Integer.valueOf(getUserPreferences().getString(ACCOUNT_ICON, "0"));
+        return Integer.valueOf(getVisiblePreferences().getString(ACCOUNT_ICON, "0"));
     }
 
     public static String getAccountKey() {
-        return getUserPreferences().getString(ACCOUNT_KEY, "");
+        return getVisiblePreferences().getString(ACCOUNT_KEY, "");
     }
+
+    public static int getFotoIntervalRate() { return Float.valueOf(getVisiblePreferences().getString(ADVANCED_FOTO_INTERVAL, "60 000")).intValue() * 60 * 1000; }
 
 }

@@ -1,4 +1,4 @@
-package nl.rsdt.japp.application;
+package nl.rsdt.japp.application.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
 
@@ -34,7 +35,10 @@ public class LoginActivity extends Activity {
             public void onClick(View view) {
 
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), 0);
+                View focus = LoginActivity.this.getCurrentFocus();
+                if(focus != null) {
+                    imm.hideSoftInputFromWindow(focus.getWindowToken(), 0);
+                }
 
                 Authentication authentication = new Authentication.Builder()
                         .setUsername(((EditText)findViewById(R.id.username)).getText().toString())

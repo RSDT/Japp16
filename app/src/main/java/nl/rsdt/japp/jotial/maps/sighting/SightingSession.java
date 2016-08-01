@@ -17,31 +17,58 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
  * @author Dingenis Sieger Sinke
  * @version 1.0
  * @since 13-7-2016
- * Description...
+ * Class for Sighting
  */
 public class SightingSession extends Snackbar.Callback implements View.OnClickListener {
 
-
+    /**
+     * Defines the SightingSession type HUNT.
+     * */
     public static final String SIGHT_HUNT = "HUNT";
 
+    /**
+     * Defines the SightingSession type SPOT.
+     * */
     public static final String SIGHT_SPOT = "SPOT";
 
-    public static final String SIGHT_MARK = "MARK";
-
+    /**
+     * The type of the sighting.
+     * */
     private String type;
 
+    /**
+     * The GoogleMap used to create markers.
+     * */
     private GoogleMap googleMap;
 
+    /**
+     * The Marker that indicates the location.
+     * */
     private Marker marker;
 
+    /**
+     * The Snackbar that informs the user.
+     * */
     private Snackbar snackbar;
 
+    /**
+     * The last LatLng that was selected.
+     * */
     private LatLng lastLatLng;
 
+    /**
+     * The callback for when the sighting is completed;
+     * */
     private OnSightingCompletedCallback callback;
 
+    /**
+     * The Deelgebied where the lastLatLng is in, null if none.
+     * */
     private Deelgebied deelgebied;
 
+    /**
+     * Initializes the SightingSession.
+     * */
     private void initialize()
     {
         BitmapDescriptor descriptor;
@@ -73,10 +100,17 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     public void onDismissed(Snackbar snackbar, int event) {
         super.onDismissed(snackbar, event);
 
-        callback.onSightingCompleted(lastLatLng);
+        if(callback != null)
+        {
+            callback.onSightingCompleted(lastLatLng, deelgebied);
+        }
+
         destroy();
     }
 
+    /**
+     * Starts the SightingSession.
+     * */
     public void start()
     {
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -124,16 +158,25 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        callback.onSightingCompleted(lastLatLng);
+        if(callback != null)
+        {
+            callback.onSightingCompleted(lastLatLng, deelgebied);
+        }
         destroy();
     }
 
+    /**
+     * Destroys the SightingSession.
+     * */
     public void destroy()
     {
         type = null;
 
-        googleMap.setOnMapClickListener(null);
-        googleMap = null;
+        if(googleMap != null)
+        {
+            googleMap.setOnMapClickListener(null);
+            googleMap = null;
+        }
 
         if(marker != null)
         {
@@ -147,37 +190,62 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
         callback = null;
 
+        deelgebied = null;
+
     }
 
+    /**
+     * @author Dingenis Sieger Sinke
+     * @version 1.0
+     * @since 13-7-2016
+     * Builder for the SightingSession.
+     */
     public static class Builder
     {
 
+        /**
+         * Buffer to hold the SightingSession.
+         * */
         private SightingSession buffer = new SightingSession();
 
+        /**
+         * Sets the GoogleMap of the SightingSession.
+         * */
         public Builder setGoogleMap(GoogleMap googleMap){
             buffer.googleMap = googleMap;
             return this;
         }
 
+        /**
+         * Sets the Type of the SightingSession.
+         * */
         public Builder setType(String type)
         {
             buffer.type = type;
             return this;
         }
 
+        /**
+         * Sets the TargetView of the SightingSession.
+         * */
         public Builder setTargetView(View view)
         {
             buffer.snackbar = Snackbar.make(view, "", Snackbar.LENGTH_INDEFINITE);
             return this;
         }
 
+        /**
+         * Sets the callback of the SightingSession.
+         * */
         public Builder setOnSightingCompletedCallback(OnSightingCompletedCallback callback)
         {
             buffer.callback = callback;
             return this;
         }
 
-
+        /**
+         * Creates the SightingSession.
+         * */
         public SightingSession create()
         {
             buffer.initialize();
@@ -187,9 +255,21 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
     }
 
+    /**
+     * @author Dingenis Sieger Sinke
+     * @version 1.0
+     * @since 13-7-2016
+     * Callback for when a SightingSession is completed.
+     */
     public interface OnSightingCompletedCallback
     {
-        void onSightingCompleted(LatLng chosen);
+        /**
+         * Gets invoked when a SightingSession has been completed.
+         *
+         * @param chosen The chosen LatLng
+         * @param deelgebied The Deelgebied where the LatLng is in, null if none.
+         * */
+        void onSightingCompleted(LatLng chosen, Deelgebied deelgebied);
     }
 
 }

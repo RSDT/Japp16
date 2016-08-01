@@ -3,6 +3,8 @@ package nl.rsdt.japp.jotial.data.structures.area348;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
@@ -34,6 +36,8 @@ public class BaseInfo implements Parcelable {
      * The longitude of the Info.
      */
     public double longitude;
+
+    public LatLng getLatLng() { return new LatLng(latitude, longitude); }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

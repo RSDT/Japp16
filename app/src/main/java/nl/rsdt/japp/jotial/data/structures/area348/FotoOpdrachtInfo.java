@@ -2,8 +2,11 @@ package nl.rsdt.japp.jotial.data.structures.area348;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 
 /**
@@ -79,10 +82,17 @@ public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
      * @param json The JSON where the FotoOpdrachtInfo should be deserialized from.
      * @return A FotoOpdrachtInfo.
      */
+    @Nullable
     public static FotoOpdrachtInfo fromJson(String json) {
-        JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
-        jsonReader.setLenient(true);
-        return new Gson().fromJson(jsonReader, FotoOpdrachtInfo.class);
+        try {
+            JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
+            jsonReader.setLenient(true);
+            return new Gson().fromJson(jsonReader, FotoOpdrachtInfo.class);
+        } catch(JsonParseException e)
+        {
+            Log.e("FotoOpdrachtInfo", e.getMessage(), e);
+        }
+        return null;
     }
 
     /**
@@ -91,10 +101,17 @@ public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
      * @param json The JSON where the array of FotoOpdrachtInfo should be deserialized from.
      * @return A array of FotoOpdrachtInfo.
      */
+    @Nullable
     public static FotoOpdrachtInfo[] fromJsonArray(String json) {
-        JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
-        jsonReader.setLenient(true);
-        return new Gson().fromJson(jsonReader, FotoOpdrachtInfo[].class);
+        try {
+            JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
+            jsonReader.setLenient(true);
+            return new Gson().fromJson(jsonReader, FotoOpdrachtInfo[].class);
+        } catch(JsonParseException e)
+        {
+            Log.e("FotoOpdrachtInfo", e.getMessage(), e);
+        }
+        return null;
     }
 
 }

@@ -1,7 +1,9 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,8 @@ import com.rsdt.anl.WebResponse;
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.jotial.maps.locations.FollowSession;
+import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
 import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
@@ -44,6 +48,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap googleMap;
 
     private OnMapReadyCallback callback;
+
+    private PinningManager pinningManager = new PinningManager();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,7 +89,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                         .setTargetView(mapView)
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
                             @Override
-                            public void onSightingCompleted(LatLng chosen) {
+                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied) {
 
                                 /*--- Show the menu ---*/
                                 FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
@@ -95,7 +101,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                     VosPostDataBuilder builder = VosPostDataBuilder.getDefault();
                                     builder.setIcon(SightingIcon.HUNT);
                                     builder.setLatLng(chosen);
-                                    builder.setTeam("a");
+                                    builder.setTeam(deelgebied.getName().substring(0, 1));
                                     builder.setInfo("testsfsf");
                                     String data = builder.build();
 
@@ -108,7 +114,15 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                     request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
                                         @Override
                                         public void onWebRequestCompleted(WebResponse response) {
-                                            Log.i("", response.getData());
+                                            switch (response.getResponseCode())
+                                            {
+                                                case 200:
+                                                    Snackbar.make(mapView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                                default:
+                                                    Snackbar.make(mapView, "Probleem bij verzenden: " + response.getResponseCode(), Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                            }
                                         }
                                     });
                                 }
@@ -140,7 +154,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                         .setTargetView(mapView)
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
                             @Override
-                            public void onSightingCompleted(LatLng chosen) {
+                            public void onSightingCompleted(LatLng chosen, final Deelgebied deelgebied) {
 
                                 /*--- Show the menu ---*/
                                 FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
@@ -152,7 +166,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                     VosPostDataBuilder builder = VosPostDataBuilder.getDefault();
                                     builder.setIcon(SightingIcon.SPOT);
                                     builder.setLatLng(chosen);
-                                    builder.setTeam("a");
+                                    builder.setTeam(deelgebied.getName().substring(0, 1));
                                     builder.setInfo("test");
                                     String data = builder.build();
 
@@ -162,7 +176,20 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                             .setMethod(WebRequestMethod.POST)
                                             .setData(data)
                                             .create();
-                                    request.executeAsync(null);
+                                    request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
+                                        @Override
+                                        public void onWebRequestCompleted(WebResponse response) {
+                                            switch (response.getResponseCode())
+                                            {
+                                                case 200:
+                                                    Snackbar.make(mapView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                                default:
+                                                    Snackbar.make(mapView, "Probleem bij verzenden: " + response.getResponseCode(), Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                            }
+                                        }
+                                    });
                                 }
                                 session = null;
                             }
@@ -171,6 +198,66 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                 session.start();
             }
         });
+
+
+        FloatingActionButton pinButton = (FloatingActionButton)v.findViewById(R.id.fab_mark);
+        pinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View v = getView();
+
+                /*--- Hide the menu ---*/
+                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+                menu.hideMenu(true);
+
+
+            }
+        });
+
+        FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
+        followButton.setOnClickListener(new View.OnClickListener() {
+
+            FollowSession session;
+
+            @Override
+            public void onClick(View view) {
+                View v = getView();
+
+                FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
+
+                /*--- Hide the menu ---*/
+                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+
+                /**
+                 * TODO: use color to identify follow state?
+                 * */
+                if(session != null) {
+                   // followButton.setColorNormal(Color.parseColor("#DA4336"));
+                    followButton.setLabelText("Volg mij");
+                    session.end();
+                    session = null;
+                }
+                else {
+                    menu.close(true);
+                    //followButton.setColorNormal(Color.parseColor("#5cd65c"));
+                    followButton.setLabelText("Stop volgen");
+                    startNewSession();
+                }
+            }
+
+            private void startNewSession()
+            {
+                session = new FollowSession.Builder()
+                        .setGoogleMap(googleMap)
+                        .setBeforeSessionCameraPosition(googleMap.getCameraPosition())
+                        .create();
+                session.start();
+            }
+
+
+
+        });
+
 
         return v;
     }
@@ -222,6 +309,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
+        googleMap.clear();
+
         Deelgebied[] all = Deelgebied.all();
         Deelgebied current;
         for(int i = 0; i < all.length; i++)
@@ -233,6 +322,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                     .strokeWidth(0)
                     .addAll(current.getCoordinates()));
         }
+
+
+        pinningManager.onMapReady(googleMap);
 
         if(callback != null)
         {

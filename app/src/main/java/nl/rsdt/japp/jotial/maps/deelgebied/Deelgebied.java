@@ -22,61 +22,129 @@ import nl.rsdt.japp.R;
  * @author Dingenis Sieger Sinke
  * @version 1.0
  * @since 13-7-2016
- * Description...
+ * Class for the Deelgebieden,
+ * Deelgebied.initialize(Resources) must be called in order for this class to function.
  */
 public final class Deelgebied {
 
-
+    /**
+     * Defines the Alpha Deelgebied.
+     * */
     public static final Deelgebied Alpha = new Deelgebied("alpha", R.drawable.vos_a_4, R.drawable.vos_a_3, Color.argb(255, 255, 0, 0) );
 
+    /**
+     * Defines the Bravo Deelgebied.
+     * */
     public static final Deelgebied Bravo = new Deelgebied("bravo", R.drawable.vos_b_4, R.drawable.vos_b_3, Color.argb(255, 0, 255, 0));
 
+    /**
+     * Defines the Charlie Deelgebied.
+     * */
     public static final Deelgebied Charlie = new Deelgebied("charlie", R.drawable.vos_c_4, R.drawable.vos_c_3, Color.argb(255, 0, 0, 255));
 
+    /**
+     * Defines the Delta Deelgebied.
+     * */
     public static final Deelgebied Delta = new Deelgebied("delta", R.drawable.vos_d_4, R.drawable.vos_d_3, Color.argb(255, 0, 255, 255));
 
+    /**
+     * Defines the Echo Deelgebied.
+     * */
     public static final Deelgebied Echo = new Deelgebied("echo", R.drawable.vos_e_4, R.drawable.vos_e_3, Color.argb(255, 255, 0, 255));
 
+    /**
+     * Defines the Foxtrot Deelgebied.
+     * */
     public static final Deelgebied Foxtrot = new Deelgebied("foxtrot", R.drawable.vos_f_4, R.drawable.vos_f_3, Color.argb(255, 255, 162, 0));
 
+    /**
+     * Defines the Xray Deelgebied.
+     * */
     public static final Deelgebied Xray = new Deelgebied("xray", R.drawable.vos_x_4, R.drawable.vos_x_3, Color.argb(255, 0, 0, 0));
 
+    /**
+     * Gets a array of all the Deelgebieden.
+     * */
     public static Deelgebied[] all() { return new Deelgebied[] { Alpha, Bravo, Charlie, Delta, Echo, Foxtrot, Xray }; }
 
+    /**
+     * The name of this Deelgebied.
+     * */
     private String name;
 
+    /**
+     * The hunt drawable associated with this Deelgebied.
+     * */
     private int drawable_hunt;
 
+    /**
+     * The spot drawable associated with this Deelgebied.
+     * */
     private int drawable_spot;
 
+    /**
+     * The color of this Deelgebied.
+     * */
     private int color;
 
+    /**
+     * Gets the hunt drawable associated with this Deelgebied.
+     * */
     public int getDrawableHunt() {
         return drawable_hunt;
     }
 
+    /**
+     * Gets the spot drawable associated with this Deelgebied.
+     * */
     public int getDrawableSpot() {
         return drawable_spot;
     }
 
+    /**
+     * Gets the color of the Deelgebied.
+     * */
     public int getColor() {
         return color;
     }
 
+    /**
+     * Gets the name of the Deelgebied.
+     * */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the color of the Deelgebied, with a given alpha.
+     *
+     * @param alpha The alpha from 0 - 255.
+     * @return The color of the Deelgebied with a given alpha.
+     * */
     public int alphaled(int alpha) {
         return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
+    /**
+     * The list of coordinates that is the area of the Deelgebied.
+     * */
     private ArrayList<LatLng> coordinates = new ArrayList<>();
 
+    /**
+     * Gets the list of coordinates that is the area of the Deelgebied.
+     * */
     public ArrayList<LatLng> getCoordinates() {
         return coordinates;
     }
 
+    /**
+     * Initializes a new instance of Deelgebied.
+     *
+     * @param name The name of the Deelgebied.
+     * @param drawable_hunt The hunt drawable of the Deelgebied.
+     * @param drawable_spot The spot drawable of the Deelgebied.
+     * @param color The color of the Deelgebied.
+     * */
     private Deelgebied(String name, int drawable_hunt, int drawable_spot, int color)
     {
         this.name = name;
@@ -108,6 +176,9 @@ public final class Deelgebied {
     }
 
 
+    /**
+     * Initializes the Deelgebieden, loading their coordinates from the Resources.
+     * */
     public static void initialize(Resources resources)
     {
         Deelgebied[] gebieden = all();
@@ -151,14 +222,12 @@ public final class Deelgebied {
                 }
             } catch (IOException e)
             {
-                Log.e("Deelgebied", "Error occured while reading stream", e);
+                Log.e("Deelgebied", "Error occurred while reading stream", e);
             }
 
             String data = total.toString();
 
-            ArrayList<LatLng> points = new Gson().fromJson(data, new TypeToken<ArrayList<LatLng>>() { }.getType());
-            current.coordinates = points;
-
+            current.coordinates = new Gson().fromJson(data, new TypeToken<ArrayList<LatLng>>() { }.getType());
         }
     }
 

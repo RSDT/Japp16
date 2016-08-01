@@ -108,9 +108,13 @@ public class AppData {
         try
         {
             File file = new File(fDir, filename);
-            JsonReader jsonReader = new JsonReader(new FileReader(file));
-            jsonReader.setLenient(true);
-            return (T)new Gson().fromJson(jsonReader, type);
+            if(file.exists())
+            {
+                JsonReader jsonReader = new JsonReader(new FileReader(file));
+                jsonReader.setLenient(true);
+                return (T)new Gson().fromJson(jsonReader, type);
+            }
+            return null;
         }
         catch(Exception e)
         {

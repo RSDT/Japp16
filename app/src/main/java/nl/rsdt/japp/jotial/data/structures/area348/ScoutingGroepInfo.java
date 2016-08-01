@@ -2,9 +2,12 @@ package nl.rsdt.japp.jotial.data.structures.area348;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.google.maps.android.clustering.ClusterItem;
 
@@ -84,10 +87,17 @@ public class ScoutingGroepInfo extends BaseInfo implements Parcelable, ClusterIt
      * @param json The JSON where the ScoutingGroepInfo should be deserialized from.
      * @return The deserialized ScoutingGroepInfo.
      */
+    @Nullable
     public static ScoutingGroepInfo fromJson(String json) {
-        JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
-        jsonReader.setLenient(true);
-        return new Gson().fromJson(jsonReader, ScoutingGroepInfo.class);
+        try {
+            JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
+            jsonReader.setLenient(true);
+            return new Gson().fromJson(jsonReader, ScoutingGroepInfo.class);
+        } catch(JsonParseException e)
+        {
+            Log.e("ScoutingGroepInfo", e.getMessage(), e);
+        }
+        return null;
     }
 
     /**
@@ -96,9 +106,16 @@ public class ScoutingGroepInfo extends BaseInfo implements Parcelable, ClusterIt
      * @param json The JSON where the array of ScoutingGroepInfo should be deserialized from.
      * @return The deserialized array of ScoutingGroepInfo.
      */
+    @Nullable
     public static ScoutingGroepInfo[] fromJsonArray(String json) {
-        JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
-        jsonReader.setLenient(true);
-        return new Gson().fromJson(jsonReader, ScoutingGroepInfo[].class);
+        try {
+            JsonReader jsonReader = new JsonReader(new java.io.StringReader(json));
+            jsonReader.setLenient(true);
+            return new Gson().fromJson(jsonReader, ScoutingGroepInfo[].class);
+        } catch(JsonParseException e)
+        {
+            Log.e("ScoutingGroepInfo", e.getMessage(), e);
+        }
+        return null;
     }
 }
