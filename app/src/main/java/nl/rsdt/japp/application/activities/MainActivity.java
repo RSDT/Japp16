@@ -1,6 +1,8 @@
 package nl.rsdt.japp.application.activities;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,9 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity
 
         fragmentNavigationManager.initialize(getFragmentManager());
         fragmentNavigationManager.onSavedInstance(savedInstanceState);
+
 
          /* mapManager.query(new WebRequest.Builder()
                 .setId(VosController.REQUEST_ID)

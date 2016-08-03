@@ -1,13 +1,14 @@
 package nl.rsdt.japp.application.fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
-import android.graphics.Color;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -25,7 +26,7 @@ import com.rsdt.anl.WebResponse;
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
-import nl.rsdt.japp.jotial.maps.locations.FollowSession;
+import nl.rsdt.japp.jotial.maps.locations.MovementManager;
 import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
@@ -51,6 +52,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
 
     private PinningManager pinningManager = new PinningManager();
 
+    private MovementManager movementManager = new MovementManager();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,11 +71,12 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
             mapView.onCreate(savedInstanceState);
         }
 
-
         FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
         huntButton.setOnClickListener(new View.OnClickListener() {
 
             SightingSession session;
+
+            AlertDialog dialog;
 
             @Override
             public void onClick(View view) {
@@ -87,9 +91,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                         .setType(SightingSession.SIGHT_HUNT)
                         .setGoogleMap(googleMap)
                         .setTargetView(mapView)
+                        .setDialogContext(JappMapFragment.this.getActivity())
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
                             @Override
-                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied) {
+                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
 
                                 /*--- Show the menu ---*/
                                 FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
@@ -97,15 +102,15 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
 
                                 if(chosen != null)
                                 {
-                                    /*--- Construct a JSON string with the data ---*/
+                                     /*--- Construct a JSON string with the data ---*/
                                     VosPostDataBuilder builder = VosPostDataBuilder.getDefault();
                                     builder.setIcon(SightingIcon.HUNT);
                                     builder.setLatLng(chosen);
                                     builder.setTeam(deelgebied.getName().substring(0, 1));
-                                    builder.setInfo("testsfsf");
+                                    builder.setInfo(optionalInfo);
                                     String data = builder.build();
 
-                                    /*--- Send a request to server ---*/
+                                                    /*--- Send a request to server ---*/
                                     WebRequest request = new WebRequest.Builder()
                                             .setUrl(new ApiUrlBuilder(false).append("vos").build())
                                             .setMethod(WebRequestMethod.POST)
@@ -126,8 +131,6 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                         }
                                     });
                                 }
-
-                                session = null;
                             }
                         })
                         .create();
@@ -149,12 +152,13 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
 
                 /*--- Build a SightingSession and start it ---*/
                 session = new SightingSession.Builder()
-                        .setType(SightingSession.SIGHT_HUNT)
+                        .setType(SightingSession.SIGHT_SPOT)
                         .setGoogleMap(googleMap)
                         .setTargetView(mapView)
+                        .setDialogContext(JappMapFragment.this.getActivity())
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
                             @Override
-                            public void onSightingCompleted(LatLng chosen, final Deelgebied deelgebied) {
+                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
 
                                 /*--- Show the menu ---*/
                                 FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
@@ -167,7 +171,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                     builder.setIcon(SightingIcon.SPOT);
                                     builder.setLatLng(chosen);
                                     builder.setTeam(deelgebied.getName().substring(0, 1));
-                                    builder.setInfo("test");
+                                    builder.setInfo(optionalInfo);
                                     String data = builder.build();
 
                                     /*--- Send a request to server ---*/
@@ -217,7 +221,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
         FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
         followButton.setOnClickListener(new View.OnClickListener() {
 
-            FollowSession session;
+            MovementManager.FollowSession session;
 
             @Override
             public void onClick(View view) {
@@ -241,20 +245,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                     menu.close(true);
                     //followButton.setColorNormal(Color.parseColor("#5cd65c"));
                     followButton.setLabelText("Stop volgen");
-                    startNewSession();
+                    session = movementManager.newSession(googleMap.getCameraPosition(), 20f, 45f);
                 }
             }
-
-            private void startNewSession()
-            {
-                session = new FollowSession.Builder()
-                        .setGoogleMap(googleMap)
-                        .setBeforeSessionCameraPosition(googleMap.getCameraPosition())
-                        .create();
-                session.start();
-            }
-
-
 
         });
 
@@ -274,8 +267,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void getMapAsync(OnMapReadyCallback callback)
-    {
+    public void getMapAsync(OnMapReadyCallback callback) {
         MapView view = (MapView)getView().findViewById(R.id.map);
         view.getMapAsync(this);
         this.callback = callback;
@@ -308,6 +300,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+
+        movementManager.onMapReady(googleMap);
 
         googleMap.clear();
 

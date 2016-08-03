@@ -1,7 +1,12 @@
 package nl.rsdt.japp.jotial.maps.sighting;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -19,7 +24,7 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
  * @since 13-7-2016
  * Class for Sighting
  */
-public class SightingSession extends Snackbar.Callback implements View.OnClickListener {
+public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener {
 
     /**
      * Defines the SightingSession type HUNT.
@@ -50,6 +55,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
      * The Snackbar that informs the user.
      * */
     private Snackbar snackbar;
+
+    /**
+     * The AlertDialog that asks for the users confirmation.
+     * */
+    private AlertDialog dialog;
 
     /**
      * The last LatLng that was selected.
@@ -99,13 +109,16 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     @Override
     public void onDismissed(Snackbar snackbar, int event) {
         super.onDismissed(snackbar, event);
-
-        if(callback != null)
+        switch (event)
         {
-            callback.onSightingCompleted(lastLatLng, deelgebied);
+            case Snackbar.Callback.DISMISS_EVENT_SWIPE:
+                if(callback != null)
+                {
+                    callback.onSightingCompleted(null, null, null);
+                }
+                destroy();
+                break;
         }
-
-        destroy();
     }
 
     /**
@@ -157,12 +170,30 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     }
 
     @Override
-    public void onClick(View view) {
-        if(callback != null)
+    public void onClick(DialogInterface dialogInterface, int i) {
+        switch (i)
         {
-            callback.onSightingCompleted(lastLatLng, deelgebied);
+            case AlertDialog.BUTTON_POSITIVE:
+                if(callback != null)
+                {
+                    callback.onSightingCompleted(lastLatLng, deelgebied, ((TextView)dialog.findViewById(R.id.sighting_dialog_info_edit)).getText().toString());
+                    destroy();
+                }
+                break;
+            case AlertDialog.BUTTON_NEGATIVE:
+                snackbar.show();
+                break;
         }
-        destroy();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(dialog != null) {
+            dialog.show();
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_location_label)).setText("Locatie: " + lastLatLng.latitude + " , " + lastLatLng.longitude);
+        }
     }
 
     /**
@@ -184,7 +215,17 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             marker = null;
         }
 
-        snackbar = null;
+        if(dialog != null)
+        {
+            dialog.dismiss();
+            dialog = null;
+        }
+
+        if(snackbar != null)
+        {
+            snackbar.dismiss();
+            snackbar = null;
+        }
 
         lastLatLng = null;
 
@@ -193,6 +234,8 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         deelgebied = null;
 
     }
+
+
 
     /**
      * @author Dingenis Sieger Sinke
@@ -235,6 +278,21 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         }
 
         /**
+         * Sets the Context for the Dialog of the SightingSession.
+         * */
+        public Builder setDialogContext(Context context) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.sighting_input_dialog, null);
+            buffer.dialog = new AlertDialog.Builder(context)
+                    .setCancelable(false)
+                    .setPositiveButton("Bevestigen", buffer)
+                    .setNegativeButton("Annuleren", buffer)
+                    .setView(view)
+                    .create();
+            return this;
+        }
+
+        /**
          * Sets the callback of the SightingSession.
          * */
         public Builder setOnSightingCompletedCallback(OnSightingCompletedCallback callback)
@@ -251,8 +309,6 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             buffer.initialize();
             return buffer;
         }
-
-
     }
 
     /**
@@ -266,10 +322,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         /**
          * Gets invoked when a SightingSession has been completed.
          *
-         * @param chosen The chosen LatLng
+         * @param chosen The chosen LatLng.
          * @param deelgebied The Deelgebied where the LatLng is in, null if none.
+         * @param optionalInfo The optional info the user can provide.
          * */
-        void onSightingCompleted(LatLng chosen, Deelgebied deelgebied);
+        void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo);
     }
 
 }
