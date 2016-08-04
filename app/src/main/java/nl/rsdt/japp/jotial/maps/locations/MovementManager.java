@@ -1,7 +1,10 @@
 package nl.rsdt.japp.jotial.maps.locations;
 
 import android.location.Location;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
@@ -11,6 +14,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
@@ -35,39 +39,48 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
 
     private FollowSession activeSession;
 
-    public MovementManager() {}
+    public MovementManager() {
+        request = new LocationRequest()
+                .setInterval(700)
+                .setFastestInterval(100)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
 
     public FollowSession newSession(CameraPosition before, float zoom, float aoa) {
         if(activeSession != null) {
             activeSession.end();
             activeSession = null;
         }
-        activeSession = new FollowSession();
+        activeSession = new FollowSession(before, zoom, aoa);
         return activeSession;
     }
 
     @Override
     public void onLocationChanged(Location location) {
 
-        if(lastLocation != null)
-        {
+
+        if(lastLocation != null) {
             bearing = lastLocation.bearingTo(location);
+
+            /**
+             * Animate the marker to the new position
+             * */
+            AnimateMarkerTool.animateMarkerToICS(marker, new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
+            marker.setRotation(bearing);
+        } else {
+            marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+
+        /**
+         * Make the marker visible
+         * */
+        if(!marker.isVisible()) {
+            marker.setVisible(true);
         }
 
         if(activeSession != null) {
             activeSession.onLocationChanged(location);
         }
-
-        /**
-         * Animate the marker to the new position
-         * */
-        AnimateMarkerTool.animateMarkerToICS(marker, new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 100);
-        marker.setRotation(bearing);
-
-        /**
-         * Make the marker visible
-         * */
-        if(!marker.isVisible()) marker.setVisible(true);
 
         lastLocation = location;
     }
@@ -75,14 +88,20 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
         marker = googleMap.addMarker(
                 new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
-                        .position(new LatLng(0, 0))
+                        .position(new LatLng(52.021818, 6.059603))
                         .visible(false)
                         .flat(true));
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        super.onConnected(bundle);
+        startLocationUpdates();
+    }
 
     public class FollowSession implements LocationSource.OnLocationChangedListener {
 
@@ -91,6 +110,12 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
         private float aoa = 45f;
 
         private CameraPosition before;
+
+        public FollowSession(CameraPosition before, float zoom, float aoa) {
+            this.before = before;
+            this.zoom = zoom;
+            this.aoa = aoa;
+        }
 
         @Override
         public void onLocationChanged(Location location) {

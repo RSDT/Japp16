@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.support.multidex.MultiDexApplication;
 
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
@@ -22,6 +23,12 @@ public class Japp extends MultiDexApplication {
 
     public static Japp getInstance() { return instance; }
 
+    private static FirebaseAnalytics analytics;
+
+    public static FirebaseAnalytics getAnalytics() {
+        return analytics;
+    }
+
     public static boolean hasInternetConnection()
     {
         ConnectivityManager cm = (ConnectivityManager)instance.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -33,6 +40,8 @@ public class Japp extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         instance = this;
+
+        analytics = FirebaseAnalytics.getInstance(this);
 
         MapsInitializer.initialize(this);
 

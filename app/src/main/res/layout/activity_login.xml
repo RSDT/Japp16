@@ -6,36 +6,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:src="@drawable/rp_logo_binocular_500x500"
-        android:layout_gravity="center"
-        android:layout_margin="0dp"
-        />
+        android:layout_height="0dp"
+        android:layout_weight="0.7">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/rp_logo_binocular_500x500"
+            android:adjustViewBounds="true"
+            />
+    </RelativeLayout>
 
     <EditText
         android:id="@+id/username"
         android:layout_width="250dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:layout_gravity="center"
         android:hint="username"
-        android:layout_gravity="bottom|center"
         />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="250dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
         android:inputType="textPassword"
+        android:layout_gravity="center"
         android:hint="password"
-        android:layout_gravity="bottom|center"/>
+        />
 
     <Button
         android:id="@+id/login"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:layout_gravity="center"
         android:text="login"
-        android:layout_gravity="bottom|center"
         android:layout_margin="20dp"
         />
 

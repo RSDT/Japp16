@@ -18,7 +18,7 @@ public class CameraUtils {
     /**
      * Moves the camera to given location.
      */
-    public static void cameraToLocation(boolean animate,GoogleMap googleMap, Location location, float zoom, float aoa, float bearing)
+    public static void cameraToLocation(boolean animate, GoogleMap googleMap, Location location, float zoom, float aoa, float bearing)
     {
         if(location != null) {
             if (animate) {

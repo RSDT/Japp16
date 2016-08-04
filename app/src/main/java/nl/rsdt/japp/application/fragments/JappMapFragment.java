@@ -24,6 +24,7 @@ import com.rsdt.anl.WebRequestMethod;
 import com.rsdt.anl.WebResponse;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.locations.MovementManager;
@@ -75,8 +76,6 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
         huntButton.setOnClickListener(new View.OnClickListener() {
 
             SightingSession session;
-
-            AlertDialog dialog;
 
             @Override
             public void onClick(View view) {
@@ -173,6 +172,12 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                     builder.setTeam(deelgebied.getName().substring(0, 1));
                                     builder.setInfo(optionalInfo);
                                     String data = builder.build();
+
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("team", deelgebied.getName());
+                                    bundle.putString("info", optionalInfo);
+                                    bundle.putParcelable("location", chosen);
+                                    Japp.getAnalytics().logEvent("EVENT_SPOT", bundle);
 
                                     /*--- Send a request to server ---*/
                                     WebRequest request = new WebRequest.Builder()
@@ -300,10 +305,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.clear();
 
         movementManager.onMapReady(googleMap);
-
-        googleMap.clear();
 
         Deelgebied[] all = Deelgebied.all();
         Deelgebied current;

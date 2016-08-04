@@ -1,8 +1,6 @@
 package nl.rsdt.japp.application.activities;
 
-import android.app.AlertDialog;
 import android.app.SearchManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,12 +11,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 
@@ -38,10 +33,7 @@ import nl.rsdt.japp.application.misc.SearchSuggestionsAdapter;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
-import nl.rsdt.japp.jotial.data.structures.area348.VosInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
-import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
-import nl.rsdt.japp.jotial.maps.management.controllers.VosController;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, SearchView.OnQueryTextListener {
