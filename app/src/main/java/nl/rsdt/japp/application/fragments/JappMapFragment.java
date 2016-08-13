@@ -1,14 +1,11 @@
 package nl.rsdt.japp.application.fragments;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -25,6 +22,7 @@ import com.rsdt.anl.WebResponse;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.locations.MovementManager;
@@ -123,6 +121,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                                 case 200:
                                                     Snackbar.make(mapView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
                                                     break;
+                                                case 404:
+                                                    Snackbar.make(mapView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    Authentication.startLoginActivity(JappMapFragment.this.getActivity());
+                                                    break;
                                                 default:
                                                     Snackbar.make(mapView, "Probleem bij verzenden: " + response.getResponseCode(), Snackbar.LENGTH_LONG).show();
                                                     break;
@@ -185,6 +187,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                             .setMethod(WebRequestMethod.POST)
                                             .setData(data)
                                             .create();
+
                                     request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
                                         @Override
                                         public void onWebRequestCompleted(WebResponse response) {
@@ -192,6 +195,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                             {
                                                 case 200:
                                                     Snackbar.make(mapView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                                case 404:
+                                                    Snackbar.make(mapView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    Authentication.startLoginActivity(JappMapFragment.this.getActivity());
                                                     break;
                                                 default:
                                                     Snackbar.make(mapView, "Probleem bij verzenden: " + response.getResponseCode(), Snackbar.LENGTH_LONG).show();

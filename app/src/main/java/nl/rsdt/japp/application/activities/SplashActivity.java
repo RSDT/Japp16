@@ -2,12 +2,13 @@ package nl.rsdt.japp.application.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker;
@@ -15,6 +16,8 @@ import nl.rsdt.japp.jotial.maps.MapDataLoader;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.OnTransduceCompletedCallback;
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
+import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
+import nl.rsdt.japp.service.cloud.messaging.JappFirebaseMessagingService;
 
 /**
  * @author Dingenis Sieger Sinke

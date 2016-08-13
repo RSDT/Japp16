@@ -1,5 +1,8 @@
 package nl.rsdt.japp.jotial.auth;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.google.gson.JsonObject;
@@ -12,6 +15,7 @@ import com.rsdt.anl.WebResponse;
 import java.io.StringReader;
 
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.application.activities.LoginActivity;
 import nl.rsdt.japp.jotial.data.builders.LoginPostDataBuilder;
 import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
 
@@ -148,6 +152,12 @@ public class Authentication implements WebRequest.OnWebRequestCompletedCallback 
     public interface OnAuthenticationCompletedCallback
     {
         void onAuthenticationCompleted(AuthenticationResult result);
+    }
+
+    public static void startLoginActivity(Activity activity) {
+        Intent intent = new Intent(activity, LoginActivity.class);
+        activity.startActivity(intent);
+        activity.finish();
     }
 
 }

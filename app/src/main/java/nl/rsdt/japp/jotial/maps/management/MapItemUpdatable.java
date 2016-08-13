@@ -1,6 +1,9 @@
 package nl.rsdt.japp.jotial.maps.management;
 
 import com.rsdt.anl.RequestPool;
+import com.rsdt.anl.WebRequest;
+
+import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -10,6 +13,13 @@ import com.rsdt.anl.RequestPool;
  */
 public interface MapItemUpdatable {
 
-    void onUpdateInvoked(RequestPool pool, boolean userInvoked);
+    String MODE_ALL = "ALL";
 
+    String MODE_LATEST = "LATEST";
+
+    WebRequest update(String mode);
+
+    void onUpdateInvoked(RequestPool pool);
+
+    void onUpdateMessage(RequestPool pool, UpdateInfo info);
 }

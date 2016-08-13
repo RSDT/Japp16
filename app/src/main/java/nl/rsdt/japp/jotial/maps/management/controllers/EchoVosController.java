@@ -50,19 +50,22 @@ public class EchoVosController extends VosController {
     }
 
     @Override
-    public void onUpdateInvoked(RequestPool pool, boolean userInvoked) {
-        if(userInvoked) {
-            pool.query(new WebRequest.Builder()
-                    .setId(REQUEST_ID)
-                    .setMethod(WebRequestMethod.GET)
-                    .setUrl(new ApiUrlBuilder().append("vos").append("e").append("all").build())
-                    .create());
-        } else if(items.isEmpty() || isElapsedSinceLastUpdate(30000) ) {
-            pool.query(new WebRequest.Builder()
-                    .setId(REQUEST_ID)
-                    .setMethod(WebRequestMethod.GET)
-                    .setUrl(new ApiUrlBuilder().append("vos").append("e").append("all").build())
-                    .create());
+    public WebRequest update(String mode) {
+        switch (mode){
+            case MODE_ALL:
+                return new WebRequest.Builder()
+                        .setId(REQUEST_ID)
+                        .setMethod(WebRequestMethod.GET)
+                        .setUrl(new ApiUrlBuilder().append("vos").append("e").append("all").build())
+                        .create();
+            case MODE_LATEST:
+                return new WebRequest.Builder()
+                        .setId(REQUEST_ID)
+                        .setMethod(WebRequestMethod.GET)
+                        .setUrl(new ApiUrlBuilder().append("vos").append("e").append("all").append(lastUpdate.toString()).build())
+                        .create();
+            default:
+                return null;
         }
     }
 }

@@ -3,6 +3,7 @@ package nl.rsdt.japp.application.navigation;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 
@@ -30,6 +31,8 @@ public class FragmentNavigationManager {
 
     private static final String BUNDLE_KEY_FRAGMENT = "BUNDLE_KEY_FRAGMENT";
 
+    private Toolbar toolbar;
+
     private FragmentManager manager;
 
     private String currentFragmentTag = "";
@@ -42,8 +45,9 @@ public class FragmentNavigationManager {
 
     private AboutFragment aboutFragment;
 
-    public void initialize(FragmentManager manager)
+    public void initialize(Toolbar toolbar, FragmentManager manager)
     {
+        this.toolbar = toolbar;
         this.manager = manager;
         setupFragments();
     }
@@ -105,6 +109,7 @@ public class FragmentNavigationManager {
 
         ft.commit();
         currentFragmentTag = fragment;
+        updateToolbarTitle();
     }
 
     public void setupMap(OnMapReadyCallback callback)
@@ -117,6 +122,26 @@ public class FragmentNavigationManager {
         else
         {
             mapFragment.getMapAsync(callback);
+        }
+    }
+
+    private void updateToolbarTitle() {
+        if(currentFragmentTag != null) {
+            switch (currentFragmentTag)
+            {
+                case FRAGMENT_HOME:
+                    toolbar.setTitle("Home");
+                    break;
+                case FRAGMENT_MAP:
+                    toolbar.setTitle("Kaart");
+                    break;
+                case FRAGMENT_SETTINGS:
+                    toolbar.setTitle("Instellingen");
+                    break;
+                case FRAGMENT_ABOUT:
+                    toolbar.setTitle("About");
+                    break;
+            }
         }
     }
 
@@ -141,6 +166,7 @@ public class FragmentNavigationManager {
         }
         ft.show(mapFragment);
         currentFragmentTag = FRAGMENT_MAP;
+        updateToolbarTitle();
 
 
         preferenceFragment  = (JappPreferenceFragment)manager.findFragmentByTag(JappPreferenceFragment.TAG);

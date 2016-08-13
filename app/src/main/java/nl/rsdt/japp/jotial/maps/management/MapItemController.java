@@ -1,6 +1,7 @@
 package nl.rsdt.japp.jotial.maps.management;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -13,7 +14,11 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.rsdt.anl.RequestPool;
 import com.rsdt.anl.WebResponse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import nl.rsdt.japp.jotial.BundleIdentifiable;
 import nl.rsdt.japp.jotial.Identifiable;
@@ -35,6 +40,7 @@ import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResu
 import nl.rsdt.japp.jotial.maps.management.transformation.Transducable;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.OnTransduceCompletedCallback;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
+import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -43,8 +49,10 @@ import nl.rsdt.japp.jotial.maps.searching.Searchable;
  * Description...
  */
 public abstract class MapItemController<T> extends MapItemRequestListener implements Recreatable,
-        MapItemHolder<T>, MapItemUpdatable, Transducable<T>, Identifiable, StorageIdentifiable, BundleIdentifiable,OnMapReadyCallback,
+        MapItemHolder<T>, MapItemUpdatable, Transducable<T>, Identifiable, StorageIdentifiable, BundleIdentifiable, OnMapReadyCallback,
         OnTransduceCompletedCallback<T>, IntentCreatable, Searchable {
+
+    public static final String TAG = "MapItemController";
 
     protected GoogleMap googleMap;
 
@@ -154,6 +162,41 @@ public abstract class MapItemController<T> extends MapItemRequestListener implem
         }
         return null;
     }
+
+    @Override
+    public void onUpdateInvoked(RequestPool pool) {
+        /**
+         * When the user invokes the update, all data should be fetched.
+         * */
+        pool.query(update(MODE_ALL));
+    }
+
+    @Override
+    public void onUpdateMessage(RequestPool pool, UpdateInfo info) {
+        Calendar cal = Calendar.getInstance();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ROOT);
+            cal.setTime(sdf.parse(info.dateOfCreation));
+        } catch (ParseException e) {
+            Log.e(TAG, e.toString(), e); }
+
+        /**
+         * Check if the date of creation is before the date of the last update
+         * */
+        if(cal.before(lastUpdate)) {
+            /**
+             * This means we need to fetch all the data
+             * */
+            update(MODE_ALL);
+        } else {
+
+            /**
+             * Fetch only the latest data, the new item should be among the data.
+             * */
+            update(MODE_LATEST);
+        }
+    }
+
 
     @Override
     public void onDestroy() {

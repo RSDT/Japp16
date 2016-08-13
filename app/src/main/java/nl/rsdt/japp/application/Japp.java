@@ -10,6 +10,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -27,6 +28,12 @@ public class Japp extends MultiDexApplication {
 
     public static FirebaseAnalytics getAnalytics() {
         return analytics;
+    }
+
+    private static UpdateManager updateManager = new UpdateManager();
+
+    public static UpdateManager getUpdateManager() {
+        return updateManager;
     }
 
     public static boolean hasInternetConnection()

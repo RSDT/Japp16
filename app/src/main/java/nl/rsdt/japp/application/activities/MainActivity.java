@@ -28,12 +28,17 @@ import java.util.List;
 import java.util.Locale;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.misc.SearchSuggestionsAdapter;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 
+import nl.rsdt.japp.application.showcase.ShowCaseTour;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
+import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
+import nl.rsdt.japp.service.cloud.data.UpdateInfo;
+import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, SearchView.OnQueryTextListener {
@@ -57,8 +62,12 @@ public class MainActivity extends AppCompatActivity
             preferences.edit().putBoolean(JappPreferences.FIRST_RUN, false).apply();
         }
 
+        ShowCaseTour tour = new ShowCaseTour(this);
+        tour.showcase();
+
         mapManager.onIntentCreate(getIntent());
         mapManager.onCreate(savedInstanceState);
+
         mapManager.addListener(new RequestPool.ExtendedRequestPoolListener(new Predicate<WebResponse>() {
             @Override
             public boolean apply(WebResponse response) {
@@ -78,6 +87,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        AlphaVosController controller = (AlphaVosController) mapManager.get(AlphaVosController.CONTROLLER_ID);
+
+
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -92,7 +104,7 @@ public class MainActivity extends AppCompatActivity
         ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_rank)).setText(JappPreferences.getAccountRank());
         //((ImageView)navigationView.getHeaderView(0).findViewById(R.id.nav_avatar)).setImageDrawable(AppData.getDrawable());
 
-        fragmentNavigationManager.initialize(getFragmentManager());
+        fragmentNavigationManager.initialize(toolbar, getFragmentManager());
         fragmentNavigationManager.onSavedInstance(savedInstanceState);
 
 

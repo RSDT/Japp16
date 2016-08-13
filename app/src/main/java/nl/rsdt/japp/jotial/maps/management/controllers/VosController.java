@@ -2,13 +2,18 @@ package nl.rsdt.japp.jotial.maps.management.controllers;
 
 import android.os.Bundle;
 import android.os.Parcel;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.rsdt.anl.RequestPool;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,6 +23,7 @@ import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
+import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -55,6 +61,7 @@ public abstract class VosController extends MapItemController<VosInfo> {
         return new VosTransducer(getStorageId(), getBundleId());
     }
 
+
     public ArrayList<BaseInfo> searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         VosInfo info;
@@ -86,6 +93,7 @@ public abstract class VosController extends MapItemController<VosInfo> {
         }
         return entries;
     }
+
 
     public static class VosTransducer extends AbstractTransducer<VosInfo>
     {

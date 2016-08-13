@@ -2,6 +2,8 @@ package nl.rsdt.japp.jotial.maps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -11,14 +13,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.rsdt.anl.RequestPool;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.activities.SplashActivity;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
@@ -32,21 +39,42 @@ import nl.rsdt.japp.jotial.maps.management.controllers.FoxtrotVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
+import nl.rsdt.japp.service.cloud.data.UpdateInfo;
+import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
 
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
  * @since 24-7-2016
- * Description...
+ * Manages the map
  */
-public class MapManager extends RequestPool implements OnMapReadyCallback, Searchable {
+public class MapManager extends RequestPool implements OnMapReadyCallback, Searchable, UpdateManager.UpdateMessageListener {
 
+    /**
+     * Defines the tag of this class.
+     * */
+    public static final String TAG = "MapManager";
+
+    /**
+     * The GoogleMap
+     * */
     private GoogleMap googleMap;
 
+    /**
+     * The HashMap with the MapItemControllers.
+     * */
     private HashMap<String, MapItemController> controllers = new HashMap<>();
 
+    /**
+     * Initializes a new instance of MapManager.
+     * */
     public MapManager()
     {
+        /**
+         * Add this as a listener for UpdateMessages.
+         * */
+        Japp.getUpdateManager().add(this);
+
         controllers.put(AlphaVosController.CONTROLLER_ID, new AlphaVosController());
         controllers.put(BravoVosController.CONTROLLER_ID, new BravoVosController());
         controllers.put(CharlieVosController.CONTROLLER_ID, new CharlieVosController());
@@ -66,6 +94,9 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
         }
     }
 
+    /**
+     *
+     * */
     public void onIntentCreate(Intent intent)
     {
         if(intent != null && intent.hasExtra(SplashActivity.LOAD_ID))
@@ -81,6 +112,11 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
         }
     }
 
+    /**
+     * Gets invoked when the Activity is created.
+     *
+     * @param savedInstanceState The Bundle where we have potential put things.
+     * */
     public void onCreate(Bundle savedInstanceState)
     {
         if(savedInstanceState != null)
@@ -95,6 +131,11 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
         }
     }
 
+    /**
+     * Gets invoked when the Activity is being saved.
+     *
+     * @param saveInstanceState The Bundle where we can save things in.
+     * */
     public void onSaveInstanceState(Bundle saveInstanceState)
     {
         if(saveInstanceState != null)
@@ -109,30 +150,63 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
         }
     }
 
+    @Nullable
+    /**
+     * Gets the MapItemController associated with the given id.
+     *
+     * @param id The id of the MapItemController, for example VosAlphaController.CONTROLLER_ID .
+     * @return The MapItemController associated with the id, returns null if none.
+     * */
     public MapItemController get(String id)
     {
         return controllers.get(id);
     }
 
+    /**
+     * Gets all the controllers.
+     * */
     public Collection<MapItemController> getAll()
     {
         return controllers.values();
     }
 
+    @Override
+    /**
+     * Gets invoked when a UpdateMessage is received.
+     * */
+    public void onUpdateMessageReceived(UpdateInfo info) {
+        MapItemController controller = null;
+        switch (info.type) {
+            case "foto":
+                controller = get(FotoOpdrachtController.CONTROLLER_ID);
+                break;
+        }
 
-    public void update(boolean userInvoked)
+        if(controller != null) {
+            controller.onUpdateMessage(this, info);
+        }
+
+    }
+
+    /**
+     * Updates all the controllers, without any smart fetching logic.
+     * */
+    public void update()
     {
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
             MapItemController controller = pair.getValue();
             if(controller != null)
             {
-                controller.onUpdateInvoked(this, userInvoked);
+                controller.onUpdateInvoked(this);
             }
         }
         executeAsync();
     }
 
     @Override
+    /**
+     * Gets invoked when the GoogleMap is ready for use.
+     * */
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
@@ -146,11 +220,18 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                 controller.onMapReady(googleMap);
             }
         }
-        update(false);
     }
 
+    /**
+     * Gets invoked when the Activity is beaning destroyed.
+     * */
     public void onDestroy()
     {
+        /**
+         * Remove this as a listener for UpdateMessages.
+         * */
+        Japp.getUpdateManager().remove(this);
+
         if(googleMap != null)
         {
             googleMap = null;
@@ -218,8 +299,12 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
         return entries;
     }
 
+    /**
+     * Animates the camera according the given CameraUpdate.
+     * */
     public void animateCamera(CameraUpdate update)
     {
         googleMap.moveCamera(update);
     }
+
 }

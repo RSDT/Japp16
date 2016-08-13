@@ -16,6 +16,10 @@ public abstract class MapItemRequestListener extends RequestPool.ExtendedRequest
 
     protected Calendar lastUpdate = Calendar.getInstance();
 
+    public Calendar getLastUpdateDate() {
+        return lastUpdate;
+    }
+
     protected boolean isElapsedSinceLastUpdate(long time) {
         Calendar now = Calendar.getInstance();
         long delta = now.getTimeInMillis() - lastUpdate.getTimeInMillis();
