@@ -70,11 +70,6 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
      * */
     public MapManager()
     {
-        /**
-         * Add this as a listener for UpdateMessages.
-         * */
-        Japp.getUpdateManager().add(this);
-
         controllers.put(AlphaVosController.CONTROLLER_ID, new AlphaVosController());
         controllers.put(BravoVosController.CONTROLLER_ID, new BravoVosController());
         controllers.put(CharlieVosController.CONTROLLER_ID, new CharlieVosController());
@@ -209,6 +204,11 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
      * */
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+
+        /**
+         * TODO: Should we hide MapToolbar so we can move the FAB menu down?
+         * */
+        //googleMap.getUiSettings().setMapToolbarEnabled(false);
 
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));

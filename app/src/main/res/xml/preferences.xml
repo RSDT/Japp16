@@ -53,6 +53,18 @@
 
     </PreferenceCategory>
 
+
+    <PreferenceCategory android:title="@string/pref_cat_updates">
+
+        <CheckBoxPreference
+            android:key="pref_updates_auto"
+            android:title="@string/pref_updates_auto_title"
+            android:summary="@string/pref_updates_auto_sum"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+
     <PreferenceCategory android:title="@string/pref_cat_notifications">
 
         <CheckBoxPreference
@@ -108,20 +120,5 @@
             />
 
     </PreferenceCategory>
-
-    <PreferenceScreen
-        android:key="pref_cat_advanced"
-        android:title="@string/pref_cat_advanced"
-        android:persistent="false">>
-
-        <EditTextPreference
-            android:key="pref_advanced_foto_interval"
-            android:title="@string/pref_advanced_foto_interval_title"
-            android:summary="@string/pref_advanced_foto_interval_sum"
-            android:inputType="numberDecimal"
-            android:defaultValue="1.0"
-            />
-
-    </PreferenceScreen>
 
 </PreferenceScreen>

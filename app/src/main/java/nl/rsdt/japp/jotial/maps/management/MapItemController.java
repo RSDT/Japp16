@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Locale;
 
 import nl.rsdt.japp.jotial.BundleIdentifiable;
@@ -94,10 +95,13 @@ public abstract class MapItemController<T> extends MapItemRequestListener implem
     public void onIntentCreate(Bundle bundle) {
         if(bundle != null) {
             AbstractTransducerResult<T> result = bundle.getParcelable(getBundleId());
-            if(googleMap != null) {
-                processResult(result);
-            } else {
-                buffer = result;
+            if(result != null) {
+                this.items = result.getItems();
+                if(googleMap != null) {
+                    processResult(result);
+                } else {
+                    buffer = result;
+                }
             }
         }
     }
@@ -119,7 +123,42 @@ public abstract class MapItemController<T> extends MapItemRequestListener implem
 
     @Override
     public void onTransduceCompleted(AbstractTransducerResult<T> result) {
-        this.items = result.getItems();
+        if(this.items.isEmpty()) {
+            this.items = result.getItems();
+        } else  {
+
+            ArrayList<Integer> ids = new ArrayList<>();
+            BaseInfo info;
+            for(int i = 0; i < result.getItems().size(); i++){
+                info = (BaseInfo)result.getItems().get(i);
+
+                BaseInfo buffer;
+                for(int x = 0; x < this.items.size(); x++) {
+                    buffer = (BaseInfo) items.get(x);
+                    if(buffer.id == info.id) {
+                        items.add(x, (T)info);
+                        items.remove(buffer);
+                        ids.add(info.id);
+                    }
+                }
+            }
+
+            int id;
+            Marker marker;
+            for(int i = 0; i < ids.size(); i++) {
+                id = ids.get(i);
+                Iterator<Marker> iterator = markers.iterator();
+                while(iterator.hasNext()) {
+                    marker = iterator.next();
+                    if(marker.getTitle().equals(String.valueOf(id))) {
+                        iterator.remove();
+                        marker.remove();
+                    }
+                }
+            }
+
+        }
+
         if(googleMap != null)
         {
             processResult(result);

@@ -151,6 +151,13 @@
 
         <!-- END CAT -->
 
+        <!-- START CAT UPDATES -->
+            <string name="pref_cat_updates">Updates</string>
+
+            <string name="pref_updates_auto_title">Automatische Updates</string>
+            <string name="pref_updates_auto_sum">Het automatisch updaten van de kaart</string>
+        <!-- END CAT -->
+
         <!-- START CAT NOTIFICATIONS -->
 
             <string name="pref_cat_notifications">Notificaties</string>
@@ -180,7 +187,7 @@
         <!-- END CAT -->
 
 
-        <!-- START CAT EXTRA -->
+        <!-- START CAT TRAVEL -->
             <string name="pref_cat_travel">Reizen</string>
 
             <string name="pref_travel_zoom_title">Zoom</string>
@@ -197,11 +204,5 @@
             <string name="pref_misc_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen</string>
         <!-- END CAT -->
 
-    <!-- START CAT ADVANCED -->
-    <string name="pref_cat_advanced">Geavanceerd</string>
-
-    <string name="pref_advanced_foto_interval_title">Foto Update Interval</string>
-    <string name="pref_advanced_foto_interval_sum">De minimale hoeveelheid tijd(min) die moet verstreken zijn, om de foto opnieuw te kunnen updaten via de auto update</string>
-    <!-- END CAT -->
 
 </resources>

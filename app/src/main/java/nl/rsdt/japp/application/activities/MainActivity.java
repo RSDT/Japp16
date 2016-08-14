@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -14,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 
@@ -41,29 +44,57 @@ import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, SearchView.OnQueryTextListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, SearchView.OnQueryTextListener, UpdateManager.UpdateMessageListener {
 
+    /**
+     * TODO: make the search system more clean
+     * */
     private Menu menu;
 
+    /**
+     * Manages the GoogleMap.
+     * */
     private MapManager mapManager = new MapManager();
 
+    /**
+     * Manages the navigation between the fragments.
+     * */
     private FragmentNavigationManager fragmentNavigationManager = new FragmentNavigationManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Add this as a listener for UpdateMessages.
+         * */
+        Japp.getUpdateManager().add(this);
+
+        /**
+         * Register a on changed listener to the visible preferences.
+         * */
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        SharedPreferences preferences = getSharedPreferences("nl.rsdt.japp", MODE_PRIVATE);
-        if(!preferences.contains(JappPreferences.FIRST_RUN))
+        /**
+         * Checks if this is the first run of the app.
+         * */
+        if(JappPreferences.isFirstRun())
         {
-            preferences.edit().putBoolean(JappPreferences.FIRST_RUN, false).apply();
-        }
+            /**
+             * Do some things for the first run.
+             * */
+            ShowCaseTour tour = new ShowCaseTour(this);
+            tour.showcase();
 
-        ShowCaseTour tour = new ShowCaseTour(this);
-        tour.showcase();
+            /**
+             * Set the the first run value to false.
+             * */
+            JappPreferences.setFirstRun(false);
+        }
 
         mapManager.onIntentCreate(getIntent());
         mapManager.onCreate(savedInstanceState);
@@ -87,46 +118,61 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        AlphaVosController controller = (AlphaVosController) mapManager.get(AlphaVosController.CONTROLLER_ID);
-
-
-        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
-
+        /**
+         * Setup the NavigationDrawer.
+         * */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        /**
+         * Setup the NavigationView.
+         * */
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(JappPreferences.getAccountUsername());
         ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_rank)).setText(JappPreferences.getAccountRank());
         //((ImageView)navigationView.getHeaderView(0).findViewById(R.id.nav_avatar)).setImageDrawable(AppData.getDrawable());
 
+        /**
+         * Initialize the FragmentNavigationManager.
+         * */
         fragmentNavigationManager.initialize(toolbar, getFragmentManager());
         fragmentNavigationManager.onSavedInstance(savedInstanceState);
 
+    }
 
-         /* mapManager.query(new WebRequest.Builder()
-                .setId(VosController.REQUEST_ID)
-                .setUrl(new ApiUrlBuilder().append("vos").append("a").append("all").build())
-                .setMethod(WebRequestMethod.GET)
-                .create());
-        mapManager.query(new WebRequest.Builder()
-                .setId(VosController.REQUEST_ID)
-                .setUrl(new ApiUrlBuilder().append("vos").append("b").append("all").build())
-                .setMethod(WebRequestMethod.GET)
-                .create());
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // The activity is about to become visible.
 
-        mapManager.executeAsync(); */
+    }
 
+    /**
+     * TODO: don't use final here
+     * */
+    public void onUpdateMessageReceived(final UpdateInfo info) {
+        if(JappPreferences.isAutoUpdateEnabled()) {
+            Snackbar.make(findViewById(R.id.container), "Updating " + info.type, Snackbar.LENGTH_LONG).show();
+            mapManager.onUpdateMessageReceived(info);
+        } else {
+            Snackbar.make(findViewById(R.id.container), "Update beschikbaar voor " + info.type, Snackbar.LENGTH_LONG)
+                    .setAction("Update!", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mapManager.onUpdateMessageReceived(info);
+                        }
+                    })
+                    .show();
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         fragmentNavigationManager.onSaveInstanceState(savedInstanceState);
-
         mapManager.onSaveInstanceState(savedInstanceState);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -185,6 +231,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    /**
+     * TODO: don't use final here
+     * */
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                item.setEnabled(false);
+                mapManager.addListener(new RequestPool.ExtendedRequestPoolListener() {
+                    @Override
+                    public void onWebRequestCompleted(WebResponse response) {
+                        item.setEnabled(true);
+                        mapManager.removeListener(this);
+                    }
+                });
+                mapManager.update();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -197,9 +266,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
-
         fragmentNavigationManager.setupMap(mapManager);
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -231,6 +298,16 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
 
+        /**
+         * Remove this as UpdateMessageListener.
+         * */
+        Japp.getUpdateManager().remove(this);
+
+        /**
+         * Unregister this as OnSharedPreferenceChangeListener.
+         * */
+        JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
+
         if(fragmentNavigationManager != null)
         {
             fragmentNavigationManager.onDestroy();
@@ -243,7 +320,7 @@ public class MainActivity extends AppCompatActivity
             mapManager = null;
         }
 
-        JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
 
@@ -261,4 +338,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onQueryTextChange(String newText) {
         return false;
     }
+
+
 }

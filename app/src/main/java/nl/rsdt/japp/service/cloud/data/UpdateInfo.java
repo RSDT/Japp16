@@ -14,10 +14,13 @@ public class UpdateInfo {
 
     public String dateOfCreation;
 
+    public String action;
+
     public static UpdateInfo parse(Map<String, String> data) {
         UpdateInfo info = new UpdateInfo();
         info.type = data.get("type");
         info.dateOfCreation = data.get("dateOfCreation");
+        info.action = data.get("action");
         return info;
     }
 

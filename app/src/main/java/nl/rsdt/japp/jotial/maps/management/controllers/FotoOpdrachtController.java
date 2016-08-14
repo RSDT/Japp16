@@ -190,7 +190,7 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
                 mOptions.position(items[i].getLatLng());
                 mOptions.title(String.valueOf(items[i].id));
 
-                if(items[i].klaar)
+                if(items[i].klaar == 1)
                 {
                     mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20_klaar));
                 }

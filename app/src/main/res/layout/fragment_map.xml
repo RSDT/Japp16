@@ -3,14 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator_map"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_menu"
@@ -55,4 +54,5 @@
             android:src="@drawable/me" />
 
     </com.github.clans.fab.FloatingActionMenu>
+
 </android.support.design.widget.CoordinatorLayout>

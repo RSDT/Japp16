@@ -39,38 +39,75 @@ public class JappPreferences {
 
     public static final String ACCOUNT_KEY = "pref_account_key";
 
-    public static final String ADVANCED_FOTO_INTERVAL = "pref_advanced_foto_interval";
+    public static final String UPDATES_AUTO = "pref_updates_auto";
 
-
-
+    /**
+     * Gets the visible preferences of Japp.
+     * */
     public static SharedPreferences getVisiblePreferences() {
         return PreferenceManager.getDefaultSharedPreferences(Japp.getInstance());
     }
 
+    /**
+     * Gets the non-visible preferences of Japp.
+     * */
     public static SharedPreferences getAppPreferences() {
         return Japp.getInstance().getSharedPreferences("nl.rsdt.japp", Context.MODE_PRIVATE);
     }
 
+    /**
+     * Gets the value indicating if this is the first run.
+     * */
     public static boolean isFirstRun() {
         return getAppPreferences().getBoolean(FIRST_RUN, true);
     }
 
+    /**
+     * Sets the value determining if this is the first run.
+     * */
+    public static void setFirstRun(boolean value) { getAppPreferences().edit().putBoolean(FIRST_RUN, value).apply(); }
+
+    /**
+     * Gets the username of the active account.
+     * */
     public static String getAccountUsername() {
         return getVisiblePreferences().getString(ACCOUNT_USERNAME, "unknown");
     }
 
+    /**
+     * Gets the rank of the active account.
+     * */
     public static String getAccountRank() {
         return getVisiblePreferences().getString(ACCOUNT_RANK, "Guest");
     }
 
+    /**
+     * Gets the icon that the user has selected to be displayed to the others.
+     * */
     public static int getAccountIcon() {
         return Integer.valueOf(getVisiblePreferences().getString(ACCOUNT_ICON, "0"));
     }
 
+    /**
+     * Gets the API-key associated with the active account.
+     * */
     public static String getAccountKey() {
         return getVisiblePreferences().getString(ACCOUNT_KEY, "");
     }
 
-    public static int getFotoIntervalRate() { return Float.valueOf(getVisiblePreferences().getString(ADVANCED_FOTO_INTERVAL, "60 000")).intValue() * 60 * 1000; }
+    /**
+     * Gets the value indicating if auto update is enabled.
+     * */
+    public static boolean isAutoUpdateEnabled() {
+        return Boolean.valueOf(getVisiblePreferences().getString(UPDATES_AUTO, "true"));
+    }
+
+    /**
+     * Sets the value indicating if auto update is enabled.
+     * */
+    public static void setAutoUpdateEnabled(boolean value) {
+        getVisiblePreferences().edit().putString(UPDATES_AUTO, String.valueOf(value)).apply();
+    }
+
 
 }

@@ -18,19 +18,6 @@ import com.google.gson.stream.JsonReader;
 public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
 
     /**
-     * Initializes a new instance of FotoOpdrachtInfo from the parcel.
-     *
-     * @param in The parcel where the instance should be created from.
-     */
-    protected FotoOpdrachtInfo(Parcel in) {
-        super(in);
-        foto_nr = in.readInt();
-        info = in.readString();
-        extra = in.readString();
-        klaar = in.readByte() != 0;
-    }
-
-    /**
      * The name of the FotoOpdrachtInfo.
      */
     public int foto_nr;
@@ -48,7 +35,15 @@ public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
     /**
      * The value indicating if FotoOpdrachtInfo is completed or not.
      */
-    public boolean klaar;
+    public int klaar;
+
+    protected FotoOpdrachtInfo(Parcel in) {
+        super(in);
+        foto_nr = in.readInt();
+        info = in.readString();
+        extra = in.readString();
+        klaar = in.readInt();
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -56,7 +51,7 @@ public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
         dest.writeInt(foto_nr);
         dest.writeString(info);
         dest.writeString(extra);
-        dest.writeByte((byte) (klaar ? 1 : 0));
+        dest.writeInt(klaar);
     }
 
     @Override
