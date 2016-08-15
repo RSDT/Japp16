@@ -49,6 +49,11 @@
         </activity>
 
         <service
+            android:name=".service.LocationService">
+        </service>
+
+
+        <service
             android:name=".service.cloud.messaging.JappFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

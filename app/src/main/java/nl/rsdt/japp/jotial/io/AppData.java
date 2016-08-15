@@ -138,7 +138,7 @@ public class AppData {
         }
         catch (Exception e)
         {
-            Log.e("AppData", e.getStackTrace().toString(), e);
+            Log.e("AppData", e.toString(), e);
         }
         return null;
     }
@@ -229,9 +229,7 @@ public class AppData {
                 ((BitmapDrawable)drawable).getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.flush();
                 fos.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }catch(IOException e){
+            } catch(IOException e){
                 e.printStackTrace();
             }
         }

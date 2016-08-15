@@ -1,7 +1,5 @@
 package nl.rsdt.japp.jotial.maps.management.transformation.async;
 
-import java.lang.ref.WeakReference;
-
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
 import nl.rsdt.japp.jotial.maps.management.transformation.TransduceMode;
@@ -29,10 +27,10 @@ public final class AsyncTransducePackage<T> {
         return mode;
     }
 
-    private WeakReference<OnTransduceCompletedCallback<T>> callback;
+    private OnTransduceCompletedCallback<T> callback;
 
     public OnTransduceCompletedCallback<T> getCallback() {
-        return callback.get();
+        return callback;
     }
 
     private AbstractTransducer<T> transducer;
@@ -66,7 +64,7 @@ public final class AsyncTransducePackage<T> {
         }
 
         public Builder<T> setCallback(OnTransduceCompletedCallback<T> callback) {
-            input.callback = new WeakReference<>(callback);
+            input.callback = callback;
             return this;
         }
 

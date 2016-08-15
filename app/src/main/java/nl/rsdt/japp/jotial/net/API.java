@@ -4,10 +4,17 @@ package nl.rsdt.japp.jotial.net;
  * @author Dingenis Sieger Sinke
  * @version 1.0
  * @since 10-7-2016
- * Description...
+ * Class that contains meta-data.
  */
-public class API {
+public final class API {
 
-    public static final String API_V2 = "http://jotihunt-api_v2.area348.nl";
+    /**
+     * The root of the Area348 V2 API
+     * */
+    public static final String API_V2_ROOT = "http://jotihunt-api_v2.area348.nl";
+
+    public static final String API_V1_ROOT = "http://jotihunt-api.area348.nl";
+
+    public static final String SITE_2016_ROOT = "http://jotihunt2016.area348.nl";
 
 }

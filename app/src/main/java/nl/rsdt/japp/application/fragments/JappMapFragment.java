@@ -25,7 +25,7 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
-import nl.rsdt.japp.jotial.maps.locations.MovementManager;
+import nl.rsdt.japp.jotial.maps.movement.MovementManager;
 import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
@@ -323,11 +323,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
             current = all[i];
 
             googleMap.addPolygon(new PolygonOptions()
-                    .fillColor(current.alphaled(90))
+                    .fillColor(current.alphaled(70))
                     .strokeWidth(0)
                     .addAll(current.getCoordinates()));
         }
-
 
         pinningManager.onMapReady(googleMap);
 

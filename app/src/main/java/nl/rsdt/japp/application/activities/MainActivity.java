@@ -1,14 +1,13 @@
 package nl.rsdt.japp.application.activities;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -17,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 
 import com.android.internal.util.Predicate;
@@ -36,10 +34,12 @@ import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.misc.SearchSuggestionsAdapter;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 
+import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.ShowCaseTour;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
-import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
+import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
+import nl.rsdt.japp.service.LocationServiceManager;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
 
@@ -56,10 +56,11 @@ public class MainActivity extends AppCompatActivity
      * */
     private MapManager mapManager = new MapManager();
 
+
     /**
      * Manages the navigation between the fragments.
      * */
-    private FragmentNavigationManager fragmentNavigationManager = new FragmentNavigationManager();
+    private NavigationManager navigationManager = new NavigationManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,15 +133,12 @@ public class MainActivity extends AppCompatActivity
          * */
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(JappPreferences.getAccountUsername());
-        ((TextView)navigationView.getHeaderView(0).findViewById(R.id.nav_rank)).setText(JappPreferences.getAccountRank());
-        //((ImageView)navigationView.getHeaderView(0).findViewById(R.id.nav_avatar)).setImageDrawable(AppData.getDrawable());
 
         /**
-         * Initialize the FragmentNavigationManager.
+         * Initialize the NavigationManager.
          * */
-        fragmentNavigationManager.initialize(toolbar, getFragmentManager());
-        fragmentNavigationManager.onSavedInstance(savedInstanceState);
+        navigationManager.initialize(this);
+        navigationManager.onSavedInstance(savedInstanceState);
 
     }
 
@@ -172,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        fragmentNavigationManager.onSaveInstanceState(savedInstanceState);
+        navigationManager.onSaveInstanceState(savedInstanceState);
         mapManager.onSaveInstanceState(savedInstanceState);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -181,17 +179,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        switch (key)
-        {
-            case JappPreferences.ACCOUNT_USERNAME:
-                NavigationView nView = (NavigationView)findViewById(R.id.nav_view);
-                ((TextView)nView.getHeaderView(0).findViewById(R.id.nav_name)).setText(sharedPreferences.getString(key, "Unknown"));
-                break;
-            case JappPreferences.ACCOUNT_RANK:
-                NavigationView view = (NavigationView)findViewById(R.id.nav_view);
-                ((TextView)view.getHeaderView(0).findViewById(R.id.nav_name)).setText(sharedPreferences.getString(key, "Unknown"));
-                break;
-        }
+
     }
 
     @Override
@@ -201,7 +189,6 @@ public class MainActivity extends AppCompatActivity
         inflater.inflate(R.menu.options_menu, menu);
 
         // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
@@ -266,7 +253,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
-        fragmentNavigationManager.setupMap(mapManager);
+        navigationManager.setupMap(mapManager);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -276,13 +263,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            fragmentNavigationManager.switchTo(FragmentNavigationManager.FRAGMENT_HOME);
+            navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_HOME);
         } else if (id == R.id.nav_map) {
-            fragmentNavigationManager.switchTo(FragmentNavigationManager.FRAGMENT_MAP);
+            navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_MAP);
         } else if (id == R.id.nav_settings) {
-            fragmentNavigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
+            navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
         } else if (id == R.id.nav_about) {
-            fragmentNavigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
+            navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -308,10 +295,10 @@ public class MainActivity extends AppCompatActivity
          * */
         JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
 
-        if(fragmentNavigationManager != null)
+        if(navigationManager != null)
         {
-            fragmentNavigationManager.onDestroy();
-            fragmentNavigationManager = null;
+            navigationManager.onDestroy();
+            navigationManager = null;
         }
 
         if(mapManager != null)

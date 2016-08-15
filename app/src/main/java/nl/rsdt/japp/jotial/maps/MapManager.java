@@ -1,6 +1,7 @@
 package nl.rsdt.japp.jotial.maps;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
@@ -48,7 +50,7 @@ import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
  * @since 24-7-2016
  * Manages the map
  */
-public class MapManager extends RequestPool implements OnMapReadyCallback, Searchable, UpdateManager.UpdateMessageListener {
+public class MapManager extends RequestPool implements OnMapReadyCallback, Searchable, UpdateManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * Defines the tag of this class.
@@ -87,6 +89,8 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                 controller.initialize(this);
             }
         }
+
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -172,15 +176,50 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
     public void onUpdateMessageReceived(UpdateInfo info) {
         MapItemController controller = null;
         switch (info.type) {
+            case "hunter":
+                controller = get(HunterController.CONTROLLER_ID);
+                break;
             case "foto":
                 controller = get(FotoOpdrachtController.CONTROLLER_ID);
+                break;
+            case "vos_a":
+                controller = get(AlphaVosController.CONTROLLER_ID);
+                break;
+            case "vos_b":
+                controller = get(BravoVosController.CONTROLLER_ID);
+                break;
+            case "vos_c":
+                controller = get(CharlieVosController.CONTROLLER_ID);
+                break;
+            case "vos_d":
+                controller = get(DeltaVosController.CONTROLLER_ID);
+                break;
+            case "vos_e":
+                controller = get(EchoVosController.CONTROLLER_ID);
+                break;
+            case "vos_f":
+                controller = get(FoxtrotVosController.CONTROLLER_ID);
+                break;
+            case "vos_x":
+                controller = get(XrayVosController.CONTROLLER_ID);
                 break;
         }
 
         if(controller != null) {
             controller.onUpdateMessage(this, info);
+            executeAsync();
         }
 
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        switch (s) {
+            case JappPreferences.MAP_TYPE:
+                String value = sharedPreferences.getString(s, "0");
+                googleMap.setMapType(Integer.valueOf(value));
+                break;
+        }
     }
 
     /**
@@ -227,6 +266,9 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
      * */
     public void onDestroy()
     {
+
+        JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
+
         /**
          * Remove this as a listener for UpdateMessages.
          * */
@@ -251,7 +293,6 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                 {
                     removeListener(controller);
                     controller.onDestroy();
-                    controller = null;
                 }
 
                 iterator.remove();
@@ -306,5 +347,6 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
     {
         googleMap.moveCamera(update);
     }
+
 
 }

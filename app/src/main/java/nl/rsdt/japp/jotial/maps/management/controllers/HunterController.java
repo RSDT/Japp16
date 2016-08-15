@@ -15,6 +15,7 @@ import com.rsdt.anl.WebResponse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -113,6 +114,31 @@ public class HunterController extends MapItemController<HunterInfo[]> {
         saveInstanceState.putInt(BUNDLE_COUNT, items.size());
     }
 
+    @Override
+    public void onTransduceCompleted(AbstractTransducerResult<HunterInfo[]> result) {
+        if(this.items.isEmpty()) {
+            this.items = result.getItems();
+        } else {
+            Iterator<Marker> iterator = markers.iterator();
+            Marker current;
+            while(iterator.hasNext()) {
+                current = iterator.next();
+                current.remove();
+                iterator.remove();
+            }
+
+            for(int i = 0; i < polylines.size(); i++) {
+                polylines.get(i).remove();
+            }
+            polylines.clear();
+        }
+
+        if(googleMap != null) {
+            processResult(result);
+        } else {
+            buffer = result;
+        }
+    }
 
     @Override
     public WebRequest update(String mode) {

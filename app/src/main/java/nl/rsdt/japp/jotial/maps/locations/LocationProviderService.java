@@ -1,8 +1,14 @@
 package nl.rsdt.japp.jotial.maps.locations;
 
+import android.app.Service;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -18,13 +24,21 @@ import nl.rsdt.japp.application.Japp;
  * @since 25-7-2016
  * Description...
  */
-public abstract class LocationProvider implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+public abstract class LocationProviderService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+
+    public static final String TAG = "LocationProviderService";
+
+    private final LocationBinder binder = new LocationBinder();
 
     protected GoogleApiClient client;
 
     protected LocationRequest request = new LocationRequest();
 
-    public LocationProvider()
+    protected Location lastLocation;
+
+    protected boolean isRequesting = false;
+
+    public LocationProviderService()
     {
         buildGoogleApiClient();
     }
@@ -44,13 +58,14 @@ public abstract class LocationProvider implements LocationListener, GoogleApiCli
     public void startLocationUpdates()
     {
         LocationServices.FusedLocationApi.requestLocationUpdates(client, request, this);
-
+        isRequesting = true;
     }
 
 
     public void removeLocationUpdates()
     {
         LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
+        isRequesting = false;
     }
 
     public void restartLocationUpdates()
@@ -59,18 +74,32 @@ public abstract class LocationProvider implements LocationListener, GoogleApiCli
         startLocationUpdates();
     }
 
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lastLocation = location;
+    }
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        startLocationUpdates();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.e(TAG, "Connection suspended : " + i);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, connectionResult.getErrorMessage());
+    }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
     }
 
     public void onDestroy() {
@@ -83,4 +112,30 @@ public abstract class LocationProvider implements LocationListener, GoogleApiCli
         request = null;
     }
 
+    public class LocationApiInterface {
+
+        public Location getLastLocation() {
+            return lastLocation;
+        }
+
+        public void setRequest(LocationRequest request) {
+            LocationProviderService.this.request = request;
+            if(isRequesting) {
+                restartLocationUpdates();
+            }
+        }
+
+        public boolean isRequesting() {
+            return isRequesting;
+        }
+
+    }
+
+    public class LocationBinder extends Binder {
+        public LocationApiInterface getApi() {
+            return new LocationApiInterface();
+        }
+    }
+
 }
+

@@ -157,6 +157,11 @@ public abstract class MapItemController<T> extends MapItemRequestListener implem
                 }
             }
 
+            for(int i = 0; i < polylines.size(); i++) {
+                polylines.get(i).remove();
+            }
+            polylines.clear();
+
         }
 
         if(googleMap != null)
@@ -212,28 +217,15 @@ public abstract class MapItemController<T> extends MapItemRequestListener implem
 
     @Override
     public void onUpdateMessage(RequestPool pool, UpdateInfo info) {
-        Calendar cal = Calendar.getInstance();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ROOT);
-            cal.setTime(sdf.parse(info.dateOfCreation));
-        } catch (ParseException e) {
-            Log.e(TAG, e.toString(), e); }
-
-        /**
-         * Check if the date of creation is before the date of the last update
-         * */
-        if(cal.before(lastUpdate)) {
-            /**
-             * This means we need to fetch all the data
-             * */
-            update(MODE_ALL);
-        } else {
-
-            /**
-             * Fetch only the latest data, the new item should be among the data.
-             * */
-            update(MODE_LATEST);
+        switch (info.action) {
+            case UpdateInfo.ACTION_NEW:
+                pool.query(update(MODE_LATEST));
+                break;
+            case UpdateInfo.ACTION_UPDATE:
+                pool.query(update(MODE_ALL));
+                break;
         }
+
     }
 
 

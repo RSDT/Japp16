@@ -1,4 +1,4 @@
-package nl.rsdt.japp.jotial.maps.locations;
+package nl.rsdt.japp.jotial.maps.movement;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -14,9 +14,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
@@ -115,6 +115,26 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
             this.before = before;
             this.zoom = zoom;
             this.aoa = aoa;
+
+            /**
+             * Enable controls.
+             * */
+            googleMap.getUiSettings().setAllGesturesEnabled(true);
+            googleMap.getUiSettings().setCompassEnabled(true);
+
+
+            googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+                @Override
+                public void onCameraMoveStarted(int i) {
+                    switch (i) {
+                        case REASON_GESTURE:
+                            CameraPosition position = googleMap.getCameraPosition();
+                            FollowSession.this.zoom = position.zoom;
+                            FollowSession.this.aoa = position.tilt;
+                            break;
+                    }
+                }
+            });
         }
 
         @Override
@@ -126,6 +146,17 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
         }
 
         public void end() {
+
+            /**
+             * Disable controls
+             * */
+            googleMap.getUiSettings().setZoomControlsEnabled(false);
+            googleMap.getUiSettings().setCompassEnabled(false);
+
+            /**
+             * Remove callback
+             * */
+            googleMap.setOnCameraMoveStartedListener(null);
 
             /**
              * Move the camera to the before position

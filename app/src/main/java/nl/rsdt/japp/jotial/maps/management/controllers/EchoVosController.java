@@ -1,7 +1,6 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
 import com.android.internal.util.Predicate;
-import com.rsdt.anl.RequestPool;
 import com.rsdt.anl.WebRequest;
 import com.rsdt.anl.WebRequestMethod;
 import com.rsdt.anl.WebResponse;

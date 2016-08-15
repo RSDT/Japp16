@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.activities.MainActivity;
 import nl.rsdt.japp.application.fragments.AboutFragment;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
@@ -45,10 +46,10 @@ public class FragmentNavigationManager {
 
     private AboutFragment aboutFragment;
 
-    public void initialize(Toolbar toolbar, FragmentManager manager)
+    public void initialize(MainActivity mainActivity)
     {
-        this.toolbar = toolbar;
-        this.manager = manager;
+        this.toolbar = (Toolbar) mainActivity.findViewById(R.id.toolbar);;
+        this.manager = mainActivity.getFragmentManager();
         setupFragments();
     }
 

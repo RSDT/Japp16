@@ -16,6 +16,7 @@ import nl.rsdt.japp.jotial.maps.MapDataLoader;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.OnTransduceCompletedCallback;
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
+import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseMessagingService;
 
@@ -101,6 +102,12 @@ public class SplashActivity extends Activity implements OnTransduceCompletedCall
     }
 
     public void determineAndStartNewActivity() {
+        /**
+         * Start the LocationService.
+         * */
+        Intent intentService = new Intent(this, LocationService.class);
+        startService(intentService);
+
         String key = JappPreferences.getAccountKey();
         if(key.isEmpty())
         {

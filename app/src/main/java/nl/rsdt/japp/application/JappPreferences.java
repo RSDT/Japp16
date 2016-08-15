@@ -41,6 +41,8 @@ public class JappPreferences {
 
     public static final String UPDATES_AUTO = "pref_updates_auto";
 
+    public static final String MAP_TYPE = "pref_map_type";
+
     /**
      * Gets the visible preferences of Japp.
      * */
@@ -96,17 +98,24 @@ public class JappPreferences {
     }
 
     /**
+     * Gets the filename of the avatar on the area348 server of the active account.
+     * */
+    public static String getAccountAvatarName() {
+        return getAppPreferences().getString(ACCOUNT_AVATAR, "");
+    }
+
+    /**
      * Gets the value indicating if auto update is enabled.
      * */
     public static boolean isAutoUpdateEnabled() {
-        return Boolean.valueOf(getVisiblePreferences().getString(UPDATES_AUTO, "true"));
+        return getVisiblePreferences().getBoolean(UPDATES_AUTO, true);
     }
 
     /**
      * Sets the value indicating if auto update is enabled.
      * */
     public static void setAutoUpdateEnabled(boolean value) {
-        getVisiblePreferences().edit().putString(UPDATES_AUTO, String.valueOf(value)).apply();
+        getVisiblePreferences().edit().putBoolean(UPDATES_AUTO, value).apply();
     }
 
 
