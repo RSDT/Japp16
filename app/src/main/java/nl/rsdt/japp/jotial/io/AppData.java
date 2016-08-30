@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 
 /**
@@ -110,6 +111,11 @@ public class AppData {
             File file = new File(fDir, filename);
             if(file.exists())
             {
+                char[] buf = new char[1024];
+                FileReader reader = new FileReader(file);
+                reader.read(buf);
+                String result = new String(buf);
+
                 JsonReader jsonReader = new JsonReader(new FileReader(file));
                 jsonReader.setLenient(true);
                 return (T)new Gson().fromJson(jsonReader, type);

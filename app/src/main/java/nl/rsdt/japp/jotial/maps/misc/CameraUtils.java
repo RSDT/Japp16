@@ -30,6 +30,23 @@ public class CameraUtils {
                 googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(location.getLatitude(), location.getLongitude()), zoom, aoa, bearing)));
             }
         }
+    }
+
+    /**
+     * Moves the camera to given location.
+     */
+    public static void cameraToLocation(boolean animate, GoogleMap googleMap, LatLng location, float zoom, float aoa, float bearing)
+    {
+        if(location != null) {
+            if (animate) {
+
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(location, zoom, aoa, bearing)));
+            }
+            else
+            {
+                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(location, zoom, aoa, bearing)));
+            }
+        }
 
     }
 

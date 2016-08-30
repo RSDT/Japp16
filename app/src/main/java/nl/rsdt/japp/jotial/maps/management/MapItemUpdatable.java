@@ -1,5 +1,7 @@
 package nl.rsdt.japp.jotial.maps.management;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.rsdt.anl.RequestPool;
 import com.rsdt.anl.WebRequest;
 
@@ -17,9 +19,9 @@ public interface MapItemUpdatable {
 
     String MODE_LATEST = "LATEST";
 
-    WebRequest update(String mode);
+    String getUrlByAssociatedMode(String mode);
 
-    void onUpdateInvoked(RequestPool pool);
+    void onUpdateInvoked(RequestQueue queue);
 
-    void onUpdateMessage(RequestPool pool, UpdateInfo info);
+    void onUpdateMessage(RequestQueue queue, UpdateInfo info);
 }

@@ -1,6 +1,7 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import com.rsdt.anl.WebResponse;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
@@ -46,6 +48,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
 
     private GoogleMap googleMap;
+
+    public GoogleMap getGoogleMap() {
+        return googleMap;
+    }
 
     private OnMapReadyCallback callback;
 
@@ -109,7 +115,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
 
                                                     /*--- Send a request to server ---*/
                                     WebRequest request = new WebRequest.Builder()
-                                            .setUrl(new ApiUrlBuilder(false).append("vos").build())
+                                            .setUrl(new ApiUrlBuilder(false).append("vos").buildAsUrl())
                                             .setMethod(WebRequestMethod.POST)
                                             .setData(data)
                                             .create();
@@ -181,9 +187,11 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                     bundle.putParcelable("location", chosen);
                                     Japp.getAnalytics().logEvent("EVENT_SPOT", bundle);
 
+
+
                                     /*--- Send a request to server ---*/
                                     WebRequest request = new WebRequest.Builder()
-                                            .setUrl(new ApiUrlBuilder(false).append("vos").build())
+                                            .setUrl(new ApiUrlBuilder(false).append("vos").buildAsUrl())
                                             .setMethod(WebRequestMethod.POST)
                                             .setData(data)
                                             .create();
@@ -239,6 +247,12 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View view) {
                 View v = getView();
 
+                googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap bitmap) {
+
+                    }
+                });
                 FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
 
                 /*--- Hide the menu ---*/
@@ -257,7 +271,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                     menu.close(true);
                     //followButton.setColorNormal(Color.parseColor("#5cd65c"));
                     followButton.setLabelText("Stop volgen");
-                    session = movementManager.newSession(googleMap.getCameraPosition(), 20f, 45f);
+                    session = movementManager.newSession(googleMap.getCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
                 }
             }
 
@@ -323,7 +337,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
             current = all[i];
 
             googleMap.addPolygon(new PolygonOptions()
-                    .fillColor(current.alphaled(70))
+                    .fillColor(current.alphaled(60))
                     .strokeWidth(0)
                     .addAll(current.getCoordinates()));
         }

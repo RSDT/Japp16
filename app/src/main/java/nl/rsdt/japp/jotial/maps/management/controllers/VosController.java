@@ -14,6 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,7 +73,7 @@ public abstract class VosController extends MapItemController<VosInfo> {
             if(info != null) {
 
                 String current;
-                String[] items = new String[] { info.opmerking, info.extra };
+                String[] items = new String[] { info.getNote(),  info.getExtra() };
                 for(int x = 0; x < items.length; x++) {
                     current = items[x];
                     if(current.toLowerCase(Locale.ROOT).startsWith(query)) results.add(info);
@@ -87,8 +90,8 @@ public abstract class VosController extends MapItemController<VosInfo> {
         for(int i = 0; i < items.size(); i++) {
             info = items.get(i);
             if(info != null) {
-                entries.add(info.opmerking);
-                entries.add(info.extra);
+                entries.add(info.getNote());
+                entries.add(info.getExtra());
             }
         }
         return entries;
@@ -120,9 +123,29 @@ public abstract class VosController extends MapItemController<VosInfo> {
         public AbstractTransducerResult<VosInfo> generate(VosInfo[] items) {
             if(items == null || items.length < 1) return new VosTransducerResult();
 
+            List<VosInfo> list = Arrays.asList(items);
+            Collections.sort(list, new Comparator<VosInfo>() {
+                @Override
+                public int compare(VosInfo info1, VosInfo info2) {
+                    Date firstDate = null;
+                    Date secondDate = null;
+                    try {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+                        firstDate = format.parse(info1.getDatetime());
+                        secondDate = format.parse(info2.getDatetime());
+                    } catch (ParseException e) {
+                        Log.e(TAG, e.toString(), e);
+                    }
+                    if(firstDate != null && secondDate != null) {
+                        return firstDate.compareTo(secondDate);
+                    }
+                    return 0;
+                }
+            });
+
             VosTransducerResult result = new VosTransducerResult();
             result.setBundleId(bundleId);
-            result.addItems(Arrays.asList(items));
+            result.addItems(list);
 
             if(saveEnabled)
             {
@@ -133,22 +156,22 @@ public abstract class VosController extends MapItemController<VosInfo> {
             }
 
             PolylineOptions pOptions = new PolylineOptions();
-            pOptions.color(items[0].getAssociatedColor());
+            pOptions.color(list.get(0).getAssociatedColor());
             pOptions.width(5);
 
             VosInfo current;
 
-            for(int i = 0; i < items.length; i++)
+            for(int i = 0; i < list.size(); i++)
             {
-                current = items[i];
+                current = list.get(i);
 
                 MarkerOptions mOptions = new MarkerOptions();
                 mOptions.title(String.valueOf(current.id));
                 mOptions.anchor(0.5f, 0.5f);
                 mOptions.position(current.getLatLng());
                 mOptions.icon(BitmapDescriptorFactory.fromResource(current.getAssociatedDrawable()));
-                result.add(mOptions);
 
+                result.add(mOptions);
 
                 pOptions.add(current.getLatLng());
             }

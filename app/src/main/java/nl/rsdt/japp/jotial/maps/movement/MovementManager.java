@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.movement;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
@@ -54,6 +56,8 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
         activeSession = new FollowSession(before, zoom, aoa);
         return activeSession;
     }
+
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -122,19 +126,26 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
             googleMap.getUiSettings().setAllGesturesEnabled(true);
             googleMap.getUiSettings().setCompassEnabled(true);
 
-
             googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
                 @Override
                 public void onCameraMoveStarted(int i) {
                     switch (i) {
                         case REASON_GESTURE:
                             CameraPosition position = googleMap.getCameraPosition();
-                            FollowSession.this.zoom = position.zoom;
-                            FollowSession.this.aoa = position.tilt;
+                            setZoom(position.zoom);
+                            setAngleOfAttack(position.tilt);
                             break;
                     }
                 }
             });
+        }
+
+        public void setZoom(float zoom) {
+            this.zoom = zoom;
+        }
+
+        public void setAngleOfAttack(float aoa) {
+            this.aoa = aoa;
         }
 
         @Override
@@ -148,9 +159,14 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
         public void end() {
 
             /**
+             * Save the settings of the session to the release_preferences
+             * */
+            JappPreferences.setFollowZoom(zoom);
+            JappPreferences.setFollowAoa(aoa);
+
+            /**
              * Disable controls
              * */
-            googleMap.getUiSettings().setZoomControlsEnabled(false);
             googleMap.getUiSettings().setCompassEnabled(false);
 
             /**
@@ -162,6 +178,8 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
              * Move the camera to the before position
              * */
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(before));
+
+            activeSession = null;
         }
     }
 

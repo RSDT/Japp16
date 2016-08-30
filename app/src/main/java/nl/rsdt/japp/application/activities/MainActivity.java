@@ -19,10 +19,14 @@ import android.view.View;
 
 
 import com.android.internal.util.Predicate;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.rsdt.anl.RequestPool;
 import com.rsdt.anl.WebResponse;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +49,8 @@ import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, SearchView.OnQueryTextListener, UpdateManager.UpdateMessageListener {
+
+    public static final String TAG = "MainActivity";
 
     /**
      * TODO: make the search system more clean
@@ -72,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         Japp.getUpdateManager().add(this);
 
         /**
-         * Register a on changed listener to the visible preferences.
+         * Register a on changed listener to the visible release_preferences.
          * */
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
 
@@ -86,38 +92,20 @@ public class MainActivity extends AppCompatActivity
         if(JappPreferences.isFirstRun())
         {
             /**
-             * Do some things for the first run.
-             * */
-            ShowCaseTour tour = new ShowCaseTour(this);
-            tour.showcase();
-
-            /**
              * Set the the first run value to false.
              * */
             JappPreferences.setFirstRun(false);
         }
 
+        /**
+         * Do some things for the first run.
+         * */
+        ShowCaseTour tour = new ShowCaseTour(this);
+        tour.showcase();
+
         mapManager.onIntentCreate(getIntent());
         mapManager.onCreate(savedInstanceState);
 
-        mapManager.addListener(new RequestPool.ExtendedRequestPoolListener(new Predicate<WebResponse>() {
-            @Override
-            public boolean apply(WebResponse response) {
-                return response.getResponseCode() != 200;
-            }
-        }) {
-            @Override
-            public void onWebRequestCompleted(WebResponse response) {
-                switch (response.getResponseCode())
-                {
-                    case 401:
-                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                        break;
-                }
-            }
-        });
 
         /**
          * Setup the NavigationDrawer.
@@ -146,7 +134,6 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.
-
     }
 
     /**
@@ -225,11 +212,11 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.refresh:
                 item.setEnabled(false);
-                mapManager.addListener(new RequestPool.ExtendedRequestPoolListener() {
+                Japp.getRequestQueue().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<JSONArray>() {
                     @Override
-                    public void onWebRequestCompleted(WebResponse response) {
+                    public void onRequestFinished(Request<JSONArray> request) {
                         item.setEnabled(true);
-                        mapManager.removeListener(this);
+                        Japp.getRequestQueue().removeRequestFinishedListener(this);
                     }
                 });
                 mapManager.update();
@@ -256,6 +243,7 @@ public class MainActivity extends AppCompatActivity
         navigationManager.setupMap(mapManager);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -281,9 +269,18 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void onStop() {
+        super.onStop();
+    }
+
     public void onDestroy()
     {
         super.onDestroy();
+
+        /**
+         * Cancel all the requests associated with this activity.
+         * */
+        Japp.getRequestQueue().cancelAll(TAG);
 
         /**
          * Remove this as UpdateMessageListener.
@@ -306,7 +303,6 @@ public class MainActivity extends AppCompatActivity
             mapManager.onDestroy();
             mapManager = null;
         }
-
 
     }
 

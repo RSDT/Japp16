@@ -175,7 +175,7 @@ public class UserInfo implements Parcelable {
     public static void collect()
     {
         WebRequest request = new WebRequest.Builder()
-                .setUrl(new ApiUrlBuilder(true).append("gebruiker").append("info").build())
+                .setUrl(new ApiUrlBuilder(true).append("gebruiker").append("info").buildAsUrl())
                 .setMethod(WebRequestMethod.GET)
                 .create();
 
@@ -189,7 +189,7 @@ public class UserInfo implements Parcelable {
                     if(info != null)
                     {
                         /**
-                         * Store the new data in preferences.
+                         * Store the new data in release_preferences.
                          * */
                         SharedPreferences.Editor userEditor = JappPreferences.getVisiblePreferences().edit();
                         userEditor.putString(JappPreferences.ACCOUNT_USERNAME, info.gebruikersnaam);

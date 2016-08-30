@@ -7,10 +7,17 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 
 /**
@@ -30,50 +37,84 @@ public class VosInfo extends BaseInfo implements Parcelable {
         super(in);
         datetime = in.readString();
         team = in.readString();
-        team_naam = in.readString();
-        opmerking = in.readString();
+        teamName= in.readString();
+        note = in.readString();
         extra = in.readString();
-        hint_nr = in.readInt();
+        hintNr = in.readInt();
         icon = in.readInt();
     }
 
+    @SerializedName("datetime")
     /**
      * The dateTime the vosInfo was created.
      */
-    public String datetime;
+    private String datetime;
 
+    public String getDatetime() {
+        return datetime;
+    }
+
+    @SerializedName("team")
     /**
      * The team of the VosInfo as a char.
      */
-    public String team;
+    private String team;
 
+    public String getTeam() {
+        return team;
+    }
+
+    @SerializedName("team_naam")
     /**
      * The team of the VosInfo as a whole name.
      */
-    public String team_naam;
+    private String teamName;
 
+    public String getTeamName() {
+        return teamName;
+    }
+
+    @SerializedName("opmerking")
     /**
      * A extra of the VosInfo.
      */
-    public String opmerking;
+    private String note;
 
+    public String getNote() {
+        return note;
+    }
+
+    @SerializedName("extra")
     /**
      * The user of the VosInfo.
      */
-    public String extra;
+    private String extra;
 
+    public String getExtra() {
+        return extra;
+    }
+
+    @SerializedName("hint_nr")
     /**
      * The hint number of the VosInfo.
      */
-    public int hint_nr;
+    private int hintNr;
 
+    public int getHintNr() {
+        return hintNr;
+    }
+
+    @SerializedName("icon")
     /**
      * The icon of the VosInfo.
      * */
-    public int icon;
+    private int icon;
 
-    public int getAssociatedDrawable()
-    {
+    public int getIcon() {
+        return icon;
+    }
+
+    public int getAssociatedDrawable() {
         return VosInfo.getAssociatedDrawable(this);
     }
 
@@ -87,10 +128,10 @@ public class VosInfo extends BaseInfo implements Parcelable {
         super.writeToParcel(dest, flags);
         dest.writeString(datetime);
         dest.writeString(team);
-        dest.writeString(team_naam);
-        dest.writeString(opmerking);
+        dest.writeString(teamName);
+        dest.writeString(note);
         dest.writeString(extra);
-        dest.writeInt(hint_nr);
+        dest.writeInt(hintNr);
         dest.writeInt(icon);
     }
 

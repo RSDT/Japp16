@@ -5,16 +5,27 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.rsdt.anl.WebRequest;
 import com.rsdt.anl.WebRequestMethod;
 import com.rsdt.anl.WebResponse;
 
-import java.util.Calendar;
+import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Map;
+
+import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.builders.HunterPostDataBuilder;
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
+import nl.rsdt.japp.jotial.net.ApiPostRequest;
 import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
 
 /**
@@ -33,8 +44,8 @@ public class LocationService extends LocationProviderService {
     public void onCreate() {
         super.onCreate();
         request = new LocationRequest()
-                .setInterval(1000)
-                .setFastestInterval(1000)
+                .setInterval(Float.floatToIntBits(JappPreferences.getLocationUpdateIntervalInMs()))
+                .setFastestInterval(Float.floatToIntBits(JappPreferences.getLocationUpdateIntervalInMs()))
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -43,28 +54,27 @@ public class LocationService extends LocationProviderService {
         super.onLocationChanged(location);
 
         long dif = Calendar.getInstance().getTimeInMillis() - lastUpdate.getTimeInMillis();
-        if(dif >= (1000 * 60)) {
+        if(dif >= Float.floatToIntBits(JappPreferences.getLocationUpdateIntervalInMs())) {
             HunterPostDataBuilder builder = HunterPostDataBuilder.getDefault();
             builder.setLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
 
-            WebRequest request = new WebRequest.Builder()
-                    .setUrl(new ApiUrlBuilder(false).append("hunter").build())
-                    .setMethod(WebRequestMethod.POST)
-                    .setData(builder.build())
-                    .create();
-            request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
-                @Override
-                public void onWebRequestCompleted(WebResponse response) {
-                    switch (response.getResponseCode()){
-                        case 200:
-                            Log.i(TAG, "Location successfully sent");
-                            break;
-                        default:
-                            Log.e(TAG, "Error occured while sending location: " + response.getResponseCode());
-                            break;
-                    }
-                }
-            });
+            ApiPostRequest request = new ApiPostRequest(
+                    new ApiUrlBuilder(false).append("hunter").buildAsString(),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i(TAG, "Location was sent to the server");
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, error.getMessage(), error);
+                        }
+                    }, builder.buildAsJSONObject());
+
+            Japp.getRequestQueue().add(request);
+            Japp.getRequestQueue().start();
             lastUpdate = Calendar.getInstance();
         }
     }

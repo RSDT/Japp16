@@ -30,7 +30,10 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
+import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepClusterManager;
+import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
+import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
 import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.BravoVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.CharlieVosController;
@@ -50,7 +53,7 @@ import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
  * @since 24-7-2016
  * Manages the map
  */
-public class MapManager extends RequestPool implements OnMapReadyCallback, Searchable, UpdateManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * Defines the tag of this class.
@@ -67,6 +70,8 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
      * */
     private HashMap<String, MapItemController> controllers = new HashMap<>();
 
+    private ScoutingGroepController sgController = new ScoutingGroepController();
+
     /**
      * Initializes a new instance of MapManager.
      * */
@@ -81,14 +86,6 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
         controllers.put(XrayVosController.CONTROLLER_ID, new XrayVosController());
         controllers.put(HunterController.CONTROLLER_ID, new HunterController());
         controllers.put(FotoOpdrachtController.CONTROLLER_ID, new FotoOpdrachtController());
-
-        for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
-            MapItemController controller = pair.getValue();
-            if(controller != null)
-            {
-                controller.initialize(this);
-            }
-        }
 
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -108,6 +105,9 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                     controller.onIntentCreate(bundle);
                 }
             }
+            sgController.onIntentCreate(bundle);
+            bundle.clear();
+            intent.removeExtra(SplashActivity.LOAD_ID);
         }
     }
 
@@ -127,6 +127,7 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                     controller.onCreate(savedInstanceState);
                 }
             }
+            sgController.onCreate(savedInstanceState);
         }
     }
 
@@ -146,6 +147,7 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                     controller.onSaveInstanceState(saveInstanceState);
                 }
             }
+            sgController.onSaveInstanceState(saveInstanceState);
         }
     }
 
@@ -174,40 +176,43 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
      * Gets invoked when a UpdateMessage is received.
      * */
     public void onUpdateMessageReceived(UpdateInfo info) {
-        MapItemController controller = null;
+        MapItemUpdatable updatable = null;
         switch (info.type) {
             case "hunter":
-                controller = get(HunterController.CONTROLLER_ID);
+                updatable = get(HunterController.CONTROLLER_ID);
                 break;
             case "foto":
-                controller = get(FotoOpdrachtController.CONTROLLER_ID);
+                updatable = get(FotoOpdrachtController.CONTROLLER_ID);
                 break;
             case "vos_a":
-                controller = get(AlphaVosController.CONTROLLER_ID);
+                updatable = get(AlphaVosController.CONTROLLER_ID);
                 break;
             case "vos_b":
-                controller = get(BravoVosController.CONTROLLER_ID);
+                updatable = get(BravoVosController.CONTROLLER_ID);
                 break;
             case "vos_c":
-                controller = get(CharlieVosController.CONTROLLER_ID);
+                updatable = get(CharlieVosController.CONTROLLER_ID);
                 break;
             case "vos_d":
-                controller = get(DeltaVosController.CONTROLLER_ID);
+                updatable = get(DeltaVosController.CONTROLLER_ID);
                 break;
             case "vos_e":
-                controller = get(EchoVosController.CONTROLLER_ID);
+                updatable = get(EchoVosController.CONTROLLER_ID);
                 break;
             case "vos_f":
-                controller = get(FoxtrotVosController.CONTROLLER_ID);
+                updatable = get(FoxtrotVosController.CONTROLLER_ID);
                 break;
             case "vos_x":
-                controller = get(XrayVosController.CONTROLLER_ID);
+                updatable = get(XrayVosController.CONTROLLER_ID);
+                break;
+            case "sc":
+                updatable = sgController;
                 break;
         }
 
-        if(controller != null) {
-            controller.onUpdateMessage(this, info);
-            executeAsync();
+        if(updatable != null) {
+            updatable.onUpdateMessage(Japp.getRequestQueue(), info);
+            Japp.getRequestQueue().start();
         }
 
     }
@@ -216,8 +221,10 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         switch (s) {
             case JappPreferences.MAP_TYPE:
-                String value = sharedPreferences.getString(s, "0");
-                googleMap.setMapType(Integer.valueOf(value));
+                if(googleMap != null) {
+                    String value = sharedPreferences.getString(s, String.valueOf(GoogleMap.MAP_TYPE_NORMAL));
+                    googleMap.setMapType(Integer.valueOf(value));
+                }
                 break;
         }
     }
@@ -231,10 +238,11 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
             MapItemController controller = pair.getValue();
             if(controller != null)
             {
-                controller.onUpdateInvoked(this);
+                controller.onUpdateInvoked(Japp.getRequestQueue());
             }
         }
-        executeAsync();
+        sgController.onUpdateInvoked(Japp.getRequestQueue());
+        Japp.getRequestQueue().start();
     }
 
     @Override
@@ -249,9 +257,12 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
          * */
         //googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        googleMap.setMapType(JappPreferences.getMapType());
+
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
 
+        update();
+        
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
             MapItemController controller = pair.getValue();
             if(controller != null)
@@ -259,6 +270,7 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                 controller.onMapReady(googleMap);
             }
         }
+        sgController.onMapReady(googleMap);
     }
 
     /**
@@ -279,6 +291,11 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
             googleMap = null;
         }
 
+        if(sgController != null) {
+            //sgController.onDestroy();
+            sgController = null;
+        }
+
         if(controllers != null)
         {
             Iterator iterator = controllers.entrySet().iterator();
@@ -289,9 +306,7 @@ public class MapManager extends RequestPool implements OnMapReadyCallback, Searc
                 entry = (HashMap.Entry)iterator.next();
                 controller = (MapItemController)entry.getValue();
 
-                if(controller != null)
-                {
-                    removeListener(controller);
+                if(controller != null) {
                     controller.onDestroy();
                 }
 

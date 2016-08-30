@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.maps.GoogleMap;
+
 
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
  * @since 13-7-2016
- * Class for preferences
+ * Class for release_preferences
  */
 public class JappPreferences {
 
@@ -43,15 +45,23 @@ public class JappPreferences {
 
     public static final String MAP_TYPE = "pref_map_type";
 
+    public static final String MAP_HUNT_NAME = "pref_map_hunt_name";
+
+    public static final String FOLLOW_ZOOM = "pref_follow_zoom";
+
+    public static final String FOLLOW_AOA = "pref_follow_aoa";
+
+    public static final String LOCATION_UPDATE_INTERVAL = "pref_advanced_location_update_interval";
+
     /**
-     * Gets the visible preferences of Japp.
+     * Gets the visible release_preferences of Japp.
      * */
     public static SharedPreferences getVisiblePreferences() {
         return PreferenceManager.getDefaultSharedPreferences(Japp.getInstance());
     }
 
     /**
-     * Gets the non-visible preferences of Japp.
+     * Gets the non-visible release_preferences of Japp.
      * */
     public static SharedPreferences getAppPreferences() {
         return Japp.getInstance().getSharedPreferences("nl.rsdt.japp", Context.MODE_PRIVATE);
@@ -116,6 +126,42 @@ public class JappPreferences {
      * */
     public static void setAutoUpdateEnabled(boolean value) {
         getVisiblePreferences().edit().putBoolean(UPDATES_AUTO, value).apply();
+    }
+
+    public static int getMapType() {
+        return Integer.valueOf(getVisiblePreferences().getString(MAP_TYPE, String.valueOf(GoogleMap.MAP_TYPE_NORMAL)));
+    }
+
+    public static void setMapType(int type) {
+        getVisiblePreferences().edit().putString(MAP_TYPE, String.valueOf(type)).apply();
+    }
+
+    public static String getHuntname() {
+        return getVisiblePreferences().getString(MAP_HUNT_NAME, "");
+    }
+
+    public static float getFollowZoom() {
+        return getAppPreferences().getFloat(FOLLOW_ZOOM, 20f);
+    }
+
+    public static void setFollowZoom(float zoom) {
+        getAppPreferences().edit().putFloat(FOLLOW_ZOOM, zoom).apply();
+    }
+
+    public static float getFollowAngleOfAttack() {
+        return getAppPreferences().getFloat(FOLLOW_AOA, 45f);
+    }
+
+    public static void setFollowAoa(float aoa) {
+        getAppPreferences().edit().putFloat(FOLLOW_AOA, aoa).apply();
+    }
+
+    public static float getLocationUpdateIntervalInMinutes() {
+        return Float.valueOf(getVisiblePreferences().getString(LOCATION_UPDATE_INTERVAL, "1.0"));
+    }
+
+    public static float getLocationUpdateIntervalInMs() {
+        return Float.valueOf(getVisiblePreferences().getString(LOCATION_UPDATE_INTERVAL, "1.0")) * 60 * 1000;
     }
 
 

@@ -24,13 +24,7 @@ public class DeltaVosController extends VosController {
     public static final String REQUEST_ID = "REQUEST_VOS_D";
 
     public DeltaVosController() {
-        this.condtion = new Predicate<WebResponse>() {
-            @Override
-            public boolean apply(WebResponse response) {
-                return response.getRequest().getId().equals(REQUEST_ID) &&
-                        response.getResponseCode() == 200;
-            }
-        };
+
     }
 
     @Override
@@ -49,20 +43,13 @@ public class DeltaVosController extends VosController {
     }
 
     @Override
-    public WebRequest update(String mode) {
-        switch (mode){
+    public String getUrlByAssociatedMode(String mode) {
+        switch (mode) {
             case MODE_ALL:
-                return new WebRequest.Builder()
-                        .setId(REQUEST_ID)
-                        .setMethod(WebRequestMethod.GET)
-                        .setUrl(new ApiUrlBuilder().append("vos").append("d").append("all").build())
-                        .create();
+                return new ApiUrlBuilder().append("vos").append("d").append("all").buildAsString();
+
             case MODE_LATEST:
-                return new WebRequest.Builder()
-                        .setId(REQUEST_ID)
-                        .setMethod(WebRequestMethod.GET)
-                        .setUrl(new ApiUrlBuilder().append("vos").append("d").append("all").append(lastUpdate.toString()).build())
-                        .create();
+                return new ApiUrlBuilder().append("vos").append("d").append("all").append(lastUpdate.toString()).buildAsString();
             default:
                 return null;
         }

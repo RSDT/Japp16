@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo;
 import nl.rsdt.japp.jotial.io.AppData;
@@ -46,13 +47,6 @@ public class HunterController extends MapItemController<HunterInfo[]> {
     public static final String REQUEST_ID = "REQUEST_HUNTER";
 
     public HunterController() {
-        this.condtion = new Predicate<WebResponse>() {
-            @Override
-            public boolean apply(WebResponse response) {
-                return response.getRequest().getId().equals(REQUEST_ID) &&
-                        response.getResponseCode() == 200;
-            }
-        };
     }
 
     @Override
@@ -141,20 +135,18 @@ public class HunterController extends MapItemController<HunterInfo[]> {
     }
 
     @Override
-    public WebRequest update(String mode) {
-        switch (mode){
+    public String getUrlByAssociatedMode(String mode) {
+
+        String name = JappPreferences.getHuntname();
+        if(name.isEmpty()) {
+            name = JappPreferences.getAccountUsername();
+        }
+
+        switch (mode) {
             case MODE_ALL:
-                return new WebRequest.Builder()
-                        .setId(REQUEST_ID)
-                        .setMethod(WebRequestMethod.GET)
-                        .setUrl(new ApiUrlBuilder().append("hunter").append("all").build())
-                        .create();
+                return new ApiUrlBuilder().append("hunter").append("andere").append(name).buildAsString();
             case MODE_LATEST:
-                return new WebRequest.Builder()
-                        .setId(REQUEST_ID)
-                        .setMethod(WebRequestMethod.GET)
-                        .setUrl(new ApiUrlBuilder().append("hunter").append("all").build())
-                        .create();
+                return new ApiUrlBuilder().append("hunter").append("andere").append(name).append(lastUpdate.toString()).buildAsString();
             default:
                 return null;
         }

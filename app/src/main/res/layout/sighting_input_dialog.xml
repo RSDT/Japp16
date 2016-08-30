@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -17,9 +18,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/sighting_dialog_location_label"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/sighting_dialog_snapshot"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <EditText
@@ -27,9 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Voeg hier eventuele informatie toe">
-
-        <requestFocus />
-
     </EditText>
 
 </LinearLayout>

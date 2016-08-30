@@ -1,7 +1,5 @@
 package nl.rsdt.japp.jotial.maps.management;
 
-import com.rsdt.anl.RequestPool;
-
 import java.util.Calendar;
 
 import nl.rsdt.japp.jotial.Destroyable;
@@ -12,7 +10,7 @@ import nl.rsdt.japp.jotial.Destroyable;
  * @since 31-7-2016
  * Description...
  */
-public abstract class MapItemRequestListener extends RequestPool.ExtendedRequestPoolListener implements Destroyable {
+public abstract class MapItemDateControl implements Destroyable {
 
     protected Calendar lastUpdate = Calendar.getInstance();
 

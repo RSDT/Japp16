@@ -3,9 +3,12 @@ package nl.rsdt.japp.jotial.maps.sighting;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -16,7 +19,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -24,7 +29,7 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
  * @since 13-7-2016
  * Class for Sighting
  */
-public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener {
+public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, GoogleMap.SnapshotReadyCallback {
 
     /**
      * Defines the SightingSession type HUNT.
@@ -112,8 +117,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         switch (event)
         {
             case Snackbar.Callback.DISMISS_EVENT_SWIPE:
-                if(callback != null)
-                {
+                if(callback != null) {
                     callback.onSightingCompleted(null, null, null);
                 }
                 destroy();
@@ -174,8 +178,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         switch (i)
         {
             case AlertDialog.BUTTON_POSITIVE:
-                if(callback != null)
-                {
+                if(callback != null) {
                     callback.onSightingCompleted(lastLatLng, deelgebied, ((TextView)dialog.findViewById(R.id.sighting_dialog_info_edit)).getText().toString());
                     destroy();
                 }
@@ -188,11 +191,24 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
+        if(deelgebied != null) {
+            googleMap.snapshot(this);
+            if(dialog != null) {
+                dialog.show();
+                ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
+                ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+            }
+        } else {
+            snackbar.setText("Selecteer een geldige locatie!");
+            snackbar.show();
+        }
+
+    }
+
+    @Override
+    public void onSnapshotReady(Bitmap bitmap) {
         if(dialog != null) {
-            dialog.show();
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_location_label)).setText("Locatie: " + lastLatLng.latitude + " , " + lastLatLng.longitude);
+            //((ImageView)dialog.findViewById(R.id.sighting_dialog_snapshot)).setImageDrawable(new BitmapDrawable(Japp.getAppResources(), bitmap));
         }
     }
 
@@ -234,7 +250,6 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         deelgebied = null;
 
     }
-
 
 
     /**

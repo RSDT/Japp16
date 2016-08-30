@@ -1,11 +1,15 @@
 package nl.rsdt.japp.application;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.multidex.MultiDexApplication;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import nl.rsdt.japp.jotial.io.AppData;
@@ -18,23 +22,31 @@ import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
  * @since 8-7-2016
  * Description...
  */
-public class Japp extends MultiDexApplication {
+public final class Japp extends MultiDexApplication {
 
     private static Japp instance;
 
     public static Japp getInstance() { return instance; }
 
-    private static FirebaseAnalytics analytics;
+    private FirebaseAnalytics analytics;
 
     public static FirebaseAnalytics getAnalytics() {
-        return analytics;
+        return instance.analytics;
     }
 
-    private static UpdateManager updateManager = new UpdateManager();
+    private UpdateManager updateManager = new UpdateManager();
 
     public static UpdateManager getUpdateManager() {
-        return updateManager;
+        return instance.updateManager;
     }
+
+    private RequestQueue requestQueue;
+
+    public static RequestQueue getRequestQueue() {
+        return instance.requestQueue;
+    }
+
+    public static Resources getAppResources() { return instance.getApplicationContext().getResources(); }
 
     public static boolean hasInternetConnection()
     {
@@ -48,7 +60,11 @@ public class Japp extends MultiDexApplication {
         super.onCreate();
         instance = this;
 
-        analytics = FirebaseAnalytics.getInstance(this);
+        requestQueue = Volley.newRequestQueue(this);
+
+        if (!FirebaseApp.getApps(this).isEmpty()) {
+            analytics = FirebaseAnalytics.getInstance(this);
+        }
 
         MapsInitializer.initialize(this);
 

@@ -3,6 +3,8 @@ package nl.rsdt.japp.application.navigation;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,7 +34,9 @@ public class FragmentNavigationManager {
 
     private static final String BUNDLE_KEY_FRAGMENT = "BUNDLE_KEY_FRAGMENT";
 
-    private Toolbar toolbar;
+    private NavigationView nView;
+
+    private ActionBar actionbar;
 
     private FragmentManager manager;
 
@@ -48,7 +52,8 @@ public class FragmentNavigationManager {
 
     public void initialize(MainActivity mainActivity)
     {
-        this.toolbar = (Toolbar) mainActivity.findViewById(R.id.toolbar);;
+        this.nView = (NavigationView) mainActivity.findViewById(R.id.nav_view);
+        this.actionbar = mainActivity.getSupportActionBar();
         this.manager = mainActivity.getFragmentManager();
         setupFragments();
     }
@@ -115,36 +120,55 @@ public class FragmentNavigationManager {
 
     public void setupMap(OnMapReadyCallback callback)
     {
-        if(mapFragment == null)
-        {
-            mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
-            mapFragment.getMapAsync(callback);
-        }
-        else
-        {
-            mapFragment.getMapAsync(callback);
+        if(mapFragment.getGoogleMap() == null) {
+            if (mapFragment == null) {
+                mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
+                mapFragment.getMapAsync(callback);
+            } else {
+                mapFragment.getMapAsync(callback);
+            }
         }
     }
 
     private void updateToolbarTitle() {
-        if(currentFragmentTag != null) {
+        if(currentFragmentTag != null && actionbar != null) {
             switch (currentFragmentTag)
             {
                 case FRAGMENT_HOME:
-                    toolbar.setTitle("Home");
+                    actionbar.setTitle("Home");
                     break;
                 case FRAGMENT_MAP:
-                    toolbar.setTitle("Kaart");
+                    actionbar.setTitle("Kaart");
                     break;
                 case FRAGMENT_SETTINGS:
-                    toolbar.setTitle("Instellingen");
+                    actionbar.setTitle("Instellingen");
                     break;
                 case FRAGMENT_ABOUT:
-                    toolbar.setTitle("About");
+                    actionbar.setTitle("About");
                     break;
             }
         }
     }
+
+    private void updateCheckedState() {
+
+        switch(currentFragmentTag)
+        {
+            case FRAGMENT_HOME:
+                nView.getMenu().findItem(R.id.nav_home).setChecked(true);
+                break;
+            case FRAGMENT_MAP:
+                nView.getMenu().findItem(R.id.nav_map).setChecked(true);
+                break;
+            case FRAGMENT_SETTINGS:
+                nView.getMenu().findItem(R.id.nav_settings).setChecked(true);
+                break;
+            case FRAGMENT_ABOUT:
+                nView.getMenu().findItem(R.id.nav_about).setChecked(true);
+                break;
+        }
+    }
+
 
     private void setupFragments()
     {
@@ -168,7 +192,7 @@ public class FragmentNavigationManager {
         ft.show(mapFragment);
         currentFragmentTag = FRAGMENT_MAP;
         updateToolbarTitle();
-
+        updateCheckedState();
 
         preferenceFragment  = (JappPreferenceFragment)manager.findFragmentByTag(JappPreferenceFragment.TAG);
         if(preferenceFragment == null)

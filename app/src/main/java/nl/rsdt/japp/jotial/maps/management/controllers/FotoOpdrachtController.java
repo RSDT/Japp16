@@ -53,13 +53,6 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
     public static final String REQUEST_ID = "REQUEST_FOTO";
 
     public FotoOpdrachtController() {
-        this.condtion = new Predicate<WebResponse>() {
-            @Override
-            public boolean apply(WebResponse response) {
-                return response.getRequest().getId().equals(REQUEST_ID) &&
-                        response.getResponseCode() == 200;
-            }
-        };
     }
 
     @Override
@@ -101,20 +94,12 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
     }
 
     @Override
-    public WebRequest update(String mode) {
-        switch (mode){
+    public String getUrlByAssociatedMode(String mode) {
+        switch (mode) {
             case MODE_ALL:
-                return new WebRequest.Builder()
-                        .setId(REQUEST_ID)
-                        .setMethod(WebRequestMethod.GET)
-                        .setUrl(new ApiUrlBuilder().append("foto").append("all").build())
-                        .create();
+                return new ApiUrlBuilder().append("foto").append("all").buildAsString();
             case MODE_LATEST:
-                return new WebRequest.Builder()
-                        .setId(REQUEST_ID)
-                        .setMethod(WebRequestMethod.GET)
-                        .setUrl(new ApiUrlBuilder().append("foto").append("all").build())
-                        .create();
+                return new ApiUrlBuilder().append("foto").append("all").buildAsString();
             default:
                 return null;
         }
@@ -181,24 +166,30 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
                 AppData.saveObjectAsJson(items, STORAGE_ID);
             }
 
+
+            FotoOpdrachtInfo info;
+
             /**
              * Loops through each FotoOpdrachtInfo.
              * */
             for (int i = 0; i < items.length; i++) {
-                MarkerOptions mOptions = new MarkerOptions();
-                mOptions.anchor(0.5f, 0.5f);
-                mOptions.position(items[i].getLatLng());
-                mOptions.title(String.valueOf(items[i].id));
+                info = items[i];
+                if(info != null) {
+                    MarkerOptions mOptions = new MarkerOptions();
+                    mOptions.anchor(0.5f, 0.5f);
+                    mOptions.position(items[i].getLatLng());
+                    mOptions.title(String.valueOf(items[i].id));
 
-                if(items[i].klaar == 1)
-                {
-                    mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20_klaar));
+                    if(items[i].klaar == 1)
+                    {
+                        mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20_klaar));
+                    }
+                    else
+                    {
+                        mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20));
+                    }
+                    result.add(mOptions);
                 }
-                else
-                {
-                    mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20));
-                }
-                result.add(mOptions);
             }
             return result;
         }

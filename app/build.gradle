@@ -8,9 +8,12 @@ android {
         applicationId "nl.rsdt.japp"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 3
-        versionName "v1.2"
+        versionCode 5
+        versionName "v1.3"
         multiDexEnabled true
+    }
+    applicationVariants.all { variant ->
+        variant.resValue "string", "versionName", variant.versionName
     }
     buildTypes {
 
@@ -26,14 +29,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.google.firebase:firebase-core:9.4.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
     compile 'com.google.firebase:firebase-crash:9.4.0'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:design:24.2.0'
     compile 'com.rsdt.anl:anl:0.6.1'
     compile 'com.github.paolorotolo:appintro:4.0.0'
     compile 'com.github.clans:fab:1.6.4'
@@ -41,6 +44,6 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.4'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
-
+    compile project(':volley')
 }
 apply plugin: 'com.google.gms.google-services'

@@ -3,6 +3,7 @@ package nl.rsdt.japp.application.fragments;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
+import nl.rsdt.japp.BuildConfig;
 import nl.rsdt.japp.R;
 
 /**
@@ -18,7 +19,10 @@ public class JappPreferenceFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.release_preferences);
+        if(BuildConfig.DEBUG) {
+            addPreferencesFromResource(R.xml.debug_preferences);
+        }
     }
 
 }

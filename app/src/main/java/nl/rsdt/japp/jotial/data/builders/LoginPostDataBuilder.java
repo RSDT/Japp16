@@ -2,6 +2,11 @@ package nl.rsdt.japp.jotial.data.builders;
 
 import com.google.gson.JsonObject;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
@@ -10,25 +15,33 @@ import com.google.gson.JsonObject;
  */
 public class LoginPostDataBuilder {
 
-    private String gebruiker;
+    private String user;
 
-    private String ww;
+    private String password;
 
     public LoginPostDataBuilder setUsername(String username) {
-        this.gebruiker = username;
+        this.user = username;
         return this;
     }
 
     public LoginPostDataBuilder setPassword(String password) {
-        this.ww = password;
+        this.password = password;
         return this;
     }
 
     public String build()
     {
         JsonObject object = new JsonObject();
-        object.addProperty("gebruiker", gebruiker);
-        object.addProperty("ww", ww);
+        object.addProperty("gebruiker", user);
+        object.addProperty("ww", password);
         return object.toString();
     }
+
+    public JSONObject buildAsParams() {
+        HashMap<String, String> map =  new HashMap<>();
+        map.put("gebruiker", user);
+        map.put("ww", password);
+        return new JSONObject(map);
+    }
+
 }

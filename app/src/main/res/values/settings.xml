@@ -6,7 +6,7 @@
         <!-- START CAT ACCOUNT-->
 
             <!--
-            The Account category of the preferences.
+            The Account category of the release_preferences.
             -->
             <string name="pref_cat_account">Account</string>
 
@@ -56,7 +56,7 @@
         <!-- START CAT MAP -->
 
             <!--
-            The Map category of the preferences.
+            The Map category of the release_preferences.
             -->
             <string name="pref_cat_map">Kaart</string>
 
@@ -197,12 +197,28 @@
             <string name="pref_travel_aoa_sum">De hoek van aanval, van 0 tot 90 graden</string>
         <!-- END CAT -->
 
-        <!-- START CAT EXTRA -->
-            <string name="pref_cat_misc">Extra</string>
+    <!-- END SCREEN -->
 
-            <string name="pref_misc_walking_speed_title">Loopsnelheid</string>
-            <string name="pref_misc_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen</string>
-        <!-- END CAT -->
+    <!-- START SCREEN ADVANCED -->
 
+    <string name="pref_advanced_title">Extra</string>
+    <string name="pref_advanced_sum">Bekijk hier extra mogelijkheden</string>
+
+    <string name="pref_advanced_walking_speed_title">Loopsnelheid</string>
+    <string name="pref_advanced_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen</string>
+
+    <string name="pref_advanced_location_update_interval_title">Locatie Update Interval</string>
+    <string name="pref_advanced_location_update_interval_sum">De interval waarmee locaties naar de server worden gestuurd in minuten</string>
+
+    <!-- END SCREEN -->
+
+    <!-- START SCREEN DEBUG -->
+
+    <string name="pref_cat_debug">Debug</string>
+
+    <string name="pref_debug_version_title">Versie</string>
+    <string name="pref_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
+
+    <!-- END SCREEN -->
 
 </resources>

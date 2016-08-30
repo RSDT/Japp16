@@ -1,6 +1,5 @@
 package nl.rsdt.japp.jotial.net;
 
-import com.rsdt.anl.UrlBuilder;
 
 import nl.rsdt.japp.application.JappPreferences;
 

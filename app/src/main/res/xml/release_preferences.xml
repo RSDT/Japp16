@@ -49,14 +49,14 @@
     <EditTextPreference
         android:title="@string/pref_map_hunt_name_title"
         android:key="pref_map_hunt_name"
-        android:summary="@string/pref_map_hunt_name_sum"/>
+        android:summary="@string/pref_map_hunt_name_sum" />
 
     </PreferenceCategory>
 
 
     <PreferenceCategory android:title="@string/pref_cat_updates">
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="pref_updates_auto"
             android:title="@string/pref_updates_auto_title"
             android:summary="@string/pref_updates_auto_sum"
@@ -86,39 +86,26 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_cat_travel">
+    <PreferenceScreen
+        android:title="@string/pref_advanced_title"
+        android:summary="@string/pref_advanced_sum">
 
         <EditTextPreference
-            android:key="pref_travel_zoom"
-            android:title="@string/pref_travel_zoom_title"
-            android:summary="@string/pref_travel_zoom_sum"
-            android:inputType="numberDecimal"
-            android:numeric="decimal"
-            android:defaultValue="20"
-            />
-
-        <EditTextPreference
-            android:key="pref_travel_aoa"
-            android:title="@string/pref_travel_aoa_title"
-            android:summary="@string/pref_travel_aoa_sum"
-            android:inputType="numberDecimal"
-            android:numeric="decimal"
-            android:defaultValue="45"
-            />
-
-    </PreferenceCategory>
-
-
-    <PreferenceCategory android:title="@string/pref_cat_misc">
-
-        <EditTextPreference
-            android:key="pref_misc_walking_speed"
-            android:title="@string/pref_misc_walking_speed_title"
-            android:summary="@string/pref_misc_walking_speed_sum"
+            android:key="pref_advanced_walking_speed"
+            android:title="@string/pref_advanced_walking_speed_title"
+            android:summary="@string/pref_advanced_walking_speed_sum"
             android:inputType="numberDecimal"
             android:defaultValue="6.0"
             />
 
-    </PreferenceCategory>
+        <EditTextPreference
+            android:key="pref_advanced_location_update_interval"
+            android:title="@string/pref_advanced_location_update_interval_title"
+            android:summary="@string/pref_advanced_location_update_interval_sum"
+            android:inputType="numberDecimal"
+            android:defaultValue="1.0"
+            />
+
+    </PreferenceScreen>
 
 </PreferenceScreen>
