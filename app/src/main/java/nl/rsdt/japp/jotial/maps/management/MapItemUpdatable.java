@@ -1,11 +1,7 @@
 package nl.rsdt.japp.jotial.maps.management;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.rsdt.anl.RequestPool;
-import com.rsdt.anl.WebRequest;
-
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
+import retrofit2.Call;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -13,15 +9,15 @@ import nl.rsdt.japp.service.cloud.data.UpdateInfo;
  * @since 31-7-2016
  * Description...
  */
-public interface MapItemUpdatable {
+public interface MapItemUpdatable<I> {
 
     String MODE_ALL = "ALL";
 
     String MODE_LATEST = "LATEST";
 
-    String getUrlByAssociatedMode(String mode);
+    Call<I> update(String mode);
 
-    void onUpdateInvoked(RequestQueue queue);
+    void onUpdateInvoked();
 
-    void onUpdateMessage(RequestQueue queue, UpdateInfo info);
+    void onUpdateMessage(UpdateInfo info);
 }

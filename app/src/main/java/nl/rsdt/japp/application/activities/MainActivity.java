@@ -1,9 +1,7 @@
 package nl.rsdt.japp.application.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -17,17 +15,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-
-import com.android.internal.util.Predicate;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.Marker;
-import com.rsdt.anl.RequestPool;
-import com.rsdt.anl.WebResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.json.JSONArray;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -40,15 +32,17 @@ import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 
 import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.ShowCaseTour;
+import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
-import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
-import nl.rsdt.japp.service.LocationServiceManager;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, SearchView.OnQueryTextListener, UpdateManager.UpdateMessageListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, UpdateManager.UpdateMessageListener {
 
     public static final String TAG = "MainActivity";
 
@@ -62,15 +56,38 @@ public class MainActivity extends AppCompatActivity
      * */
     private MapManager mapManager = new MapManager();
 
-
     /**
      * Manages the navigation between the fragments.
      * */
     private NavigationManager navigationManager = new NavigationManager();
 
+    private SearchManager searchManager = new SearchManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FirebaseMessaging.getInstance().subscribeToTopic("updates");
+
+        Japp.setInterceptor(new Interceptor() {
+            boolean hasStarted = false;
+
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+
+                if(!hasStarted) {
+                    if(response.code() == 401) {
+                        hasStarted = true;
+                        Authentication.startLoginActivity(MainActivity.this);
+
+                    }
+                }
+                return response;
+            }
+        });
+
 
         /**
          * Add this as a listener for UpdateMessages.
@@ -86,6 +103,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         /**
          * Checks if this is the first run of the app.
          * */
@@ -95,13 +113,14 @@ public class MainActivity extends AppCompatActivity
              * Set the the first run value to false.
              * */
             JappPreferences.setFirstRun(false);
+
+            /**
+             * Do some things for the first run.
+             * */
+            ShowCaseTour tour = new ShowCaseTour(this);
+            tour.showcase();
         }
 
-        /**
-         * Do some things for the first run.
-         * */
-        ShowCaseTour tour = new ShowCaseTour(this);
-        tour.showcase();
 
         mapManager.onIntentCreate(getIntent());
         mapManager.onCreate(savedInstanceState);
@@ -129,6 +148,7 @@ public class MainActivity extends AppCompatActivity
         navigationManager.onSavedInstance(savedInstanceState);
 
     }
+
 
     @Override
     protected void onStart() {
@@ -175,33 +195,54 @@ public class MainActivity extends AppCompatActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
-        // Get the SearchView and set the searchable configuration
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        searchView.setSuggestionsAdapter(new SearchSuggestionsAdapter(this, mapManager));
-
-        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-            @Override
-            public boolean onSuggestionSelect(int position) {
-                return false;
-            }
-
-            @Override
-            public boolean onSuggestionClick(int position) {
-                SearchView searchView = (SearchView) MainActivity.this.menu.findItem(R.id.search).getActionView();
-                SearchSuggestionsAdapter adapter = (SearchSuggestionsAdapter) searchView.getSuggestionsAdapter();
-                SearchSuggestionsAdapter.SuggestionsCursor cursor = (SearchSuggestionsAdapter.SuggestionsCursor)adapter.getItem(0);
-                List<String> entries = cursor.getEntries();
-                String chosen = entries.get(position);
-                searchView.setQuery(chosen, false);
-                onQueryTextSubmit(chosen);
-                searchView.clearFocus();
-                return false;
-            }
-        });
+        searchManager.onCreateOptionsMenu(menu);
         this.menu = menu;
         return true;
+    }
+
+    public class SearchManager implements SearchView.OnQueryTextListener {
+
+        public void onCreateOptionsMenu(Menu menu) {
+            // Get the SearchView and set the searchable configuration
+            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            searchView.setOnQueryTextListener(this);
+            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            searchView.setSuggestionsAdapter(new SearchSuggestionsAdapter(MainActivity.this, mapManager));
+            searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+                @Override
+                public boolean onSuggestionSelect(int position) {
+                    return false;
+                }
+
+                @Override
+                public boolean onSuggestionClick(int position) {
+                    SearchView searchView = (SearchView) MainActivity.this.menu.findItem(R.id.search).getActionView();
+                    SearchSuggestionsAdapter adapter = (SearchSuggestionsAdapter) searchView.getSuggestionsAdapter();
+                    SearchSuggestionsAdapter.SuggestionsCursor cursor = (SearchSuggestionsAdapter.SuggestionsCursor)adapter.getItem(0);
+                    List<String> entries = cursor.getEntries();
+                    String chosen = entries.get(position);
+                    searchView.setQuery(chosen, false);
+                    onQueryTextSubmit(chosen);
+                    searchView.clearFocus();
+                    return false;
+                }
+            });
+        }
+
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            ArrayList<BaseInfo> possibles =  mapManager.searchFor(query.toLowerCase(Locale.ROOT));
+            if(possibles.size() == 1) {
+                Marker marker = mapManager.getAssociatedMarker(possibles.get(0));
+                mapManager.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            return false;
+        }
     }
 
     @Override
@@ -211,14 +252,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                item.setEnabled(false);
-                Japp.getRequestQueue().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<JSONArray>() {
-                    @Override
-                    public void onRequestFinished(Request<JSONArray> request) {
-                        item.setEnabled(true);
-                        Japp.getRequestQueue().removeRequestFinishedListener(this);
-                    }
-                });
                 mapManager.update();
                 return true;
             default:
@@ -258,10 +291,6 @@ public class MainActivity extends AppCompatActivity
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
         } else if (id == R.id.nav_about) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -277,10 +306,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
 
-        /**
-         * Cancel all the requests associated with this activity.
-         * */
-        Japp.getRequestQueue().cancelAll(TAG);
+        Japp.setInterceptor(null);
 
         /**
          * Remove this as UpdateMessageListener.
@@ -292,35 +318,21 @@ public class MainActivity extends AppCompatActivity
          * */
         JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
 
-        if(navigationManager != null)
-        {
-            navigationManager.onDestroy();
-            navigationManager = null;
-        }
-
         if(mapManager != null)
         {
             mapManager.onDestroy();
             mapManager = null;
         }
 
-    }
-
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        ArrayList<BaseInfo> possibles =  mapManager.searchFor(query.toLowerCase(Locale.ROOT));
-        if(possibles.size() == 1) {
-            Marker marker = mapManager.getAssociatedMarker(possibles.get(0));
-            mapManager.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
+        if(navigationManager != null)
+        {
+            navigationManager.onDestroy();
+            navigationManager = null;
         }
-        return false;
-    }
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
+        if(searchManager != null) {
+            searchManager = null;
+        }
     }
-
 
 }

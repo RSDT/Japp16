@@ -123,6 +123,10 @@ public class VosInfo extends BaseInfo implements Parcelable {
         return VosInfo.getAssociatedColor(this);
     }
 
+    public void setIcon(int icon) {
+        this.icon = icon;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);

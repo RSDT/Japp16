@@ -1,10 +1,13 @@
 package nl.rsdt.japp.jotial.maps.movement;
 
-import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,13 +18,22 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.List;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.jotial.Recreatable;
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
+import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
+import nl.rsdt.japp.service.LocationService;
+import nl.rsdt.japp.service.ServiceManager;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -29,11 +41,17 @@ import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
  * @since 2-8-2016
  * Description...
  */
-public class MovementManager extends LocationProvider implements OnMapReadyCallback {
+public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
+
+    private static final String BUNDLE_KEY = "MovementManager";
+
+    private LocationService service;
 
     private GoogleMap googleMap;
 
     private Marker marker;
+
+    private Polyline tail;
 
     private float bearing;
 
@@ -41,12 +59,14 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
 
     private FollowSession activeSession;
 
-    public MovementManager() {
-        request = new LocationRequest()
-                .setInterval(700)
-                .setFastestInterval(100)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    private Deelgebied deelgebied;
+
+    private View snackBarView;
+
+    public void setSnackBarView(View snackBarView) {
+        this.snackBarView = snackBarView;
     }
+
 
     public FollowSession newSession(CameraPosition before, float zoom, float aoa) {
         if(activeSession != null) {
@@ -57,12 +77,8 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
         return activeSession;
     }
 
-
-
     @Override
     public void onLocationChanged(Location location) {
-
-
         if(lastLocation != null) {
             bearing = lastLocation.bearingTo(location);
 
@@ -73,6 +89,29 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
             marker.setRotation(bearing);
         } else {
             marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+
+        List<LatLng> points = tail.getPoints();
+        if(points.size() > 60) {
+            points = points.subList(points.size()/3, points.size());
+        }
+        points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+        tail.setPoints(points);
+
+        boolean refresh = false;
+        if(deelgebied != null) {
+            if(!deelgebied.containsLocation(location)) {
+                refresh = true;
+            }
+        } else {
+            refresh = true;
+        }
+
+        if(refresh) {
+            deelgebied = Deelgebied.resolveOnLocation(location);
+            if(deelgebied != null && snackBarView != null) {
+                Snackbar.make(snackBarView, "Welkom in deelgebied " + deelgebied.getName(), Snackbar.LENGTH_LONG).show();
+            }
         }
 
         /**
@@ -89,6 +128,17 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
         lastLocation = location;
     }
 
+    @Override
+    public void onBind(LocationService.LocationBinder binder) {
+        service = binder.getInstance();
+        service.add(this);
+        service.setRequest(new LocationRequest()
+                .setInterval(700)
+                .setFastestInterval(100)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
+    }
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -99,17 +149,16 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
                         .position(new LatLng(52.021818, 6.059603))
                         .visible(false)
                         .flat(true));
-    }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        super.onConnected(bundle);
-        startLocationUpdates();
+        tail = googleMap.addPolyline(
+                new PolylineOptions()
+                        .width(3)
+                        .color(Color.BLUE));
     }
 
     public class FollowSession implements LocationSource.OnLocationChangedListener {
 
-        private float zoom = 20f;
+        private float zoom = 19f;
 
         private float aoa = 45f;
 
@@ -181,6 +230,47 @@ public class MovementManager extends LocationProvider implements OnMapReadyCallb
 
             activeSession = null;
         }
+    }
+
+    public void onResume() {
+        if(service != null) {
+            service.setRequest(new LocationRequest()
+                    .setInterval(700)
+                    .setFastestInterval(100)
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
+        }
+    }
+
+    public void onPause() {
+        if(service != null) {
+            service.setRequest(service.getStandard());
+        }
+    }
+
+    public void onDestroy() {
+
+        if(googleMap != null) {
+            googleMap = null;
+        }
+
+        if(marker != null) {
+            marker.remove();
+            marker = null;
+        }
+
+        if(lastLocation != null) {
+            lastLocation = null;
+        }
+
+        if(activeSession != null) {
+            activeSession = null;
+        }
+
+        if(service != null) {
+            service.remove(this);
+            service = null;
+        }
+
     }
 
 }

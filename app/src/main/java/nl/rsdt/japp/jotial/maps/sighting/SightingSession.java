@@ -6,11 +6,15 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.Snackbar;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -192,12 +196,23 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     @Override
     public void onClick(View view) {
         if(deelgebied != null) {
-            googleMap.snapshot(this);
-            if(dialog != null) {
-                dialog.show();
-                ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
-                ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
-            }
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    if(dialog != null) {
+                        dialog.show();
+                        ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
+                        ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+                    }
+                    googleMap.snapshot(SightingSession.this);
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+
         } else {
             snackbar.setText("Selecteer een geldige locatie!");
             snackbar.show();
@@ -208,7 +223,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     @Override
     public void onSnapshotReady(Bitmap bitmap) {
         if(dialog != null) {
-            //((ImageView)dialog.findViewById(R.id.sighting_dialog_snapshot)).setImageDrawable(new BitmapDrawable(Japp.getAppResources(), bitmap));
+            ((ImageView)dialog.findViewById(R.id.sighting_dialog_snapshot)).setImageDrawable(new BitmapDrawable(Japp.getAppResources(), bitmap));
         }
     }
 

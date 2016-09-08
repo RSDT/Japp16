@@ -14,6 +14,8 @@ import com.google.gson.stream.JsonReader;
 
 import java.util.Map;
 
+import nl.rsdt.japp.R;
+
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
@@ -39,15 +41,31 @@ public class HunterInfo extends BaseInfo implements Parcelable {
      */
     public String datetime;
 
+    public String getDatetime() {
+        return datetime;
+    }
+
     /**
      * The user of the HunterInfo.
      */
     public String hunter;
 
+    public String getHunter() {
+        return hunter;
+    }
+
     /**
      * The icon of the HunterInfo.
      * */
     public int icon;
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public int getAssociatedDrawable()  {
+        return getAssociatedDrawable(icon);
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -73,6 +91,46 @@ public class HunterInfo extends BaseInfo implements Parcelable {
             return new HunterInfo[size];
         }
     };
+
+
+    public static int getAssociatedDrawable(int icon) {
+        switch (icon) {
+            case 0:
+                return(R.drawable.hunter_0);
+            case 1:
+                return(R.drawable.hunter_1);
+            case 2:
+                return(R.drawable.hunter_2);
+            case 3:
+                return(R.drawable.hunter_3);
+            case 4:
+                return(R.drawable.hunter_4);
+            case 5:
+                return(R.drawable.hunter_5);
+            case 6:
+                return(R.drawable.hunter_6);
+            case 7:
+                return(R.drawable.hunter_7);
+            case 8:
+                return(R.drawable.hunter_8);
+            case 9:
+                return(R.drawable.hunter_9);
+            case 10:
+                return(R.drawable.hunter_10);
+            case 11:
+                return(R.drawable.hunter_11);
+            case 12:
+                return(R.drawable.hunter_12);
+            case 13:
+                return(R.drawable.hunter_13);
+            case 14:
+                return(R.drawable.hunter_14);
+            case 15:
+                return(R.drawable.hunter_15);
+            default:
+                return(R.drawable.hunter_0);
+        }
+    }
 
     /**
      * Deserializes a HunterInfo from JSON.

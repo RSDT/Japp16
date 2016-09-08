@@ -1,11 +1,10 @@
-package nl.rsdt.japp.jotial.data.builders;
+package nl.rsdt.japp.jotial.data.bodies;
 
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Dingenis Sieger Sinke

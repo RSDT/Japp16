@@ -3,38 +3,28 @@ package nl.rsdt.japp.jotial.maps.management.controllers;
 import android.os.Bundle;
 import android.os.Parcel;
 
-import com.android.internal.util.Predicate;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import com.rsdt.anl.RequestPool;
-import com.rsdt.anl.WebRequest;
-import com.rsdt.anl.WebRequestMethod;
-import com.rsdt.anl.WebResponse;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import nl.rsdt.japp.R;
 
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
-
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.FotoOpdrachtInfo;
 
-import nl.rsdt.japp.jotial.data.structures.area348.VosInfo;
 import nl.rsdt.japp.jotial.io.AppData;
 
-import nl.rsdt.japp.jotial.maps.management.MapItemController;
+import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
-import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
 
-import nl.rsdt.japp.jotial.maps.searching.SearchEntry;
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
+import nl.rsdt.japp.jotial.net.apis.FotoApi;
+import retrofit2.Call;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -42,7 +32,7 @@ import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
  * @since 31-7-2016
  * Description...
  */
-public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> {
+public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrachtInfo, FotoOpdrachtController.FotoOpdrachtTransducer.Result>{
 
     public static final String CONTROLLER_ID = "FotoOpdrachtController";
 
@@ -71,38 +61,15 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState != null)
-        {
-            if(savedInstanceState.containsKey(BUNDLE_ID))
-            {
-                this.items = savedInstanceState.getParcelableArrayList(BUNDLE_ID);
-                AbstractTransducerResult<FotoOpdrachtInfo> result = getTransducer().generate(items, FotoOpdrachtInfo.class);
-                if(googleMap != null) {
-                    processResult(result);
-                }
-                else {
-                    buffer = result;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle saveInstanceState) {
-        saveInstanceState.putParcelableArrayList(BUNDLE_ID, items);
-    }
-
-    @Override
-    public String getUrlByAssociatedMode(String mode) {
+    public Call<ArrayList<FotoOpdrachtInfo>> update(String mode) {
+        FotoApi api = Japp.getApi(FotoApi.class);
         switch (mode) {
             case MODE_ALL:
-                return new ApiUrlBuilder().append("foto").append("all").buildAsString();
+                return api.getAll(JappPreferences.getAccountKey());
             case MODE_LATEST:
-                return new ApiUrlBuilder().append("foto").append("all").buildAsString();
-            default:
-                return null;
+                return api.getAll(JappPreferences.getAccountKey());
         }
+        return null;
     }
 
     public ArrayList<BaseInfo> searchFor(String query) {
@@ -138,29 +105,30 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
     }
 
     @Override
-    public AbstractTransducer<FotoOpdrachtInfo> getTransducer() {
+    public FotoOpdrachtTransducer getTransducer() {
         return new FotoOpdrachtTransducer();
     }
 
-    public static class FotoOpdrachtTransducer extends AbstractTransducer<FotoOpdrachtInfo> {
+
+    public static class FotoOpdrachtTransducer extends AbstractTransducer<ArrayList<FotoOpdrachtInfo>, FotoOpdrachtTransducer.Result> {
 
         @Override
-        public FotoOpdrachtInfo[] retrieveFromStorage() {
-            return AppData.getObject(STORAGE_ID, FotoOpdrachtInfo[].class);
+        public ArrayList<FotoOpdrachtInfo> load() {
+            return AppData.getObject(STORAGE_ID, new TypeToken<ArrayList<FotoOpdrachtInfo>>() {}.getType());
         }
 
         @Override
-        public FotoOpdrachtInfo[] extract(String data) {
-            return FotoOpdrachtInfo.fromJsonArray(data);
+        public void transduceToBundle(Bundle bundle) {
+            bundle.putParcelable(BUNDLE_ID, generate(load()));
         }
 
         @Override
-        public AbstractTransducerResult<FotoOpdrachtInfo> generate(FotoOpdrachtInfo[] items) {
-            if(items == null || items.length < 1) return new FotoOpdrachtTransducerResult();
+        public Result generate(ArrayList<FotoOpdrachtInfo> items) {
+            if(items == null || items.isEmpty()) return new Result();
 
-            FotoOpdrachtTransducerResult result = new FotoOpdrachtTransducerResult();
+            Result result = new Result();
             result.setBundleId(BUNDLE_ID);
-            result.addItems(Arrays.asList(items));
+            result.addItems(items);
 
             if(saveEnabled) {
                 AppData.saveObjectAsJson(items, STORAGE_ID);
@@ -172,15 +140,15 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
             /**
              * Loops through each FotoOpdrachtInfo.
              * */
-            for (int i = 0; i < items.length; i++) {
-                info = items[i];
+            for (int i = 0; i < items.size(); i++) {
+                info = items.get(i);
                 if(info != null) {
                     MarkerOptions mOptions = new MarkerOptions();
                     mOptions.anchor(0.5f, 0.5f);
-                    mOptions.position(items[i].getLatLng());
-                    mOptions.title(String.valueOf(items[i].id));
+                    mOptions.position(info.getLatLng());
+                    mOptions.title(String.valueOf(info.id));
 
-                    if(items[i].klaar == 1)
+                    if(info.klaar == 1)
                     {
                         mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20_klaar));
                     }
@@ -200,16 +168,16 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
          * @since 31-7-2016
          * Description...
          */
-        public static class FotoOpdrachtTransducerResult extends AbstractTransducerResult<FotoOpdrachtInfo> {
+        public static class Result extends AbstractTransducer.StandardResult<FotoOpdrachtInfo> {
 
-            public FotoOpdrachtTransducerResult() {}
+            public Result() {}
 
             /**
              * Reconstructs the result.
              *
              * @param in The parcel where the result was written to
              */
-            protected FotoOpdrachtTransducerResult(Parcel in) {
+            protected Result(Parcel in) {
                 super(in);
                 items = in.createTypedArrayList(FotoOpdrachtInfo.CREATOR);
             }
@@ -220,15 +188,15 @@ public class FotoOpdrachtController extends MapItemController<FotoOpdrachtInfo> 
                 dest.writeTypedList(items);
             }
 
-            public static final Creator<FotoOpdrachtTransducerResult> CREATOR = new Creator<FotoOpdrachtTransducerResult>() {
+            public static final Creator<Result> CREATOR = new Creator<Result>() {
                 @Override
-                public FotoOpdrachtTransducerResult createFromParcel(Parcel in) {
-                    return new FotoOpdrachtTransducerResult(in);
+                public Result createFromParcel(Parcel in) {
+                    return new Result(in);
                 }
 
                 @Override
-                public FotoOpdrachtTransducerResult[] newArray(int size) {
-                    return new FotoOpdrachtTransducerResult[size];
+                public Result[] newArray(int size) {
+                    return new Result[size];
                 }
             };
         }

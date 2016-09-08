@@ -1,6 +1,5 @@
 package nl.rsdt.japp.service.cloud.messaging;
 
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -19,12 +18,11 @@ public class JappFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onCreate() {
         super.onCreate();
-        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_UPDATES);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Japp.getUpdateManager().onMessageData(remoteMessage.getData());
+        Japp.getUpdateManager().onMessage(remoteMessage);
     }
 }

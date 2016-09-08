@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.maps;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -12,10 +13,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.rsdt.anl.RequestPool;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -70,6 +68,9 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
      * */
     private HashMap<String, MapItemController> controllers = new HashMap<>();
 
+    /**
+     * The Controller for the ScoutingGroep map items.
+     * */
     private ScoutingGroepController sgController = new ScoutingGroepController();
 
     /**
@@ -98,16 +99,18 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
         if(intent != null && intent.hasExtra(SplashActivity.LOAD_ID))
         {
             Bundle bundle = intent.getBundleExtra(SplashActivity.LOAD_ID);
-            for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
-                MapItemController controller = pair.getValue();
-                if(controller != null)
-                {
-                    controller.onIntentCreate(bundle);
+            if(bundle != null) {
+                for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
+                    MapItemController controller = pair.getValue();
+                    if(controller != null)
+                    {
+                        controller.onIntentCreate(bundle);
+                    }
                 }
+                sgController.onIntentCreate(bundle);
+                bundle.clear();
+                intent.removeExtra(SplashActivity.LOAD_ID);
             }
-            sgController.onIntentCreate(bundle);
-            bundle.clear();
-            intent.removeExtra(SplashActivity.LOAD_ID);
         }
     }
 
@@ -158,9 +161,8 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
      * @param id The id of the MapItemController, for example VosAlphaController.CONTROLLER_ID .
      * @return The MapItemController associated with the id, returns null if none.
      * */
-    public MapItemController get(String id)
-    {
-        return controllers.get(id);
+    public <T extends MapItemController> T get(String id) {
+        return (T)controllers.get(id);
     }
 
     /**
@@ -176,6 +178,7 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
      * Gets invoked when a UpdateMessage is received.
      * */
     public void onUpdateMessageReceived(UpdateInfo info) {
+        if(info == null || info.type == null || info.action == null) return;
         MapItemUpdatable updatable = null;
         switch (info.type) {
             case "hunter":
@@ -211,10 +214,8 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
         }
 
         if(updatable != null) {
-            updatable.onUpdateMessage(Japp.getRequestQueue(), info);
-            Japp.getRequestQueue().start();
+            updatable.onUpdateMessage(info);
         }
-
     }
 
     @Override
@@ -238,11 +239,10 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
             MapItemController controller = pair.getValue();
             if(controller != null)
             {
-                controller.onUpdateInvoked(Japp.getRequestQueue());
+                controller.onUpdateInvoked();
             }
         }
-        sgController.onUpdateInvoked(Japp.getRequestQueue());
-        Japp.getRequestQueue().start();
+        sgController.onUpdateInvoked();
     }
 
     @Override

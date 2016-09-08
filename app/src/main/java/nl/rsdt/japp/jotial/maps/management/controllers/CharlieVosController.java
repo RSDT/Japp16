@@ -1,11 +1,5 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
-import com.android.internal.util.Predicate;
-import com.rsdt.anl.WebRequest;
-import com.rsdt.anl.WebRequestMethod;
-import com.rsdt.anl.WebResponse;
-
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -28,6 +22,11 @@ public class CharlieVosController extends VosController {
     }
 
     @Override
+    public String getTeam() {
+        return "c";
+    }
+
+    @Override
     public String getId() {
         return CONTROLLER_ID;
     }
@@ -42,17 +41,5 @@ public class CharlieVosController extends VosController {
         return BUNDLE_ID;
     }
 
-    @Override
-    public String getUrlByAssociatedMode(String mode) {
-        switch (mode) {
-            case MODE_ALL:
-                return new ApiUrlBuilder().append("vos").append("c").append("all").buildAsString();
-
-            case MODE_LATEST:
-                return new ApiUrlBuilder().append("vos").append("c").append("all").append(lastUpdate.toString()).buildAsString();
-            default:
-                return null;
-        }
-    }
 }
 

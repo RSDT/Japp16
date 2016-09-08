@@ -1,9 +1,12 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,27 +14,37 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.rsdt.anl.WebRequest;
-import com.rsdt.anl.WebRequestMethod;
-import com.rsdt.anl.WebResponse;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
-import nl.rsdt.japp.jotial.data.builders.VosPostDataBuilder;
+import nl.rsdt.japp.jotial.data.bodies.VosPostBody;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
 import nl.rsdt.japp.jotial.maps.movement.MovementManager;
+import nl.rsdt.japp.jotial.maps.pinning.Pin;
 import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
+import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
+import nl.rsdt.japp.jotial.net.apis.VosApi;
+import nl.rsdt.japp.service.LocationService;
+import nl.rsdt.japp.service.ServiceManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -44,6 +57,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     public static final String TAG = "JappMapFragment";
 
     private static final String BUNDLE_MAP = "BUNDLE_MAP";
+
+    private ServiceManager<LocationService, LocationService.LocationBinder> serviceManager = new ServiceManager<>(LocationService.class);
 
     private MapView mapView;
 
@@ -58,6 +73,12 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     private PinningManager pinningManager = new PinningManager();
 
     private MovementManager movementManager = new MovementManager();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        pinningManager.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,6 +96,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
         {
             mapView.onCreate(savedInstanceState);
         }
+        movementManager.setSnackBarView(mapView);
 
         FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
         huntButton.setOnClickListener(new View.OnClickListener() {
@@ -89,11 +111,12 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                 FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
                 menu.hideMenu(true);
 
+
                 /*--- Build a SightingSession and start it ---*/
                 session = new SightingSession.Builder()
                         .setType(SightingSession.SIGHT_HUNT)
                         .setGoogleMap(googleMap)
-                        .setTargetView(mapView)
+                        .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
                         .setDialogContext(JappMapFragment.this.getActivity())
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
                             @Override
@@ -106,37 +129,43 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                 if(chosen != null)
                                 {
                                      /*--- Construct a JSON string with the data ---*/
-                                    VosPostDataBuilder builder = VosPostDataBuilder.getDefault();
+                                    VosPostBody builder = VosPostBody.getDefault();
                                     builder.setIcon(SightingIcon.HUNT);
                                     builder.setLatLng(chosen);
                                     builder.setTeam(deelgebied.getName().substring(0, 1));
                                     builder.setInfo(optionalInfo);
-                                    String data = builder.build();
 
-                                                    /*--- Send a request to server ---*/
-                                    WebRequest request = new WebRequest.Builder()
-                                            .setUrl(new ApiUrlBuilder(false).append("vos").buildAsUrl())
-                                            .setMethod(WebRequestMethod.POST)
-                                            .setData(data)
-                                            .create();
-                                    request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
+                                    VosApi api = Japp.getApi(VosApi.class);
+                                    api.post(builder).enqueue(new Callback<Void>() {
                                         @Override
-                                        public void onWebRequestCompleted(WebResponse response) {
-                                            switch (response.getResponseCode())
-                                            {
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            switch (response.code()) {
                                                 case 200:
-                                                    Snackbar.make(mapView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
                                                     break;
                                                 case 404:
-                                                    Snackbar.make(mapView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
                                                     Authentication.startLoginActivity(JappMapFragment.this.getActivity());
                                                     break;
                                                 default:
-                                                    Snackbar.make(mapView, "Probleem bij verzenden: " + response.getResponseCode(), Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
                                                     break;
                                             }
                                         }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();
+                                        }
                                     });
+
+                                    /**
+                                     * TODO: send details?
+                                     * Log the hunt in firebase.
+                                     * */
+                                    Japp.getAnalytics().logEvent("EVENT_HUNT", new Bundle());
                                 }
                             }
                         })
@@ -161,7 +190,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                 session = new SightingSession.Builder()
                         .setType(SightingSession.SIGHT_SPOT)
                         .setGoogleMap(googleMap)
-                        .setTargetView(mapView)
+                        .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
                         .setDialogContext(JappMapFragment.this.getActivity())
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
                             @Override
@@ -174,46 +203,43 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                 if(chosen != null)
                                 {
                                     /*--- Construct a JSON string with the data ---*/
-                                    VosPostDataBuilder builder = VosPostDataBuilder.getDefault();
+                                    VosPostBody builder = VosPostBody.getDefault();
                                     builder.setIcon(SightingIcon.SPOT);
                                     builder.setLatLng(chosen);
                                     builder.setTeam(deelgebied.getName().substring(0, 1));
                                     builder.setInfo(optionalInfo);
-                                    String data = builder.build();
 
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString("team", deelgebied.getName());
-                                    bundle.putString("info", optionalInfo);
-                                    bundle.putParcelable("location", chosen);
-                                    Japp.getAnalytics().logEvent("EVENT_SPOT", bundle);
-
-
-
-                                    /*--- Send a request to server ---*/
-                                    WebRequest request = new WebRequest.Builder()
-                                            .setUrl(new ApiUrlBuilder(false).append("vos").buildAsUrl())
-                                            .setMethod(WebRequestMethod.POST)
-                                            .setData(data)
-                                            .create();
-
-                                    request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
+                                    VosApi api = Japp.getApi(VosApi.class);
+                                    api.post(builder).enqueue(new Callback<Void>() {
                                         @Override
-                                        public void onWebRequestCompleted(WebResponse response) {
-                                            switch (response.getResponseCode())
-                                            {
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            switch (response.code()) {
                                                 case 200:
-                                                    Snackbar.make(mapView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
                                                     break;
                                                 case 404:
-                                                    Snackbar.make(mapView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
                                                     Authentication.startLoginActivity(JappMapFragment.this.getActivity());
                                                     break;
                                                 default:
-                                                    Snackbar.make(mapView, "Probleem bij verzenden: " + response.getResponseCode(), Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
                                                     break;
                                             }
                                         }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();
+                                        }
                                     });
+
+                                    /**
+                                     * TODO: send details?
+                                     * Log the spot in firebase.
+                                     * */
+                                    Japp.getAnalytics().logEvent("EVENT_SPOT", new Bundle());
                                 }
                                 session = null;
                             }
@@ -226,14 +252,45 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
 
         FloatingActionButton pinButton = (FloatingActionButton)v.findViewById(R.id.fab_mark);
         pinButton.setOnClickListener(new View.OnClickListener() {
+
+            PinningSession session;
+
             @Override
             public void onClick(View view) {
                 View v = getView();
 
-                /*--- Hide the menu ---*/
                 FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
-                menu.hideMenu(true);
 
+                if(session != null) {
+                    /*--- Show the menu ---*/
+                    menu.showMenu(true);
+                    session.end();
+                    session = null;
+                } else {
+                    /*--- Hide the menu ---*/
+                    menu.hideMenu(true);
+
+                    session = new PinningSession.Builder()
+                            .setGoogleMap(googleMap)
+                            .setCallback(new PinningSession.OnPinningCompletedCallback() {
+                                @Override
+                                public void onPinningCompleted(Pin pin) {
+                                    if(pin != null) {
+                                        pinningManager.add(pin);
+                                    }
+
+                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                    menu.showMenu(true);
+
+                                    session.end();
+                                    session = null;
+                                }
+                            })
+                            .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
+                            .setDialogContext(JappMapFragment.this.getActivity())
+                            .create();
+                    session.start();
+                }
 
             }
         });
@@ -247,12 +304,6 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View view) {
                 View v = getView();
 
-                googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
-                    @Override
-                    public void onSnapshotReady(Bitmap bitmap) {
-
-                    }
-                });
                 FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
 
                 /*--- Hide the menu ---*/
@@ -276,13 +327,13 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
             }
 
         });
-
-
         return v;
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        pinningManager.onSaveInstanceState(savedInstanceState);
 
         Bundle mapBundle = new Bundle();
         mapView.onSaveInstanceState(mapBundle);
@@ -293,6 +344,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+
     public void getMapAsync(OnMapReadyCallback callback) {
         MapView view = (MapView)getView().findViewById(R.id.map);
         view.getMapAsync(this);
@@ -301,20 +353,34 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onResume() {
-        mapView.onResume();
         super.onResume();
+        mapView.onResume();
+        serviceManager.add(movementManager);
+        movementManager.onResume();
+        if(!serviceManager.isBound()) {
+            serviceManager.bind(this.getActivity());
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
+        movementManager.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+
+        if(movementManager != null) {
+            movementManager.onDestroy();
+            serviceManager.remove(movementManager);
+            movementManager = null;
+        }
+
+        serviceManager.unbind(getActivity());
     }
 
     @Override

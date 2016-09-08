@@ -4,91 +4,85 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
- * @since 20-7-2016
+ * @since 8-9-2016
  * Description...
  */
-public class Pin implements Parcelable
-{
-    private MarkerOptions marker = new MarkerOptions();
+public class Pin {
 
-    protected Pin()
-    {
+    protected Marker marker;
 
-    }
+    protected Data data;
 
-    protected Pin(Parcel in) {
-        marker = in.readParcelable(MarkerOptions.class.getClassLoader());
-    }
-
-    public MarkerOptions getMarker() {
-        return marker;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(marker, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Pin> CREATOR = new Creator<Pin>() {
-        @Override
-        public Pin createFromParcel(Parcel in) {
-            return new Pin(in);
-        }
-
-        @Override
-        public Pin[] newArray(int size) {
-            return new Pin[size];
-        }
-    };
-
-    public String getTitle() { return marker.getTitle(); }
-
-    public String getSnippet() { return marker.getSnippet(); }
-
-    public LatLng getLatLng() { return marker.getPosition(); }
-
-    public void addToGoogleMap(GoogleMap googleMap)
-    {
-
-    }
-
-
-    public static class Builder
-    {
+    public static Pin create(GoogleMap googleMap, Data data) {
         Pin buffer = new Pin();
-
-        public Builder setTitle(String title)
-        {
-            buffer.marker.title(title);
-            return this;
-        }
-
-        public Builder setSnippet(String snippet)
-        {
-            buffer.marker.title(snippet);
-            return this;
-        }
-
-        public Builder setPosition(LatLng latLng)
-        {
-            buffer.marker.position(latLng);
-            return this;
-        }
-
-        public Pin create()
-        {
-            return buffer;
-        }
+        buffer.marker = googleMap.addMarker(new MarkerOptions()
+                .title(data.title)
+        .position(data.position)
+        .icon(BitmapDescriptorFactory.fromResource(data.icon)));
+        buffer.data = data;
+        return buffer;
     }
+
+    public static class Data implements Parcelable{
+
+        protected String title;
+
+        protected String description;
+
+        protected LatLng position;
+
+        protected int icon;
+
+        public Data() {
+
+        }
+
+        public Data(String title, String description, LatLng position, int icon) {
+            this.title = title;
+            this.description = description;
+            this.position = position;
+            this.icon = icon;
+        }
+
+        protected Data(Parcel in) {
+            title = in.readString();
+            description = in.readString();
+            position = in.readParcelable(LatLng.class.getClassLoader());
+            icon = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(title);
+            dest.writeString(description);
+            dest.writeParcelable(position, flags);
+            dest.writeInt(icon);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<Data> CREATOR = new Creator<Data>() {
+            @Override
+            public Data createFromParcel(Parcel in) {
+                return new Data(in);
+            }
+
+            @Override
+            public Data[] newArray(int size) {
+                return new Data[size];
+            }
+        };
+    }
+
 }

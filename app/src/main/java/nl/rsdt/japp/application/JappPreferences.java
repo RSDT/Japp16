@@ -37,7 +37,7 @@ public class JappPreferences {
 
     public static final String ACCOUNT_RANK = "pref_account_rank";
 
-    public static final String ACCOUNT_ICON = "pref_icon_icon";
+    public static final String ACCOUNT_ICON = "pref_account_icon";
 
     public static final String ACCOUNT_KEY = "pref_account_key";
 
@@ -52,6 +52,10 @@ public class JappPreferences {
     public static final String FOLLOW_AOA = "pref_follow_aoa";
 
     public static final String LOCATION_UPDATE_INTERVAL = "pref_advanced_location_update_interval";
+
+    public static final String HUNTER_UPDATE_INTERVAL = "pref_advanced_hunter_update_interval";
+
+    public static final String DEBUG_VERSION_NAME = "pref_debug_version_name";
 
     /**
      * Gets the visible release_preferences of Japp.
@@ -164,5 +168,8 @@ public class JappPreferences {
         return Float.valueOf(getVisiblePreferences().getString(LOCATION_UPDATE_INTERVAL, "1.0")) * 60 * 1000;
     }
 
+    public static float getHunterUpdateIntervalInMs() {
+        return Float.valueOf(getVisiblePreferences().getString(HUNTER_UPDATE_INTERVAL, "1.0")) * 60 * 1000;
+    }
 
 }

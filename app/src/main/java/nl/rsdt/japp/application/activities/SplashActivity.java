@@ -7,24 +7,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.gson.reflect.TypeToken;
-import com.rsdt.anl.WebRequest;
-import com.rsdt.anl.WebRequestMethod;
-import com.rsdt.anl.WebResponse;
+import java.io.File;
 
-import java.net.URL;
-import java.util.ArrayList;
-
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker;
-import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
-import nl.rsdt.japp.jotial.io.AppData;
-import nl.rsdt.japp.jotial.maps.MapDataLoader;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
-import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
-import nl.rsdt.japp.jotial.maps.management.transformation.async.OnTransduceCompletedCallback;
+import nl.rsdt.japp.jotial.maps.management.MapItemController;
+import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask;
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
+import nl.rsdt.japp.jotial.net.apis.AuthApi;
 import nl.rsdt.japp.service.LocationService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -32,15 +29,13 @@ import nl.rsdt.japp.service.LocationService;
  * @since 8-7-2016
  * Description...
  */
-public class SplashActivity extends Activity implements OnTransduceCompletedCallback {
+public class SplashActivity extends Activity implements AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
+
+    public static final String TAG = "SplashActivity";
 
     public static final String LOAD_ID = "LOAD_RESULTS";
 
-    Bundle bundle = new Bundle();
-
-    MapDataLoader mapDataLoader = new MapDataLoader();
-
-    int count = 0;
+    Bundle bundle;
 
     int permission_check;
 
@@ -53,35 +48,22 @@ public class SplashActivity extends Activity implements OnTransduceCompletedCall
          * */
         permission_check = LocationPermissionsChecker.check(this);
 
-        /**
-         * Load the MapData.
-         * */
-        mapDataLoader.load(this);
-
+        new AsyncBundleTransduceTask(this).execute(MapItemController.getAll());
     }
 
     @Override
-    public void onTransduceCompleted(AbstractTransducerResult result) {
-        if(result != null)
-        {
-            bundle.putParcelable(result.getBundleId(), result);
-        }
-        count++;
-
-        if(count == mapDataLoader.getNumOfControllers()) {
-            ArrayList<ScoutingGroepInfo> list = AppData.getObject(ScoutingGroepController.STORAGE_ID, new TypeToken<ArrayList<ScoutingGroepInfo>>(){}.getType());
-            if(list != null) {
-                bundle.putParcelableArrayList(ScoutingGroepController.BUNDLE_ID, list);
-            }
-            continueToNext();
-        }
+    public void onTransduceCompleted(Bundle bundle) {
+        this.bundle = bundle;
+        ScoutingGroepController.loadAndPutToBundle(bundle);
+        continueToNext();
     }
+
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 
         if(LocationPermissionsChecker.hasPermissionOfPermissionRequestResult(requestCode, permissions, grantResults)) {
             if(GooglePlayServicesChecker.check(this) != GooglePlayServicesChecker.FAILURE) {
-                determineAndStartNewActivity();
+                validate();
             }
         }
         else {
@@ -107,16 +89,46 @@ public class SplashActivity extends Activity implements OnTransduceCompletedCall
 
     public void continueToNext() {
         if(permission_check != LocationPermissionsChecker.PERMISSIONS_REQUEST_REQUIRED) {
-            determineAndStartNewActivity();
+            validate();
         }
     }
 
+    public void validate() {
+        AuthApi api = Japp.getApi(AuthApi.class);
+        api.validateKey(JappPreferences.getAccountKey()).enqueue(new Callback<Authentication.ValidateObject>() {
+            @Override
+            public void onResponse(Call<Authentication.ValidateObject> call, Response<Authentication.ValidateObject> response) {
+                if(response.code() == 200) {
+                    Authentication.ValidateObject object = response.body();
+                    if(object != null) {
+                        if(!object.exists()) {
+                            Authentication.startLoginActivity(SplashActivity.this);
+                        } else {
+                            determineAndStartNewActivity();
+                        }
+                    }
+                } else {
+                    Authentication.startLoginActivity(SplashActivity.this);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Authentication.ValidateObject> call, Throwable t) {
+                Log.e(TAG, t.toString(), t);
+            }
+        });
+    }
+
     public void determineAndStartNewActivity() {
-        /**
-         * Start the LocationService.
-         * */
-        Intent intentService = new Intent(this, LocationService.class);
-        startService(intentService);
+
+        if(false) {
+            Intent intenti = new Intent(this, IntroActivity.class);
+            startActivity(intenti);
+            finish();
+            return;
+        }
+
 
         String key = JappPreferences.getAccountKey();
         if(key.isEmpty())
@@ -144,5 +156,4 @@ public class SplashActivity extends Activity implements OnTransduceCompletedCall
             }
         }
     }
-
 }

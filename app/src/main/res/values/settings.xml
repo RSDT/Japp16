@@ -36,6 +36,17 @@
                 <item>2</item>
                 <item>3</item>
                 <item>4</item>
+                <item>5</item>
+                <item>6</item>
+                <item>7</item>
+                <item>8</item>
+                <item>9</item>
+                <item>10</item>
+                <item>11</item>
+                <item>12</item>
+                <item>13</item>
+                <item>14</item>
+                <item>15</item>
             </string-array>
             <string-array name="pref_account_icon_data">
                 <item>0</item>
@@ -43,6 +54,17 @@
                 <item>2</item>
                 <item>3</item>
                 <item>4</item>
+                <item>5</item>
+                <item>6</item>
+                <item>7</item>
+                <item>8</item>
+                <item>9</item>
+                <item>10</item>
+                <item>11</item>
+                <item>12</item>
+                <item>13</item>
+                <item>14</item>
+                <item>15</item>
             </string-array>
 
             <!--
@@ -201,7 +223,8 @@
 
     <!-- START SCREEN ADVANCED -->
 
-    <string name="pref_advanced_title">Extra</string>
+    <string name="pref_cat_advanced">Extra</string>
+    <string name="pref_advanced_title">Geavanceerd</string>
     <string name="pref_advanced_sum">Bekijk hier extra mogelijkheden</string>
 
     <string name="pref_advanced_walking_speed_title">Loopsnelheid</string>
@@ -209,6 +232,9 @@
 
     <string name="pref_advanced_location_update_interval_title">Locatie Update Interval</string>
     <string name="pref_advanced_location_update_interval_sum">De interval waarmee locaties naar de server worden gestuurd in minuten</string>
+
+    <string name="pref_advanced_hunter_update_interval_title">Hunter Update Inerval</string>
+    <string name="pref_advanced_hunter_update_interval_sum">De interval waarmee de hunters worden binnengehaald in minuten</string>
 
     <!-- END SCREEN -->
 

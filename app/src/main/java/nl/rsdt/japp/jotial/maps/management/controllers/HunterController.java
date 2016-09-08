@@ -2,31 +2,38 @@ package nl.rsdt.japp.jotial.maps.management.controllers;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
+import android.util.Log;
 
-import com.android.internal.util.Predicate;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.rsdt.anl.RequestPool;
-import com.rsdt.anl.WebRequest;
-import com.rsdt.anl.WebRequestMethod;
-import com.rsdt.anl.WebResponse;
+import com.google.gson.reflect.TypeToken;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
-import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducerResult;
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
+import nl.rsdt.japp.jotial.net.apis.HunterApi;
+import retrofit2.Call;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -34,7 +41,7 @@ import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
  * @since 31-7-2016
  * Description...
  */
-public class HunterController extends MapItemController<HunterInfo[]> {
+public class HunterController extends MapItemController<HashMap<String, ArrayList<HunterInfo>>, HunterController.HunterTransducer.Result> {
 
     public static final String CONTROLLER_ID = "HunterOpdrachtController";
 
@@ -44,9 +51,18 @@ public class HunterController extends MapItemController<HunterInfo[]> {
 
     public static final String BUNDLE_COUNT = "HUNTER_COUNT";
 
-    public static final String REQUEST_ID = "REQUEST_HUNTER";
+    /**
+     * Handler for updating the Hunters.
+     * */
+    private Handler handler = new Handler();
+
+    private HunterUpdateRunnable runnable;
+
+    protected HashMap<String, ArrayList<HunterInfo>> data = new HashMap<>();
 
     public HunterController() {
+        runnable = new HunterUpdateRunnable();
+        handler.postDelayed(runnable, (long)JappPreferences.getHunterUpdateIntervalInMs());
     }
 
     @Override
@@ -65,30 +81,37 @@ public class HunterController extends MapItemController<HunterInfo[]> {
     }
 
     @Override
+    public void onIntentCreate(Bundle bundle) {
+        super.onIntentCreate(bundle);
+        if(bundle != null) {
+            HunterTransducer.Result result = bundle.getParcelable(BUNDLE_ID);
+            if(result != null) {
+                data = result.data;
+            }
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if(savedInstanceState != null)
         {
-            if(savedInstanceState.containsKey(BUNDLE_COUNT))
-            {
-                AbstractTransducer<HunterInfo[]> transducer = getTransducer();
-                AbstractTransducerResult<HunterInfo[]> result;
-                int size = savedInstanceState.getInt(BUNDLE_COUNT);
-                for(int i = 0; i < size; i++)
-                {
-                    HunterInfo[] item = (HunterInfo[]) savedInstanceState.getParcelableArray(BUNDLE_ID + i);
-                    if(item != null)
-                    {
-                        this.items.add(item);
+            if(savedInstanceState.containsKey(BUNDLE_COUNT)) {
+                ArrayList<String> keys = savedInstanceState.getStringArrayList(BUNDLE_COUNT);
+                if(keys != null) {
+                    String key;
+                    for(int i = 0; i < keys.size(); i++) {
+                        key = keys.get(i);
+                        ArrayList<HunterInfo> list = savedInstanceState.getParcelableArrayList(key);
+                        if(list != null && !list.isEmpty()) {
+                            data.put(key, list);
+                        }
                     }
-                }
-                result = transducer.generate(items, HunterInfo[].class);
-                if(googleMap != null)
-                {
-                    processResult(result);
-                }
-                else
-                {
-                    buffer = result;
+                    HunterTransducer.Result result = getTransducer().generate(data);
+                    if(googleMap != null) {
+                        processResult(result);
+                    } else {
+                        buffer = result;
+                    }
                 }
             }
         }
@@ -96,126 +119,133 @@ public class HunterController extends MapItemController<HunterInfo[]> {
 
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState) {
-        HunterInfo[] item;
-        for(int i = 0; i < items.size(); i++)
-        {
-            item = items.get(i);
-            if(item != null)
-            {
-                saveInstanceState.putParcelableArray(BUNDLE_ID + i, item);
-            }
+        ArrayList<String> keys = new ArrayList<>();
+        for(Map.Entry<String, ArrayList<HunterInfo>> entry : data.entrySet()) {
+            saveInstanceState.putParcelableArrayList(entry.getKey(), entry.getValue());
+            keys.add(entry.getKey());
         }
-        saveInstanceState.putInt(BUNDLE_COUNT, items.size());
+        saveInstanceState.putStringArrayList(BUNDLE_COUNT, keys);
     }
 
     @Override
-    public void onTransduceCompleted(AbstractTransducerResult<HunterInfo[]> result) {
-        if(this.items.isEmpty()) {
-            this.items = result.getItems();
-        } else {
-            Iterator<Marker> iterator = markers.iterator();
-            Marker current;
-            while(iterator.hasNext()) {
-                current = iterator.next();
-                current.remove();
-                iterator.remove();
-            }
+    public ArrayList<BaseInfo> searchFor(String query) {
+        return null;
+    }
 
-            for(int i = 0; i < polylines.size(); i++) {
-                polylines.get(i).remove();
-            }
-            polylines.clear();
-        }
 
-        if(googleMap != null) {
-            processResult(result);
-        } else {
-            buffer = result;
-        }
+    @Override
+    public List<String> getEntries() {
+        return new ArrayList<>(data.keySet());
     }
 
     @Override
-    public String getUrlByAssociatedMode(String mode) {
+    public HunterTransducer getTransducer() {
+        return new HunterTransducer();
+    }
+
+    @Override
+    public Call<HashMap<String, ArrayList<HunterInfo>>> update(String mode) {
 
         String name = JappPreferences.getHuntname();
         if(name.isEmpty()) {
             name = JappPreferences.getAccountUsername();
         }
 
-        switch (mode) {
+        HunterApi api = Japp.getApi(HunterApi.class);
+        switch (mode){
             case MODE_ALL:
-                return new ApiUrlBuilder().append("hunter").append("andere").append(name).buildAsString();
+                return api.getAllExcept(JappPreferences.getAccountKey(), name);
             case MODE_LATEST:
-                return new ApiUrlBuilder().append("hunter").append("andere").append(name).append(lastUpdate.toString()).buildAsString();
-            default:
-                return null;
+                return api.getAllExcept(JappPreferences.getAccountKey(), name);
         }
+        return null;
     }
 
     @Override
-    public ArrayList<BaseInfo> searchFor(String query) {
-        ArrayList<BaseInfo> results= new ArrayList<>();
-        HunterInfo info;
-        HunterInfo[] array;
-        for(int i = 0; i < items.size(); i++) {
-            array = items.get(i);
-            if(array != null && array.length > 0) {
-                info = array[0];
-                if(info.hunter.toLowerCase(Locale.ROOT).startsWith(query)) results.add(info);
-            }
-        }
-        return results;
+    public void merge(HunterTransducer.Result other) {
+        clear();
+        processResult(other);
     }
 
     @Override
-    public List<String> getEntries() {
-        ArrayList<String> entries = new ArrayList<>();
-        HunterInfo info;
-        HunterInfo[] array;
-        for(int i = 0; i < items.size(); i++) {
-            array = items.get(i);
-            if(array != null && array.length > 0) {
-                info = array[0];
-                entries.add(info.hunter);
-            }
-        }
-        return entries;
+    protected void processResult(HunterTransducer.Result result) {
+        super.processResult(result);
+        data = result.data;
     }
 
     @Override
-    public AbstractTransducer<HunterInfo[]> getTransducer() {
-        return new HunterTransducer();
+    protected void clear() {
+        super.clear();
+        data.clear();
     }
 
-    public static class HunterTransducer extends AbstractTransducer<HunterInfo[]> {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(data != null) {
+            /**
+             * TODO: clearing the data might result in the data clearance in the saved instance state bundle
+             * */
+            data.clear();
+            data = null;
+        }
+
+        if(handler != null) {
+            handler.removeCallbacks(runnable);
+            handler = null;
+        }
+    }
+
+    public static class HunterTransducer extends AbstractTransducer<HashMap<String, ArrayList<HunterInfo>>, HunterTransducer.Result> {
 
         @Override
-        public HunterInfo[][] retrieveFromStorage() {
-            return AppData.getObject(STORAGE_ID, HunterInfo[][].class);
+        public HashMap<String, ArrayList<HunterInfo>> load() {
+            return AppData.getObject(STORAGE_ID, new TypeToken<HashMap<String, ArrayList<HunterInfo>>>(){}.getType());
         }
 
         @Override
-        public HunterInfo[][] extract(String data) {
-            return HunterInfo.formJsonArray2D(data);
+        public void transduceToBundle(Bundle bundle) {
+            bundle.putParcelable(BUNDLE_ID, generate(load()));
         }
 
         @Override
-        public AbstractTransducerResult<HunterInfo[]> generate(HunterInfo[][] items) {
-            if(items == null || items.length < 1) return new HunterTransducerResult();
+        public Result generate(HashMap<String, ArrayList<HunterInfo>> data) {
+            if(data == null || data.isEmpty()) return new Result();
 
-            HunterTransducerResult result = new HunterTransducerResult();
+            Result result = new Result();
             result.setBundleId(BUNDLE_ID);
-            result.addItems(Arrays.asList(items));
+            result.data = data;
 
             if(saveEnabled)
             {
-                AppData.saveObjectAsJson(items, STORAGE_ID);
+                AppData.saveObjectAsJson(data, STORAGE_ID);
             }
 
-            /**
-             * Loop through each user.
-             * */
-            for (int h = 0; h < items.length; h++) {
+            ArrayList<HunterInfo> currentData;
+
+
+            for(Map.Entry<String, ArrayList<HunterInfo>> entry : data.entrySet()) {
+                currentData = entry.getValue();
+
+                Collections.sort(currentData, new Comparator<HunterInfo>() {
+                    @Override
+                    public int compare(HunterInfo info1, HunterInfo info2) {
+                        Date firstDate = null;
+                        Date secondDate = null;
+                        try {
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+                            firstDate = format.parse(info1.getDatetime());
+                            secondDate = format.parse(info2.getDatetime());
+                        } catch (ParseException e) {
+                            Log.e(TAG, e.toString(), e);
+                        }
+                        if(firstDate != null && secondDate != null) {
+                            return firstDate.compareTo(secondDate);
+                        }
+                        return 0;
+                    }
+                });
+
                 /**
                  * Setup the polyline for the Hunter.
                  * */
@@ -226,8 +256,8 @@ public class HunterController extends MapItemController<HunterInfo[]> {
                 /**
                  * Loop through each info.
                  * */
-                for (int i = 0; i < items[h].length; i++) {
-                    pOptions.add(items[h][i].getLatLng());
+                for (int i = 0; i < currentData.size(); i++) {
+                    pOptions.add(currentData.get(i).getLatLng());
                 }
 
                 result.add(pOptions);
@@ -235,69 +265,86 @@ public class HunterController extends MapItemController<HunterInfo[]> {
                 /**
                  * The lastest info should be the first one in the array.
                  * */
-                HunterInfo lastestInfo = items[h][0];
+                HunterInfo lastestInfo = currentData.get(currentData.size() - 1);
 
                 /**
                  * Setup the marker for the Hunter.
-                 * TODO: import hunter icons
                  * */
                 MarkerOptions mOptions = new MarkerOptions();
                 mOptions.title(String.valueOf(lastestInfo.id));
                 mOptions.position(lastestInfo.getLatLng());
-                //mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hunter));
+                mOptions.icon(BitmapDescriptorFactory.fromResource(lastestInfo.getAssociatedDrawable()));
 
                 result.add(mOptions);
 
             }
             return result;
+
         }
 
-        public static class HunterTransducerResult extends AbstractTransducerResult<HunterInfo[]> {
+        public static class Result extends AbstractTransducer.Result {
 
-            private HunterTransducerResult() {};
+            protected HashMap<String, ArrayList<HunterInfo>> data = new HashMap<>();
 
-            protected HunterTransducerResult(Parcel in) {
+            private Result() {};
+
+            protected Result(Parcel in) {
                 super(in);
-
-                int size = in.readInt();
-                for(int i = 0; i < size; i++)
-                {
-                    HunterInfo[] array = in.createTypedArray(HunterInfo.CREATOR);
-                    items.add(array);
+                String[] keys = in.createStringArray();
+                if(keys != null) {
+                    String key;
+                    for(int i = 0; i < keys.length; i++) {
+                        key = keys[i];
+                        ArrayList<HunterInfo> list = in.createTypedArrayList(HunterInfo.CREATOR);
+                        if(list != null && !list.isEmpty()) {
+                            data.put(key, list);
+                        }
+                    }
                 }
+
             }
 
             @Override
             public void writeToParcel(Parcel dest, int flags) {
                 super.writeToParcel(dest, flags);
 
-                dest.writeInt(items.size());
-
-                HunterInfo[] current;
-                for(int i = 0; i < items.size(); i++)
-                {
-                    current = items.get(i);
-                    if(current != null)
-                    {
-                        dest.writeTypedArray(current, 0);
-                    }
+                String[] keys = new String[data.size()];
+                data.keySet().toArray(keys);
+                dest.writeStringArray(keys);
+                for(Map.Entry<String, ArrayList<HunterInfo>> entry : data.entrySet()) {
+                    dest.writeTypedList(entry.getValue());
                 }
+
             }
 
-            public static final Creator<HunterTransducerResult> CREATOR = new Creator<HunterTransducerResult>() {
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            public static final Creator<Result> CREATOR = new Creator<Result>() {
                 @Override
-                public HunterTransducerResult createFromParcel(Parcel in) {
-                    return new HunterTransducerResult(in);
+                public Result createFromParcel(Parcel in) {
+                    return new Result(in);
                 }
 
                 @Override
-                public HunterTransducerResult[] newArray(int size) {
-                    return new HunterTransducerResult[size];
+                public Result[] newArray(int size) {
+                    return new Result[size];
                 }
             };
 
         }
 
+    }
+
+    private class HunterUpdateRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            onUpdateInvoked();
+            handler.postDelayed(this, (long)JappPreferences.getHunterUpdateIntervalInMs());
+        }
     }
 
 }

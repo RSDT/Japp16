@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 
@@ -135,7 +134,7 @@ public class FragmentNavigationManager {
             switch (currentFragmentTag)
             {
                 case FRAGMENT_HOME:
-                    actionbar.setTitle("Home");
+                    actionbar.setTitle("Thuis");
                     break;
                 case FRAGMENT_MAP:
                     actionbar.setTitle("Kaart");
@@ -144,7 +143,7 @@ public class FragmentNavigationManager {
                     actionbar.setTitle("Instellingen");
                     break;
                 case FRAGMENT_ABOUT:
-                    actionbar.setTitle("About");
+                    actionbar.setTitle("Over Japp");
                     break;
             }
         }

@@ -5,4 +5,12 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <string name="sighting_input_dialog_hint">Voeg hier eventuele informatie toe</string>
+
+    <string name="pinning_input_dialog_title_hint">titel</string>
+
+    <string name="pinning_input_dialog_description_hint">beschrijving</string>
+
+    <string name="pinning_input_dialog_icon_hint">icon</string>
 </resources>

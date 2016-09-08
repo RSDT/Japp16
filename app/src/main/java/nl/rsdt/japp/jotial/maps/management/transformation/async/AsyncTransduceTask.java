@@ -3,55 +3,46 @@ package nl.rsdt.japp.jotial.maps.management.transformation.async;
 import android.os.AsyncTask;
 
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
-import nl.rsdt.japp.jotial.maps.management.transformation.TransduceMode;
 
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
- * @since 31-7-2016
+ * @since 4-9-2016
  * Description...
  */
-public class AsyncTransduceTask extends AsyncTask<AsyncTransducePackage, Integer, AsyncTransducePackage[]> {
+public class AsyncTransduceTask<I, O extends AbstractTransducer.Result> extends AsyncTask<Integer, Integer, O> {
 
-    @Override
-    protected AsyncTransducePackage[] doInBackground(AsyncTransducePackage... inputs) {
-        AsyncTransducePackage input;
+    protected AbstractTransducer<I, O> transducer;
 
-        for(int i = 0; i < inputs.length; i++) {
-            input = inputs[i];
+    protected I data;
 
-            if(input != null) {
-                AbstractTransducer transducer = input.getTransducer();
-                if(transducer != null) {
+    protected OnTransduceCompletedCallback<O> callback;
 
-                    switch (input.getMode())
-                    {
-                        case TransduceMode.DATA_MODE:
-                            String data = input.getData();
-                            if(data != null && !data.isEmpty()) {
-                                input.setResult(transducer.generate(transducer.extract(data)));
-                            }
-                            break;
-                        case TransduceMode.STORAGE_MODE:
-                            input.setResult(transducer.generate(transducer.retrieveFromStorage()));
-                            break;
-                    }
-                }
-            }
-        }
-        return inputs;
+    public void setTransducer(AbstractTransducer<I, O> transducer) {
+        this.transducer = transducer;
+    }
+
+    public void setData(I data) {
+        this.data = data;
+    }
+
+    public void setCallback(OnTransduceCompletedCallback<O> callback) {
+        this.callback = callback;
     }
 
     @Override
-    protected void onPostExecute(AsyncTransducePackage[] packages) {
-        AsyncTransducePackage output;
-        for(int i = 0; i < packages.length; i++) {
-            output = packages[i];
+    protected O doInBackground(Integer... integers) {
+        return transducer.generate(data);
+    }
 
-            OnTransduceCompletedCallback callback = output.getCallback();
-            if(callback != null) {
-                callback.onTransduceCompleted(output.getResult());
-            }
+    @Override
+    protected void onPostExecute(O output) {
+        if(output != null && callback != null) {
+            callback.onTransduceCompleted(output);
         }
+    }
+
+    public interface OnTransduceCompletedCallback<O extends AbstractTransducer.Result> {
+        void onTransduceCompleted(O result);
     }
 }

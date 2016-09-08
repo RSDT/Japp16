@@ -6,8 +6,8 @@ package nl.rsdt.japp.jotial.maps.management.transformation;
  * @since 24-7-2016
  * Description...
  */
-public interface Transducable<T> {
+public interface Transducable<I, O extends AbstractTransducer.Result> {
 
-    AbstractTransducer<T> getTransducer();
+    AbstractTransducer<I, O> getTransducer();
 
 }

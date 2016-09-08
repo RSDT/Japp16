@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -19,6 +20,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+
+import nl.rsdt.japp.application.Japp;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -106,26 +109,26 @@ public class AppData {
     @Nullable
     public static <T> T getObject(String filename, Type type)
     {
-        try
-        {
-            File file = new File(fDir, filename);
-            if(file.exists())
+        if(hasSave(filename)) {
+            try
             {
-                char[] buf = new char[1024];
-                FileReader reader = new FileReader(file);
-                reader.read(buf);
-                String result = new String(buf);
-
-                JsonReader jsonReader = new JsonReader(new FileReader(file));
-                jsonReader.setLenient(true);
-                return (T)new Gson().fromJson(jsonReader, type);
+                File file = new File(fDir, filename);
+                if(file.exists())
+                {
+                    JsonReader jsonReader = new JsonReader(new FileReader(file));
+                    jsonReader.setLenient(true);
+                    return new Gson().fromJson(jsonReader, type);
+                }
+                return null;
             }
-            return null;
+            catch(Exception e)
+            {
+                Log.e("AppData", e.toString(), e);
+            }
+        } else {
+            Log.e("AppData", "File was not found");
         }
-        catch(Exception e)
-        {
-            Log.e("AppData", e.getCause().toString(), e);
-        }
+
         return null;
     }
 

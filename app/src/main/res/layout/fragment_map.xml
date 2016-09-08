@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
@@ -51,7 +52,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_label="Volg mij"
-            android:src="@drawable/me" />
+            android:src="@drawable/me"
+            />
 
     </com.github.clans.fab.FloatingActionMenu>
 

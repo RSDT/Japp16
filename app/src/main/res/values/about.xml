@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="about_bram_title">Bram Sinke - App Developer</string>
+    <string name="about_bram_sum">De ontwikkelaar van de Android app voor de Jotihunt</string>
+
+    <string name="about_micky_title">Micky - Web Developer</string>
+    <string name="about_micky_sum">De ontwikkelaaar van de site en de API voor de Jotihunt</string>
+
+    <string name="about_mattijn_title">Mattijn Kreuzen - Bot Developer</string>
+    <string name="about_mattijn_sum">De ontwikkelaar van de bot voor de Jotihunt</string>
+
+    <string name="about_helpers_title">Beta Testers &amp; Helpers</string>
+    <string name="about_helpers_sum">Iedereen die geholpen heeft om het allemaal mogelijk te maken</string>
+
+</resources>

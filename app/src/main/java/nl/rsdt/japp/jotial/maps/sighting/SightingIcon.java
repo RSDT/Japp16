@@ -12,7 +12,7 @@ public class SightingIcon {
 
     public static final int SPOT = 3;
 
-    public static final int DEFAULT = 2;
+    public static final int DEFAULT = 0;
 
     public static final int LAST_LOCATION = 1;
 

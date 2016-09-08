@@ -1,6 +1,5 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -22,6 +21,11 @@ public class AlphaVosController extends VosController {
     }
 
     @Override
+    public String getTeam() {
+        return "a";
+    }
+
+    @Override
     public String getId() {
         return CONTROLLER_ID;
     }
@@ -36,16 +40,4 @@ public class AlphaVosController extends VosController {
         return BUNDLE_ID;
     }
 
-    @Override
-    public String getUrlByAssociatedMode(String mode) {
-        switch (mode) {
-            case MODE_ALL:
-                return new ApiUrlBuilder().append("vos").append("a").append("all").buildAsString();
-
-            case MODE_LATEST:
-                return new ApiUrlBuilder().append("vos").append("a").append("all").append(lastUpdate.toString()).buildAsString();
-            default:
-                return null;
-        }
-    }
 }

@@ -16,6 +16,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
+
 import nl.rsdt.japp.application.Japp;
 
 /**
@@ -24,15 +26,15 @@ import nl.rsdt.japp.application.Japp;
  * @since 25-7-2016
  * Description...
  */
-public abstract class LocationProviderService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+public abstract class LocationProviderService<B extends Binder> extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
 
     public static final String TAG = "LocationProviderService";
-
-    private final LocationBinder binder = new LocationBinder();
 
     protected GoogleApiClient client;
 
     protected LocationRequest request = new LocationRequest();
+
+    protected ArrayList<LocationListener> listeners = new ArrayList<>();
 
     protected Location lastLocation;
 
@@ -74,11 +76,16 @@ public abstract class LocationProviderService extends Service implements Locatio
         startLocationUpdates();
     }
 
-
-
     @Override
     public void onLocationChanged(Location location) {
         lastLocation = location;
+        LocationListener listener;
+        for(int i = 0; i < listeners.size(); i++) {
+            listener = listeners.get(i);
+            if(listener != null) {
+                listener.onLocationChanged(location);
+            }
+        }
     }
 
     @Override
@@ -96,12 +103,6 @@ public abstract class LocationProviderService extends Service implements Locatio
         Log.e(TAG, connectionResult.getErrorMessage());
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
-    }
-
     public void onDestroy() {
         if(client != null)
         {
@@ -112,29 +113,23 @@ public abstract class LocationProviderService extends Service implements Locatio
         request = null;
     }
 
-    public class LocationApiInterface {
-
-        public Location getLastLocation() {
-            return lastLocation;
-        }
-
-        public void setRequest(LocationRequest request) {
-            LocationProviderService.this.request = request;
-            if(isRequesting) {
-                restartLocationUpdates();
-            }
-        }
-
-        public boolean isRequesting() {
-            return isRequesting;
-        }
-
+    public void add(LocationListener listener) {
+        this.listeners.add(listener);
     }
 
-    public class LocationBinder extends Binder {
-        public LocationApiInterface getApi() {
-            return new LocationApiInterface();
+    public void remove(LocationListener listener) {
+        this.listeners.remove(listener);
+    }
+
+    public void setRequest(LocationRequest request) {
+        LocationProviderService.this.request = request;
+        if(isRequesting && client.isConnected()) {
+            restartLocationUpdates();
         }
+    }
+
+    public Location getLastLocation() {
+        return lastLocation;
     }
 
 }

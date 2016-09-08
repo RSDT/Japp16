@@ -5,13 +5,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.rsdt.anl.WebRequest;
-import com.rsdt.anl.WebRequestMethod;
-import com.rsdt.anl.WebResponse;
-
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
+import nl.rsdt.japp.jotial.net.apis.UserApi;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -20,6 +19,8 @@ import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
  * Class represents that the users info.
  */
 public class UserInfo implements Parcelable {
+
+    public static final String TAG = "UserInfo";
 
     /**
      * The id of the user.
@@ -174,17 +175,13 @@ public class UserInfo implements Parcelable {
 
     public static void collect()
     {
-        WebRequest request = new WebRequest.Builder()
-                .setUrl(new ApiUrlBuilder(true).append("gebruiker").append("info").buildAsUrl())
-                .setMethod(WebRequestMethod.GET)
-                .create();
-
-        request.executeAsync(new WebRequest.OnWebRequestCompletedCallback() {
+        UserApi api = Japp.getApi(UserApi.class);
+        api.getUserInfo(JappPreferences.getAccountKey()).enqueue(new Callback<UserInfo>() {
             @Override
-            public void onWebRequestCompleted(WebResponse response) {
-                if(response.getResponseCode() == 200)
+            public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
+                if(response.code() == 200)
                 {
-                    UserInfo info = new Gson().fromJson(response.getData(), UserInfo.class);
+                    UserInfo info = response.body();
 
                     if(info != null)
                     {
@@ -212,7 +209,13 @@ public class UserInfo implements Parcelable {
                     }
                 }
             }
+
+            @Override
+            public void onFailure(Call<UserInfo> call, Throwable t) {
+                Log.e(TAG, t.toString(), t);
+            }
         });
+
     }
 
 }

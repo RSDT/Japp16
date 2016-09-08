@@ -4,30 +4,27 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import nl.rsdt.japp.application.Japp;
-import nl.rsdt.japp.application.activities.MainActivity;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.IntentCreatable;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
-import nl.rsdt.japp.jotial.net.ApiGetJsonArrayRequest;
-import nl.rsdt.japp.jotial.net.ApiUrlBuilder;
+import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
+import nl.rsdt.japp.jotial.net.apis.FotoApi;
+import nl.rsdt.japp.jotial.net.apis.ScoutingGroepApi;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -35,7 +32,7 @@ import nl.rsdt.japp.service.cloud.data.UpdateInfo;
  * @since 29-8-2016
  * Description...
  */
-public class ScoutingGroepController implements OnMapReadyCallback, Recreatable, IntentCreatable, MapItemUpdatable, Response.Listener<JSONArray>, Response.ErrorListener {
+public class ScoutingGroepController implements OnMapReadyCallback, Recreatable, IntentCreatable, MapItemUpdatable, Callback<ArrayList<ScoutingGroepInfo>> {
 
     public static final String TAG = "ScoutingGroepController";
 
@@ -43,7 +40,7 @@ public class ScoutingGroepController implements OnMapReadyCallback, Recreatable,
 
     public static final String BUNDLE_ID = "SC";
 
-    ScoutingGroepClusterManager clusterManager;
+    protected ScoutingGroepClusterManager clusterManager;
 
     @Nullable
     public ScoutingGroepClusterManager getClusterManager() {
@@ -55,11 +52,13 @@ public class ScoutingGroepController implements OnMapReadyCallback, Recreatable,
     @Override
     public void onIntentCreate(Bundle bundle) {
         if(bundle != null) {
-            buffer = bundle.getParcelableArrayList(BUNDLE_ID);
-            if(clusterManager != null) {
-                clusterManager.addItems(buffer);
-                clusterManager.cluster();
-                buffer = null;
+            if(bundle.containsKey(BUNDLE_ID)) {
+                buffer = bundle.getParcelableArrayList(BUNDLE_ID);
+                if(clusterManager != null) {
+                    clusterManager.addItems(buffer);
+                    clusterManager.cluster();
+                    buffer = null;
+                }
             }
         }
     }
@@ -83,12 +82,16 @@ public class ScoutingGroepController implements OnMapReadyCallback, Recreatable,
 
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState) {
-        Collection<ScoutingGroepInfo> items = clusterManager.getItems();
-        if(items != null) {
-            if(items instanceof ArrayList) {
-                saveInstanceState.putParcelableArrayList(BUNDLE_ID, (ArrayList<ScoutingGroepInfo>)items);
-            } else {
-                saveInstanceState.putParcelableArrayList(BUNDLE_ID, new ArrayList<>(items));
+        if(saveInstanceState != null) {
+            if(clusterManager != null) {
+                Collection<ScoutingGroepInfo> items = clusterManager.getItems();
+                if(items != null) {
+                    if(items instanceof ArrayList) {
+                        saveInstanceState.putParcelableArrayList(BUNDLE_ID, (ArrayList<ScoutingGroepInfo>)items);
+                    } else {
+                        saveInstanceState.putParcelableArrayList(BUNDLE_ID, new ArrayList<>(items));
+                    }
+                }
             }
         }
     }
@@ -105,61 +108,77 @@ public class ScoutingGroepController implements OnMapReadyCallback, Recreatable,
     }
 
     @Override
-    public String getUrlByAssociatedMode(String mode) {
+    public void onResponse(Call<ArrayList<ScoutingGroepInfo>> call, Response<ArrayList<ScoutingGroepInfo>> response) {
+        switch (response.code()) {
+            case 200:
+                if(clusterManager != null) {
+                    if(clusterManager.getItems().isEmpty()) {
+                        clusterManager.addItems(response.body());
+                    } else {
+                        clusterManager.clearItems();
+                        clusterManager.addItems(response.body());
+                    }
+
+                } else {
+                    buffer = response.body();
+                }
+                AppData.saveObjectAsJsonInBackground(response.body(), STORAGE_ID);
+                break;
+
+        }
+    }
+
+    @Override
+    public void onFailure(Call<ArrayList<ScoutingGroepInfo>> call, Throwable t) {
+        Log.e(TAG, t.toString(), t);
+    }
+
+
+    @Override
+    public Call<ArrayList<ScoutingGroepInfo>> update(String mode) {
+        ScoutingGroepApi api = Japp.getApi(ScoutingGroepApi.class);
         switch (mode) {
             case MODE_ALL:
-                return new ApiUrlBuilder().append("sc").append("all").buildAsString();
+                return api.getAll(JappPreferences.getAccountKey());
             case MODE_LATEST:
-                return new ApiUrlBuilder().append("sc").append("all").buildAsString();
-            default:
-                return null;
+                return api.getAll(JappPreferences.getAccountKey());
         }
+        return null;
     }
 
     @Override
-    public void onUpdateInvoked(RequestQueue queue) {
-        Request request = new ApiGetJsonArrayRequest(getUrlByAssociatedMode(MODE_ALL), this, this);
-        request.setTag(MainActivity.TAG);
-        queue.add(request);
+    public void onUpdateInvoked() {
+        Call<ArrayList<ScoutingGroepInfo>> call = update(MODE_ALL);
+        if(call != null) {
+            call.enqueue(this);
+        }
+
     }
 
     @Override
-    public void onUpdateMessage(RequestQueue queue, UpdateInfo info) {
-        Request request;
-        String mode;
-        switch (info.action) {
+    public void onUpdateMessage(UpdateInfo info) {
+        Call<ArrayList<ScoutingGroepInfo>> call;
+        switch (info.type) {
             case UpdateInfo.ACTION_NEW:
-                mode = MODE_LATEST;
+                 call = update(MODE_ALL);
                 break;
             case UpdateInfo.ACTION_UPDATE:
-                mode = MODE_ALL;
+                call = update(MODE_ALL);
                 break;
             default:
-                mode = null;
+                call = null;
                 break;
         }
-
-        if(mode != null) {
-            request = new ApiGetJsonArrayRequest(getUrlByAssociatedMode(mode), this, this);
-            request.setTag(MainActivity.TAG);
-            queue.add(request);
+        if(call != null) {
+            call.enqueue(this);
         }
     }
 
-    @Override
-    public void onResponse(JSONArray response) {
-        ArrayList<ScoutingGroepInfo> list = new Gson().fromJson(response.toString(), new TypeToken<ArrayList<ScoutingGroepInfo>>(){}.getType());
-        if(clusterManager != null) {
-            clusterManager.addItems(list);
-        } else {
-            buffer = list;
+    public static void loadAndPutToBundle(Bundle bundle) {
+        ArrayList<ScoutingGroepInfo> list = AppData.getObject(STORAGE_ID, new TypeToken<ArrayList<ScoutingGroepInfo>>(){}.getType());
+        if(list != null && !list.isEmpty()) {
+            bundle.putParcelableArrayList(BUNDLE_ID, list);
         }
-        AppData.saveObjectAsJsonInBackground(list, STORAGE_ID);
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        Log.e(TAG, error.toString(), error);
     }
 
 }

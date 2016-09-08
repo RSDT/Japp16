@@ -6,15 +6,26 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.multidex.MultiDexApplication;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.jotial.net.API;
 import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import retrofit2.CallAdapter;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -40,10 +51,23 @@ public final class Japp extends MultiDexApplication {
         return instance.updateManager;
     }
 
-    private RequestQueue requestQueue;
+    private Interceptor interceptor;
 
-    public static RequestQueue getRequestQueue() {
-        return instance.requestQueue;
+    public static Interceptor getInterceptor() { return instance.interceptor; }
+
+    public static void setInterceptor(Interceptor value) { instance.interceptor = value; }
+
+    public static <T> T getApi(Class api) {
+        OkHttpClient.Builder client = new OkHttpClient.Builder();
+        if(instance.interceptor != null) {
+            client.addInterceptor(instance.interceptor);
+        }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API.API_V2_ROOT)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client.build())
+                .build();
+        return (T)retrofit.create(api);
     }
 
     public static Resources getAppResources() { return instance.getApplicationContext().getResources(); }
@@ -60,8 +84,6 @@ public final class Japp extends MultiDexApplication {
         super.onCreate();
         instance = this;
 
-        requestQueue = Volley.newRequestQueue(this);
-
         if (!FirebaseApp.getApps(this).isEmpty()) {
             analytics = FirebaseAnalytics.getInstance(this);
         }
@@ -71,5 +93,8 @@ public final class Japp extends MultiDexApplication {
         Deelgebied.initialize(this.getResources());
 
         AppData.initialize(this.getFilesDir());
+        File dir = this.getFilesDir();
+        String file = dir.getAbsolutePath();
+        dir.exists();
     }
 }

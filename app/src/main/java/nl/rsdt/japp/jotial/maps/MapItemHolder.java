@@ -12,9 +12,7 @@ import java.util.ArrayList;
  * @since 24-7-2016
  * Description...
  */
-public interface MapItemHolder<T> {
-
-    ArrayList<T> getItems();
+public interface MapItemHolder {
 
     ArrayList<Marker> getMarkers();
 

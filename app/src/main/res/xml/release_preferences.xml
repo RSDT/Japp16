@@ -24,7 +24,8 @@
             android:summary="@string/pref_account_icon_sum"
             android:defaultValue="@string/pref_account_icon_def"
             android:entries="@array/pref_account_icon"
-            android:entryValues="@array/pref_account_icon_data"/>
+            android:entryValues="@array/pref_account_icon_data"
+            android:icon="@drawable/hunter_0"/>
 
         <EditTextPreference
             android:title="@string/pref_account_key_title"
@@ -86,26 +87,35 @@
 
     </PreferenceCategory>
 
-    <PreferenceScreen
-        android:title="@string/pref_advanced_title"
-        android:summary="@string/pref_advanced_sum">
+    <PreferenceCategory android:title="@string/pref_cat_advanced">
+        <PreferenceScreen
+            android:title="@string/pref_advanced_title"
+            android:summary="@string/pref_advanced_sum">
 
-        <EditTextPreference
-            android:key="pref_advanced_walking_speed"
-            android:title="@string/pref_advanced_walking_speed_title"
-            android:summary="@string/pref_advanced_walking_speed_sum"
-            android:inputType="numberDecimal"
-            android:defaultValue="6.0"
-            />
+            <EditTextPreference
+                android:key="pref_advanced_walking_speed"
+                android:title="@string/pref_advanced_walking_speed_title"
+                android:summary="@string/pref_advanced_walking_speed_sum"
+                android:inputType="numberDecimal"
+                android:defaultValue="6.0"
+                />
 
-        <EditTextPreference
-            android:key="pref_advanced_location_update_interval"
-            android:title="@string/pref_advanced_location_update_interval_title"
-            android:summary="@string/pref_advanced_location_update_interval_sum"
-            android:inputType="numberDecimal"
-            android:defaultValue="1.0"
-            />
+            <EditTextPreference
+                android:key="pref_advanced_location_update_interval"
+                android:title="@string/pref_advanced_location_update_interval_title"
+                android:summary="@string/pref_advanced_location_update_interval_sum"
+                android:inputType="numberDecimal"
+                android:defaultValue="1.0"
+                />
 
-    </PreferenceScreen>
+            <EditTextPreference
+                android:key="pref_advanced_hunter_update_interval"
+                android:title="@string/pref_advanced_hunter_update_interval_title"
+                android:summary="@string/pref_advanced_hunter_update_interval_sum"
+                android:inputType="numberDecimal"
+                android:defaultValue="1.0"
+                />
+        </PreferenceScreen>
+    </PreferenceCategory>
 
 </PreferenceScreen>
