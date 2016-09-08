@@ -115,6 +115,17 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
 
             @Override
             public void onFailure(Call<Authentication.ValidateObject> call, Throwable t) {
+                new AlertDialog.Builder(SplashActivity.this)
+                        .setTitle("Fout tijdens vertificatie")
+                        .setMessage(t.toString())
+                        .setPositiveButton("Opnieuw proberen", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                validate();
+                            }
+                        })
+                        .create()
+                        .show();
                 Log.e(TAG, t.toString(), t);
             }
         });

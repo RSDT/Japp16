@@ -9,6 +9,7 @@ import android.support.multidex.MultiDexApplication;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.gson.GsonBuilder;
 
 
 import java.io.File;
@@ -62,9 +63,10 @@ public final class Japp extends MultiDexApplication {
         if(instance.interceptor != null) {
             client.addInterceptor(instance.interceptor);
         }
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API.API_V2_ROOT)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
                 .client(client.build())
                 .build();
         return (T)retrofit.create(api);
