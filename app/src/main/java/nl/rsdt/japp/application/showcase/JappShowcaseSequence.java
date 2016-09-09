@@ -11,9 +11,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.activities.MainActivity;
@@ -21,26 +19,17 @@ import nl.rsdt.japp.application.activities.MainActivity;
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
- * @since 4-8-2016
+ * @since 9-9-2016
  * Description...
  */
-public class ShowCaseTour {
+public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
-    private int count = 0;
-
-    private ShowcaseView current;
-
-    private ArrayList<ShowCaseTourMember> members = new ArrayList<>();
-
-    private MainActivity mainActivity;
-
-    public ShowCaseTour(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
-        populate();
+    public JappShowcaseSequence(MainActivity mainActivity) {
+        setActivity(mainActivity);
     }
 
-    private void populate() {
-        members.add(new ShowCaseTourMember() {
+    protected void populate() {
+        members.add(new ShowcaseSequenceItem() {
             @Override
             public String getTitle() {
                 return "Navigatie Menu";
@@ -54,20 +43,20 @@ public class ShowCaseTour {
             @Override
             public ViewTarget getTarget() {
                 try {
-                    Toolbar toolbar = (Toolbar) mainActivity.findViewById(R.id.toolbar);
+                    Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
                     Field field = Toolbar.class.getDeclaredField("mNavButtonView");
                     field.setAccessible(true);
                     View navigationView = (View) field.get(toolbar);
                     return new ViewTarget(navigationView);
 
                 } catch (Exception e) {
-                    Log.e("ShowCaseTour", e.toString(), e);
+                    Log.e("ShowcaseSequence", e.toString(), e);
                 }
                 return null;
             }
         });
 
-        members.add(new ShowCaseTourMember() {
+        members.add(new ShowcaseSequenceItem() {
             @Override
             public String getTitle() {
                 return "Actie Menu";
@@ -80,12 +69,12 @@ public class ShowCaseTour {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionMenu menu = (FloatingActionMenu)mainActivity.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = (FloatingActionMenu)activity.findViewById(R.id.fab_menu);
                 menu.setOnMenuButtonClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         current.hide();
-                        ((FloatingActionMenu) mainActivity.findViewById(R.id.fab_menu)).open(true);
+                        ((FloatingActionMenu) activity.findViewById(R.id.fab_menu)).open(true);
                     }
                 });
                 return new ViewTarget(menu.getMenuIconView());
@@ -96,11 +85,11 @@ public class ShowCaseTour {
                 return new SimpleShowcaseEventListener() {
                     @Override
                     public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-                        FloatingActionMenu menu = ((FloatingActionMenu) mainActivity.findViewById(R.id.fab_menu));
+                        FloatingActionMenu menu = ((FloatingActionMenu) activity.findViewById(R.id.fab_menu));
                         menu.setOnMenuButtonClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                FloatingActionMenu menu = ((FloatingActionMenu) mainActivity.findViewById(R.id.fab_menu));
+                                FloatingActionMenu menu = ((FloatingActionMenu) activity.findViewById(R.id.fab_menu));
                                 if(menu.isOpened()) {
                                     menu.close(true);
                                 } else {
@@ -110,13 +99,13 @@ public class ShowCaseTour {
                         });
                         menu.open(true);
                         count++;
-                        showcase();
+                        start();
                     }
                 };
             }
         });
 
-        members.add(new ShowCaseTourMember() {
+        members.add(new ShowcaseSequenceItem() {
             @Override
             public String getTitle() {
                 return "Volg Mij Knop";
@@ -129,12 +118,12 @@ public class ShowCaseTour {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton follow = (FloatingActionButton)mainActivity.findViewById(R.id.fab_follow);
+                FloatingActionButton follow = (FloatingActionButton)activity.findViewById(R.id.fab_follow);
                 return new ViewTarget(follow);
             }
         });
 
-        members.add(new ShowCaseTourMember() {
+        members.add(new ShowcaseSequenceItem() {
             @Override
             public String getTitle() {
                 return "Mark Knop";
@@ -147,12 +136,12 @@ public class ShowCaseTour {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton mark = (FloatingActionButton)mainActivity.findViewById(R.id.fab_mark);
+                FloatingActionButton mark = (FloatingActionButton)activity.findViewById(R.id.fab_mark);
                 return new ViewTarget(mark);
             }
         });
 
-        members.add(new ShowCaseTourMember() {
+        members.add(new ShowcaseSequenceItem() {
             @Override
             public String getTitle() {
                 return "Spot Knop";
@@ -165,12 +154,12 @@ public class ShowCaseTour {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton spot = (FloatingActionButton)mainActivity.findViewById(R.id.fab_spot);
+                FloatingActionButton spot = (FloatingActionButton)activity.findViewById(R.id.fab_spot);
                 return new ViewTarget(spot);
             }
         });
 
-        members.add(new ShowCaseTourMember() {
+        members.add(new ShowcaseSequenceItem() {
             @Override
             public String getTitle() {
                 return "Hunt Knop";
@@ -183,49 +172,11 @@ public class ShowCaseTour {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton hunt = (FloatingActionButton)mainActivity.findViewById(R.id.fab_hunt);
+                FloatingActionButton hunt = (FloatingActionButton)activity.findViewById(R.id.fab_hunt);
                 return new ViewTarget(hunt);
             }
         });
 
 
     }
-
-    public void showcase() {
-        if(members.size() > count) {
-            ShowCaseTourMember member = members.get(count);
-            ShowcaseView.Builder builder = new ShowcaseView.Builder(mainActivity);
-            current = builder.setTarget(member.getTarget())
-                    .setStyle(R.style.ShowCaseTheme)
-                    .setContentTitle(member.getTitle())
-                    .setContentText(member.getContentText())
-                    .setShowcaseEventListener(member.getEventListener())
-                    .build();
-            current.show();
-        }
-    }
-
-    /**
-     * @author Dingenis Sieger Sinke
-     * @version 1.0
-     * @since 29-8-2016
-     * Description...
-     */
-    public abstract class ShowCaseTourMember {
-
-        public abstract String getTitle();
-
-        public abstract String getContentText();
-
-        public abstract ViewTarget getTarget();
-
-        public OnShowcaseEventListener getEventListener() { return new SimpleShowcaseEventListener() {
-            @Override
-            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-                count++;
-                showcase();
-            }
-        }; }
-    }
-
 }

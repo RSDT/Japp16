@@ -31,7 +31,8 @@ import nl.rsdt.japp.application.misc.SearchSuggestionsAdapter;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 
 import nl.rsdt.japp.application.navigation.NavigationManager;
-import nl.rsdt.japp.application.showcase.ShowCaseTour;
+import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
+import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
@@ -44,12 +45,10 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, UpdateManager.UpdateMessageListener {
 
-    public static final String TAG = "MainActivity";
-
     /**
-     * TODO: make the search system more clean
+     * Defines a tag for this class.
      * */
-    private Menu menu;
+    public static final String TAG = "MainActivity";
 
     /**
      * Manages the GoogleMap.
@@ -61,14 +60,23 @@ public class MainActivity extends AppCompatActivity
      * */
     private NavigationManager navigationManager = new NavigationManager();
 
+    /**
+     * Manages the searching.
+     * */
     private SearchManager searchManager = new SearchManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /**
+         * Subscribe to the updates topic.
+         * */
         FirebaseMessaging.getInstance().subscribeToTopic("updates");
 
+        /**
+         * Set a interceptor so that requests that give a 401 will result in a login activity.
+         * */
         Japp.setInterceptor(new Interceptor() {
             boolean hasStarted = false;
 
@@ -115,13 +123,21 @@ public class MainActivity extends AppCompatActivity
             JappPreferences.setFirstRun(false);
 
             /**
-             * Do some things for the first run.
+             * Show the user the app via a sequence.
              * */
-            ShowCaseTour tour = new ShowCaseTour(this);
-            tour.showcase();
+            JappShowcaseSequence sequence = new JappShowcaseSequence(this);
+            sequence.setCallback(new ShowcaseSequence.OnSequenceCompletedCallback<MainActivity>() {
+                @Override
+                public void onSequenceCompleted(ShowcaseSequence<MainActivity> sequence) {
+                    sequence.end();
+                }
+            });
+            sequence.start();
         }
 
-
+        /**
+         * Setup the MapManager.
+         * */
         mapManager.onIntentCreate(getIntent());
         mapManager.onCreate(savedInstanceState);
 
@@ -196,11 +212,12 @@ public class MainActivity extends AppCompatActivity
         inflater.inflate(R.menu.options_menu, menu);
 
         searchManager.onCreateOptionsMenu(menu);
-        this.menu = menu;
         return true;
     }
 
-    public class SearchManager implements SearchView.OnQueryTextListener {
+    public class SearchManager implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
+
+        protected Menu menu;
 
         public void onCreateOptionsMenu(Menu menu) {
             // Get the SearchView and set the searchable configuration
@@ -208,25 +225,8 @@ public class MainActivity extends AppCompatActivity
             searchView.setOnQueryTextListener(this);
             searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
             searchView.setSuggestionsAdapter(new SearchSuggestionsAdapter(MainActivity.this, mapManager));
-            searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-                @Override
-                public boolean onSuggestionSelect(int position) {
-                    return false;
-                }
-
-                @Override
-                public boolean onSuggestionClick(int position) {
-                    SearchView searchView = (SearchView) MainActivity.this.menu.findItem(R.id.search).getActionView();
-                    SearchSuggestionsAdapter adapter = (SearchSuggestionsAdapter) searchView.getSuggestionsAdapter();
-                    SearchSuggestionsAdapter.SuggestionsCursor cursor = (SearchSuggestionsAdapter.SuggestionsCursor)adapter.getItem(0);
-                    List<String> entries = cursor.getEntries();
-                    String chosen = entries.get(position);
-                    searchView.setQuery(chosen, false);
-                    onQueryTextSubmit(chosen);
-                    searchView.clearFocus();
-                    return false;
-                }
-            });
+            searchView.setOnSuggestionListener(this);
+            this.menu = menu;
         }
 
         @Override
@@ -241,6 +241,24 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean onQueryTextChange(String newText) {
+            return false;
+        }
+
+        @Override
+        public boolean onSuggestionSelect(int position) {
+            return false;
+        }
+
+        @Override
+        public boolean onSuggestionClick(int position) {
+            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            SearchSuggestionsAdapter adapter = (SearchSuggestionsAdapter) searchView.getSuggestionsAdapter();
+            SearchSuggestionsAdapter.SuggestionsCursor cursor = (SearchSuggestionsAdapter.SuggestionsCursor)adapter.getItem(0);
+            List<String> entries = cursor.getEntries();
+            String chosen = entries.get(position);
+            searchView.setQuery(chosen, false);
+            onQueryTextSubmit(chosen);
+            searchView.clearFocus();
             return false;
         }
     }
