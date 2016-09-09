@@ -92,7 +92,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
         }
 
         List<LatLng> points = tail.getPoints();
-        if(points.size() > 60) {
+        if(points.size() > 150) {
             points = points.subList(points.size()/3, points.size());
         }
         points.add(new LatLng(location.getLatitude(), location.getLongitude()));

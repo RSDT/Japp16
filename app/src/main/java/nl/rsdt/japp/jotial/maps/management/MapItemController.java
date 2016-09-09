@@ -197,7 +197,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
 
     @Override
-    public Marker getAssociatedMarker(BaseInfo info) {
+    public Marker searchFor(BaseInfo info) {
         Marker marker;
         for(int i = 0; i < markers.size(); i++) {
             marker = markers.get(i);

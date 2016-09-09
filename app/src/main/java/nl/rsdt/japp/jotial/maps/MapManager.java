@@ -3,9 +3,7 @@ package nl.rsdt.japp.jotial.maps;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,12 +13,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 
@@ -28,7 +24,6 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
-import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepClusterManager;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
@@ -332,11 +327,11 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
     }
 
     @Override
-    public Marker getAssociatedMarker(BaseInfo info) {
+    public Marker searchFor(BaseInfo info) {
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
             MapItemController controller = pair.getValue();
             if(controller != null) {
-                Marker marker = controller.getAssociatedMarker(info);
+                Marker marker = controller.searchFor(info);
                 if(marker != null) return marker;
             }
         }
@@ -344,12 +339,12 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
     }
 
     @Override
-    public List<String> getEntries() {
+    public List<String> provide() {
         ArrayList<String> entries = new ArrayList<>();
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
             MapItemController controller = pair.getValue();
             if(controller != null) {
-                entries.addAll(controller.getEntries());
+                entries.addAll(controller.provide());
             }
         }
         return entries;

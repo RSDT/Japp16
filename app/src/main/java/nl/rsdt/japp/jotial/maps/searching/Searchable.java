@@ -15,10 +15,8 @@ import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
  */
 public interface Searchable {
 
-    List<String> getEntries();
+    List<String> provide();
 
-    ArrayList<BaseInfo> searchFor(String query);
-
-    Marker getAssociatedMarker(BaseInfo info);
+    Marker searchFor(String query);
 
 }

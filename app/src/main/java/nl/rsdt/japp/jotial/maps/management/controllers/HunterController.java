@@ -128,13 +128,20 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
     }
 
     @Override
-    public ArrayList<BaseInfo> searchFor(String query) {
+    public Marker searchFor(String query) {
+        Marker marker;
+        for(int m = 0; m < markers.size(); m++) {
+            marker = markers.get(m);
+
+            if(marker != null) {
+            }
+        }
         return null;
     }
 
 
     @Override
-    public List<String> getEntries() {
+    public List<String> provide() {
         return new ArrayList<>(data.keySet());
     }
 
@@ -145,7 +152,6 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
 
     @Override
     public Call<HashMap<String, ArrayList<HunterInfo>>> update(String mode) {
-
         String name = JappPreferences.getHuntname();
         if(name.isEmpty()) {
             name = JappPreferences.getAccountUsername();

@@ -6,14 +6,10 @@ import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import nl.rsdt.japp.jotial.maps.searching.SearchEntry;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
 
 
@@ -28,7 +24,6 @@ public class SearchSuggestionsAdapter extends SimpleCursorAdapter {
     private static final String[] mFields  = { "_id", "result" };
     private static final String[] mVisible = { "result" };
     private static final int[]    mViewIds = { android.R.id.text1 };
-
 
     private Searchable searchable;
 
@@ -53,7 +48,7 @@ public class SearchSuggestionsAdapter extends SimpleCursorAdapter {
         }
 
         public SuggestionsCursor(CharSequence constraint, Searchable searchable) {
-            entries = searchable.getEntries();
+            entries = searchable.provide();
 
             if (!TextUtils.isEmpty(constraint)) {
                 String constraintString = constraint.toString().toLowerCase(Locale.ROOT);

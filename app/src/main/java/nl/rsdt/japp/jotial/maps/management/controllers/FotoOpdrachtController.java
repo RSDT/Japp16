@@ -91,7 +91,7 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
     }
 
     @Override
-    public List<String> getEntries() {
+    public List<String> provide() {
         ArrayList<String> results = new ArrayList<>();
         FotoOpdrachtInfo info;
         for(int i = 0; i < items.size(); i++) {

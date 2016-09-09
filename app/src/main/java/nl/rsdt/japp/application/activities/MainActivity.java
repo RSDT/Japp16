@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity
         public boolean onQueryTextSubmit(String query) {
             ArrayList<BaseInfo> possibles =  mapManager.searchFor(query.toLowerCase(Locale.ROOT));
             if(possibles.size() == 1) {
-                Marker marker = mapManager.getAssociatedMarker(possibles.get(0));
+                Marker marker = mapManager.searchFor(possibles.get(0));
                 mapManager.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
             }
             return false;
@@ -261,6 +261,10 @@ public class MainActivity extends AppCompatActivity
             searchView.clearFocus();
             return false;
         }
+
+
+
+
     }
 
     @Override
