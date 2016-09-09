@@ -116,7 +116,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
     @Override
     public void onUpdateMessage(UpdateInfo info) {
         Call<I> call;
-        switch (info.type) {
+        switch (info.action) {
             case UpdateInfo.ACTION_NEW:
                 call = update(MODE_ALL);
                 break;
