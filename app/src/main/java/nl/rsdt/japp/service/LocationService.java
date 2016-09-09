@@ -30,7 +30,6 @@ import retrofit2.Response;
  */
 public class LocationService extends LocationProviderService {
 
-
     public static final String TAG = "LocationService";
 
     private final LocationBinder binder = new LocationBinder();
@@ -44,8 +43,8 @@ public class LocationService extends LocationProviderService {
 
     public LocationRequest getStandard() {
         return new LocationRequest()
-                .setInterval(Float.floatToIntBits(JappPreferences.getLocationUpdateIntervalInMs()))
-                .setFastestInterval(Float.floatToIntBits(JappPreferences.getLocationUpdateIntervalInMs()))
+                .setInterval((long)JappPreferences.getLocationUpdateIntervalInMs())
+                .setFastestInterval((long)JappPreferences.getLocationUpdateIntervalInMs())
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
