@@ -7,11 +7,6 @@ package nl.rsdt.japp.jotial.maps.management.controllers;
  * Description...
  */
 
-
-import java.util.ArrayList;
-
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
-
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
@@ -52,9 +47,5 @@ public class BravoVosController extends VosController {
         return BUNDLE_ID;
     }
 
-    @Override
-    public ArrayList<BaseInfo> searchFor(String query) {
-        return super.searchFor(query);
-    }
 }
 

@@ -57,6 +57,8 @@ public class JappPreferences {
 
     public static final String DEBUG_VERSION_NAME = "pref_debug_version_name";
 
+    public static final String FCM_TOKEN = "pref_fcm_token";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -170,6 +172,14 @@ public class JappPreferences {
 
     public static float getHunterUpdateIntervalInMs() {
         return Float.valueOf(getVisiblePreferences().getString(HUNTER_UPDATE_INTERVAL, "1.0")) * 60 * 1000;
+    }
+
+    public static String getFcmToken() {
+        return getAppPreferences().getString(FCM_TOKEN, "");
+    }
+
+    public static void setFcmToken(String token) {
+        getAppPreferences().edit().putString(FCM_TOKEN, token).apply();
     }
 
 }

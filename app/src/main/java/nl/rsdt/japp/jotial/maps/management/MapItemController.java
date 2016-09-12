@@ -197,11 +197,11 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
 
     @Override
-    public Marker searchFor(BaseInfo info) {
+    public Marker searchFor(String query) {
         Marker marker;
         for(int i = 0; i < markers.size(); i++) {
             marker = markers.get(i);
-            if(marker.getTitle().equals(String.valueOf(info.id))) {
+            if(marker.getTitle().equals(String.valueOf(query))) {
                 return marker;
             }
         }

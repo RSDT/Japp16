@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.reflect.TypeToken;
 
@@ -72,7 +73,7 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
         return null;
     }
 
-    public ArrayList<BaseInfo> searchFor(String query) {
+    public Marker searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         FotoOpdrachtInfo info;
         for(int i = 0; i < items.size(); i++) {
@@ -87,7 +88,7 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
                 }
             }
         }
-        return results;
+        return null;
     }
 
     @Override

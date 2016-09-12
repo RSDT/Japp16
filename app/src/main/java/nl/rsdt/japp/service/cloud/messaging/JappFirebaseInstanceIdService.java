@@ -6,6 +6,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.bodies.FcmPostBody;
 import nl.rsdt.japp.jotial.net.apis.FcmApi;
 import retrofit2.Call;
@@ -25,8 +26,16 @@ public class JappFirebaseInstanceIdService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        JappPreferences.setFcmToken(refreshedToken);
+
+        if(!JappPreferences.isFirstRun()) {
+            sendToken();
+        }
+    }
+
+    public static void sendToken() {
         FcmApi api = Japp.getApi(FcmApi.class);
-        api.postToken(FcmPostBody.getDefault().setToken(refreshedToken)).enqueue(new Callback<Void>() {
+        api.postToken(FcmPostBody.getDefault().setToken(JappPreferences.getFcmToken())).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, "Refreshed token to the server: " + call.request().body());

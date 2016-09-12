@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.Marker;
  * @since 29-8-2016
  * Description...
  */
-public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
+public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoWindow(Marker marker) {

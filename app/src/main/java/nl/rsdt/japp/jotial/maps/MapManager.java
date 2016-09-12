@@ -23,7 +23,6 @@ import java.util.Map;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
@@ -37,8 +36,9 @@ import nl.rsdt.japp.jotial.maps.management.controllers.FoxtrotVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
+import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
-import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
+import nl.rsdt.japp.service.cloud.messaging.MessageManager;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -46,7 +46,7 @@ import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
  * @since 24-7-2016
  * Manages the map
  */
-public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MapManager implements OnMapReadyCallback, Searchable, MessageManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * Defines the tag of this class.
@@ -214,6 +214,11 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
     }
 
     @Override
+    public void onNoticeMessageReceived(NoticeInfo info) {
+
+    }
+
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         switch (s) {
             case JappPreferences.MAP_TYPE:
@@ -314,29 +319,10 @@ public class MapManager implements OnMapReadyCallback, Searchable, UpdateManager
     }
 
     @Override
-    public ArrayList<BaseInfo> searchFor(String query) {
-        ArrayList<BaseInfo> results = new ArrayList<>();
-        for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
-            MapItemController controller = pair.getValue();
-            if(controller != null)
-            {
-                results.addAll(controller.searchFor(query));
-            }
-        }
-        return results;
-    }
-
-    @Override
-    public Marker searchFor(BaseInfo info) {
-        for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
-            MapItemController controller = pair.getValue();
-            if(controller != null) {
-                Marker marker = controller.searchFor(info);
-                if(marker != null) return marker;
-            }
-        }
+    public Marker searchFor(String query) {
         return null;
     }
+
 
     @Override
     public List<String> provide() {

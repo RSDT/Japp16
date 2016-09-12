@@ -13,18 +13,13 @@ import com.google.gson.GsonBuilder;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.net.API;
-import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
+import nl.rsdt.japp.service.cloud.messaging.MessageManager;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -46,10 +41,10 @@ public final class Japp extends MultiDexApplication {
         return instance.analytics;
     }
 
-    private UpdateManager updateManager = new UpdateManager();
+    private MessageManager messageManager = new MessageManager();
 
-    public static UpdateManager getUpdateManager() {
-        return instance.updateManager;
+    public static MessageManager getUpdateManager() {
+        return instance.messageManager;
     }
 
     private Interceptor interceptor;

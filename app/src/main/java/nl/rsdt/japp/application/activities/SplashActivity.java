@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.File;
+import java.net.UnknownHostException;
 
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
@@ -115,17 +116,21 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
 
             @Override
             public void onFailure(Call<Authentication.ValidateObject> call, Throwable t) {
-                new AlertDialog.Builder(SplashActivity.this)
-                        .setTitle("Fout tijdens vertificatie")
-                        .setMessage(t.toString())
-                        .setPositiveButton("Opnieuw proberen", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                validate();
-                            }
-                        })
-                        .create()
-                        .show();
+                if(t instanceof UnknownHostException) {
+                    determineAndStartNewActivity();
+                } else {
+                    new AlertDialog.Builder(SplashActivity.this)
+                            .setTitle("Fout tijdens vertificatie")
+                            .setMessage(t.toString())
+                            .setPositiveButton("Opnieuw proberen", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    validate();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
                 Log.e(TAG, t.toString(), t);
             }
         });

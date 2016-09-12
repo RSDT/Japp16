@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -102,6 +103,11 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
         if(deelgebied != null) {
             if(!deelgebied.containsLocation(location)) {
                 refresh = true;
+
+                /**
+                 * Unsubscribe from the current deelgebied messages
+                 * */
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(deelgebied.getName());
             }
         } else {
             refresh = true;
@@ -111,6 +117,11 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             deelgebied = Deelgebied.resolveOnLocation(location);
             if(deelgebied != null && snackBarView != null) {
                 Snackbar.make(snackBarView, "Welkom in deelgebied " + deelgebied.getName(), Snackbar.LENGTH_LONG).show();
+
+                /**
+                 * Subscribe to the new deelgebied messages.
+                 * */
+                FirebaseMessaging.getInstance().subscribeToTopic(deelgebied.getName());
             }
         }
 

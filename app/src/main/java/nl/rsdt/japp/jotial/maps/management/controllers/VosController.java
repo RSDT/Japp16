@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.reflect.TypeToken;
@@ -56,7 +57,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
         return new VosTransducer(getStorageId(), getBundleId());
     }
 
-    public ArrayList<BaseInfo> searchFor(String query) {
+    public Marker searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         VosInfo info;
         for(int i = 0; i < items.size(); i++) {
@@ -71,7 +72,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                 }
             }
         }
-        return results;
+        return null;
     }
 
     @Override

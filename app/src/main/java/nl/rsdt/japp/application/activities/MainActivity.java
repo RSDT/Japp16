@@ -1,5 +1,6 @@
 package nl.rsdt.japp.application.activities;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -15,14 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
@@ -34,16 +31,17 @@ import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
+import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
-import nl.rsdt.japp.service.cloud.messaging.UpdateManager;
+import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
+import nl.rsdt.japp.service.cloud.messaging.MessageManager;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, UpdateManager.UpdateMessageListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
 
     /**
      * Defines a tag for this class.
@@ -123,6 +121,11 @@ public class MainActivity extends AppCompatActivity
             JappPreferences.setFirstRun(false);
 
             /**
+             * Send the token to the server.
+             * */
+            JappFirebaseInstanceIdService.sendToken();
+
+            /**
              * Show the user the app via a sequence.
              * */
             JappShowcaseSequence sequence = new JappShowcaseSequence(this);
@@ -191,6 +194,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * TODO: don't use final here
+     * */
+    @Override
+    public void onNoticeMessageReceived(final NoticeInfo info) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(info.getTitle())
+                        .setMessage(info.getBody())
+                        .setIcon(info.getDrawable())
+                        .create()
+                        .show();
+            }
+        });
+    }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         navigationManager.onSaveInstanceState(savedInstanceState);
@@ -211,7 +232,10 @@ public class MainActivity extends AppCompatActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
-        searchManager.onCreateOptionsMenu(menu);
+        /**
+         * TODO: fix search system
+         * */
+        //searchManager.onCreateOptionsMenu(menu);
         return true;
     }
 
@@ -231,11 +255,6 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean onQueryTextSubmit(String query) {
-            ArrayList<BaseInfo> possibles =  mapManager.searchFor(query.toLowerCase(Locale.ROOT));
-            if(possibles.size() == 1) {
-                Marker marker = mapManager.searchFor(possibles.get(0));
-                mapManager.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 20));
-            }
             return false;
         }
 
@@ -313,6 +332,8 @@ public class MainActivity extends AppCompatActivity
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
         } else if (id == R.id.nav_about) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
+        } else if (id == R.id.nav_log_out) {
+            Authentication.startLoginActivity(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
