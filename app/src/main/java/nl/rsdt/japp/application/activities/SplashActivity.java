@@ -20,6 +20,7 @@ import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTrans
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
 import nl.rsdt.japp.jotial.net.apis.AuthApi;
 import nl.rsdt.japp.service.LocationService;
+import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,11 +45,43 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if(extras != null) {
+           extras.getString("title");
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(extras.getString("title"))
+                    .setMessage(extras.getString("body"))
+                    .setIcon(NoticeInfo.parseDrawable(extras.getString("icon")))
+                    .setPositiveButton("Doorgaan naar de app", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            start();
+                        }
+                    })
+                    .create();
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+                }
+            });
+            dialog.show();
+        } else {
+           start();
+        }
+    }
+
+    private void start() {
         /**
          * Check if we have the permissions we need.
          * */
         permission_check = LocationPermissionsChecker.check(this);
 
+
+        /**
+         * Load in the map data.
+         * */
         new AsyncBundleTransduceTask(this).execute(MapItemController.getAll());
     }
 

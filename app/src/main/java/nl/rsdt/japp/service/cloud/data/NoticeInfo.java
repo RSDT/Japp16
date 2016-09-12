@@ -31,14 +31,7 @@ public class NoticeInfo {
     }
 
     public int getDrawable() {
-        switch (icon) {
-            case "info":
-                return R.drawable.ic_info_black_48dp;
-            case "belangrijk":
-                return R.drawable.ic_priority_high_black_48dp;
-            default:
-                return R.drawable.ic_info_black_48dp;
-        }
+       return parseDrawable(icon);
     }
 
     public static NoticeInfo parse(Map<String, String> data) {
@@ -47,6 +40,17 @@ public class NoticeInfo {
         buffer.body = data.get("body");
         buffer.icon = data.get("icon");
         return buffer;
+    }
+
+    public static int parseDrawable(String icon) {
+        switch (icon) {
+            case "info":
+                return R.drawable.ic_info_black_48dp;
+            case "belangrijk":
+                return R.drawable.ic_priority_high_black_48dp;
+            default:
+                return R.drawable.ic_info_black_48dp;
+        }
     }
 
 }
