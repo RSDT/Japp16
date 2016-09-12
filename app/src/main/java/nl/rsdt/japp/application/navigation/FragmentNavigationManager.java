@@ -8,6 +8,12 @@ import android.support.v7.app.ActionBar;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.activities.MainActivity;
 import nl.rsdt.japp.application.fragments.AboutFragment;
@@ -33,6 +39,8 @@ public class FragmentNavigationManager {
 
     private static final String BUNDLE_KEY_FRAGMENT = "BUNDLE_KEY_FRAGMENT";
 
+    private ArrayList<String> backstack = new ArrayList<>();
+
     private NavigationView nView;
 
     private ActionBar actionbar;
@@ -48,6 +56,10 @@ public class FragmentNavigationManager {
     private JappPreferenceFragment preferenceFragment;
 
     private AboutFragment aboutFragment;
+
+    public boolean hasBackStack() {
+        return !backstack.isEmpty();
+    }
 
     public void initialize(MainActivity mainActivity)
     {
@@ -74,8 +86,11 @@ public class FragmentNavigationManager {
         }
     }
 
-    public void switchTo(String fragment)
-    {
+    public void switchTo(String fragment) {
+       switchTo(fragment, true);
+    }
+
+    private void switchTo(String fragment, boolean addToStack) {
         if(currentFragmentTag == null || currentFragmentTag.equals(fragment)) return;
 
         FragmentTransaction ft = manager.beginTransaction();
@@ -113,8 +128,12 @@ public class FragmentNavigationManager {
         }
 
         ft.commit();
+        if(addToStack) {
+            backstack.add(currentFragmentTag);
+        }
         currentFragmentTag = fragment;
         updateToolbarTitle();
+        updateCheckedState();
     }
 
     public void setupMap(OnMapReadyCallback callback)
@@ -126,6 +145,14 @@ public class FragmentNavigationManager {
             } else {
                 mapFragment.getMapAsync(callback);
             }
+        }
+    }
+
+    public void onBackPressed() {
+        if(!backstack.isEmpty()) {
+            int last = backstack.size() - 1;
+            switchTo(backstack.get(last), false);
+            backstack.remove(last);
         }
     }
 
