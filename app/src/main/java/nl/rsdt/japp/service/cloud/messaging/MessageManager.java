@@ -57,7 +57,7 @@ public class MessageManager {
                         }
                     }
                 }
-            } else if(type.equals(MessageType.NEW) || type.equals(MessageType.UPDATE)) {
+            } else if(type.startsWith("vos")) {
                 if(listeners.size() > 0)  {
                     UpdateInfo info = UpdateInfo.parse(data);
                     if(info != null && info.type != null && info.action != null) {
