@@ -43,6 +43,7 @@ public class NoticeInfo {
     }
 
     public static int parseDrawable(String icon) {
+        if(icon == null) return R.drawable.ic_info_black_48dp;
         switch (icon) {
             case "info":
                 return R.drawable.ic_info_black_48dp;

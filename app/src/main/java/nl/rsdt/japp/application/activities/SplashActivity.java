@@ -48,25 +48,28 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if(extras != null) {
-           extras.getString("title");
-            AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle(extras.getString("title"))
-                    .setMessage(extras.getString("body"))
-                    .setIcon(NoticeInfo.parseDrawable(extras.getString("icon")))
-                    .setPositiveButton("Doorgaan naar de app", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            start();
-                        }
-                    })
-                    .create();
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
-                }
-            });
-            dialog.show();
+            if(extras.containsKey("title") && extras.containsKey("body")) {
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(extras.getString("title"))
+                        .setMessage(extras.getString("body"))
+                        .setIcon(NoticeInfo.parseDrawable(extras.getString("icon")))
+                        .setPositiveButton("Doorgaan naar de app", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                start();
+                            }
+                        })
+                        .create();
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+                    }
+                });
+                dialog.show();
+            } else {
+                start();
+            }
         } else {
            start();
         }
