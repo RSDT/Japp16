@@ -58,6 +58,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
         });
 
         members.add(new ShowcaseSequenceItem() {
+
             @Override
             public String getTitle() {
                 return "Actie Menu";
@@ -71,11 +72,12 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
             @Override
             public ViewTarget getTarget() {
                 FloatingActionMenu menu = (FloatingActionMenu)activity.findViewById(R.id.fab_menu);
-                menu.setOnMenuButtonClickListener(new View.OnClickListener() {
+                menu.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
                     @Override
-                    public void onClick(View view) {
-                        current.hide();
-                        ((FloatingActionMenu) activity.findViewById(R.id.fab_menu)).open(true);
+                    public void onMenuToggle(boolean opened) {
+                        if(opened) {
+                            current.hide();
+                        }
                     }
                 });
                 return new ViewTarget(menu.getMenuIconView());
@@ -87,23 +89,13 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
                     @Override
                     public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
                         FloatingActionMenu menu = ((FloatingActionMenu) activity.findViewById(R.id.fab_menu));
-                        menu.setOnMenuButtonClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                FloatingActionMenu menu = ((FloatingActionMenu) activity.findViewById(R.id.fab_menu));
-                                if(menu.isOpened()) {
-                                    menu.close(true);
-                                } else {
-                                    menu.open(true);
-                                }
-                            }
-                        });
                         menu.open(true);
-                        count++;
-                        start();
+                        continueToNext();
+                        menu.setOnMenuToggleListener(null);
                     }
                 };
             }
+
         });
 
         members.add(new ShowcaseSequenceItem() {

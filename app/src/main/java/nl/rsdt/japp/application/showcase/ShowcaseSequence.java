@@ -39,6 +39,19 @@ public class ShowcaseSequence<A extends Activity> {
     }
 
     public void start() {
+        continueToNext();
+    }
+
+    protected void continueToNext() {
+        if(current != null) {
+            /**
+             * Set the EventListener to null, so that it doesn't re-invokes the onShowcaseViewDidHide() method.
+             * */
+            current.setOnShowcaseEventListener(null);
+            current.hide();
+            current = null;
+        }
+
         if(members != null) {
             if(members.size() > count) {
                 ShowcaseSequenceItem member = members.get(count);
@@ -51,10 +64,12 @@ public class ShowcaseSequence<A extends Activity> {
                         .setShowcaseEventListener(member.getEventListener())
                         .build();
                 current.show();
+                count++;
             } else {
                 if(callback != null) {
                     callback.onSequenceCompleted(this);
                 }
+                onDestroy();
             }
         }
     }
@@ -101,8 +116,7 @@ public class ShowcaseSequence<A extends Activity> {
         public OnShowcaseEventListener getEventListener() { return new SimpleShowcaseEventListener() {
             @Override
             public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-                count++;
-                start();
+                continueToNext();
             }
         }; }
 

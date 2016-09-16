@@ -58,6 +58,10 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
      * */
     private GoogleMap googleMap;
 
+    public GoogleMap getGoogleMap() {
+        return googleMap;
+    }
+
     /**
      * The HashMap with the MapItemControllers.
      * */

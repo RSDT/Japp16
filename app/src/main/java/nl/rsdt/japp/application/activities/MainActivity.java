@@ -33,6 +33,7 @@ import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.maps.MapManager;
+import nl.rsdt.japp.jotial.maps.misc.KmlLoader;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
@@ -105,8 +106,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         /**
          * Checks if this is the first run of the app.
@@ -335,6 +334,7 @@ public class MainActivity extends AppCompatActivity
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
         } else if (id == R.id.nav_about) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
+            new KmlLoader(mapManager.getGoogleMap(), R.raw.jotihunt2015).ReadKML(this);
         } else if (id == R.id.nav_log_out) {
             Authentication.startLoginActivity(this);
         }
