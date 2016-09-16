@@ -58,6 +58,41 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
         });
 
         members.add(new ShowcaseSequenceItem() {
+            @Override
+            public String getTitle() {
+                return "Zoek Knop";
+            }
+
+            @Override
+            public String getContentText() {
+                return "Hiermee kun je hunters of scouting groepen zoeken op de kaart";
+            }
+
+            @Override
+            public ViewTarget getTarget() {
+                return new ViewTarget(R.id.search, activity);
+            }
+        });
+
+
+        members.add(new ShowcaseSequenceItem() {
+            @Override
+            public String getTitle() {
+                return "Refresh Knop";
+            }
+
+            @Override
+            public String getContentText() {
+                return "Hiermee kun je de app handmatig laten updaten, al is dit vaak niet nodig omdat de app zichzelf update";
+            }
+
+            @Override
+            public ViewTarget getTarget() {
+                return new ViewTarget(R.id.refresh, activity);
+            }
+        });
+
+        members.add(new ShowcaseSequenceItem() {
 
             @Override
             public String getTitle() {
