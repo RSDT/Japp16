@@ -45,6 +45,22 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /**
+         * Checks if the Fresh-Start feature is enabled if so the data of the app is cleared.
+         * */
+        if(JappPreferences.isFreshStart()) {
+            JappPreferences.getAppPreferences().edit().clear().apply();
+            JappPreferences.getVisiblePreferences().edit().clear().apply();
+
+            File dir = getFilesDir();
+            if(dir.exists() && dir.isDirectory()) {
+                String[] children = dir.list();
+                for (int i = 0; i < children.length; i++) {
+                    new File(dir, children[i]).delete();
+                }
+            }
+        }
+
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if(extras != null) {

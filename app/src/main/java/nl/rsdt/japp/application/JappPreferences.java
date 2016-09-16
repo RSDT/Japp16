@@ -59,6 +59,8 @@ public class JappPreferences {
 
     public static final String FCM_TOKEN = "pref_fcm_token";
 
+    public static final String DEBUG_FRESH_START = "pref_debug_fresh_start";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -180,6 +182,10 @@ public class JappPreferences {
 
     public static void setFcmToken(String token) {
         getAppPreferences().edit().putString(FCM_TOKEN, token).apply();
+    }
+
+    public static boolean isFreshStart() {
+        return getVisiblePreferences().getBoolean(DEBUG_FRESH_START, false);
     }
 
 }

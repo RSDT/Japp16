@@ -245,6 +245,9 @@
     <string name="pref_debug_version_title">Versie</string>
     <string name="pref_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
 
+    <string name="pref_debug_fresh_start_title">Verse Start</string>
+    <string name="pref_debug_fresh_start_sum">Verwijder alle gegevens bij de volgende keer opstarten</string>
+
     <!-- END SCREEN -->
 
 </resources>
