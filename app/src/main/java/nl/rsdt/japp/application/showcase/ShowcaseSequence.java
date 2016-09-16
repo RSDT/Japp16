@@ -39,19 +39,22 @@ public class ShowcaseSequence<A extends Activity> {
     }
 
     public void start() {
-        if(members.size() > count) {
-            ShowcaseSequenceItem member = members.get(count);
-            ShowcaseView.Builder builder = new ShowcaseView.Builder(activity);
-            current = builder.setTarget(member.getTarget())
-                    .setStyle(R.style.ShowCaseTheme)
-                    .setContentTitle(member.getTitle())
-                    .setContentText(member.getContentText())
-                    .setShowcaseEventListener(member.getEventListener())
-                    .build();
-            current.show();
-        } else {
-            if(callback != null) {
-                callback.onSequenceCompleted(this);
+        if(members != null) {
+            if(members.size() > count) {
+                ShowcaseSequenceItem member = members.get(count);
+                ShowcaseView.Builder builder = new ShowcaseView.Builder(activity);
+                current = builder.setTarget(member.getTarget())
+                        .setStyle(R.style.ShowCaseTheme)
+                        .withMaterialShowcase()
+                        .setContentTitle(member.getTitle())
+                        .setContentText(member.getContentText())
+                        .setShowcaseEventListener(member.getEventListener())
+                        .build();
+                current.show();
+            } else {
+                if(callback != null) {
+                    callback.onSequenceCompleted(this);
+                }
             }
         }
     }
@@ -62,6 +65,7 @@ public class ShowcaseSequence<A extends Activity> {
 
     private void onDestroy() {
         if(current != null) {
+            current.setOnShowcaseEventListener(null);
             current.hide();
             current = null;
         }

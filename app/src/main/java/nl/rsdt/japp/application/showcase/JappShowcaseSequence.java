@@ -26,6 +26,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
     public JappShowcaseSequence(MainActivity mainActivity) {
         setActivity(mainActivity);
+        populate();
     }
 
     protected void populate() {

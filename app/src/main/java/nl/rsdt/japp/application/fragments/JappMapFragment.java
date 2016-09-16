@@ -1,7 +1,9 @@
 package nl.rsdt.japp.application.fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -146,7 +148,6 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                                     break;
                                                 case 404:
                                                     Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
-                                                    Authentication.startLoginActivity(JappMapFragment.this.getActivity());
                                                     break;
                                                 default:
                                                     Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
@@ -220,7 +221,6 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
                                                     break;
                                                 case 404:
                                                     Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
-                                                    Authentication.startLoginActivity(JappMapFragment.this.getActivity());
                                                     break;
                                                 default:
                                                     Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();

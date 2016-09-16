@@ -1,6 +1,7 @@
 package nl.rsdt.japp.application.activities;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -38,6 +39,7 @@ import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;
 import okhttp3.Interceptor;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
@@ -76,20 +78,15 @@ public class MainActivity extends AppCompatActivity
          * Set a interceptor so that requests that give a 401 will result in a login activity.
          * */
         Japp.setInterceptor(new Interceptor() {
-            boolean hasStarted = false;
 
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
                 Response response = chain.proceed(request);
-
-                if(!hasStarted) {
-                    if(response.code() == 401) {
-                        hasStarted = true;
-                        Authentication.startLoginActivity(MainActivity.this);
-
-                    }
+                if(response.code() == 401) {
+                    Authentication.startLoginActivity(MainActivity.this);
                 }
+
                 return response;
             }
         });
@@ -126,18 +123,19 @@ public class MainActivity extends AppCompatActivity
              * */
             JappFirebaseInstanceIdService.sendToken();
 
-            /**
-             * Show the user the app via a sequence.
-             * */
-            JappShowcaseSequence sequence = new JappShowcaseSequence(this);
-            sequence.setCallback(new ShowcaseSequence.OnSequenceCompletedCallback<MainActivity>() {
-                @Override
-                public void onSequenceCompleted(ShowcaseSequence<MainActivity> sequence) {
-                    sequence.end();
-                }
-            });
-            sequence.start();
         }
+
+        /**
+         * Show the user the app via a sequence.
+         * */
+        JappShowcaseSequence sequence = new JappShowcaseSequence(this);
+        sequence.setCallback(new ShowcaseSequence.OnSequenceCompletedCallback<MainActivity>() {
+            @Override
+            public void onSequenceCompleted(ShowcaseSequence<MainActivity> sequence) {
+                sequence.end();
+            }
+        });
+        sequence.start();
 
         /**
          * Setup the MapManager.
