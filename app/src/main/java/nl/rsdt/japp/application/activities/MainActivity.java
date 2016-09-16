@@ -334,7 +334,6 @@ public class MainActivity extends AppCompatActivity
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
         } else if (id == R.id.nav_about) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
-            new KmlLoader(mapManager.getGoogleMap(), R.raw.jotihunt2015).ReadKML(this);
         } else if (id == R.id.nav_log_out) {
             Authentication.startLoginActivity(this);
         }

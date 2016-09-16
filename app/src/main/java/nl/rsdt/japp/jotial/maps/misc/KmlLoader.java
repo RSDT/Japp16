@@ -36,7 +36,7 @@ public class KmlLoader {
         try {
             File directory = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), "deelgebieden");
-            boolean created = directory.mkdirs();
+            boolean created = directory.mkdir();
             KmlLayer kmllayer = new KmlLayer(Gmap, kmlfile, activity);
             for (KmlContainer temp : kmllayer.getContainers()){
                 for (KmlContainer temp2: temp.getContainers()){
