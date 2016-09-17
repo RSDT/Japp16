@@ -29,13 +29,17 @@ public class JappFirebaseInstanceIdService extends FirebaseInstanceIdService {
         JappPreferences.setFcmToken(refreshedToken);
 
         if(!JappPreferences.isFirstRun()) {
-            sendToken();
+            sendToken(refreshedToken);
         }
     }
 
     public static void sendToken() {
+        sendToken(JappPreferences.getFcmToken());
+    }
+
+    public static void sendToken(String token) {
         FcmApi api = Japp.getApi(FcmApi.class);
-        api.postToken(FcmPostBody.getDefault().setToken(JappPreferences.getFcmToken())).enqueue(new Callback<Void>() {
+        api.postToken(FcmPostBody.getDefault().setToken(token)).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, "Refreshed token to the server: " + call.request().body());

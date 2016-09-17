@@ -153,6 +153,7 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     /**
      * Gets the MapItemController associated with the given id.
@@ -171,6 +172,7 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     {
         return controllers.values();
     }
+
 
     @Override
     /**

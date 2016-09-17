@@ -16,6 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
+import nl.rsdt.japp.jotial.maps.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.MapManager;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
@@ -41,7 +44,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
 
     /**
      * Defines a tag for this class.
@@ -119,26 +122,25 @@ public class MainActivity extends AppCompatActivity
              * */
             JappFirebaseInstanceIdService.sendToken();
 
-        }
+            /**
+             * Show the user around the app via a sequence.
+             * */
+            JappShowcaseSequence sequence = new JappShowcaseSequence(this);
+            sequence.setCallback(new ShowcaseSequence.OnSequenceCompletedCallback<MainActivity>() {
+                @Override
+                public void onSequenceCompleted(ShowcaseSequence<MainActivity> sequence) {
+                    sequence.end();
+                }
+            });
+            sequence.start();
 
-        /**
-         * Show the user the app via a sequence.
-         * */
-        JappShowcaseSequence sequence = new JappShowcaseSequence(this);
-        sequence.setCallback(new ShowcaseSequence.OnSequenceCompletedCallback<MainActivity>() {
-            @Override
-            public void onSequenceCompleted(ShowcaseSequence<MainActivity> sequence) {
-                sequence.end();
-            }
-        });
-        sequence.start();
+        }
 
         /**
          * Setup the MapManager.
          * */
         mapManager.onIntentCreate(getIntent());
         mapManager.onCreate(savedInstanceState);
-
 
         /**
          * Setup the NavigationDrawer.
@@ -163,11 +165,19 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        navigationManager.onSaveInstanceState(savedInstanceState);
+        mapManager.onSaveInstanceState(savedInstanceState);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        // The activity is about to become visible.
+    public void onMapReady(GoogleMap googleMap) {
+        mapManager.onMapReady(googleMap);
+        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater()));
     }
 
     /**
@@ -208,15 +218,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        navigationManager.onSaveInstanceState(savedInstanceState);
-        mapManager.onSaveInstanceState(savedInstanceState);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
     }
@@ -233,6 +234,8 @@ public class MainActivity extends AppCompatActivity
         //searchManager.onCreateOptionsMenu(menu);
         return true;
     }
+
+
 
     public class SearchManager implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
 
@@ -313,7 +316,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
-        navigationManager.setupMap(mapManager);
+        navigationManager.setupMap(this);
     }
 
 
