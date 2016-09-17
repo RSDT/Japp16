@@ -1,17 +1,27 @@
 package nl.rsdt.japp.jotial.maps;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
+import nl.rsdt.japp.jotial.data.structures.area348.VosInfo;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -34,8 +44,38 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.custom_info_window_text_fields);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) layout.getLayoutParams();
         params.rightMargin = 10;
-        layout.addView(createTextView(context, params, "hoi"));
-        layout.addView(createTextView(context, params, "sfsf"));
+
+        ImageView indicator = (ImageView) view.findViewById(R.id.custom_info_window_indicator_image);
+
+        MarkerIdentifier identifier = new Gson().fromJson(marker.getTitle(), MarkerIdentifier.class);
+        HashMap<String, String> properties = identifier.getProperties();
+        switch (identifier.getType()) {
+            case MarkerIdentifier.TYPE_VOS:
+                layout.addView(createTextView(context, params, properties.get("note")));
+                layout.addView(createTextView(context, params, properties.get("extra")));
+                layout.addView(createTextView(context, params, properties.get("time")));
+                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                break;
+            case MarkerIdentifier.TYPE_FOTO:
+                layout.addView(createTextView(context, params, properties.get("info")));
+                layout.addView(createTextView(context, params, properties.get("extra")));
+                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                break;
+            case MarkerIdentifier.TYPE_HUNTER:
+                layout.addView(createTextView(context, params, properties.get("hunter")));
+                layout.addView(createTextView(context, params, properties.get("time")));
+                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                break;
+            case MarkerIdentifier.TYPE_SC:
+                layout.addView(createTextView(context, params, properties.get("name")));
+                layout.addView(createTextView(context, params, properties.get("adres")));
+                indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
+                break;
+            case MarkerIdentifier.TYPE_SC_CLUSTER:
+                layout.addView(createTextView(context, params, properties.get("size")));
+                indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
+                break;
+        }
         return view;
     }
 

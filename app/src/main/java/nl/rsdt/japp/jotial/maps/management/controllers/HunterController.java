@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.text.ParseException;
@@ -31,6 +32,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.net.apis.HunterApi;
 import retrofit2.Call;
@@ -273,11 +275,18 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
                  * */
                 HunterInfo lastestInfo = currentData.get(currentData.size() - 1);
 
+                MarkerIdentifier identifier  = new MarkerIdentifier.Builder()
+                        .setType(MarkerIdentifier.TYPE_HUNTER)
+                        .add("icon", String.valueOf(lastestInfo.getAssociatedDrawable()))
+                        .add("hunter", lastestInfo.hunter)
+                        .add("time", lastestInfo.datetime)
+                        .create();
+
                 /**
                  * Setup the marker for the Hunter.
                  * */
                 MarkerOptions mOptions = new MarkerOptions();
-                mOptions.title(String.valueOf(lastestInfo.id));
+                mOptions.title(new Gson().toJson(identifier));
                 mOptions.position(lastestInfo.getLatLng());
                 mOptions.icon(BitmapDescriptorFactory.fromResource(lastestInfo.getAssociatedDrawable()));
 

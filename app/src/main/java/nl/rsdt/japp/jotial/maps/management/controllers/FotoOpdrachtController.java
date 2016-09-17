@@ -6,6 +6,7 @@ import android.os.Parcel;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.FotoOpdrachtInfo;
 
 import nl.rsdt.japp.jotial.io.AppData;
 
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 
@@ -144,10 +146,18 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
             for (int i = 0; i < items.size(); i++) {
                 info = items.get(i);
                 if(info != null) {
+
+                    MarkerIdentifier identifier  = new MarkerIdentifier.Builder()
+                            .setType(MarkerIdentifier.TYPE_FOTO)
+                            .add("info", info.info)
+                            .add("extra", info.extra)
+                            .add("icon", String.valueOf(info.getAssociatedDrawable()))
+                            .create();
+
                     MarkerOptions mOptions = new MarkerOptions();
                     mOptions.anchor(0.5f, 0.5f);
                     mOptions.position(info.getLatLng());
-                    mOptions.title(String.valueOf(info.id));
+                    mOptions.title(new Gson().toJson(identifier));
 
                     if(info.klaar == 1)
                     {

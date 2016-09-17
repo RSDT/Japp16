@@ -5,9 +5,12 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
+
+import nl.rsdt.japp.R;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -52,6 +55,10 @@ public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
         dest.writeString(info);
         dest.writeString(extra);
         dest.writeInt(klaar);
+    }
+
+    public int getAssociatedDrawable() {
+        return getAssociatedDrawable(klaar);
     }
 
     @Override
@@ -107,6 +114,13 @@ public class FotoOpdrachtInfo extends BaseInfo implements Parcelable {
             Log.e("FotoOpdrachtInfo", e.getMessage(), e);
         }
         return null;
+    }
+
+    public static int getAssociatedDrawable(int klaar) {
+        if(klaar == 1) {
+            return R.drawable.camera_20x20_klaar;
+        }
+        return R.drawable.camera_20x20;
     }
 
 }

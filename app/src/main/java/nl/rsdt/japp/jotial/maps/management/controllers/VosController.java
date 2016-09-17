@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.text.ParseException;
@@ -24,6 +25,7 @@ import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.VosInfo;
 import nl.rsdt.japp.jotial.io.AppData;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
@@ -155,9 +157,18 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
             {
                 current = data.get(i);
 
+                MarkerIdentifier identifier  = new MarkerIdentifier.Builder()
+                        .setType(MarkerIdentifier.TYPE_VOS)
+                        .add("team", current.getTeam())
+                        .add("note", current.getNote())
+                        .add("extra", current.getExtra())
+                        .add("time", current.getDatetime())
+                        .add("icon", String.valueOf(current.getAssociatedDrawable()))
+                        .create();
+
                 MarkerOptions mOptions = new MarkerOptions();
-                mOptions.title(String.valueOf(current.id));
                 mOptions.anchor(0.5f, 0.5f);
+                mOptions.title(new Gson().toJson(identifier));
                 mOptions.position(current.getLatLng());
 
                 int last = data.size() - 1;

@@ -6,12 +6,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -30,10 +32,13 @@ public class ScoutingGroepRenderer extends DefaultClusterRenderer<ScoutingGroepI
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.scouting_groep_icon_30x22));
         markerOptions.anchor(0.5f, 0.5f);
 
-        /**
-         * Use the title to save data with the marker.
-         * */
-        markerOptions.title("sc " + item.naam + " " + item.adres + " " + item.latitude + " " + item.longitude + " " + item.team);
+        MarkerIdentifier identifier  = new MarkerIdentifier.Builder()
+                .setType(MarkerIdentifier.TYPE_SC)
+                .add("name", item.naam)
+                .add("adres", item.adres)
+                .create();
+
+        markerOptions.title(new Gson().toJson(identifier));
     }
 
     @Override
@@ -43,11 +48,11 @@ public class ScoutingGroepRenderer extends DefaultClusterRenderer<ScoutingGroepI
 
     @Override
     protected void onBeforeClusterRendered(Cluster<ScoutingGroepInfo> cluster, MarkerOptions markerOptions) {
-        /**
-         * Define it is a cluster by a format Scouting Groep Cluster(scc).
-         * NOTE: You can make a behaviour for this cluster.
-         * */
-        markerOptions.title("scc " + cluster.getSize() + " " + cluster.getPosition().latitude + " " + cluster.getPosition().longitude);
+        MarkerIdentifier identifier  = new MarkerIdentifier.Builder()
+                .setType(MarkerIdentifier.TYPE_SC_CLUSTER)
+                .add("size", String.valueOf(cluster.getSize()))
+                .create();
+        markerOptions.title(new Gson().toJson(identifier));
         super.onBeforeClusterRendered(cluster, markerOptions);
     }
 
