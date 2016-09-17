@@ -7,7 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.io.File;
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 import nl.rsdt.japp.application.Japp;
@@ -49,9 +54,16 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
          * Checks if the Fresh-Start feature is enabled if so the data of the app is cleared.
          * */
         if(JappPreferences.isFreshStart()) {
+
+            /**
+             * Clear preferences.
+             * */
             JappPreferences.getAppPreferences().edit().clear().apply();
             JappPreferences.getVisiblePreferences().edit().clear().apply();
 
+            /**
+             * Clear data files.
+             * */
             File dir = getFilesDir();
             if(dir.exists() && dir.isDirectory()) {
                 String[] children = dir.list();
@@ -59,6 +71,27 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
                     new File(dir, children[i]).delete();
                 }
             }
+
+            try {
+                /**
+                 * Resets Instance ID and revokes all tokens.
+                 * */
+                FirebaseInstanceId.getInstance().deleteInstanceId();
+            } catch (IOException e) {
+                Log.e(TAG, e.toString(), e);
+            }
+
+            /**
+             * Set the FCM token to a empty String.
+             * */
+            JappPreferences.setFcmToken("");
+
+            /**
+             * Get a new token.
+             * */
+            FirebaseInstanceId.getInstance().getToken();
+
+
         }
 
         Intent intent = getIntent();
