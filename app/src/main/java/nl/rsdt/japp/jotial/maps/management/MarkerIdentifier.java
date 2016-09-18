@@ -20,6 +20,8 @@ public class MarkerIdentifier {
 
     public static final String TYPE_SC_CLUSTER = "SC_CLUSTER";
 
+    public static final String TYPE_SIGHTING = "SIGHTING";
+
     private String type;
 
     public String getType() {

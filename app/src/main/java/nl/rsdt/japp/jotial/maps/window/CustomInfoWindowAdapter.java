@@ -1,9 +1,10 @@
-package nl.rsdt.japp.jotial.maps;
+package nl.rsdt.japp.jotial.maps.window;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 
@@ -29,12 +31,18 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
  * @since 29-8-2016
  * Description...
  */
-public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowCloseListener {
 
     private LayoutInflater inflater;
 
-    public CustomInfoWindowAdapter(LayoutInflater inflater) {
+    private GoogleMap googleMap;
+
+    private MarkerSpecialSession session;
+
+    public CustomInfoWindowAdapter(LayoutInflater inflater, GoogleMap googleMap) {
         this.inflater = inflater;
+        this.googleMap = googleMap;
+        this.googleMap.setOnInfoWindowCloseListener(this);
     }
 
     @Override
@@ -47,6 +55,9 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         ImageView indicator = (ImageView) view.findViewById(R.id.custom_info_window_indicator_image);
 
+        boolean create = false;
+        boolean end = false;
+
         MarkerIdentifier identifier = new Gson().fromJson(marker.getTitle(), MarkerIdentifier.class);
         HashMap<String, String> properties = identifier.getProperties();
         switch (identifier.getType()) {
@@ -55,6 +66,17 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 layout.addView(createTextView(context, params, properties.get("extra")));
                 layout.addView(createTextView(context, params, properties.get("time")));
                 indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+
+                if(session != null) {
+                    if(!session.getType().equals(MarkerIdentifier.TYPE_VOS)) {
+                        end = true;
+                        create = true;
+                    } else {
+                        end = true;
+                    }
+                } else {
+                    create = true;
+                }
                 break;
             case MarkerIdentifier.TYPE_FOTO:
                 layout.addView(createTextView(context, params, properties.get("info")));
@@ -70,11 +92,41 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 layout.addView(createTextView(context, params, properties.get("name")));
                 layout.addView(createTextView(context, params, properties.get("adres")));
                 indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
+
+                if(session != null) {
+                    if(!session.getType().equals(MarkerIdentifier.TYPE_SC)) {
+                        end = true;
+                        create = true;
+                    } else {
+                        end = true;
+                    }
+                } else {
+                    create = true;
+                }
                 break;
             case MarkerIdentifier.TYPE_SC_CLUSTER:
                 layout.addView(createTextView(context, params, properties.get("size")));
                 indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
                 break;
+            case MarkerIdentifier.TYPE_SIGHTING:
+                layout.addView(createTextView(context, params, properties.get("text")));
+                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                break;
+        }
+
+        if(end) {
+            if(session != null) {
+                session.end();
+                session = null;
+            }
+        }
+
+        if(create) {
+            session = new MarkerSpecialSession.Builder()
+                    .setMarker(marker)
+                    .setGoogleMap(googleMap)
+                    .create();
+            session.start();
         }
         return view;
     }
@@ -92,4 +144,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         return null;
     }
 
+    @Override
+    public void onInfoWindowClose(Marker marker) {
+        if(session != null) {
+            session.end();
+            session = null;
+        }
+    }
 }

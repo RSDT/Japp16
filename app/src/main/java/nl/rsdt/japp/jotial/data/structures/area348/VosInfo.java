@@ -118,10 +118,14 @@ public class VosInfo extends BaseInfo implements Parcelable {
         return VosInfo.getAssociatedDrawable(this);
     }
 
-    public int getAssociatedColor()
-    {
+    public int getAssociatedColor() {
         return VosInfo.getAssociatedColor(this);
     }
+
+    public int getAssociatedColor(int alpha) {
+        return VosInfo.getAssociatedColor(this, alpha);
+    }
+
 
     public void setIcon(int icon) {
         this.icon = icon;
@@ -308,26 +312,33 @@ public class VosInfo extends BaseInfo implements Parcelable {
         return getAssociatedColor(info.team);
     }
 
+    public static int getAssociatedColor(VosInfo info, int alpha) { return getAssociatedColor(info.team, alpha); }
+
     public static int getAssociatedColor(String team) {
+        return getAssociatedColor(team, 255);
+    }
+
+    public static int getAssociatedColor(String team, int alpha) {
         switch (team)
         {
             case "a":
-                return Color.argb(255, 255, 0, 0);
+                return Color.argb(alpha, 255, 0, 0);
             case "b":
-                return Color.argb(255, 0, 255, 0);
+                return Color.argb(alpha, 0, 255, 0);
             case "c":
-                return Color.argb(255, 0, 0, 255);
+                return Color.argb(alpha, 0, 0, 255);
             case "d":
-                return Color.argb(255, 0, 255, 255);
+                return Color.argb(alpha, 0, 255, 255);
             case "e":
-                return Color.argb(255, 255, 0, 255);
+                return Color.argb(alpha, 255, 0, 255);
             case "f":
-                return Color.argb(255, 255, 162, 0);
+                return Color.argb(alpha, 255, 162, 0);
             case "x":
-                return Color.argb(255, 0, 0, 0);
+                return Color.argb(alpha, 0, 0, 0);
             default:
                 return Color.WHITE;
         }
     }
+
 
 }

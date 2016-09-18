@@ -33,7 +33,7 @@ import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
-import nl.rsdt.japp.jotial.maps.CustomInfoWindowAdapter;
+import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.MapManager;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
@@ -176,8 +176,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        /**
+         * First set the custom InfoWindowAdapter and then invoke the onMapReady on the MapManager.
+         * */
+        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater(), googleMap));
         mapManager.onMapReady(googleMap);
-        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater()));
     }
 
     /**

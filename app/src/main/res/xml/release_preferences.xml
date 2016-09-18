@@ -63,6 +63,12 @@
             android:summary="@string/pref_updates_auto_sum"
             android:defaultValue="true" />
 
+        <SwitchPreference
+            android:key="pref_updates_location"
+            android:title="@string/pref_updates_location_title"
+            android:summary="@string/pref_updates_location_sum"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
 
@@ -92,29 +98,54 @@
             android:title="@string/pref_advanced_title"
             android:summary="@string/pref_advanced_sum">
 
-            <EditTextPreference
-                android:key="pref_advanced_walking_speed"
-                android:title="@string/pref_advanced_walking_speed_title"
-                android:summary="@string/pref_advanced_walking_speed_sum"
-                android:inputType="numberDecimal"
-                android:defaultValue="6.0"
-                />
+            <PreferenceCategory android:title="@string/pref_advanced_cat_auto_enlargement">
 
-            <EditTextPreference
-                android:key="pref_advanced_location_update_interval"
-                android:title="@string/pref_advanced_location_update_interval_title"
-                android:summary="@string/pref_advanced_location_update_interval_sum"
-                android:inputType="numberDecimal"
-                android:defaultValue="1.0"
-                />
+                <SwitchPreference
+                    android:key="pref_advanced_auto_enlargement"
+                    android:title="@string/pref_advanced_auto_enlargement_title"
+                    android:summary="@string/pref_advanced_auto_enlargement_sum"
+                    android:defaultValue="true"
+                    />
 
-            <EditTextPreference
-                android:key="pref_advanced_hunter_update_interval"
-                android:title="@string/pref_advanced_hunter_update_interval_title"
-                android:summary="@string/pref_advanced_hunter_update_interval_sum"
-                android:inputType="numberDecimal"
-                android:defaultValue="1.0"
-                />
+                <EditTextPreference
+                    android:key="pref_advanced_auto_enlargement_interval"
+                    android:title="@string/pref_advanced_auto_enlargement_interval_title"
+                    android:summary="@string/pref_advanced_auto_enlargement_interval_sum"
+                    android:inputType="numberDecimal"
+                    android:defaultValue="0.1"
+                    android:dependency="pref_advanced_auto_enlargement"
+                    />
+
+                <EditTextPreference
+                    android:key="pref_advanced_auto_enlargement_walking_speed"
+                    android:title="@string/pref_advanced_auto_enlargement_walking_speed_title"
+                    android:summary="@string/pref_advanced_auto_enlargement_walking_speed_sum"
+                    android:inputType="numberDecimal"
+                    android:defaultValue="6.0"
+                    android:dependency="pref_advanced_auto_enlargement"
+                    />
+
+            </PreferenceCategory>
+
+
+            <PreferenceCategory android:title="@string/pref_advanced_cat_updates">
+
+                <EditTextPreference
+                    android:key="pref_advanced_location_update_interval"
+                    android:title="@string/pref_advanced_location_update_interval_title"
+                    android:summary="@string/pref_advanced_location_update_interval_sum"
+                    android:inputType="numberDecimal"
+                    android:defaultValue="1.0"
+                    />
+
+                <EditTextPreference
+                    android:key="pref_advanced_hunter_update_interval"
+                    android:title="@string/pref_advanced_hunter_update_interval_title"
+                    android:summary="@string/pref_advanced_hunter_update_interval_sum"
+                    android:inputType="numberDecimal"
+                    android:defaultValue="1.0"
+                    />
+            </PreferenceCategory>
         </PreferenceScreen>
     </PreferenceCategory>
 

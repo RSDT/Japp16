@@ -21,10 +21,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 
 /**
@@ -109,6 +111,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
 
+
         marker = googleMap.addMarker(new MarkerOptions()
                 .visible(false)
                 .position(new LatLng(0,0))
@@ -139,7 +142,6 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             public void onMapClick(LatLng latLng) {
                 lastLatLng = latLng;
 
-                if(!marker.isVisible()) marker.setVisible(true);
                 marker.setPosition(latLng);
 
                 boolean updateMarker = false;
@@ -161,16 +163,31 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
                 if(deelgebied != null && updateMarker)
                 {
+                    String icon = null;
                     switch (type)
                     {
                         case SIGHT_HUNT:
                             marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableHunt()));
+                            icon = String.valueOf(deelgebied.getDrawableHunt());
                             break;
                         case SIGHT_SPOT:
                             marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableSpot()));
+                            icon = String.valueOf(deelgebied.getDrawableSpot());
                             break;
                     }
+
+                    MarkerIdentifier identifier = new MarkerIdentifier.Builder()
+                            .setType(MarkerIdentifier.TYPE_SIGHTING)
+                            .add("text", type)
+                            .add("icon", icon)
+                            .create();
+                    marker.setTitle(new Gson().toJson(identifier));
                 }
+
+                if(!marker.isVisible()) {
+                    marker.setVisible(true);
+                }
+
             }
         });
 

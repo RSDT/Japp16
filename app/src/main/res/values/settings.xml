@@ -178,6 +178,10 @@
 
             <string name="pref_updates_auto_title">Automatische Updates</string>
             <string name="pref_updates_auto_sum">Het automatisch updaten van de kaart</string>
+
+            <string name="pref_updates_location_title">Locatie Versturen</string>
+            <string name="pref_updates_location_sum">Het versturen van locaties naar de server</string>
+
         <!-- END CAT -->
 
         <!-- START CAT NOTIFICATIONS -->
@@ -227,8 +231,18 @@
     <string name="pref_advanced_title">Geavanceerd</string>
     <string name="pref_advanced_sum">Bekijk hier extra mogelijkheden</string>
 
-    <string name="pref_advanced_walking_speed_title">Loopsnelheid</string>
-    <string name="pref_advanced_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen</string>
+    <string name="pref_advanced_cat_auto_enlargement">Automatiek</string>
+
+    <string name="pref_advanced_auto_enlargement_title">Automatische Cirkelvergroting</string>
+    <string name="pref_advanced_auto_enlargement_sum">Het automatische vergroten van vossen cirkel gebaseerd op een loopsnelheid</string>
+
+    <string name="pref_advanced_auto_enlargement_interval_title">Cirkelvergroting Interval</string>
+    <string name="pref_advanced_auto_enlargement_interval_sum">De interval waarmee de cirkel word vergroot in minuten</string>
+
+    <string name="pref_advanced_auto_enlargement_walking_speed_title">Loopsnelheid</string>
+    <string name="pref_advanced_auto_enlargement_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen in km/uur</string>
+
+    <string name="pref_advanced_cat_updates">Updates</string>
 
     <string name="pref_advanced_location_update_interval_title">Locatie Update Interval</string>
     <string name="pref_advanced_location_update_interval_sum">De interval waarmee locaties naar de server worden gestuurd in minuten</string>

@@ -54,24 +54,26 @@ public class LocationService extends LocationProviderService {
 
         long dif = Calendar.getInstance().getTimeInMillis() - lastUpdate.getTimeInMillis();
 
-        if(dif >= Math.round(JappPreferences.getLocationUpdateIntervalInMs())) {
-            HunterPostBody builder = HunterPostBody.getDefault();
-            builder.setLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+        if(JappPreferences.isUpdatingLocationToServer()) {
+            if(dif >= Math.round(JappPreferences.getLocationUpdateIntervalInMs())) {
+                HunterPostBody builder = HunterPostBody.getDefault();
+                builder.setLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
 
-            HunterApi api = Japp.getApi(HunterApi.class);
-            api.post(builder).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    Log.i(TAG, "Location was sent!");
-                }
+                HunterApi api = Japp.getApi(HunterApi.class);
+                api.post(builder).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.i(TAG, "Location was sent!");
+                    }
 
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Log.e(TAG, t.toString(), t);
-                }
-            });
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e(TAG, t.toString(), t);
+                    }
+                });
 
-            lastUpdate = Calendar.getInstance();
+                lastUpdate = Calendar.getInstance();
+            }
         }
     }
 

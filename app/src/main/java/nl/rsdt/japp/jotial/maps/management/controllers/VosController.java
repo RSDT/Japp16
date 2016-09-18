@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
@@ -164,6 +165,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                         .add("extra", current.getExtra())
                         .add("time", current.getDatetime())
                         .add("icon", String.valueOf(current.getAssociatedDrawable()))
+                        .add("color", String.valueOf(Color.argb(120, 255, 255, 255)))
                         .create();
 
                 MarkerOptions mOptions = new MarkerOptions();

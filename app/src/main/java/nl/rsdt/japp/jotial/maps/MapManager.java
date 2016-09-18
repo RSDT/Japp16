@@ -2,21 +2,31 @@ package nl.rsdt.japp.jotial.maps;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.gson.Gson;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -26,6 +36,7 @@ import nl.rsdt.japp.application.activities.SplashActivity;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.BravoVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.CharlieVosController;
@@ -36,6 +47,7 @@ import nl.rsdt.japp.jotial.maps.management.controllers.FoxtrotVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
+import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;
@@ -255,7 +267,7 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     /**
      * Gets invoked when the GoogleMap is ready for use.
      * */
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
 
         /**

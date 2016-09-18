@@ -61,6 +61,14 @@ public class JappPreferences {
 
     public static final String DEBUG_FRESH_START = "pref_debug_fresh_start";
 
+    public static final String UPDATE_LOCATION = "pref_updates_location";
+
+    public static final String AUTO_ENLARGMENT = "pref_advanced_auto_enlargement";
+
+    public static final String AUTO_ENLARGMENT_INTERVAL = "pref_advanced_auto_enlargement_interval";
+
+    public static final String WALK_SPEED = "pref_advanced_auto_enlargement_walking_speed";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -186,6 +194,26 @@ public class JappPreferences {
 
     public static boolean isFreshStart() {
         return getVisiblePreferences().getBoolean(DEBUG_FRESH_START, false);
+    }
+
+    public static boolean isUpdatingLocationToServer() {
+        return getVisiblePreferences().getBoolean(UPDATE_LOCATION, true);
+    }
+
+    public static boolean isAutoEnlargementEnabled() {
+        return getVisiblePreferences().getBoolean(AUTO_ENLARGMENT, true);
+    }
+
+    public static float getAutoEnlargementInterval() {
+        return Float.valueOf(getVisiblePreferences().getString(AUTO_ENLARGMENT_INTERVAL, "0.1f"));
+    }
+
+    public static float getAutoEnlargementIntervalInMs() {
+        return Float.valueOf(getVisiblePreferences().getString(AUTO_ENLARGMENT_INTERVAL, "0.2f")) * 60 * 1000;
+    }
+
+    public static float getWalkSpeed() {
+        return Float.parseFloat(getVisiblePreferences().getString(WALK_SPEED, "6.0f"));
     }
 
 }
