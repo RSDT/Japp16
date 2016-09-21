@@ -8,6 +8,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -23,10 +26,18 @@ public class Pin {
 
     public static Pin create(GoogleMap googleMap, Data data) {
         Pin buffer = new Pin();
+
+        MarkerIdentifier identifier = new MarkerIdentifier.Builder()
+                .setType(MarkerIdentifier.TYPE_PIN)
+                .add("title", data.title)
+                .add("description", data.description)
+                .add("icon", String.valueOf(data.icon))
+                .create();
+
         buffer.marker = googleMap.addMarker(new MarkerOptions()
-                .title(data.title)
-        .position(data.position)
-        .icon(BitmapDescriptorFactory.fromResource(data.icon)));
+                .title(new Gson().toJson(identifier))
+                .position(data.position)
+                .icon(BitmapDescriptorFactory.fromResource(data.icon)));
         buffer.data = data;
         return buffer;
     }

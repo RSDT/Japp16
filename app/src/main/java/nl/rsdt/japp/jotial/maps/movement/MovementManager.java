@@ -198,6 +198,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                     }
                 }
             });
+
         }
 
         public void setZoom(float zoom) {

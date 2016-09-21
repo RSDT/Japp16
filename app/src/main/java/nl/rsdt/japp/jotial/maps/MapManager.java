@@ -297,7 +297,7 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
         if(!isRecreated) {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
         }
-        
+
         update();
         
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {

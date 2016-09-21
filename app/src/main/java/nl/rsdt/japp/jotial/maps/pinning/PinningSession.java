@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
  * @author Dingenis Sieger Sinke

@@ -114,6 +114,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                     layout.addView(createTextView(context, params, properties.get("text")));
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
+                case MarkerIdentifier.TYPE_PIN:
+                    layout.addView(createTextView(context, params, properties.get("title")));
+                    layout.addView(createTextView(context, params, properties.get("description")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                    break;
             }
 
             if(end) {

@@ -22,6 +22,8 @@ public class MarkerIdentifier {
 
     public static final String TYPE_SIGHTING = "SIGHTING";
 
+    public static final String TYPE_PIN = "PIN";
+
     private String type;
 
     public String getType() {
