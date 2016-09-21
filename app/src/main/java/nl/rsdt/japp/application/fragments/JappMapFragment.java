@@ -26,7 +26,9 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.gson.Gson;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
@@ -35,6 +37,7 @@ import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.movement.MovementManager;
 import nl.rsdt.japp.jotial.maps.pinning.Pin;
 import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
@@ -54,7 +57,7 @@ import retrofit2.Response;
  * @since 8-7-2016
  * Description...
  */
-public class JappMapFragment extends Fragment implements OnMapReadyCallback {
+public class JappMapFragment extends Fragment implements OnMapReadyCallback{
 
     public static final String TAG = "JappMapFragment";
 
@@ -79,6 +82,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pinningManager.intialize(getActivity());
         pinningManager.onCreate(savedInstanceState);
     }
 

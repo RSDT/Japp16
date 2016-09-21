@@ -126,7 +126,7 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
                 if(callback != null) {
                     String title = ((TextView)dialog.findViewById(R.id.pinning_dialog_title_edit)).getText().toString();
                     String description = ((TextView)dialog.findViewById(R.id.pinning_dialog_description_edit)).getText().toString();
-                    callback.onPinningCompleted(Pin.create(googleMap, new Pin.Data(title, description, marker.getPosition(), R.drawable.ic_action_place)));
+                    callback.onPinningCompleted(Pin.create(googleMap, new Pin.Data(title, description, marker.getPosition(), R.drawable.ic_place_white_48dp)));
                 }
                 break;
             case DialogInterface.BUTTON_NEGATIVE:l:

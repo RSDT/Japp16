@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -254,11 +255,11 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        switch (s) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
             case JappPreferences.MAP_TYPE:
                 if(googleMap != null) {
-                    String value = sharedPreferences.getString(s, String.valueOf(GoogleMap.MAP_TYPE_NORMAL));
+                    String value = sharedPreferences.getString(key, String.valueOf(GoogleMap.MAP_TYPE_NORMAL));
                     googleMap.setMapType(Integer.valueOf(value));
                 }
                 break;

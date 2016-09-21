@@ -117,6 +117,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                 case MarkerIdentifier.TYPE_PIN:
                     layout.addView(createTextView(context, params, properties.get("title")));
                     layout.addView(createTextView(context, params, properties.get("description")));
+                    layout.addView(createTextView(context, params, "Houd dit lang ingedrukt om te verwijderen"));
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
             }
