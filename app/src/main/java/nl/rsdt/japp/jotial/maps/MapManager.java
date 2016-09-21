@@ -66,6 +66,16 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     public static final String TAG = "MapManager";
 
     /**
+     * Defines a key for storing the isRecreated value.
+     * */
+    private static final String RECREATED_KEY = "RECREATED";
+
+    /**
+     * The value that determines if the MapManager is already recreated once.
+     * */
+    private boolean isRecreated = false;
+
+    /**
      * The GoogleMap
      * */
     private GoogleMap googleMap;
@@ -142,6 +152,8 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
                 }
             }
             sgController.onCreate(savedInstanceState);
+
+            isRecreated = savedInstanceState.getBoolean(RECREATED_KEY);
         }
     }
 
@@ -162,6 +174,11 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
                 }
             }
             sgController.onSaveInstanceState(saveInstanceState);
+
+            /**
+             * Indicate the MapManager has already been created once.
+             * */
+            saveInstanceState.putBoolean(RECREATED_KEY, true);
         }
     }
 
@@ -277,8 +294,10 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
 
         googleMap.setMapType(JappPreferences.getMapType());
 
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
-
+        if(!isRecreated) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
+        }
+        
         update();
         
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
