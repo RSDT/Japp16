@@ -59,75 +59,78 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
         boolean end = false;
 
         MarkerIdentifier identifier = new Gson().fromJson(marker.getTitle(), MarkerIdentifier.class);
-        HashMap<String, String> properties = identifier.getProperties();
-        switch (identifier.getType()) {
-            case MarkerIdentifier.TYPE_VOS:
-                layout.addView(createTextView(context, params, properties.get("note")));
-                layout.addView(createTextView(context, params, properties.get("extra")));
-                layout.addView(createTextView(context, params, properties.get("time")));
-                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+        if(identifier != null) {
+            HashMap<String, String> properties = identifier.getProperties();
+            switch (identifier.getType()) {
+                case MarkerIdentifier.TYPE_VOS:
+                    layout.addView(createTextView(context, params, properties.get("note")));
+                    layout.addView(createTextView(context, params, properties.get("extra")));
+                    layout.addView(createTextView(context, params, properties.get("time")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
 
-                if(session != null) {
-                    if(!session.getType().equals(MarkerIdentifier.TYPE_VOS)) {
-                        end = true;
-                        create = true;
+                    if(session != null) {
+                        if(!session.getType().equals(MarkerIdentifier.TYPE_VOS)) {
+                            end = true;
+                            create = true;
+                        } else {
+                            end = true;
+                        }
                     } else {
-                        end = true;
-                    }
-                } else {
-                    create = true;
-                }
-                break;
-            case MarkerIdentifier.TYPE_FOTO:
-                layout.addView(createTextView(context, params, properties.get("info")));
-                layout.addView(createTextView(context, params, properties.get("extra")));
-                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
-                break;
-            case MarkerIdentifier.TYPE_HUNTER:
-                layout.addView(createTextView(context, params, properties.get("hunter")));
-                layout.addView(createTextView(context, params, properties.get("time")));
-                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
-                break;
-            case MarkerIdentifier.TYPE_SC:
-                layout.addView(createTextView(context, params, properties.get("name")));
-                layout.addView(createTextView(context, params, properties.get("adres")));
-                indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
-
-                if(session != null) {
-                    if(!session.getType().equals(MarkerIdentifier.TYPE_SC)) {
-                        end = true;
                         create = true;
-                    } else {
-                        end = true;
                     }
-                } else {
-                    create = true;
-                }
-                break;
-            case MarkerIdentifier.TYPE_SC_CLUSTER:
-                layout.addView(createTextView(context, params, properties.get("size")));
-                indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
-                break;
-            case MarkerIdentifier.TYPE_SIGHTING:
-                layout.addView(createTextView(context, params, properties.get("text")));
-                indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
-                break;
-        }
+                    break;
+                case MarkerIdentifier.TYPE_FOTO:
+                    layout.addView(createTextView(context, params, properties.get("info")));
+                    layout.addView(createTextView(context, params, properties.get("extra")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                    break;
+                case MarkerIdentifier.TYPE_HUNTER:
+                    layout.addView(createTextView(context, params, properties.get("hunter")));
+                    layout.addView(createTextView(context, params, properties.get("time")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                    break;
+                case MarkerIdentifier.TYPE_SC:
+                    layout.addView(createTextView(context, params, properties.get("name")));
+                    layout.addView(createTextView(context, params, properties.get("adres")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
 
-        if(end) {
-            if(session != null) {
-                session.end();
-                session = null;
+                    if(session != null) {
+                        if(!session.getType().equals(MarkerIdentifier.TYPE_SC)) {
+                            end = true;
+                            create = true;
+                        } else {
+                            end = true;
+                        }
+                    } else {
+                        create = true;
+                    }
+                    break;
+                case MarkerIdentifier.TYPE_SC_CLUSTER:
+                    layout.addView(createTextView(context, params, properties.get("size")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
+                    break;
+                case MarkerIdentifier.TYPE_SIGHTING:
+                    layout.addView(createTextView(context, params, properties.get("text")));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                    break;
+            }
+
+            if(end) {
+                if(session != null) {
+                    session.end();
+                    session = null;
+                }
+            }
+
+            if(create) {
+                session = new MarkerSpecialSession.Builder()
+                        .setMarker(marker)
+                        .setGoogleMap(googleMap)
+                        .create();
+                session.start();
             }
         }
 
-        if(create) {
-            session = new MarkerSpecialSession.Builder()
-                    .setMarker(marker)
-                    .setGoogleMap(googleMap)
-                    .create();
-            session.start();
-        }
         return view;
     }
 

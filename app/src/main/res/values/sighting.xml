@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="sighting_standard_text">Markeer de positie van de vossen op de kaart. Swipe dit weg om te annuleren</string>
+    <string name="sighting_snackbar_action_text">Klaar!</string>
+    <string name="sighting_invalid_location_text">Selecteer een geldige locatie!</string>
+</resources>

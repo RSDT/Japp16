@@ -6,11 +6,8 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.Snackbar;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,7 +24,6 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
-import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -63,6 +59,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     private Marker marker;
 
     /**
+     * The view where the Snackbar is going to be made on.
+     * */
+    private View targetView;
+
+    /**
      * The Snackbar that informs the user.
      * */
     private Snackbar snackbar;
@@ -90,27 +91,23 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     /**
      * Initializes the SightingSession.
      * */
-    private void initialize()
-    {
+    private void initialize() {
         BitmapDescriptor descriptor;
         switch (type)
         {
             case SIGHT_HUNT:
-                snackbar.setText("Markeer de positie van de vossen op de kaart. Swipe dit weg om te annuleren");
                 descriptor = BitmapDescriptorFactory.fromResource(R.drawable.vos_x_4);
                 break;
             case SIGHT_SPOT:
-                snackbar.setText("Markeer de positie van de vossen op de kaart. Swipe dit weg om te annuleren");
                 descriptor = BitmapDescriptorFactory.fromResource(R.drawable.vos_x_3);
                 break;
             default:
-                snackbar.setText("");
                 descriptor = BitmapDescriptorFactory.defaultMarker();
                 break;
         }
-        snackbar.setAction("Klaar!", this);
+        snackbar = Snackbar.make(targetView, R.string.sighting_standard_text, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.sighting_snackbar_action_text, this);
         snackbar.setCallback(this);
-
 
         marker = googleMap.addMarker(new MarkerOptions()
                 .visible(false)
@@ -205,6 +202,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
                 }
                 break;
             case AlertDialog.BUTTON_NEGATIVE:
+                snackbar.setText(R.string.sighting_standard_text);
                 snackbar.show();
                 break;
         }
@@ -231,7 +229,14 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             });
 
         } else {
-            snackbar.setText("Selecteer een geldige locatie!");
+            if(snackbar != null) {
+                snackbar.dismiss();
+                snackbar = null;
+            }
+
+            snackbar = Snackbar.make(targetView, R.string.sighting_invalid_location_text, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.sighting_snackbar_action_text, this);
+            snackbar.setCallback(this);
             snackbar.show();
         }
 
@@ -320,7 +325,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
          * */
         public Builder setTargetView(View view)
         {
-            buffer.snackbar = Snackbar.make(view, "", Snackbar.LENGTH_INDEFINITE);
+            buffer.targetView = view;
             return this;
         }
 
