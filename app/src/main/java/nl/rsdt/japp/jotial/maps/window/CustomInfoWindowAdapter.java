@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -137,6 +138,8 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
     private TextView createTextView(Context context, ViewGroup.LayoutParams params, String text) {
         TextView buffer = new TextView(context);
         buffer.setText(text);
+        buffer.setSingleLine();
+        buffer.setEllipsize(TextUtils.TruncateAt.END);
         buffer.setTextColor(Color.DKGRAY);
         buffer.setLayoutParams(params);
         return buffer;

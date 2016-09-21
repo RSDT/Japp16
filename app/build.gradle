@@ -8,8 +8,8 @@ android {
         applicationId "nl.rsdt.japp"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 18
-        versionName "v1.7.6"
+        versionCode 19
+        versionName "v1.8.0"
         multiDexEnabled true
     }
     applicationVariants.all { variant ->
