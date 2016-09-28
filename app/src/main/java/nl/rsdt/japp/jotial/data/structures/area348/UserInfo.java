@@ -5,8 +5,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.io.IOException;
+
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.application.navigation.NavigationManager;
+import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.net.apis.UserApi;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -201,11 +207,37 @@ public class UserInfo implements Parcelable {
                         appEditor.putString(JappPreferences.ACCOUNT_MEMBER_SINCE, info.sinds);
                         appEditor.putString(JappPreferences.ACCOUNT_LAST_VISIT, info.last);
                         appEditor.putBoolean(JappPreferences.ACCOUNT_ACTIVE, intActiveToBooleanActive(info.actief));
-                        appEditor.putString(JappPreferences.ACCOUNT_RANK, intLvlToStringRank(info.toeganslvl));
                         appEditor.putString(JappPreferences.ACCOUNT_AVATAR, info.avatar);
                         appEditor.apply();
 
                         Log.i("UserInfo", "New UserInfo was collected");
+
+                        /**
+                         * Start a Thread for deleting the InstanceId and deleting avatar.
+                         * */
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    /**
+                                     * Resets Instance ID and revokes all tokens.
+                                     * */
+                                    FirebaseInstanceId.getInstance().deleteInstanceId();
+
+                                    /**
+                                     * Delete the Avatar.
+                                     * */
+                                    AppData.delete(NavigationManager.ACCOUNT_AVATAR_STORAGE);
+                                } catch (IOException e) {
+                                    Log.e(TAG, e.toString(), e);
+                                }
+
+                                /**
+                                 * Get a new token.
+                                 * */
+                                FirebaseInstanceId.getInstance().getToken();
+                            }
+                        }).start();
                     }
                 }
             }

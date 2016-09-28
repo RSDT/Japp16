@@ -39,33 +39,6 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
 
-        /**
-         * Start a Thread for deleting the InstanceId and deleting avatar.
-         * */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    /**
-                     * Resets Instance ID and revokes all tokens.
-                     * */
-                    FirebaseInstanceId.getInstance().deleteInstanceId();
-
-                    /**
-                     * Delete the Avatar.
-                     * */
-                    AppData.delete(NavigationManager.ACCOUNT_AVATAR_STORAGE);
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString(), e);
-                }
-
-                /**
-                 * Get a new token.
-                 * */
-                FirebaseInstanceId.getInstance().getToken();
-            }
-        }).start();
-
         Button button = (Button)findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +60,7 @@ public class LoginActivity extends Activity {
                                     if(result.isSucceeded())
                                     {
                                         UserInfo.collect();
+
                                         if(JappPreferences.isFirstRun())
                                         {
                                             Intent intent = new Intent(LoginActivity.this, IntroActivity.class);

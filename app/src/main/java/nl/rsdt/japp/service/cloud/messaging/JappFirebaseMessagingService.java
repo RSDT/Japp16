@@ -13,8 +13,6 @@ import nl.rsdt.japp.application.Japp;
  */
 public class JappFirebaseMessagingService extends FirebaseMessagingService {
 
-    public static final String TOPIC_UPDATES = "updates";
-
     @Override
     public void onCreate() {
         super.onCreate();

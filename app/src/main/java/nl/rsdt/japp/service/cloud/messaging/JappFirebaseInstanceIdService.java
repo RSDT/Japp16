@@ -42,7 +42,7 @@ public class JappFirebaseInstanceIdService extends FirebaseInstanceIdService {
         api.postToken(FcmPostBody.getDefault().setToken(token)).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.i(TAG, "Refreshed token to the server: " + call.request().body());
+                Log.i(TAG, "Refreshed token to the server");
             }
 
             @Override

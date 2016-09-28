@@ -321,7 +321,6 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
             update();
         }
 
-
         /**
          * Loop trough each controller and call the OnMapReadyCallback.
          * */
