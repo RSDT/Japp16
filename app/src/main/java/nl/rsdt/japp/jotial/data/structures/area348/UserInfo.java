@@ -215,7 +215,5 @@ public class UserInfo implements Parcelable {
                 Log.e(TAG, t.toString(), t);
             }
         });
-
     }
-
 }

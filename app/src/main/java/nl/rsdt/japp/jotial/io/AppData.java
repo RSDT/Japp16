@@ -100,6 +100,11 @@ public class AppData {
         new Thread(new SaveDrawableTask(drawable, filename)).start();
     }
 
+    public static boolean delete(String filename) {
+        File file = new File(fDir, filename);
+        return file.delete();
+    }
+
     /**
      * Gets a object out of the save.
      *
@@ -150,6 +155,19 @@ public class AppData {
             Log.e("AppData", e.toString(), e);
         }
         return null;
+    }
+
+    public static void clear() {
+        /**
+         * Clear data files.
+         * */
+        File dir = fDir;
+        if(dir.exists() && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
+        }
     }
 
     /**

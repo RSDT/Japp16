@@ -8,17 +8,21 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.iid.InstanceID;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker;
+import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask;
@@ -54,23 +58,15 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
          * Checks if the Fresh-Start feature is enabled if so the data of the app is cleared.
          * */
         if(JappPreferences.isFreshStart()) {
-
             /**
              * Clear preferences.
              * */
-            JappPreferences.getAppPreferences().edit().clear().apply();
-            JappPreferences.getVisiblePreferences().edit().clear().apply();
+            JappPreferences.clear();
 
             /**
-             * Clear data files.
+             * Clear all the data files
              * */
-            File dir = getFilesDir();
-            if(dir.exists() && dir.isDirectory()) {
-                String[] children = dir.list();
-                for (int i = 0; i < children.length; i++) {
-                    new File(dir, children[i]).delete();
-                }
-            }
+            AppData.clear();
 
             try {
                 /**
@@ -80,11 +76,6 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
             } catch (IOException e) {
                 Log.e(TAG, e.toString(), e);
             }
-
-            /**
-             * Set the FCM token to a empty String.
-             * */
-            JappPreferences.setFcmToken("");
 
             /**
              * Get a new token.
@@ -203,6 +194,18 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
             public void onFailure(Call<Authentication.ValidateObject> call, Throwable t) {
                 if(t instanceof UnknownHostException) {
                     determineAndStartNewActivity();
+                } else if (t instanceof SocketTimeoutException) {
+                    new AlertDialog.Builder(SplashActivity.this)
+                            .setTitle("Fout tijdens vertificatie")
+                            .setMessage(R.string.splash_activity_socket_timed_out)
+                            .setPositiveButton("Doorgaan naar de app", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    determineAndStartNewActivity();
+                                }
+                            })
+                            .create()
+                            .show();
                 } else {
                     new AlertDialog.Builder(SplashActivity.this)
                             .setTitle("Fout tijdens vertificatie")

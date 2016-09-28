@@ -82,8 +82,8 @@
             -->
             <string name="pref_cat_map">Kaart</string>
 
-            <string name="pref_map_type_title">Uiterlijk</string>
-            <string name="pref_map_type_sum">Verander hier het uiterlijk van de kaart</string>
+            <string name="pref_map_type_title">Type</string>
+            <string name="pref_map_type_sum">Verander hier het type van de kaart</string>
             <string name="pref_map_type_options_def">1</string>
 
             <string-array name="pref_map_type_options">
@@ -99,6 +99,24 @@
                 <item>3</item>
                 <item>4</item>
             </string-array>
+
+            <string name="pref_map_style_title">Stijl</string>
+            <string name="pref_map_style_sum">Verander hier de stijl van de kaart</string>
+            <string name="pref_map_style_options_def">2</string>
+
+            <string-array name="pref_map_style_options">
+                <item>Automatisch</item>
+                <item>Dag</item>
+                <item>Nacht</item>
+            </string-array>
+
+            <string-array name="pref_map_style_options_data">
+                <item>1</item>
+                <item>2</item>
+                <item>3</item>
+            </string-array>
+
+
 
             <!--
             The hunt name section.

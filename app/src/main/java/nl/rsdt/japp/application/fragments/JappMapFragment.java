@@ -355,6 +355,16 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback{
         this.callback = callback;
     }
 
+    public void onStart()  {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
     @Override
     public void onResume() {
         super.onResume();

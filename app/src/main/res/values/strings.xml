@@ -13,4 +13,6 @@
     <string name="pinning_input_dialog_description_hint">beschrijving</string>
 
     <string name="pinning_input_dialog_icon_hint">icon</string>
+
+    <string name="splash_activity_socket_timed_out">Er is een fout opgetreden tijdens het verbinden met area348.nl, je kunt de app offline gebruiken maar sommige functies zoals Hunter/Spotten en updates zullen niet beschikbaar zijn.</string>
 </resources>

@@ -6,15 +6,22 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.io.IOException;
+
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
+import nl.rsdt.japp.jotial.io.AppData;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -24,11 +31,40 @@ import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
  */
 public class LoginActivity extends Activity {
 
+    public static String TAG = "LoginActivity";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
+
+        /**
+         * Start a Thread for deleting the InstanceId and deleting avatar.
+         * */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    /**
+                     * Resets Instance ID and revokes all tokens.
+                     * */
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+
+                    /**
+                     * Delete the Avatar.
+                     * */
+                    AppData.delete(NavigationManager.ACCOUNT_AVATAR_STORAGE);
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString(), e);
+                }
+
+                /**
+                 * Get a new token.
+                 * */
+                FirebaseInstanceId.getInstance().getToken();
+            }
+        }).start();
 
         Button button = (Button)findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {

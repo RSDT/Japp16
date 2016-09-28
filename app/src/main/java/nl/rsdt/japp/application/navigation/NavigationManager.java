@@ -45,6 +45,7 @@ public class NavigationManager extends FragmentNavigationManager implements Shar
 
     public NavigationManager() {
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
+        JappPreferences.getAppPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -60,25 +61,8 @@ public class NavigationManager extends FragmentNavigationManager implements Shar
                 setAvatarDrawable(drawable);
             }
         } else {
-            String filename = JappPreferences.getAccountAvatarName();
-            if(!filename.isEmpty()) {
-                try {
-                    DownloadDrawableTask task = new DownloadDrawableTask(new DownloadDrawableTask.OnDowloadDrawablesCompletedCallback() {
-                        @Override
-                        public void onDownloadDrawablesCompleted(ArrayList<Drawable> drawables) {
-                            if(!drawables.isEmpty()) {
-                                setAvatarDrawable(drawables.get(0));
-                                AppData.saveDrawableInBackground(drawables.get(0), ACCOUNT_AVATAR_STORAGE);
-                            }
-                        }
-                    });
-                    task.execute(new URL(API.SITE_2016_ROOT + "/img/avatar/" + filename));
-                } catch (Exception e) {
-                    Log.e(TAG, e.toString(), e);
-                }
-            }
+            download();
         }
-
     }
 
     @Override
@@ -91,6 +75,29 @@ public class NavigationManager extends FragmentNavigationManager implements Shar
             case JappPreferences.ACCOUNT_RANK:
                 getRankView().setText(sharedPreferences.getString(key, "Unknown"));
                 break;
+            case JappPreferences.ACCOUNT_AVATAR:
+                download();
+                break;
+        }
+    }
+
+    private void download() {
+        String filename = JappPreferences.getAccountAvatarName();
+        if(!filename.isEmpty()) {
+            try {
+                DownloadDrawableTask task = new DownloadDrawableTask(new DownloadDrawableTask.OnDowloadDrawablesCompletedCallback() {
+                    @Override
+                    public void onDownloadDrawablesCompleted(ArrayList<Drawable> drawables) {
+                        if(!drawables.isEmpty()) {
+                            setAvatarDrawable(drawables.get(0));
+                            AppData.saveDrawableInBackground(drawables.get(0), ACCOUNT_AVATAR_STORAGE);
+                        }
+                    }
+                });
+                task.execute(new URL(API.SITE_2016_ROOT + "/img/avatar/" + filename));
+            } catch (Exception e) {
+                Log.e(TAG, e.toString(), e);
+            }
         }
     }
 

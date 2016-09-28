@@ -15,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 
@@ -31,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
@@ -263,6 +265,16 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
                     googleMap.setMapType(Integer.valueOf(value));
                 }
                 break;
+            case JappPreferences.MAP_STYLE:
+                if(googleMap != null) {
+                    int style = Integer.valueOf(sharedPreferences.getString(key, String.valueOf(MapStyle.DAY)));
+                    if(style == MapStyle.AUTO) {
+
+                    } else {
+                        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(style)));
+                    }
+                }
+                break;
         }
     }
 
@@ -285,22 +297,34 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     /**
      * Gets invoked when the GoogleMap is ready for use.
      * */
-    public void onMapReady(final GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
         /**
-         * TODO: Should we hide MapToolbar so we can move the FAB menu down?
+         * Set the type and the style of the map.
          * */
-        //googleMap.getUiSettings().setMapToolbarEnabled(false);
-
         googleMap.setMapType(JappPreferences.getMapType());
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(JappPreferences.getMapStyle())));
 
+        /**
+         * Checks if this is the first instance of MapManager.
+         * */
         if(!isRecreated) {
+            /**
+             * Move the camera to the default position(Netherlands).
+             * */
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
+
+            /**
+             * Update the controllers.
+             * */
+            update();
         }
 
-        update();
-        
+
+        /**
+         * Loop trough each controller and call the OnMapReadyCallback.
+         * */
         for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
             MapItemController controller = pair.getValue();
             if(controller != null)
@@ -316,7 +340,9 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
      * */
     public void onDestroy()
     {
-
+        /**
+         * Unregister this as listener to prevent memory leaks.
+         * */
         JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         /**
@@ -373,14 +399,4 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
         }
         return entries;
     }
-
-    /**
-     * Animates the camera according the given CameraUpdate.
-     * */
-    public void animateCamera(CameraUpdate update)
-    {
-        googleMap.moveCamera(update);
-    }
-
-
 }

@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.GoogleMap;
 
+import nl.rsdt.japp.jotial.maps.MapStyle;
+
 
 /**
  * @author Dingenis Sieger Sinke
@@ -44,6 +46,8 @@ public class JappPreferences {
     public static final String UPDATES_AUTO = "pref_updates_auto";
 
     public static final String MAP_TYPE = "pref_map_type";
+
+    public static final String MAP_STYLE = "pref_map_style";
 
     public static final String MAP_HUNT_NAME = "pref_map_hunt_name";
 
@@ -152,6 +156,10 @@ public class JappPreferences {
         getVisiblePreferences().edit().putString(MAP_TYPE, String.valueOf(type)).apply();
     }
 
+    public static int getMapStyle() {
+        return Integer.valueOf(getVisiblePreferences().getString(MAP_STYLE, String.valueOf(MapStyle.DAY)));
+    }
+
     public static String getHuntname() {
         return getVisiblePreferences().getString(MAP_HUNT_NAME, "");
     }
@@ -214,6 +222,11 @@ public class JappPreferences {
 
     public static float getWalkSpeed() {
         return Float.parseFloat(getVisiblePreferences().getString(WALK_SPEED, "6.0f"));
+    }
+
+    public static void clear() {
+        getVisiblePreferences().edit().clear().apply();
+        getAppPreferences().edit().clear().apply();
     }
 
 }
