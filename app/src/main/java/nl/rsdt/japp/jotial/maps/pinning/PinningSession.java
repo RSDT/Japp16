@@ -42,6 +42,11 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
     private OnPinningCompletedCallback callback;
 
     /**
+     * The view where the Snackbar is going to be made on.
+     * */
+    private View targetView;
+
+    /**
      * The Snackbar that informs the user.
      * */
     private Snackbar snackbar;
@@ -53,7 +58,7 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
 
 
     private void initialize() {
-        snackbar.setText("Markeer een positie op de kaart. Swipe dit weg om te annuleren");
+        snackbar = Snackbar.make(targetView, "Markeer een positie op de kaart. Swipe dit weg om te annuleren", Snackbar.LENGTH_INDEFINITE);;
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
 
@@ -99,7 +104,13 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
                 }
             });
         } else {
-            snackbar.setText("Selecteer een geldige locatie!");
+            if(snackbar != null){
+                snackbar.dismiss();
+                snackbar = null;
+            }
+            snackbar = Snackbar.make(targetView, "Selecteer een geldige locatie!", Snackbar.LENGTH_INDEFINITE);
+            snackbar.setCallback(this);
+            snackbar.setAction("Klaar!", this);
             snackbar.show();
         }
     }
@@ -129,7 +140,8 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
                     callback.onPinningCompleted(Pin.create(googleMap, new Pin.Data(title, description, marker.getPosition(), R.drawable.ic_place_white_48dp)));
                 }
                 break;
-            case DialogInterface.BUTTON_NEGATIVE:l:
+            case DialogInterface.BUTTON_NEGATIVE:
+                snackbar.setText("Markeer een positie op de kaart. Swipe dit weg om te annuleren");
                 snackbar.show();
                 break;
         }
@@ -184,9 +196,8 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
         /**
          * Sets the TargetView of the SightingSession.
          * */
-        public Builder setTargetView(View view)
-        {
-            buffer.snackbar = Snackbar.make(view, "", Snackbar.LENGTH_INDEFINITE);
+        public Builder setTargetView(View view) {
+            buffer.targetView = view;
             return this;
         }
 
