@@ -130,8 +130,8 @@ public class MarkerSpecialSession implements SharedPreferences.OnSharedPreferenc
 
                 if(date != null) {
                     float diffMs = new Date().getTime() - date.getTime();
-                    float diffH = diffMs / 1000 / 60 / 60;
-                    size = diffH * speed;
+                    float diffS = diffMs / 1000;
+                    size = diffS * (speed / 3.6f );
                 }
                 if(circle != null) {
                     circle.setRadius(size);
