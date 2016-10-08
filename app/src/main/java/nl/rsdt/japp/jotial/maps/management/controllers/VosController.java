@@ -1,5 +1,7 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -179,7 +181,21 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                         current.setIcon(SightingIcon.LAST_LOCATION);
                     }
                 }
-                mOptions.icon(BitmapDescriptorFactory.fromResource(current.getAssociatedDrawable()));
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                switch (current.getIcon()) {
+                    case SightingIcon.DEFAULT:
+                        options.inSampleSize = 4;
+                        break;
+                    case SightingIcon.HUNT:
+                        options.inSampleSize = 1;
+                        break;
+                    case SightingIcon.LAST_LOCATION:
+                        options.inSampleSize = 1;
+                        break;
+                }
+                Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), current.getAssociatedDrawable(), options);
+                mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
                 result.add(mOptions);
 

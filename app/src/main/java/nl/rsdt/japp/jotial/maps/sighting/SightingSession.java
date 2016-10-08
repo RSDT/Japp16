@@ -31,7 +31,7 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
  * @since 13-7-2016
  * Class for Sighting
  */
-public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, GoogleMap.SnapshotReadyCallback {
+public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, GoogleMap.SnapshotReadyCallback, GoogleMap.OnMapClickListener {
 
     /**
      * Defines the SightingSession type HUNT.
@@ -132,64 +132,62 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     /**
      * Starts the SightingSession.
      * */
-    public void start()
-    {
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                lastLatLng = latLng;
-
-                marker.setPosition(latLng);
-
-                boolean updateMarker = false;
-
-                if(deelgebied == null)
-                {
-                    deelgebied = Deelgebied.resolveOnLocation(latLng);
-                    updateMarker = true;
-                }
-                else
-                {
-                    if(!deelgebied.containsLocation(latLng))
-                    {
-                        deelgebied = null;
-                        deelgebied = Deelgebied.resolveOnLocation(latLng);
-                        updateMarker = true;
-                    }
-                }
-
-                if(deelgebied != null && updateMarker)
-                {
-                    String icon = null;
-                    switch (type)
-                    {
-                        case SIGHT_HUNT:
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableHunt()));
-                            icon = String.valueOf(deelgebied.getDrawableHunt());
-                            break;
-                        case SIGHT_SPOT:
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableSpot()));
-                            icon = String.valueOf(deelgebied.getDrawableSpot());
-                            break;
-                    }
-
-                    MarkerIdentifier identifier = new MarkerIdentifier.Builder()
-                            .setType(MarkerIdentifier.TYPE_SIGHTING)
-                            .add("text", type)
-                            .add("icon", icon)
-                            .create();
-                    marker.setTitle(new Gson().toJson(identifier));
-                }
-
-                if(!marker.isVisible()) {
-                    marker.setVisible(true);
-                }
-
-            }
-        });
-
+    public void start() {
+        googleMap.setOnMapClickListener(this);
         snackbar.show();
     }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        lastLatLng = latLng;
+
+        marker.setPosition(latLng);
+
+        boolean updateMarker = false;
+
+        if(deelgebied == null)
+        {
+            deelgebied = Deelgebied.resolveOnLocation(latLng);
+            updateMarker = true;
+        }
+        else
+        {
+            if(!deelgebied.containsLocation(latLng))
+            {
+                deelgebied = null;
+                deelgebied = Deelgebied.resolveOnLocation(latLng);
+                updateMarker = true;
+            }
+        }
+
+        if(deelgebied != null && updateMarker)
+        {
+            String icon = null;
+            switch (type)
+            {
+                case SIGHT_HUNT:
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableHunt()));
+                    icon = String.valueOf(deelgebied.getDrawableHunt());
+                    break;
+                case SIGHT_SPOT:
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableSpot()));
+                    icon = String.valueOf(deelgebied.getDrawableSpot());
+                    break;
+            }
+
+            MarkerIdentifier identifier = new MarkerIdentifier.Builder()
+                    .setType(MarkerIdentifier.TYPE_SIGHTING)
+                    .add("text", type)
+                    .add("icon", icon)
+                    .create();
+            marker.setTitle(new Gson().toJson(identifier));
+        }
+
+        if(!marker.isVisible()) {
+            marker.setVisible(true);
+        }
+    }
+
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
