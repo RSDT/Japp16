@@ -177,7 +177,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
 
                 int last = data.size() - 1;
                 if(i == last) {
-                    if(current.getIcon() == SightingIcon.DEFAULT) {
+                    if(current.getIcon() == SightingIcon.DEFAULT || current.getIcon() == SightingIcon.INVALID) {
                         current.setIcon(SightingIcon.LAST_LOCATION);
                     }
                 }
@@ -194,6 +194,9 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                         options.inSampleSize = 2;
                         break;
                     case SightingIcon.LAST_LOCATION:
+                        options.inSampleSize = 2;
+                        break;
+                    default:
                         options.inSampleSize = 2;
                         break;
                 }

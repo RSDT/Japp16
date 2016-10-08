@@ -14,6 +14,8 @@ public class SightingIcon {
 
     public static final int DEFAULT = 0;
 
+    public static final int INVALID = 2;
+
     public static final int LAST_LOCATION = 1;
 
 }
