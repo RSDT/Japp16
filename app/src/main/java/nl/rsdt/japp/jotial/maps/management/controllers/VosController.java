@@ -190,6 +190,9 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                     case SightingIcon.HUNT:
                         options.inSampleSize = 1;
                         break;
+                    case SightingIcon.SPOT:
+                        options.inSampleSize = 1;
+                        break;
                     case SightingIcon.LAST_LOCATION:
                         options.inSampleSize = 1;
                         break;

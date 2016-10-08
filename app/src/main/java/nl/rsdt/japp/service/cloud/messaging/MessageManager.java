@@ -57,7 +57,7 @@ public class MessageManager {
                         }
                     }
                 }
-            } else if(type.startsWith("vos")) {
+            } else if(type.startsWith("vos") || type.equals("foto") || type.equals("sc")) {
                 if(listeners.size() > 0)  {
                     UpdateInfo info = UpdateInfo.parse(data);
                     if(info != null && info.type != null && info.action != null) {
