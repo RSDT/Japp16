@@ -188,13 +188,13 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                         options.inSampleSize = 4;
                         break;
                     case SightingIcon.HUNT:
-                        options.inSampleSize = 1;
+                        options.inSampleSize = 2;
                         break;
                     case SightingIcon.SPOT:
-                        options.inSampleSize = 1;
+                        options.inSampleSize = 2;
                         break;
                     case SightingIcon.LAST_LOCATION:
-                        options.inSampleSize = 1;
+                        options.inSampleSize = 2;
                         break;
                 }
                 Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), current.getAssociatedDrawable(), options);
