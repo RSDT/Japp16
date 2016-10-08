@@ -2,6 +2,7 @@ package nl.rsdt.japp.application.activities;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -108,6 +109,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if(JappPreferences.getAccountUsername().equals("David")) {
+            MediaPlayer player = MediaPlayer.create(this, R.raw.shaco_tank_engine);
+            player.start();
+        }
 
         /**
          * Checks if this is the first run of the app.
