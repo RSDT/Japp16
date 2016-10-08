@@ -238,7 +238,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Move the camera to the before position
              * */
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(before));
+            //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(before));
 
             activeSession = null;
         }
