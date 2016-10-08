@@ -165,7 +165,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                         .add("extra", current.getExtra())
                         .add("time", current.getDatetime())
                         .add("icon", String.valueOf(current.getAssociatedDrawable()))
-                        .add("color", String.valueOf(Color.argb(120, 255, 255, 255)))
+                        .add("color", String.valueOf(current.getAssociatedColor(130)))
                         .create();
 
                 MarkerOptions mOptions = new MarkerOptions();
