@@ -100,7 +100,9 @@ public abstract class LocationProviderService<B extends Binder> extends Service 
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, connectionResult.getErrorMessage());
+        String error = connectionResult.getErrorMessage();
+        if(error == null) error = connectionResult.toString();
+        Log.e(TAG, error);
     }
 
     public void onDestroy() {

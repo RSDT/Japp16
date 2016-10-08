@@ -34,6 +34,7 @@ import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
+import nl.rsdt.japp.jotial.maps.misc.KmlLoader;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.MapManager;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
