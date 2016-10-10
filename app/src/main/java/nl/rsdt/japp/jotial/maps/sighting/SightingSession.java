@@ -31,7 +31,7 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
  * @since 13-7-2016
  * Class for Sighting
  */
-public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, GoogleMap.SnapshotReadyCallback, GoogleMap.OnMapClickListener {
+public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, GoogleMap.SnapshotReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.CancelableCallback {
 
     /**
      * Defines the SightingSession type HUNT.
@@ -57,6 +57,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
      * The Marker that indicates the location.
      * */
     private Marker marker;
+
+    /**
+     * The Context used for creating dialogs etc.
+     * */
+    private Context context;
 
     /**
      * The view where the Snackbar is going to be made on.
@@ -113,6 +118,15 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
                 .visible(false)
                 .position(new LatLng(0,0))
                 .icon(descriptor));
+
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.sighting_input_dialog, null);
+        dialog = new AlertDialog.Builder(context)
+                .setCancelable(false)
+                .setPositiveButton("Bevestigen", this)
+                .setNegativeButton("Annuleren", this)
+                .setView(view)
+                .create();
     }
 
     @Override
@@ -208,37 +222,32 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if(deelgebied != null) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), new GoogleMap.CancelableCallback() {
-                @Override
-                public void onFinish() {
-                    if(dialog != null) {
-                        dialog.show();
-                        ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
-                        ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
-                    }
-                    googleMap.snapshot(SightingSession.this);
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
-
-        } else {
-            if(snackbar != null) {
-                snackbar.dismiss();
-                snackbar = null;
-            }
-
-            snackbar = Snackbar.make(targetView, R.string.sighting_invalid_location_text, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction(R.string.sighting_snackbar_action_text, this);
-            snackbar.setCallback(this);
-            snackbar.show();
+        if(deelgebied == null) {
+            deelgebied = Deelgebied.Xray;
         }
-
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), this);
     }
+
+    @Override
+    public void onFinish() {
+        if(dialog != null) {
+            dialog.show();
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+        }
+        googleMap.snapshot(SightingSession.this);
+    }
+
+    @Override
+    public void onCancel() {
+        if(dialog != null) {
+            dialog.show();
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+        }
+        googleMap.snapshot(SightingSession.this);
+    }
+
 
     @Override
     public void onSnapshotReady(Bitmap bitmap) {
@@ -286,7 +295,6 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
 
     }
 
-
     /**
      * @author Dingenis Sieger Sinke
      * @version 1.0
@@ -331,14 +339,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
          * Sets the Context for the Dialog of the SightingSession.
          * */
         public Builder setDialogContext(Context context) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.sighting_input_dialog, null);
-            buffer.dialog = new AlertDialog.Builder(context)
-                    .setCancelable(false)
-                    .setPositiveButton("Bevestigen", buffer)
-                    .setNegativeButton("Annuleren", buffer)
-                    .setView(view)
-                    .create();
+            buffer.context = context;
             return this;
         }
 
