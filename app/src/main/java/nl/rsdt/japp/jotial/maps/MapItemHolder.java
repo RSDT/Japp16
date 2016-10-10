@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps;
 
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
@@ -19,5 +20,7 @@ public interface MapItemHolder {
     ArrayList<Polyline> getPolylines();
 
     ArrayList<Polygon> getPolygons();
+
+    ArrayList<Circle> getCircles();
 
 }

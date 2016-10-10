@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -117,10 +118,28 @@ public abstract class AbstractTransducer<I, O extends AbstractTransducer.Result>
             return polygons;
         }
 
+        /**
+         * The Circle list.
+         */
+        protected ArrayList<CircleOptions> circles;
+
+        /**
+         * Adds a CircleOptions object to the polygon list.
+         */
+        public void add(CircleOptions options) { circles.add(options); }
+
+        /**
+         * Gets the circles.
+         * */
+        public ArrayList<CircleOptions> getCircles() {
+            return circles;
+        }
+
         protected Result() {
             markers = new ArrayList<>();
             polylines = new ArrayList<>();
             polygons = new ArrayList<>();
+            circles = new ArrayList<>();
         }
 
         /**
@@ -133,6 +152,7 @@ public abstract class AbstractTransducer<I, O extends AbstractTransducer.Result>
             markers = in.createTypedArrayList(MarkerOptions.CREATOR);
             polylines = in.createTypedArrayList(PolylineOptions.CREATOR);
             polygons = in.createTypedArrayList(PolygonOptions.CREATOR);
+            circles = in.createTypedArrayList(CircleOptions.CREATOR);
         }
 
         @Override
@@ -141,6 +161,7 @@ public abstract class AbstractTransducer<I, O extends AbstractTransducer.Result>
             dest.writeTypedList(markers);
             dest.writeTypedList(polylines);
             dest.writeTypedList(polygons);
+            dest.writeTypedList(circles);
         }
     }
 

@@ -4,10 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -31,6 +34,7 @@ import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
+import nl.rsdt.japp.jotial.maps.misc.VosUtils;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import retrofit2.Call;
@@ -42,6 +46,10 @@ import retrofit2.Call;
  * Description...
  */
 public abstract class VosController extends StandardMapItemController<VosInfo, VosController.VosTransducer.Result> {
+
+    private Handler handler = new Handler();
+
+    private UpdateCircleRunnable runnable = new UpdateCircleRunnable();
 
     public abstract String getTeam();
 
@@ -78,6 +86,12 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
             }
         }
         return null;
+    }
+
+    @Override
+    protected void processResult(VosTransducer.Result result) {
+        super.processResult(result);
+        handler.post(runnable);
     }
 
     @Override
@@ -180,6 +194,20 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                     if(current.getIcon() == SightingIcon.DEFAULT || current.getIcon() == SightingIcon.INVALID) {
                         current.setIcon(SightingIcon.LAST_LOCATION);
                     }
+
+                    double diff = VosUtils.calculateTimeDifferenceInHoursFromNow(VosUtils.parseDate(current.getDatetime()));
+
+                    /**
+                     * If the VosInfo is younger or equal than 2 hours: show a circle indicating where the vos team could have walked
+                     * */
+                    if(diff > 0 && diff <= 2) {
+                        CircleOptions cOptions = new CircleOptions();
+                        cOptions.center(current.getLatLng());
+                        cOptions.fillColor(current.getAssociatedColor(80));
+                        cOptions.strokeWidth(0);
+                        cOptions.radius(VosUtils.calculateRadius(current.getDatetime(), JappPreferences.getWalkSpeed()));
+                        result.add(cOptions);
+                    }
                 }
 
                 BitmapFactory.Options options = new BitmapFactory.Options();
@@ -247,6 +275,42 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
             };
         }
 
+    }
+
+    private class UpdateCircleRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            if(!circles.isEmpty()) {
+                Circle circle = circles.get(0);
+
+                int last = items.size() - 1;
+                VosInfo info = items.get(last);
+
+                /**
+                 * Parse the date.
+                 * */
+                Date date = VosUtils.parseDate(info.getDatetime());
+
+                /**
+                 * Calculate the difference in time between the vos date and now.
+                 * */
+                double diff = VosUtils.calculateTimeDifferenceInHoursFromNow(date);
+
+                /**
+                 * If the VosInfo is younger or equal than 2 hours: show a circle indicating where the vos team could have walked
+                 * */
+                if(diff > 0 && diff <= 2) {
+                    circle.setRadius(VosUtils.calculateRadius(date, JappPreferences.getWalkSpeed()));
+                    if(JappPreferences.isAutoEnlargementEnabled()) {
+                        handler.postDelayed(this, (long)JappPreferences.getAutoEnlargementIntervalInMs());
+                    }
+                } else {
+                    circle.remove();
+                    circles.remove(circle);
+                }
+            }
+        }
     }
 
 }

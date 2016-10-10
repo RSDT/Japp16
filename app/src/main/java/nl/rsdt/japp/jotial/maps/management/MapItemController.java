@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
@@ -73,6 +75,13 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
     @Override
     public ArrayList<Polygon> getPolygons() {
         return polygons;
+    }
+
+    public ArrayList<Circle> circles = new ArrayList<>();
+
+    @Override
+    public ArrayList<Circle> getCircles() {
+        return circles;
     }
 
     protected O buffer;
@@ -176,6 +185,12 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         {
             this.polygons.add(googleMap.addPolygon(polygons.get(g)));
         }
+
+        ArrayList<CircleOptions> circles = result.getCircles();
+        for(int c = 0; c < circles.size(); c++)
+        {
+            this.circles.add(googleMap.addCircle(circles.get(c)));
+        }
     }
 
     protected void clear() {
@@ -193,6 +208,12 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
             polygons.get(i).remove();
         }
         polygons.clear();
+
+        for(int i = 0; i < circles.size(); i++) {
+            circles.get(i).remove();
+        }
+        circles.clear();
+
     }
 
 
