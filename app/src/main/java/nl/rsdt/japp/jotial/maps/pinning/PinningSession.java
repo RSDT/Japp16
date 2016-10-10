@@ -24,7 +24,7 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
  * @since 8-9-2016
  * Description...
  */
-public class PinningSession extends Snackbar.Callback implements OnMapReadyCallback, GoogleMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener {
+public class PinningSession extends Snackbar.Callback implements OnMapReadyCallback, GoogleMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, GoogleMap.CancelableCallback {
 
     /**
      * The GoogleMap used to create markers.
@@ -90,19 +90,7 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
     @Override
     public void onClick(View view) {
         if(marker.isVisible()) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 12), new GoogleMap.CancelableCallback() {
-                @Override
-                public void onFinish() {
-                    if(dialog != null) {
-                        dialog.show();
-                        ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText("Bevestig de markering");
-                    }
-                }
-
-                @Override
-                public void onCancel() {
-                }
-            });
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 12), this);
         } else {
             if(snackbar != null){
                 snackbar.dismiss();
@@ -112,6 +100,23 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
             snackbar.setCallback(this);
             snackbar.setAction("Klaar!", this);
             snackbar.show();
+        }
+    }
+
+
+    @Override
+    public void onFinish() {
+        if(dialog != null) {
+            dialog.show();
+            ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText("Bevestig de markering");
+        }
+    }
+
+    @Override
+    public void onCancel() {
+        if(dialog != null) {
+            dialog.show();
+            ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText("Bevestig de markering");
         }
     }
 
