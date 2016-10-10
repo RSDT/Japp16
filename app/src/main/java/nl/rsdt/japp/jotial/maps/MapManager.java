@@ -280,10 +280,12 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
                 Set<String> set = sharedPreferences.getStringSet(key, null);
                 if(set != null) {
                     for(String property : set) {
-                        googleMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
-                        googleMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
-                        googleMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
-                        googleMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
+                        if(googleMap != null) {
+                            googleMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
+                            googleMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
+                            googleMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
+                            googleMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
+                        }
                     }
                 }
                 break;
