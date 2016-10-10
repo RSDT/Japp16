@@ -1,5 +1,7 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -288,7 +290,11 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
                 MarkerOptions mOptions = new MarkerOptions();
                 mOptions.title(new Gson().toJson(identifier));
                 mOptions.position(lastestInfo.getLatLng());
-                mOptions.icon(BitmapDescriptorFactory.fromResource(lastestInfo.getAssociatedDrawable()));
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 2;
+                Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), lastestInfo.getAssociatedDrawable(), options);
+                mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
                 result.add(mOptions);
 
