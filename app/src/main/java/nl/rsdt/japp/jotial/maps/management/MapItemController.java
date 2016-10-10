@@ -232,7 +232,6 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     @Override
     public void onDestroy() {
-
         if(markers != null)
         {
             markers.clear();

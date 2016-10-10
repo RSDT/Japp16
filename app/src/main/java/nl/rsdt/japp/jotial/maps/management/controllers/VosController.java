@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -45,13 +46,17 @@ import retrofit2.Call;
  * @since 31-7-2016
  * Description...
  */
-public abstract class VosController extends StandardMapItemController<VosInfo, VosController.VosTransducer.Result> {
+public abstract class VosController extends StandardMapItemController<VosInfo, VosController.VosTransducer.Result> implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private Handler handler = new Handler();
 
     private UpdateCircleRunnable runnable = new UpdateCircleRunnable();
 
     public abstract String getTeam();
+
+    public VosController() {
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
+    }
 
     @Override
     public Call<ArrayList<VosInfo>> update(String mode) {
@@ -108,6 +113,34 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
         return entries;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
+            case JappPreferences.AUTO_ENLARGMENT:
+                handler.removeCallbacks(runnable);
+                if(sharedPreferences.getBoolean(key, true)) {
+                    handler.post(runnable);
+                } else {
+                    handler.removeCallbacks(runnable);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if(handler != null) {
+            if(runnable != null) {
+                handler.removeCallbacks(runnable);
+            }
+            handler = null;
+            runnable = null;
+        }
+
+        JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 
     public static class VosTransducer extends AbstractTransducer<ArrayList<VosInfo>, VosTransducer.Result>
     {

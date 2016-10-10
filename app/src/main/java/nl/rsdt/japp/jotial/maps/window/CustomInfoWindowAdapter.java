@@ -1,11 +1,9 @@
 package nl.rsdt.japp.jotial.maps.window;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import nl.rsdt.japp.R;
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
-import nl.rsdt.japp.jotial.data.structures.area348.VosInfo;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
@@ -38,7 +32,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
 
     private GoogleMap googleMap;
 
-    private MarkerSpecialSession session;
+    private ScoutingGroepClickSession session;
 
     public CustomInfoWindowAdapter(LayoutInflater inflater, GoogleMap googleMap) {
         this.inflater = inflater;
@@ -130,7 +124,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
             }
 
             if(create) {
-                session = new MarkerSpecialSession.Builder()
+                session = new ScoutingGroepClickSession.Builder()
                         .setMarker(marker)
                         .setGoogleMap(googleMap)
                         .create();
