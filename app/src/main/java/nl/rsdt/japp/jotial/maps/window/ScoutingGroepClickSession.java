@@ -7,6 +7,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 
+import nl.rsdt.japp.jotial.data.structures.area348.VosInfo;
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
@@ -37,10 +39,11 @@ public class ScoutingGroepClickSession {
             MarkerIdentifier identifier = new Gson().fromJson(marker.getTitle(), MarkerIdentifier.class);
             switch (identifier.getType()) {
                 case MarkerIdentifier.TYPE_SC:
+                    String team = identifier.getProperties().get("team");
                     circle = googleMap.addCircle(new CircleOptions()
                             .center(marker.getPosition())
                             .radius(500)
-                            .fillColor(Color.parseColor("#663300"))
+                            .fillColor(VosInfo.getAssociatedColor(team, 100))
                             .strokeWidth(0));
                     break;
             }

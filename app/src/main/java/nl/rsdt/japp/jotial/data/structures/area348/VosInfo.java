@@ -319,7 +319,7 @@ public class VosInfo extends BaseInfo implements Parcelable {
     }
 
     public static int getAssociatedColor(String team, int alpha) {
-        switch (team)
+        switch (team.toLowerCase())
         {
             case "a":
                 return Color.argb(alpha, 255, 0, 0);

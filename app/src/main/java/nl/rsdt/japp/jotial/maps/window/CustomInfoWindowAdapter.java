@@ -62,17 +62,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                     layout.addView(createTextView(context, params, properties.get("extra")));
                     layout.addView(createTextView(context, params, properties.get("time")));
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
-
-                    if(session != null) {
-                        if(!session.getType().equals(MarkerIdentifier.TYPE_VOS)) {
-                            end = true;
-                            create = true;
-                        } else {
-                            end = true;
-                        }
-                    } else {
-                        create = true;
-                    }
                     break;
                 case MarkerIdentifier.TYPE_FOTO:
                     layout.addView(createTextView(context, params, properties.get("info")));

@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.GoogleMap;
 
+import java.util.Set;
+
 import nl.rsdt.japp.jotial.maps.MapStyle;
 
 
@@ -50,6 +52,8 @@ public class JappPreferences {
     public static final String MAP_STYLE = "pref_map_style";
 
     public static final String MAP_HUNT_NAME = "pref_map_hunt_name";
+
+    public static final String MAP_CONTROLS = "pref_map_controls";
 
     public static final String FOLLOW_ZOOM = "pref_follow_zoom";
 
@@ -162,6 +166,10 @@ public class JappPreferences {
 
     public static String getHuntname() {
         return getVisiblePreferences().getString(MAP_HUNT_NAME, "");
+    }
+
+    public static Set<String> getMapControls() {
+        return getVisiblePreferences().getStringSet(MAP_CONTROLS, null);
     }
 
     public static float getFollowZoom() {

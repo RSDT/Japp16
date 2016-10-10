@@ -61,6 +61,16 @@
             android:key="pref_map_hunt_name"
             android:summary="@string/pref_map_hunt_name_sum" />
 
+        <MultiSelectListPreference
+            android:dialogTitle="@string/pref_map_controls_dialog_title"
+            android:key="pref_map_controls"
+            android:title="@string/pref_map_controls_options_title"
+            android:summary="@string/pref_map_controls_options_sum"
+            android:entries="@array/pref_map_controls_options"
+            android:entryValues="@array/pref_map_controls_options_data"
+            android:defaultValue="@array/pref_map_controls_options_def"
+            />
+
     </PreferenceCategory>
 
 

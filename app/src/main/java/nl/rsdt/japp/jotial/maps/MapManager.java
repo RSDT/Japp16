@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 
 import nl.rsdt.japp.R;
@@ -275,6 +276,17 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
                     }
                 }
                 break;
+            case JappPreferences.MAP_CONTROLS:
+                Set<String> set = sharedPreferences.getStringSet(key, null);
+                if(set != null) {
+                    for(String property : set) {
+                        googleMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
+                        googleMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
+                        googleMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
+                        googleMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
+                    }
+                }
+                break;
         }
     }
 
@@ -305,6 +317,16 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
          * */
         googleMap.setMapType(JappPreferences.getMapType());
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(JappPreferences.getMapStyle())));
+
+        Set<String> controls = JappPreferences.getMapControls();
+        if(controls != null) {
+            for(String property : controls) {
+                googleMap.getUiSettings().setZoomControlsEnabled(controls.contains(String.valueOf(MapControls.ZOOM)));
+                googleMap.getUiSettings().setCompassEnabled(controls.contains(String.valueOf(MapControls.COMPASS)));
+                googleMap.getUiSettings().setIndoorLevelPickerEnabled(controls.contains(String.valueOf(MapControls.LEVEL)));
+                googleMap.getUiSettings().setMapToolbarEnabled(controls.contains(String.valueOf(MapControls.TOOLBAR)));
+            }
+        }
 
         /**
          * Checks if this is the first instance of MapManager.

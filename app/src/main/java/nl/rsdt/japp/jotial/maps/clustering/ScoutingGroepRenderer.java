@@ -36,6 +36,7 @@ public class ScoutingGroepRenderer extends DefaultClusterRenderer<ScoutingGroepI
                 .setType(MarkerIdentifier.TYPE_SC)
                 .add("name", item.naam)
                 .add("adres", item.adres)
+                .add("team", item.team)
                 .create();
 
         markerOptions.title(new Gson().toJson(identifier));
