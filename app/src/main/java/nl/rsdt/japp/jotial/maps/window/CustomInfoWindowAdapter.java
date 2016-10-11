@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 
 /**
@@ -101,6 +102,15 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                     layout.addView(createTextView(context, params, properties.get("title")));
                     layout.addView(createTextView(context, params, properties.get("description")));
                     layout.addView(createTextView(context, params, "Houd dit lang ingedrukt om te verwijderen"));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
+                    break;
+                case MarkerIdentifier.TYPE_ME:
+                    String name = JappPreferences.getHuntname();
+                    if(name.isEmpty()) {
+                        name = JappPreferences.getAccountUsername();
+                    }
+
+                    layout.addView(createTextView(context, params, name));
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
             }

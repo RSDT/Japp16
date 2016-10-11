@@ -1,11 +1,16 @@
 package nl.rsdt.japp.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.LocationRequest;
@@ -13,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody;
@@ -34,6 +40,8 @@ public class LocationService extends LocationProviderService {
 
     private final LocationBinder binder = new LocationBinder();
 
+    private boolean wasSending = false;
+
     Calendar lastUpdate = Calendar.getInstance();
 
     @Override
@@ -54,7 +62,33 @@ public class LocationService extends LocationProviderService {
 
         long dif = Calendar.getInstance().getTimeInMillis() - lastUpdate.getTimeInMillis();
 
-        if(JappPreferences.isUpdatingLocationToServer()) {
+        boolean shouldSend = JappPreferences.isUpdatingLocationToServer();
+
+        if(shouldSend != wasSending) {
+
+            String title;
+            int color;
+            if(shouldSend) {
+                title = "Japp verzendt je locatie";
+                color = Color.rgb(113, 244, 66);
+            } else {
+                title = "Japp verzendt je locatie niet";
+                color = Color.rgb(244, 66, 66);
+            }
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setContentTitle(title)
+                    .setContentText("Klik om Japp te openen")
+                    .setSmallIcon(R.drawable.ic_my_location_white_48dp)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                    .setColor(color)
+                    .setOngoing(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build();
+            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mNotifyMgr.notify(1923, notification);
+        }
+
+        if(shouldSend) {
             if(dif >= Math.round(JappPreferences.getLocationUpdateIntervalInMs())) {
                 HunterPostBody builder = HunterPostBody.getDefault();
                 builder.setLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -73,6 +107,7 @@ public class LocationService extends LocationProviderService {
                 });
 
                 lastUpdate = Calendar.getInstance();
+                wasSending = true;
             }
         }
     }

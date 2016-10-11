@@ -34,7 +34,7 @@ public class ScoutingGroepClusterManager extends ClusterManager<ScoutingGroepInf
         setAlgorithm(algorithm);
         renderer = new ScoutingGroepRenderer(context, map, this);
         setRenderer(renderer);
-        map.setOnCameraChangeListener(this);
+        map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
     }
 

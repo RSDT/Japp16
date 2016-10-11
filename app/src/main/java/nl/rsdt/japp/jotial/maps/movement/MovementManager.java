@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
@@ -154,12 +156,19 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+
+        MarkerIdentifier identifier = new MarkerIdentifier.Builder()
+                .setType(MarkerIdentifier.TYPE_ME)
+                .add("icon", String.valueOf(R.drawable.me))
+                .create();
+
         marker = googleMap.addMarker(
                 new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
                         .position(new LatLng(52.021818, 6.059603))
                         .visible(false)
-                        .flat(true));
+                        .flat(true)
+                        .title(new Gson().toJson(identifier)));
 
         tail = googleMap.addPolyline(
                 new PolylineOptions()
