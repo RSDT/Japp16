@@ -28,6 +28,7 @@ import java.util.List;
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.misc.SearchSuggestionsAdapter;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 
@@ -63,11 +64,6 @@ public class MainActivity extends AppCompatActivity
      * Manages the navigation between the fragments.
      * */
     private NavigationManager navigationManager = new NavigationManager();
-
-    /**
-     * Manages the searching.
-     * */
-    private SearchManager searchManager = new SearchManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,55 +242,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
-
-    public class SearchManager implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
-
-        protected Menu menu;
-
-        public void onCreateOptionsMenu(Menu menu) {
-            // Get the SearchView and set the searchable configuration
-            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-            searchView.setOnQueryTextListener(this);
-            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-            searchView.setSuggestionsAdapter(new SearchSuggestionsAdapter(MainActivity.this, mapManager));
-            searchView.setOnSuggestionListener(this);
-            this.menu = menu;
-        }
-
-        @Override
-        public boolean onQueryTextSubmit(String query) {
-            return false;
-        }
-
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            return false;
-        }
-
-        @Override
-        public boolean onSuggestionSelect(int position) {
-            return false;
-        }
-
-        @Override
-        public boolean onSuggestionClick(int position) {
-            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-            SearchSuggestionsAdapter adapter = (SearchSuggestionsAdapter) searchView.getSuggestionsAdapter();
-            SearchSuggestionsAdapter.SuggestionsCursor cursor = (SearchSuggestionsAdapter.SuggestionsCursor)adapter.getItem(0);
-            List<String> entries = cursor.getEntries();
-            String chosen = entries.get(position);
-            searchView.setQuery(chosen, false);
-            onQueryTextSubmit(chosen);
-            searchView.clearFocus();
-            return false;
-        }
-
-
-
-
-    }
-
     @Override
     /**
      * TODO: don't use final here
@@ -303,6 +250,14 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.refresh:
                 mapManager.update();
+
+                /**
+                 * Update the vos status on the home fragment.
+                 * */
+                HomeFragment fragment = (HomeFragment) navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_HOME);
+                if(fragment != null) {
+                    fragment.refresh();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -386,9 +341,6 @@ public class MainActivity extends AppCompatActivity
             navigationManager = null;
         }
 
-        if(searchManager != null) {
-            searchManager = null;
-        }
     }
 
 }

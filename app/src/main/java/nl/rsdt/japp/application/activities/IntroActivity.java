@@ -26,8 +26,7 @@ public class IntroActivity extends AppIntro {
         addSlide(AppIntroFragment.newInstance("Welkom", "Welkom bij de Jotihunt app voor de RP", R.drawable.rp_logo_500x500, Color.parseColor("#993333")));
         addSlide(AppIntroFragment.newInstance("Kaart", "Bekijk de vossen, scouting-groepen, foto-opdrachten en de andere hunters op de kaart", R.drawable.map_example, Color.parseColor("#66ccff")));
         addSlide(AppIntroFragment.newInstance("Waarnemen & melden", "Spot of hunt een vos via de app", R.drawable.spot_example, Color.parseColor("#99cc00")));
-        addSlide(AppIntroFragment.newInstance("Zoeken", "Zoek een Scoutinggroeg op of een andere hunter", R.drawable.search_example, Color.parseColor("#ff9900")));
-        addSlide(AppIntroFragment.newInstance("Automatische Updates", "Wanneer de app actief is wordt alles automatisch bijgewerkt! Verander voorkeuren in de Instellingen onder updates", R.drawable.ic_menu_camera, Color.parseColor("#993399")));
+        addSlide(AppIntroFragment.newInstance("Automatische Updates", "Wanneer de app actief is wordt alles automatisch bijgewerkt! Verander voorkeuren in de Instellingen onder updates", R.drawable.ic_action_refresh, Color.parseColor("#993399")));
 
         // OPTIONAL METHODS
         // Override bar/separator color.

@@ -1,5 +1,6 @@
 package nl.rsdt.japp.application.navigation;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -56,6 +57,14 @@ public class FragmentNavigationManager {
     private JappPreferenceFragment preferenceFragment;
 
     private AboutFragment aboutFragment;
+
+    public Fragment getFragment(String tag) {
+        switch(tag) {
+            case FRAGMENT_HOME:
+                return homeFragment;
+        }
+        return null;
+    }
 
     public boolean hasBackStack() {
         return !backstack.isEmpty();

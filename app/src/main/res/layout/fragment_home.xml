@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/fragment_home_alpha"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_red_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_vertical"
+            android:textColor="@android:color/white"
+            android:text="Alpha"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_home_bravo"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_red_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_vertical"
+            android:textColor="@android:color/white"
+            android:text="Bravo"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_home_charlie"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_red_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_vertical"
+            android:textColor="@android:color/white"
+            android:text="Charlie"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_home_delta"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_red_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_vertical"
+            android:textColor="@android:color/white"
+            android:text="Delta"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_home_echo"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_red_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_vertical"
+            android:textColor="@android:color/white"
+            android:text="Echo"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_home_foxtrot"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_red_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_vertical"
+            android:textColor="@android:color/white"
+            android:text="Foxtrot"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
+</LinearLayout>

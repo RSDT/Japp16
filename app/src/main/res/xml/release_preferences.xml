@@ -90,28 +90,6 @@
 
     </PreferenceCategory>
 
-
-    <PreferenceCategory android:title="@string/pref_cat_notifications">
-
-        <CheckBoxPreference
-            android:title="@string/pref_notifications_title"
-            android:key="pref_notifications"
-            android:summary="@string/pref_notifications_sum"
-            android:defaultValue="true"/>
-
-        <MultiSelectListPreference
-            android:dialogTitle="@string/pref_notifications_options_dialog_title"
-            android:key="pref_notifications_options"
-            android:title="@string/pref_notifications_options_title"
-            android:summary="@string/pref_notifications_options_sum"
-            android:entries="@array/pref_notifications_options"
-            android:entryValues="@array/pref_notifications_options_data"
-            android:defaultValue="@array/pref_notifications_options_def"
-            android:dependency="pref_notifications"
-            />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/pref_cat_advanced">
         <PreferenceScreen
             android:title="@string/pref_advanced_title"

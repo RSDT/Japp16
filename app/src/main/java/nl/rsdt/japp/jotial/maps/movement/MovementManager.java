@@ -177,11 +177,19 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                         .width(3)
                         .color(Color.BLUE));
 
+        /**
+         * TODO: use the onSaveInstane way instead of loading the list of locations each time the fragment gets recreated.
+         * */
         List<LatLng> list = AppData.getObject(STORAGE_KEY, new TypeToken<List<LatLng>>() {}.getType());
-        if(list != null) {
+        if(list != null && !list.isEmpty()) {
             tail.setPoints(list);
 
-            int last = list.size() - 1;
+            int last;
+            if(list.size() > 1) {
+                last = list.size() - 1;
+            } else {
+                last = 0;
+            }
             marker.setPosition(list.get(last));
             marker.setVisible(true);
         }
