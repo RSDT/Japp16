@@ -22,12 +22,14 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.Recreatable;
+import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
@@ -45,6 +47,8 @@ import nl.rsdt.japp.service.ServiceManager;
  * Description...
  */
 public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
+
+    private static final String STORAGE_KEY = "TAIL";
 
     private static final String BUNDLE_KEY = "MovementManager";
 
@@ -69,7 +73,6 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
     public void setSnackBarView(View snackBarView) {
         this.snackBarView = snackBarView;
     }
-
 
     public FollowSession newSession(CameraPosition before, float zoom, float aoa) {
         if(activeSession != null) {
@@ -152,7 +155,6 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
     }
 
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -174,6 +176,15 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                 new PolylineOptions()
                         .width(3)
                         .color(Color.BLUE));
+
+        List<LatLng> list = AppData.getObject(STORAGE_KEY, new TypeToken<List<LatLng>>() {}.getType());
+        if(list != null) {
+            tail.setPoints(list);
+
+            int last = list.size() - 1;
+            marker.setPosition(list.get(last));
+            marker.setVisible(true);
+        }
     }
 
     public class FollowSession implements LocationSource.OnLocationChangedListener {
@@ -268,7 +279,28 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
         }
     }
 
+    private void save(boolean background) {
+        if(tail != null) {
+            if(background) {
+                AppData.saveObjectAsJsonInBackground(tail.getPoints(), STORAGE_KEY);
+            } else {
+                AppData.saveObjectAsJson(tail.getPoints(), STORAGE_KEY);
+            }
+        }
+    }
+
     public void onDestroy() {
+
+        if(marker != null) {
+            marker.remove();
+            marker = null;
+        }
+
+        if(tail != null) {
+            save(false);
+            tail.remove();
+            tail = null;
+        }
 
         if(googleMap != null) {
             googleMap = null;

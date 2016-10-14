@@ -47,6 +47,27 @@ public class LocationService extends LocationProviderService {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        wasSending = JappPreferences.isUpdatingLocationToServer();
+        if(!wasSending) {
+            showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
+        }
+
+    }
+
+    private void showLocationNotification(String title, int color) {
+        Notification notification = new NotificationCompat.Builder(this)
+                .setContentTitle(title)
+                .setContentText("Klik om Japp te openen")
+                .setSmallIcon(R.drawable.ic_my_location_white_48dp)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setColor(color)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(1923, notification);
     }
 
     public LocationRequest getStandard() {
@@ -75,17 +96,7 @@ public class LocationService extends LocationProviderService {
                 title = "Japp verzendt je locatie niet";
                 color = Color.rgb(244, 66, 66);
             }
-            Notification notification = new NotificationCompat.Builder(this)
-                    .setContentTitle(title)
-                    .setContentText("Klik om Japp te openen")
-                    .setSmallIcon(R.drawable.ic_my_location_white_48dp)
-                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                    .setColor(color)
-                    .setOngoing(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .build();
-            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mNotifyMgr.notify(1923, notification);
+            showLocationNotification(title, color);
         }
 
         if(shouldSend) {
