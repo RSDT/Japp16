@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity
                 if(response.code() == 401) {
                     Authentication.startLoginActivity(MainActivity.this);
                 }
-
                 return response;
             }
         });
