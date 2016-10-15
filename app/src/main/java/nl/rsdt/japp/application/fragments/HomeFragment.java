@@ -8,9 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.data.structures.area348.VosStatusInfo;
@@ -59,38 +56,40 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
         if(info != null) {
             for(VosStatusInfo.Status status : info.getStatus()) {
                 View view = getView();
-                LinearLayout layout = null;
-                switch (status.getTeam()) {
-                    case "Alpha":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_alpha);
-                        break;
-                    case "Bravo":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_bravo);
-                        break;
-                    case "Charlie":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_charlie);
-                        break;
-                    case "Delta":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_delta);
-                        break;
-                    case "Echo":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_echo);
-                        break;
-                    case "Foxtrot":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_foxtrot);
-                        break;
-                }
-                if(layout != null) {
-                    switch (status.getStatus()) {
-                        case RED:
-                            layout.setBackgroundColor(ContextCompat.getColor(this.getActivity(), android.R.color.holo_red_light));
+                if(view != null) {
+                    LinearLayout layout = null;
+                    switch (status.getTeam()) {
+                        case "Alpha":
+                            layout = (LinearLayout) view.findViewById(R.id.fragment_home_alpha);
                             break;
-                        case ORANGE:
-                            layout.setBackgroundColor(ContextCompat.getColor(this.getActivity(), android.R.color.holo_orange_light));
+                        case "Bravo":
+                            layout = (LinearLayout) view.findViewById(R.id.fragment_home_bravo);
                             break;
-                        case GREEN:
-                            layout.setBackgroundColor(ContextCompat.getColor(this.getActivity(), android.R.color.holo_green_light));
+                        case "Charlie":
+                            layout = (LinearLayout) view.findViewById(R.id.fragment_home_charlie);
                             break;
+                        case "Delta":
+                            layout = (LinearLayout) view.findViewById(R.id.fragment_home_delta);
+                            break;
+                        case "Echo":
+                            layout = (LinearLayout) view.findViewById(R.id.fragment_home_echo);
+                            break;
+                        case "Foxtrot":
+                            layout = (LinearLayout) view.findViewById(R.id.fragment_home_foxtrot);
+                            break;
+                    }
+                    if(layout != null) {
+                        switch (status.getStatus()) {
+                            case RED:
+                                layout.setBackgroundColor(ContextCompat.getColor(this.getActivity(), android.R.color.holo_red_light));
+                                break;
+                            case ORANGE:
+                                layout.setBackgroundColor(ContextCompat.getColor(this.getActivity(), android.R.color.holo_orange_light));
+                                break;
+                            case GREEN:
+                                layout.setBackgroundColor(ContextCompat.getColor(this.getActivity(), android.R.color.holo_green_light));
+                                break;
+                        }
                     }
                 }
             }

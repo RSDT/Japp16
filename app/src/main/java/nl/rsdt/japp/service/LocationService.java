@@ -47,13 +47,10 @@ public class LocationService extends LocationProviderService {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
         wasSending = JappPreferences.isUpdatingLocationToServer();
         if(!wasSending) {
             showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
         }
-
     }
 
     private void showLocationNotification(String title, int color) {
