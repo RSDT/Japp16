@@ -143,6 +143,25 @@
                     android:defaultValue="1.0"
                     />
             </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/pref_advanced_cat_areas">
+
+                <SwitchPreference
+                    android:key="pref_advanced_areas_edges"
+                    android:title="@string/pref_advanced_areas_edges_title"
+                    android:summary="@string/pref_advanced_areas_edges_sum"
+                    android:defaultValue="true"
+                    />
+
+                <SwitchPreference
+                    android:key="pref_advanced_areas_color"
+                    android:title="@string/pref_advanced_areas_color_title"
+                    android:summary="@string/pref_advanced_areas_color_sum"
+                    android:defaultValue="true"
+                    />
+
+            </PreferenceCategory>
+
         </PreferenceScreen>
     </PreferenceCategory>
 

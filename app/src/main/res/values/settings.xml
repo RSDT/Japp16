@@ -213,6 +213,15 @@
     <string name="pref_advanced_hunter_update_interval_title">Hunter Update Inerval</string>
     <string name="pref_advanced_hunter_update_interval_sum">De interval waarmee de hunters worden binnengehaald in minuten</string>
 
+    <string name="pref_advanced_cat_areas">Deelgebieden</string>
+
+    <string name="pref_advanced_areas_edges_title">Randen</string>
+    <string name="pref_advanced_areas_edges_sum">Laat de randen zien van de deelgebieden</string>
+
+    <string name="pref_advanced_areas_color_title">Kleur</string>
+    <string name="pref_advanced_areas_color_sum">Laat de kleur zien van de deelgebieden</string>
+
+
     <!-- END SCREEN -->
 
     <!-- START SCREEN DEBUG -->

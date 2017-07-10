@@ -77,6 +77,10 @@ public class JappPreferences {
 
     public static final String WALK_SPEED = "pref_advanced_auto_enlargement_walking_speed";
 
+    public static final String AREAS_EDGES = "pref_advanced_areas_edges";
+
+    public static final String AREAS_COLOR = "pref_advanced_areas_color";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -231,6 +235,15 @@ public class JappPreferences {
     public static float getWalkSpeed() {
         return Float.parseFloat(getVisiblePreferences().getString(WALK_SPEED, "6.0f"));
     }
+
+    public static boolean getAreasEdgesEnabled() {
+        return getVisiblePreferences().getBoolean(AREAS_EDGES, true);
+    }
+
+    public static boolean getAreasColorEnabled() {
+        return getVisiblePreferences().getBoolean(AREAS_COLOR, true);
+    }
+
 
     public static void clear() {
         getVisiblePreferences().edit().clear().apply();

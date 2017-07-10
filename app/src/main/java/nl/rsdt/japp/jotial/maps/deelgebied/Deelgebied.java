@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import javax.crypto.spec.DESedeKeySpec;
+
 import nl.rsdt.japp.R;
 
 /**
@@ -273,6 +275,27 @@ public final class Deelgebied {
             }
         }
         return null;
+    }
+
+    public static Deelgebied parse(String name) {
+        switch (name.toLowerCase()){
+            case "alpha":
+                return Alpha;
+            case "bravo":
+                return Bravo;
+            case "charlie":
+                return Charlie;
+            case "delta":
+                return Delta;
+            case "echo":
+                return Echo;
+            case "foxtrot":
+                return Foxtrot;
+            case "xray":
+                return Xray;
+            default:
+                return null;
+        }
     }
 
 

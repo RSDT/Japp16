@@ -1,6 +1,8 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -14,7 +16,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+
+import java.util.HashMap;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
@@ -40,7 +45,7 @@ import retrofit2.Response;
  * @since 8-7-2016
  * Description...
  */
-public class JappMapFragment extends Fragment implements OnMapReadyCallback{
+public class JappMapFragment extends Fragment implements OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener{
 
     public static final String TAG = "JappMapFragment";
 
@@ -62,11 +67,15 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback{
 
     private MovementManager movementManager = new MovementManager();
 
+    private HashMap<String, Polygon> areas = new HashMap<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pinningManager.intialize(getActivity());
         pinningManager.onCreate(savedInstanceState);
+
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -399,10 +408,12 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback{
         {
             current = all[i];
 
-            googleMap.addPolygon(new PolygonOptions()
+            Polygon polygon = googleMap.addPolygon(new PolygonOptions()
                     .fillColor(current.alphaled(60))
                     .strokeWidth(0)
                     .addAll(current.getCoordinates()));
+
+            areas.put(current.getName(), polygon);
         }
 
         pinningManager.onMapReady(googleMap);
@@ -410,6 +421,27 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback{
         if(callback != null)
         {
             callback.onMapReady(googleMap);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key){
+            case JappPreferences.AREAS_EDGES:
+                
+                break;
+            case JappPreferences.AREAS_COLOR:
+                boolean color = JappPreferences.getAreasColorEnabled();
+                Polygon polygon;
+                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                    polygon = pair.getValue();
+                    if(color) {
+                        polygon.setFillColor(Deelgebied.parse(pair.getKey()).alphaled(60));
+                    } else {
+                        polygon.setFillColor(Color.TRANSPARENT);
+                    }
+                }
+                break;
         }
     }
 }
