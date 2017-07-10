@@ -153,11 +153,29 @@
                     android:defaultValue="true"
                     />
 
+                <EditTextPreference
+                    android:key="pref_advanced_areas_edges_width"
+                    android:title="@string/pref_advanced_areas_edges_width_title"
+                    android:summary="@string/pref_advanced_areas_edges_width_sum"
+                    android:inputType="number"
+                    android:defaultValue="5"
+                    android:dependency="pref_advanced_areas_edges"
+                    />
+
                 <SwitchPreference
                     android:key="pref_advanced_areas_color"
                     android:title="@string/pref_advanced_areas_color_title"
                     android:summary="@string/pref_advanced_areas_color_sum"
                     android:defaultValue="true"
+                    />
+
+                <EditTextPreference
+                    android:key="pref_advanced_areas_color_alpha"
+                    android:title="@string/pref_advanced_areas_color_alpha_title"
+                    android:summary="@string/pref_advanced_areas_color_alpha_sum"
+                    android:inputType="number"
+                    android:defaultValue="25"
+                    android:dependency="pref_advanced_areas_color"
                     />
 
             </PreferenceCategory>

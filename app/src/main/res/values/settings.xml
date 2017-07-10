@@ -218,9 +218,14 @@
     <string name="pref_advanced_areas_edges_title">Randen</string>
     <string name="pref_advanced_areas_edges_sum">Laat de randen zien van de deelgebieden</string>
 
-    <string name="pref_advanced_areas_color_title">Kleur</string>
+    <string name="pref_advanced_areas_edges_width_title">Breedte randen</string>
+    <string name="pref_advanced_areas_edges_width_sum">De breedte van de randen om de deelgebieden heen</string>
+
+    <string name="pref_advanced_areas_color_title">Kleuren</string>
     <string name="pref_advanced_areas_color_sum">Laat de kleur zien van de deelgebieden</string>
 
+    <string name="pref_advanced_areas_color_alpha_title">Doorzichtigheid kleuren</string>
+    <string name="pref_advanced_areas_color_alpha_sum">Doorzictighheid van de kleur in procenten</string>
 
     <!-- END SCREEN -->
 

@@ -79,7 +79,11 @@ public class JappPreferences {
 
     public static final String AREAS_EDGES = "pref_advanced_areas_edges";
 
+    public static final String AREAS_EDGES_WIDTH = "pref_advanced_areas_edges_width";
+
     public static final String AREAS_COLOR = "pref_advanced_areas_color";
+
+    public static final String AREAS_COLOR_ALPHA = "pref_advanced_areas_color_alpha";
 
     /**
      * Gets the visible release_preferences of Japp.
@@ -240,8 +244,16 @@ public class JappPreferences {
         return getVisiblePreferences().getBoolean(AREAS_EDGES, true);
     }
 
+    public static int getAreasEdgesWidth() {
+        return Integer.valueOf(getVisiblePreferences().getString(AREAS_EDGES_WIDTH, "5"));
+    }
+
     public static boolean getAreasColorEnabled() {
         return getVisiblePreferences().getBoolean(AREAS_COLOR, true);
+    }
+
+    public static int getAreasColorAlpha() {
+        return Integer.valueOf(getVisiblePreferences().getString(AREAS_COLOR_ALPHA, "25"));
     }
 
 

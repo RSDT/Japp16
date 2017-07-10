@@ -386,6 +386,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             movementManager = null;
         }
 
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
+
         serviceManager.unbind(getActivity());
     }
 
@@ -402,18 +404,30 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
         movementManager.onMapReady(googleMap);
 
+
         Deelgebied[] all = Deelgebied.all();
         Deelgebied current;
         for(int i = 0; i < all.length; i++)
         {
             current = all[i];
 
-            Polygon polygon = googleMap.addPolygon(new PolygonOptions()
-                    .fillColor(current.alphaled(60))
-                    .strokeWidth(0)
-                    .addAll(current.getCoordinates()));
+            PolygonOptions options = new PolygonOptions().addAll(current.getCoordinates());
+            if(JappPreferences.getAreasColorEnabled()) {
+                int alphaPercent = JappPreferences.getAreasColorAlpha();
+                float alpha = ((float)alphaPercent)/100 * 255;
+                options.fillColor(current.alphaled(Math.round(alpha)));
+            } else {
+                options.fillColor(Color.TRANSPARENT);
+            }
 
-            areas.put(current.getName(), polygon);
+            options.strokeColor(current.getColor());
+            if(JappPreferences.getAreasEdgesEnabled()) {
+                options.strokeWidth(JappPreferences.getAreasEdgesWidth());
+            } else {
+                options.strokeWidth(0);
+            }
+
+            areas.put(current.getName(), googleMap.addPolygon(options));
         }
 
         pinningManager.onMapReady(googleMap);
@@ -426,19 +440,49 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Polygon polygon;
         switch (key){
             case JappPreferences.AREAS_EDGES:
-                
+                boolean edges = JappPreferences.getAreasEdgesEnabled();
+                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                    polygon = pair.getValue();
+                    if(edges) {
+                        polygon.setStrokeWidth(JappPreferences.getAreasEdgesWidth());
+                    } else {
+                        polygon.setStrokeWidth(0);
+                    }
+                }
+                break;
+            case JappPreferences.AREAS_EDGES_WIDTH:
+                boolean edgesEnabled = JappPreferences.getAreasEdgesEnabled();
+                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                    polygon = pair.getValue();
+                    if(edgesEnabled) {
+                        polygon.setStrokeWidth(JappPreferences.getAreasEdgesWidth());
+                    }
+                }
                 break;
             case JappPreferences.AREAS_COLOR:
                 boolean color = JappPreferences.getAreasColorEnabled();
-                Polygon polygon;
                 for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
                     polygon = pair.getValue();
                     if(color) {
-                        polygon.setFillColor(Deelgebied.parse(pair.getKey()).alphaled(60));
+                        int alphaPercent = JappPreferences.getAreasColorAlpha();
+                        float alpha = ((float)alphaPercent)/100 * 255;
+                        polygon.setFillColor(Deelgebied.parse(pair.getKey()).alphaled(Math.round(alpha)));
                     } else {
                         polygon.setFillColor(Color.TRANSPARENT);
+                    }
+                }
+                break;
+            case JappPreferences.AREAS_COLOR_ALPHA:
+                boolean areasColorEnabled = JappPreferences.getAreasColorEnabled();
+                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                    polygon = pair.getValue();
+                    if(areasColorEnabled) {
+                        int alphaPercent = JappPreferences.getAreasColorAlpha();
+                        float alpha = ((float)alphaPercent)/100 * 255;
+                        polygon.setFillColor(Deelgebied.parse(pair.getKey()).alphaled(Math.round(alpha)));
                     }
                 }
                 break;
