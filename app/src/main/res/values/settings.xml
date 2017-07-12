@@ -197,13 +197,13 @@
     <string name="pref_advanced_cat_auto_enlargement">Automatiek</string>
 
     <string name="pref_advanced_auto_enlargement_title">Automatische Cirkelvergroting</string>
-    <string name="pref_advanced_auto_enlargement_sum">Het automatische vergroten van vossen cirkel gebaseerd op een loopsnelheid</string>
+    <string name="pref_advanced_auto_enlargement_sum">Het automatische vergroten van cirkel om de laatse bekend vos locatie, zodat je een idee hebt waar ze kunnen zitten</string>
 
-    <string name="pref_advanced_auto_enlargement_interval_title">Cirkelvergroting Interval</string>
+    <string name="pref_advanced_auto_enlargement_interval_title">Cirkelvergroting Tijdsinterval</string>
     <string name="pref_advanced_auto_enlargement_interval_sum">De interval waarmee de cirkel word vergroot in minuten</string>
 
     <string name="pref_advanced_auto_enlargement_walking_speed_title">Loopsnelheid</string>
-    <string name="pref_advanced_auto_enlargement_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen in km/uur</string>
+    <string name="pref_advanced_auto_enlargement_walking_speed_sum">De snelheid waarmee de vossen ongeveer lopen in km per uur</string>
 
     <string name="pref_advanced_cat_updates">Updates</string>
 
@@ -225,7 +225,7 @@
     <string name="pref_advanced_areas_color_sum">Laat de kleur zien van de deelgebieden</string>
 
     <string name="pref_advanced_areas_color_alpha_title">Doorzichtigheid kleuren</string>
-    <string name="pref_advanced_areas_color_alpha_sum">Doorzictighheid van de kleur in procenten</string>
+    <string name="pref_advanced_areas_color_alpha_sum">Doorzictighheid van de deelgebied kleuren in procenten</string>
 
     <!-- END SCREEN -->
 

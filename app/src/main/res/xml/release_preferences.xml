@@ -174,7 +174,7 @@
                     android:title="@string/pref_advanced_areas_color_alpha_title"
                     android:summary="@string/pref_advanced_areas_color_alpha_sum"
                     android:inputType="number"
-                    android:defaultValue="25"
+                    android:defaultValue="70"
                     android:dependency="pref_advanced_areas_color"
                     />
 

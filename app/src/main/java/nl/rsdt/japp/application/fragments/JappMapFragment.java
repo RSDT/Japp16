@@ -414,7 +414,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             PolygonOptions options = new PolygonOptions().addAll(current.getCoordinates());
             if(JappPreferences.getAreasColorEnabled()) {
                 int alphaPercent = JappPreferences.getAreasColorAlpha();
-                float alpha = ((float)alphaPercent)/100 * 255;
+                float alpha = ((float)(100 - alphaPercent))/100 * 255;
                 options.fillColor(current.alphaled(Math.round(alpha)));
             } else {
                 options.fillColor(Color.TRANSPARENT);
@@ -468,7 +468,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                     polygon = pair.getValue();
                     if(color) {
                         int alphaPercent = JappPreferences.getAreasColorAlpha();
-                        float alpha = ((float)alphaPercent)/100 * 255;
+                        float alpha = ((float)(100 - alphaPercent))/100 * 255;
                         polygon.setFillColor(Deelgebied.parse(pair.getKey()).alphaled(Math.round(alpha)));
                     } else {
                         polygon.setFillColor(Color.TRANSPARENT);
@@ -481,7 +481,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                     polygon = pair.getValue();
                     if(areasColorEnabled) {
                         int alphaPercent = JappPreferences.getAreasColorAlpha();
-                        float alpha = ((float)alphaPercent)/100 * 255;
+                        float alpha = ((float)(100 - alphaPercent))/100 * 255;
                         polygon.setFillColor(Deelgebied.parse(pair.getKey()).alphaled(Math.round(alpha)));
                     }
                 }
