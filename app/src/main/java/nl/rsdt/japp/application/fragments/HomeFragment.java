@@ -1,7 +1,13 @@
 package nl.rsdt.japp.application.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,13 +97,43 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
                                 break;
                         }
                     }
+                    showNotification(status);
                 }
             }
         }
+    }
+
+    public void showNotification(VosStatusInfo.Status status) {
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity());
+        switch (status.getStatus()){
+            case RED:
+                builder.setContentTitle(status.getTeam() + " Status Update")
+                        .setContentText("Team " + status.getTeam() + " mag niet meer gehunt worden!")
+                        .setColor(Color.rgb(244, 66, 66));
+                break;
+            case ORANGE:
+                builder.setContentTitle(status.getTeam() + " status update")
+                        .setContentText("Team " + status.getTeam() + " zal binnen 30 minuten niet meer gehunt worden")
+                        .setColor(Color.rgb(214, 118, 8));
+                break;
+            case GREEN:
+                builder.setContentTitle(status.getTeam() + " status update")
+                        .setContentText("Team " + status.getTeam() + " mag gehunt worden!")
+                        .setColor(Color.rgb(113, 244, 66));
+                break;
+        }
+        Notification notification = builder.setSmallIcon(R.drawable.fox3)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+        NotificationManager mNotifyMgr = (NotificationManager) this.getActivity().getSystemService(Activity.NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(1925, notification);
     }
 
     @Override
     public void onFailure(Call<VosStatusInfo> call, Throwable t) {
         Log.e(TAG, t.toString(), t);
     }
+
+
 }
