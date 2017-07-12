@@ -27,12 +27,6 @@
             android:entryValues="@array/pref_account_icon_data"
             android:icon="@drawable/hunter_0"/>
 
-        <EditTextPreference
-            android:title="@string/pref_account_key_title"
-            android:key="pref_account_key"
-            android:editable="false"
-            android:summary="@string/pref_account_key_sum"/>
-
     </PreferenceCategory>
 
 
@@ -177,6 +171,38 @@
                     android:defaultValue="70"
                     android:dependency="pref_advanced_areas_color"
                     />
+
+            </PreferenceCategory>
+
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:title="@string/pref_developer_title"
+            android:summary="@string/pref_developer_sum">
+
+            <PreferenceCategory android:title="@string/pref_cat_developer_account">
+                <EditTextPreference
+                    android:title="@string/pref_developer_account_key_title"
+                    android:key="pref_developer_account_key"
+                    android:editable="false"
+                    android:summary="@string/pref_developer_account_key_sum"/>
+            </PreferenceCategory>
+
+
+            <PreferenceCategory android:title="@string/pref_cat_developer_debug">
+
+                <SwitchPreference
+                    android:title="@string/pref_developer_debug_fresh_start_title"
+                    android:key="pref_debug_fresh_start"
+                    android:summary="@string/pref_developer_debug_fresh_start_sum"
+                    android:defaultValue="false"/>
+
+                <EditTextPreference
+                    android:title="@string/pref_developer_debug_version_title"
+                    android:key="pref_developer_debug_version_name"
+                    android:editable="false"
+                    android:summary="@string/pref_developer_debug_version_sum"
+                    android:defaultValue="@string/versionName"/>
 
             </PreferenceCategory>
 

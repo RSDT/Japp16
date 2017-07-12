@@ -67,12 +67,6 @@
                 <item>15</item>
             </string-array>
 
-            <!--
-            The API-Key section.
-            -->
-            <string name="pref_account_key">pref_account_key</string>
-            <string name="pref_account_key_title">API-Key</string>
-            <string name="pref_account_key_sum">De API Key voor je account</string>
         <!-- END CAT -->
 
         <!-- START CAT MAP -->
@@ -152,10 +146,10 @@
             <string name="pref_cat_updates">Updates</string>
 
             <string name="pref_updates_auto_title">Automatische Updates</string>
-            <string name="pref_updates_auto_sum">Het automatisch updaten van de kaart</string>
+            <string name="pref_updates_auto_sum">Update alles automatisch voor mij</string>
 
-            <string name="pref_updates_location_title">Locatie Versturen</string>
-            <string name="pref_updates_location_sum">Het versturen van locaties naar de server</string>
+            <string name="pref_updates_location_title">Locatie Delen</string>
+            <string name="pref_updates_location_sum">Verstuur mijn locatie naar de server zodat iedereen weet waar ik ben</string>
 
         <!-- END CAT -->
 
@@ -188,12 +182,17 @@
         <!-- END CAT -->
     <!-- END SCREEN -->
 
-    <!-- START SCREEN ADVANCED -->
+
 
     <string name="pref_cat_advanced">Extra</string>
+
     <string name="pref_advanced_title">Geavanceerd</string>
     <string name="pref_advanced_sum">Bekijk hier extra mogelijkheden</string>
 
+    <string name="pref_developer_title">Ontwikkelaaropties</string>
+    <string name="pref_developer_sum">Bekijk hier opties voor ontwikkelaars</string>
+
+    <!-- START SCREEN ADVANCED -->
     <string name="pref_advanced_cat_auto_enlargement">Automatiek</string>
 
     <string name="pref_advanced_auto_enlargement_title">Automatische Cirkelvergroting</string>
@@ -229,15 +228,30 @@
 
     <!-- END SCREEN -->
 
-    <!-- START SCREEN DEBUG -->
 
-    <string name="pref_cat_debug">Debug</string>
 
-    <string name="pref_debug_version_title">Versie</string>
-    <string name="pref_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
 
-    <string name="pref_debug_fresh_start_title">Verse Start</string>
-    <string name="pref_debug_fresh_start_sum">Verwijder alle gegevens bij de volgende keer opstarten</string>
+    <!-- START SCREEN DEVELOPER -->
+
+    <string name="pref_cat_developer_account">Account</string>
+    <!--
+    The API-Key section.
+    -->
+    <string name="pref_developer_account_key">pref_account_key</string>
+    <string name="pref_developer_account_key_title">API-key</string>
+    <string name="pref_developer_account_key_sum">De API-key voor dit account</string>
+
+    <string name="pref_cat_developer_debug">Debug</string>
+
+    <string name="pref_developer_debug_fresh_start_title">Verse Start</string>
+    <string name="pref_developer_debug_fresh_start_sum">Verwijder alle gegevens bij de volgende keer opstarten</string>
+
+    <string name="pref_developer_debug_version_title">Versie</string>
+    <string name="pref_developer_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
+
+
+
+
 
     <!-- END SCREEN -->
 

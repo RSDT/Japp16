@@ -11,25 +11,6 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/about_bram"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/about_bram"
-            android:scaleType="fitStart"
-            android:adjustViewBounds="true"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_bram_title"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_bram_sum" />
-
-
-        <ImageView
             android:id="@+id/about_micky"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +27,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/about_micky_sum" />
+            android:text="@string/about_micky_sum"
+            android:layout_marginBottom="10dp"/>
 
         <ImageView
             android:id="@+id/about_mattijn"
@@ -65,7 +47,27 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/about_mattijn_sum" />
+            android:text="@string/about_mattijn_sum"
+            android:layout_marginBottom="10dp"/>
+
+        <ImageView
+            android:id="@+id/about_bram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/about_bram"
+            android:scaleType="fitStart"
+            android:adjustViewBounds="true"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_bram_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_bram_sum"
+            android:layout_marginBottom="10dp"/>
 
         <ImageView
             android:id="@+id/about_beta_testers"

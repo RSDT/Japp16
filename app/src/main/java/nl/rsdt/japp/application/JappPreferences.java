@@ -43,7 +43,7 @@ public class JappPreferences {
 
     public static final String ACCOUNT_ICON = "pref_account_icon";
 
-    public static final String ACCOUNT_KEY = "pref_account_key";
+    public static final String ACCOUNT_KEY = "pref_developer_account_key";
 
     public static final String UPDATES_AUTO = "pref_updates_auto";
 
@@ -63,11 +63,11 @@ public class JappPreferences {
 
     public static final String HUNTER_UPDATE_INTERVAL = "pref_advanced_hunter_update_interval";
 
-    public static final String DEBUG_VERSION_NAME = "pref_debug_version_name";
+    public static final String DEBUG_VERSION_NAME = "pref_developer_debug_version_name";
 
     public static final String FCM_TOKEN = "pref_fcm_token";
 
-    public static final String DEBUG_FRESH_START = "pref_debug_fresh_start";
+    public static final String DEBUG_FRESH_START = "pref_developer_debug_fresh_start";
 
     public static final String UPDATE_LOCATION = "pref_updates_location";
 
