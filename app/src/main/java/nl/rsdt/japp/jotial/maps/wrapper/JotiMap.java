@@ -1,6 +1,5 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
@@ -15,6 +14,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class JotiMap {
 
     private final GoogleMap googleMap;
     private final MapView osmMap; //todo fix type
-    private static Map<MapView,JotiMap> osm_instances;
+    private static Map<MapView,JotiMap> osm_instances = new HashMap<>();
 
     private JotiMap(GoogleMap map){
         mapType = GOOGLEMAPTYPE;
@@ -45,6 +45,7 @@ public class JotiMap {
         mapType = OSMMAPTYPE;
         osmMap  = map;
         googleMap = null;
+
     }
 
     public static JotiMap getJotiMapInstance(GoogleMap map){
@@ -70,7 +71,7 @@ public class JotiMap {
             osm_instances.remove(this.getOSMMap());
         }
     }
-    
+
     public void setInfoWindowAdapter(CustomInfoWindowAdapter infoWindowAdapter) {
         if (mapType == GOOGLEMAPTYPE){
             googleMap.setInfoWindowAdapter(infoWindowAdapter);
@@ -80,7 +81,7 @@ public class JotiMap {
     }
 
     public void setGMapType(int mapType) {
-        if (mapType == GOOGLEMAPTYPE){
+        if (this.mapType == GOOGLEMAPTYPE){
             googleMap.setMapType(mapType);
         }else{
             throw new RuntimeException("only supported for googleMaps");
@@ -104,11 +105,13 @@ public class JotiMap {
         }
     }
     public void animateCamera(LatLng latLng, int zoom)  {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-
+        if (mapType == GOOGLEMAPTYPE) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        } else  if (mapType == OSMMAPTYPE){
+            osmMap.getController().animateTo(new GeoPoint(latLng.latitude,latLng.longitude));
+            osmMap.getController().zoomTo(zoom);//// TODO: 07/08/17 controleren of de zoomlevels van googlemaps en osm enigzins overeenkomen.
         }else{
-            throw new RuntimeException("only supported for googleMaps");
+            throw new RuntimeException("only supported for googleMaps&OSM");
         }
     }
 
