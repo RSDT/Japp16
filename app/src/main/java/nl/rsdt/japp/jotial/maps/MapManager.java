@@ -324,7 +324,7 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
             /**
              * Move the camera to the default position(Netherlands).
              * */
-            jotiMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
+            jotiMap.animateCamera(new LatLng(52.015379, 6.025979), 10);
 
             /**
              * Update the controllers.

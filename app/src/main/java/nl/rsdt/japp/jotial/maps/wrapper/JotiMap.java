@@ -1,10 +1,12 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -12,6 +14,8 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.osmdroid.views.MapView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +33,18 @@ public class JotiMap {
     private final int mapType;
 
     private final GoogleMap googleMap;
-    private final Object osmMap; //todo fix type
+    private final MapView osmMap; //todo fix type
+    private static Map<MapView,JotiMap> osm_instances;
 
     private JotiMap(GoogleMap map){
         mapType = GOOGLEMAPTYPE;
         googleMap = map;
         osmMap = null;
+    }
+    private JotiMap(MapView map){
+        mapType = OSMMAPTYPE;
+        osmMap  = map;
+        googleMap = null;
     }
 
     public static JotiMap getJotiMapInstance(GoogleMap map){
@@ -45,7 +55,22 @@ public class JotiMap {
         return google_instances.get(map);
     }
 
+    public static JotiMap getJotiMapInstance(MapView map){
+        if (!osm_instances.containsKey(map)) {
+            JotiMap jm = new JotiMap(map);
+            osm_instances.put(map,jm);
+        }
+        return osm_instances.get(map);
+    }
 
+    public void delete() {
+        if (google_instances.containsValue(this)) {
+            google_instances.remove(this.getGoogleMap());
+        } else if (osm_instances.containsValue(this)) {
+            osm_instances.remove(this.getOSMMap());
+        }
+    }
+    
     public void setInfoWindowAdapter(CustomInfoWindowAdapter infoWindowAdapter) {
         if (mapType == GOOGLEMAPTYPE){
             googleMap.setInfoWindowAdapter(infoWindowAdapter);
@@ -72,15 +97,16 @@ public class JotiMap {
 
     public UiSettings getUiSettings() {
         if (mapType == GOOGLEMAPTYPE){
-            return googleMap.getUiSettings();
+            UiSettings sett = googleMap.getUiSettings();
+            return sett;
         }else{
             throw new RuntimeException("only supported for googleMaps");
         }
     }
-
-    public void animateCamera(CameraUpdate cameraUpdate) {
+    public void animateCamera(LatLng latLng, int zoom)  {
         if (mapType == GOOGLEMAPTYPE){
-            googleMap.animateCamera(cameraUpdate);
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+
         }else{
             throw new RuntimeException("only supported for googleMaps");
         }
@@ -124,5 +150,9 @@ public class JotiMap {
 
     public int getMapType() {
         return mapType;
+    }
+
+    public MapView getOSMMap() {
+        return osmMap;
     }
 }
