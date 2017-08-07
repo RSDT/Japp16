@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -17,9 +15,8 @@ import nl.rsdt.japp.jotial.IntentCreatable;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
 import nl.rsdt.japp.jotial.io.AppData;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
-import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
-import nl.rsdt.japp.jotial.net.apis.FotoApi;
 import nl.rsdt.japp.jotial.net.apis.ScoutingGroepApi;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import retrofit2.Call;
@@ -32,7 +29,7 @@ import retrofit2.Response;
  * @since 29-8-2016
  * Description...
  */
-public class ScoutingGroepController implements OnMapReadyCallback, Recreatable, IntentCreatable, MapItemUpdatable, Callback<ArrayList<ScoutingGroepInfo>> {
+public class ScoutingGroepController implements Recreatable, IntentCreatable, MapItemUpdatable, Callback<ArrayList<ScoutingGroepInfo>> {
 
     public static final String TAG = "ScoutingGroepController";
 
@@ -40,10 +37,10 @@ public class ScoutingGroepController implements OnMapReadyCallback, Recreatable,
 
     public static final String BUNDLE_ID = "SC";
 
-    protected ScoutingGroepClusterManager clusterManager;
+    protected ClusterManagerInterface clusterManager;
 
     @Nullable
-    public ScoutingGroepClusterManager getClusterManager() {
+    public ClusterManagerInterface getClusterManager() {
         return clusterManager;
     }
 
@@ -96,10 +93,12 @@ public class ScoutingGroepController implements OnMapReadyCallback, Recreatable,
         }
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        clusterManager = new ScoutingGroepClusterManager(Japp.getInstance(), googleMap);
-
+    public void onMapReady(JotiMap jotiMap) {
+        if (jotiMap.getMapType() == JotiMap.GOOGLEMAPTYPE) {
+            clusterManager = new ScoutingGroepClusterManager(Japp.getInstance(), jotiMap.getGoogleMap());
+        }else {
+            clusterManager = new NoneClusterManager();
+        }
         if(buffer != null) {
             clusterManager.addItems(buffer);
             clusterManager.cluster();

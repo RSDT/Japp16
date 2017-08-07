@@ -6,22 +6,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import java.io.IOException;
-
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
-import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
-import nl.rsdt.japp.jotial.io.AppData;
 
 /**
  * @author Dingenis Sieger Sinke

@@ -35,7 +35,7 @@ public abstract class StandardMapItemController<I extends Parcelable, O extends 
             {
                 this.items = savedInstanceState.getParcelableArrayList(getBundleId());
                 O result = getTransducer().generate(items);
-                if(googleMap != null) {
+                if(jotiMap != null) {
                     processResult(result);
                 }
                 else {

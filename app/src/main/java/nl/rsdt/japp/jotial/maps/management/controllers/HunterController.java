@@ -111,7 +111,7 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
                         }
                     }
                     HunterTransducer.Result result = getTransducer().generate(data);
-                    if(googleMap != null) {
+                    if(jotiMap != null) {
                         processResult(result);
                     } else {
                         buffer = result;
