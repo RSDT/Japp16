@@ -10,7 +10,6 @@ import android.os.Parcel;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -36,6 +35,7 @@ import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.misc.VosUtils;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
+import nl.rsdt.japp.jotial.maps.wrapper.Circle;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import retrofit2.Call;

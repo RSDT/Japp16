@@ -1,35 +1,26 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
-import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
-import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
-import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 
 /**
@@ -131,8 +122,7 @@ public class JotiMap {
         if (mapType == GOOGLEMAPTYPE) {
             return new Marker(googleMap.addMarker(markerOptions));
         }else if(mapType == OSMMAPTYPE){
-            return null;
-
+            return new Marker(markerOptions);
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");
@@ -141,7 +131,7 @@ public class JotiMap {
 
     public Polyline addPolyline(PolylineOptions polylineOptions) {
         if (mapType == GOOGLEMAPTYPE){
-            return googleMap.addPolyline(polylineOptions);
+            return new Polyline(googleMap.addPolyline(polylineOptions));
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");
@@ -150,7 +140,7 @@ public class JotiMap {
 
     public Polygon addPolygon(PolygonOptions polygonOptions) {
         if (mapType == GOOGLEMAPTYPE){
-            return googleMap.addPolygon(polygonOptions);
+            return new Polygon(googleMap.addPolygon(polygonOptions));
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");
@@ -159,7 +149,7 @@ public class JotiMap {
 
     public Circle addCircle(CircleOptions circleOptions) {
         if (mapType == GOOGLEMAPTYPE){
-            return googleMap.addCircle(circleOptions);
+            return new Circle(googleMap.addCircle(circleOptions));
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");

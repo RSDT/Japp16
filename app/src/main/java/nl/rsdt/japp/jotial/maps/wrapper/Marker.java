@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.maps.wrapper;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Objects;
 
@@ -22,6 +23,11 @@ public class Marker {
     public Marker(com.google.android.gms.maps.model.Marker marker) {
         this.marker = marker;
         markerType = GOOGLEMARKER;
+    }
+
+    public Marker(MarkerOptions markerOptions) {
+        marker = null;
+        markerType = OSMMARKER;
     }
 
     public void remove() {

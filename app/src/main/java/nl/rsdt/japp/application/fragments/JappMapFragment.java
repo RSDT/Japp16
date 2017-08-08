@@ -1,9 +1,11 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +18,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 
 import java.util.HashMap;
 
@@ -33,6 +37,7 @@ import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
@@ -87,7 +92,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        boolean useOSM = false; // todo get from prefs
+        boolean useOSM = true; // todo get from prefs
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
@@ -106,7 +111,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         MapView googleMapView = (MapView)v.findViewById(R.id.googleMap);
         googleMapView.setVisibility(View.GONE);
         org.osmdroid.views.MapView osmView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
-        //// TODO: 08/08/17 show osmMap
+        Context ctx = getActivity().getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        osmView.setTileSource(TileSourceFactory.MAPNIK);
         return v;
     }
 
@@ -371,7 +378,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
 
     public void getMapAsync(OnMapReadyCallback callback) {
-        MapView view = (MapView)getView().findViewById(R.id.googleMap);
+        MapView view = (MapView) getView().findViewById(R.id.googleMap);
         view.getMapAsync(this);
         this.callback = callback;
     }
@@ -395,6 +402,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         super.onResume();
         if (!osmActive) {
             googleMapView.onResume();
+        }else {
+            Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
         }
         serviceManager.add(movementManager);
         movementManager.onResume();

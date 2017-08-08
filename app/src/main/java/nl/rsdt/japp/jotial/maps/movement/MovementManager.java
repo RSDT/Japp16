@@ -2,22 +2,17 @@ package nl.rsdt.japp.jotial.maps.movement;
 
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
@@ -27,17 +22,13 @@ import java.util.List;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
-import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
-import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
-import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
-import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
-import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
 
@@ -86,25 +77,26 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
 
     @Override
     public void onLocationChanged(Location location) {
-        if(lastLocation != null) {
-            bearing = lastLocation.bearingTo(location);
+        if (marker != null) {
+            if (lastLocation != null) {
+                bearing = lastLocation.bearingTo(location);
 
-            /**
-             * Animate the marker to the new position
-             * */
-            marker.animateMarkerToICS(new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
-            marker.setRotation(bearing);
-        } else {
-            marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                /**
+                 * Animate the marker to the new position
+                 * */
+                marker.animateMarkerToICS(new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
+                marker.setRotation(bearing);
+            } else {
+                marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+
+            List<LatLng> points = tail.getPoints();
+            if (points.size() > 150) {
+                points = points.subList(points.size() / 3, points.size());
+            }
+            points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            tail.setPoints(points);
         }
-
-        List<LatLng> points = tail.getPoints();
-        if(points.size() > 150) {
-            points = points.subList(points.size()/3, points.size());
-        }
-        points.add(new LatLng(location.getLatitude(), location.getLongitude()));
-        tail.setPoints(points);
-
         boolean refresh = false;
         if(deelgebied != null) {
             if(!deelgebied.containsLocation(location)) {
@@ -130,14 +122,14 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 FirebaseMessaging.getInstance().subscribeToTopic(deelgebied.getName());
             }
         }
-
-        /**
-         * Make the marker visible
-         * */
-        if(!marker.isVisible()) {
-            marker.setVisible(true);
+        if (marker  != null) {
+            /**
+             * Make the marker visible
+             * */
+            if (!marker.isVisible()) {
+                marker.setVisible(true);
+            }
         }
-
         if(activeSession != null) {
             activeSession.onLocationChanged(location);
         }

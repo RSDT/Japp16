@@ -3,12 +3,9 @@ package nl.rsdt.japp.jotial.maps.management;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 
@@ -18,6 +15,7 @@ import nl.rsdt.japp.jotial.Identifiable;
 import nl.rsdt.japp.jotial.IntentCreatable;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.StorageIdentifiable;
+import nl.rsdt.japp.jotial.maps.wrapper.Circle;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.MapItemHolder;
 import nl.rsdt.japp.jotial.maps.Mergable;
@@ -35,6 +33,8 @@ import nl.rsdt.japp.jotial.maps.management.transformation.Transducable;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncTransduceTask;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
+import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,7 +63,6 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     protected ArrayList<Polyline> polylines = new ArrayList<>();
 
-    @Override
     public ArrayList<Polyline> getPolylines() {
         return polylines;
     }
