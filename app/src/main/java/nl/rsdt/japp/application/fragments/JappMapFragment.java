@@ -52,10 +52,11 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     private static final String BUNDLE_MAP = "BUNDLE_MAP";
 
+    private static final String BUNDLE_OSM_ACTIVE = "BUNDLE_OSM_ACTIVE_B";
+
     private ServiceManager<LocationService, LocationService.LocationBinder> serviceManager = new ServiceManager<>(LocationService.class);
 
-    private MapView mapView;
-
+    private MapView googleMapView;
     private JotiMap jotiMap;
 
     public JotiMap getJotiMap() {
@@ -70,6 +71,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     private HashMap<String, Polygon> areas = new HashMap<>();
 
+    private boolean osmActive = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,17 +87,43 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mapView = (MapView)v.findViewById(R.id.map);
+        boolean useOSM = false; // todo get from prefs
+        if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
+            if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
+                savedInstanceState = null;
+            }
+        }
 
+        if (useOSM){
+            return createOSMMap(savedInstanceState, v);
+        }else {
+            return createGoogleMap(savedInstanceState, v);
+        }
+    }
+
+    private View createOSMMap(Bundle savedInstanceState, View v) {
+        osmActive = true;
+        MapView googleMapView = (MapView)v.findViewById(R.id.googleMap);
+        googleMapView.setVisibility(View.GONE);
+        org.osmdroid.views.MapView osmView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
+        //// TODO: 08/08/17 show osmMap
+        return v;
+    }
+
+    private View createGoogleMap(Bundle savedInstanceState, View v){
+        osmActive = false;
+        googleMapView = (MapView)v.findViewById(R.id.googleMap);
+        org.osmdroid.views.MapView osmMapView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
+        osmMapView.setVisibility(View.GONE);
         if(savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_MAP))
         {
-            mapView.onCreate(savedInstanceState.getBundle(BUNDLE_MAP));
+            googleMapView.onCreate(savedInstanceState.getBundle(BUNDLE_MAP));
         }
         else
         {
-            mapView.onCreate(savedInstanceState);
+            googleMapView.onCreate(savedInstanceState);
         }
-        movementManager.setSnackBarView(mapView);
+        movementManager.setSnackBarView(googleMapView);
 
         FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
         huntButton.setOnClickListener(new View.OnClickListener() {
@@ -141,13 +169,13 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
                                             switch (response.code()) {
                                                 case 200:
-                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
                                                     break;
                                                 case 404:
-                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
                                                     break;
                                                 default:
-                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
                                                     break;
                                             }
                                         }
@@ -155,7 +183,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                                         @Override
                                         public void onFailure(Call<Void> call, Throwable t) {
                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();//// TODO: 08/08/17 magic string
                                         }
                                     });
 
@@ -163,7 +191,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                                      * TODO: send details?
                                      * Log the hunt in firebase.
                                      * */
-                                    Japp.getAnalytics().logEvent("EVENT_HUNT", new Bundle());
+                                    Japp.getAnalytics().logEvent("EVENT_HUNT", new Bundle()); //// TODO: 08/08/17 magic string
                                 }
                             }
                         })
@@ -256,7 +284,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             public void onClick(View view) {
                 View v = getView();
 
-                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
 
                 if(session != null) {
                     /*--- Show the menu ---*/
@@ -310,7 +338,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                  * TODO: use color to identify follow state?
                  * */
                 if(session != null) {
-                   // followButton.setColorNormal(Color.parseColor("#DA4336"));
+                    // followButton.setColorNormal(Color.parseColor("#DA4336"));
                     followButton.setLabelText("Volg mij");
                     session.end();
                     session = null;
@@ -327,41 +355,47 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         return v;
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         pinningManager.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(BUNDLE_OSM_ACTIVE, osmActive);
+        if (!osmActive) {
+            Bundle mapBundle = new Bundle();
+            googleMapView.onSaveInstanceState(mapBundle);
 
-        Bundle mapBundle = new Bundle();
-        mapView.onSaveInstanceState(mapBundle);
-
-        savedInstanceState.putBundle(BUNDLE_MAP, mapBundle);
-
+            savedInstanceState.putBundle(BUNDLE_MAP, mapBundle);
+        }
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
 
 
     public void getMapAsync(OnMapReadyCallback callback) {
-        MapView view = (MapView)getView().findViewById(R.id.map);
+        MapView view = (MapView)getView().findViewById(R.id.googleMap);
         view.getMapAsync(this);
         this.callback = callback;
     }
 
     public void onStart()  {
         super.onStart();
-        mapView.onStart();
+        if (!osmActive) {
+            googleMapView.onStart();
+        }
     }
 
     public void onStop() {
         super.onStop();
-        mapView.onStop();
+        if (!osmActive) {
+            googleMapView.onStop();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        if (!osmActive) {
+            googleMapView.onResume();
+        }
         serviceManager.add(movementManager);
         movementManager.onResume();
         if(!serviceManager.isBound()) {
@@ -372,15 +406,16 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        googleMapView.onPause();
         movementManager.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
-
+        if (!osmActive) {
+            googleMapView.onDestroy();
+        }
         if(movementManager != null) {
             movementManager.onDestroy();
             serviceManager.remove(movementManager);
@@ -395,7 +430,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        if (!osmActive) {
+            googleMapView.onLowMemory();
+        }
     }
 
     @Override
