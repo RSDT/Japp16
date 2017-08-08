@@ -16,7 +16,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
@@ -24,6 +23,8 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -51,7 +52,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     /**
      * The GoogleMap used to create markers.
      * */
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
     /**
      * The Marker that indicates the location.
@@ -114,7 +115,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         snackbar.setAction(R.string.sighting_snackbar_action_text, this);
         snackbar.setCallback(this);
 
-        marker = googleMap.addMarker(new MarkerOptions()
+        marker = jotiMap.addMarker(new MarkerOptions()
                 .visible(false)
                 .position(new LatLng(0,0))
                 .icon(descriptor));
@@ -147,7 +148,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
      * Starts the SightingSession.
      * */
     public void start() {
-        googleMap.setOnMapClickListener(this);
+        jotiMap.setOnMapClickListener(this);
         snackbar.show();
     }
 
@@ -180,11 +181,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             switch (type)
             {
                 case SIGHT_HUNT:
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableHunt()));
+                    marker.setIcon(deelgebied.getDrawableHunt());
                     icon = String.valueOf(deelgebied.getDrawableHunt());
                     break;
                 case SIGHT_SPOT:
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableSpot()));
+                    marker.setIcon(deelgebied.getDrawableSpot());
                     icon = String.valueOf(deelgebied.getDrawableSpot());
                     break;
             }
@@ -225,7 +226,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         if(deelgebied == null) {
             deelgebied = Deelgebied.Xray;
         }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), this);
+        jotiMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), this);
     }
 
     @Override
@@ -235,7 +236,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
             ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
         }
-        googleMap.snapshot(SightingSession.this);
+        jotiMap.snapshot(SightingSession.this);
     }
 
     @Override
@@ -245,7 +246,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
             ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
         }
-        googleMap.snapshot(SightingSession.this);
+        jotiMap.snapshot(SightingSession.this);
     }
 
 
@@ -263,10 +264,10 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     {
         type = null;
 
-        if(googleMap != null)
+        if(jotiMap != null)
         {
-            googleMap.setOnMapClickListener(null);
-            googleMap = null;
+            jotiMap.setOnMapClickListener(null);
+            jotiMap = null;
         }
 
         if(marker != null)
@@ -312,8 +313,8 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         /**
          * Sets the GoogleMap of the SightingSession.
          * */
-        public Builder setGoogleMap(GoogleMap googleMap){
-            buffer.googleMap = googleMap;
+        public Builder setGoogleMap(JotiMap jotiMap){
+            buffer.jotiMap = jotiMap;
             return this;
         }
 

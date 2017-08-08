@@ -1,11 +1,12 @@
 package nl.rsdt.japp.jotial.maps;
 
 import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
+
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 /**
  * @author Dingenis Sieger Sinke

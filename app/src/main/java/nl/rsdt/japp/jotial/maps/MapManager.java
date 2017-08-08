@@ -9,7 +9,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;//// TODO: 07/08/17 make this class indepent from GoogleMap
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +37,7 @@ import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,6 +25,7 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.jotial.net.apis.FotoApi;
 import retrofit2.Call;
 
@@ -75,6 +75,7 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
         return null;
     }
 
+    @Override
     public Marker searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         FotoOpdrachtInfo info;

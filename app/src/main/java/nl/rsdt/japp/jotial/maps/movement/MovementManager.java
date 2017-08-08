@@ -16,7 +16,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -37,6 +36,8 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
 
@@ -46,7 +47,7 @@ import nl.rsdt.japp.service.ServiceManager;
  * @since 2-8-2016
  * Description...
  */
-public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
+public class MovementManager implements ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
 
     private static final String STORAGE_KEY = "TAIL";
 
@@ -54,7 +55,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
 
     private LocationService service;
 
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
     private Marker marker;
 
@@ -91,7 +92,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Animate the marker to the new position
              * */
-            AnimateMarkerTool.animateMarkerToICS(marker, new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
+            marker.animateMarkerToICS(new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
             marker.setRotation(bearing);
         } else {
             marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -154,17 +155,15 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
     }
 
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+    public void onMapReady(JotiMap jotiMap) {
+        this.jotiMap = jotiMap;
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()
                 .setType(MarkerIdentifier.TYPE_ME)
                 .add("icon", String.valueOf(R.drawable.me))
                 .create();
 
-        marker = googleMap.addMarker(
+        marker = jotiMap.addMarker(
                 new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
                         .position(new LatLng(52.021818, 6.059603))
@@ -172,7 +171,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                         .flat(true)
                         .title(new Gson().toJson(identifier)));
 
-        tail = googleMap.addPolyline(
+        tail = jotiMap.addPolyline(
                 new PolylineOptions()
                         .width(3)
                         .color(Color.BLUE));
@@ -211,15 +210,15 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Enable controls.
              * */
-            googleMap.getUiSettings().setAllGesturesEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
+            jotiMap.getUiSettings().setAllGesturesEnabled(true);
+            jotiMap.getUiSettings().setCompassEnabled(true);
 
-            googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            jotiMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
                 @Override
                 public void onCameraMoveStarted(int i) {
                     switch (i) {
                         case REASON_GESTURE:
-                            CameraPosition position = googleMap.getCameraPosition();
+                            CameraPosition position = jotiMap.getCameraPosition();
                             setZoom(position.zoom);
                             setAngleOfAttack(position.tilt);
                             break;
@@ -242,7 +241,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Animate the camera to the new position
              * */
-            CameraUtils.cameraToLocation(true, googleMap, location, zoom, aoa, bearing);
+            jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
         }
 
         public void end() {
@@ -256,12 +255,12 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Disable controls
              * */
-            googleMap.getUiSettings().setCompassEnabled(false);
+            jotiMap.getUiSettings().setCompassEnabled(false);
 
             /**
              * Remove callback
              * */
-            googleMap.setOnCameraMoveStartedListener(null);
+            jotiMap.setOnCameraMoveStartedListener(null);
 
             /**
              * Move the camera to the before position
@@ -310,8 +309,8 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             tail = null;
         }
 
-        if(googleMap != null) {
-            googleMap = null;
+        if(jotiMap != null) {
+            jotiMap = null;
         }
 
         if(marker != null) {

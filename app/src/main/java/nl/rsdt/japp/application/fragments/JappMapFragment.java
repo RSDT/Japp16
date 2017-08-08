@@ -32,6 +32,7 @@ import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
 import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
@@ -55,10 +56,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     private MapView mapView;
 
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
-    public GoogleMap getGoogleMap() {
-        return googleMap;
+    public JotiMap getJotiMap() {
+        return jotiMap;
     }
 
     private OnMapReadyCallback callback;
@@ -113,7 +114,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 /*--- Build a SightingSession and start it ---*/
                 session = new SightingSession.Builder()
                         .setType(SightingSession.SIGHT_HUNT)
-                        .setGoogleMap(googleMap)
+                        .setGoogleMap(jotiMap)
                         .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
                         .setDialogContext(JappMapFragment.this.getActivity())
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
@@ -186,7 +187,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 /*--- Build a SightingSession and start it ---*/
                 session = new SightingSession.Builder()
                         .setType(SightingSession.SIGHT_SPOT)
-                        .setGoogleMap(googleMap)
+                        .setGoogleMap(jotiMap)
                         .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
                         .setDialogContext(JappMapFragment.this.getActivity())
                         .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
@@ -267,7 +268,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                     menu.hideMenu(true);
 
                     session = new PinningSession.Builder()
-                            .setGoogleMap(googleMap)
+                            .setGoogleMap(jotiMap)
                             .setCallback(new PinningSession.OnPinningCompletedCallback() {
                                 @Override
                                 public void onPinningCompleted(Pin pin) {
@@ -318,7 +319,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                     menu.close(true);
                     //followButton.setColorNormal(Color.parseColor("#5cd65c"));
                     followButton.setLabelText("Stop volgen");
-                    session = movementManager.newSession(googleMap.getCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
+                    session = movementManager.newSession(jotiMap.getCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
                 }
             }
 
@@ -399,10 +400,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        googleMap.clear();
+        this.jotiMap = JotiMap.getJotiMapInstance(googleMap);
+        jotiMap.clear();
 
-        movementManager.onMapReady(googleMap);
+        movementManager.onMapReady(jotiMap);
 
 
         Deelgebied[] all = Deelgebied.all();
@@ -427,10 +428,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 options.strokeWidth(0);
             }
 
-            areas.put(current.getName(), googleMap.addPolygon(options));
+            areas.put(current.getName(), jotiMap.addPolygon(options));
         }
 
-        pinningManager.onMapReady(googleMap);
+        pinningManager.onMapReady(jotiMap);
 
         if(callback != null)
         {

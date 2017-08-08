@@ -147,7 +147,7 @@ public class FragmentNavigationManager {
 
     public void setupMap(OnMapReadyCallback callback)
     {
-        if(mapFragment.getGoogleMap() == null) {
+        if(mapFragment.getJotiMap() == null) {
             if (mapFragment == null) {
                 mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
                 mapFragment.getMapAsync(callback);

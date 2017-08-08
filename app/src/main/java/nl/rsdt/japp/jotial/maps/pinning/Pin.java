@@ -3,14 +3,14 @@ package nl.rsdt.japp.jotial.maps.pinning;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -24,7 +24,7 @@ public class Pin {
 
     protected Data data;
 
-    public static Pin create(GoogleMap googleMap, Data data) {
+    public static Pin create(JotiMap jotiMap, Data data) {
         Pin buffer = new Pin();
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()
@@ -34,7 +34,7 @@ public class Pin {
                 .add("icon", String.valueOf(data.icon))
                 .create();
 
-        buffer.marker = googleMap.addMarker(new MarkerOptions()
+        buffer.marker = jotiMap.addMarker(new MarkerOptions()
                 .title(new Gson().toJson(identifier))
                 .position(data.position)
                 .icon(BitmapDescriptorFactory.fromResource(data.icon)));

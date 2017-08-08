@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -35,6 +34,7 @@ import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.management.transformation.Transducable;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncTransduceTask;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
