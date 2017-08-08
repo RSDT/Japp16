@@ -1,6 +1,10 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
+import android.system.Os;
+
 import com.google.android.gms.maps.model.LatLng;
+
+import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,22 +19,38 @@ public class Polyline {
 
     private final int polylineType;
     private final com.google.android.gms.maps.model.Polyline googlePolyline;
+    private final org.osmdroid.views.overlay.Polyline osmPolyline;
     private List<LatLng> points;
 
     public Polyline(com.google.android.gms.maps.model.Polyline polyline) {
         googlePolyline  = polyline;
         polylineType = GOOGLE_POLYLINE;
+        osmPolyline = null;
+    }
+
+    public Polyline(org.osmdroid.views.overlay.Polyline polyline) {
+        polylineType = OSM_POLYLINE;
+        googlePolyline = null;
+        osmPolyline = polyline;
     }
 
     public void remove() {
         if (polylineType == GOOGLE_POLYLINE){
             googlePolyline.remove();
+        }else if (polylineType == OSM_POLYLINE){
+            osmPolyline.setVisible(false); //todo dit is heel lelijk
         }
     }
 
     public List<LatLng> getPoints() {
-        if (polylineType == GOOGLE_POLYLINE){
+        if (polylineType == GOOGLE_POLYLINE) {
             return googlePolyline.getPoints();
+        }else if(polylineType == OSM_POLYLINE){
+            ArrayList<LatLng> r = new ArrayList<>();
+            for (GeoPoint p : osmPolyline.getPoints()){
+                r.add(new LatLng(p.getLatitude(),p.getLongitude()));
+            }
+            return r;
         }else {
             return new ArrayList<>();
         }
@@ -39,6 +59,12 @@ public class Polyline {
     public void setPoints(List<LatLng> points) {
         if (polylineType == GOOGLE_POLYLINE){
             googlePolyline.setPoints(points);
+        }else if (polylineType == OSM_POLYLINE){
+            ArrayList<GeoPoint> r = new ArrayList<>();
+            for (LatLng p : points){
+                r.add(new GeoPoint(p.latitude,p.longitude));
+            }
+            osmPolyline.setPoints(r);
         }
     }
 }

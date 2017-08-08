@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,8 +131,21 @@ public class JotiMap {
     }
 
     public Polyline addPolyline(PolylineOptions polylineOptions) {
-        if (mapType == GOOGLEMAPTYPE){
+        if (mapType == GOOGLEMAPTYPE) {
             return new Polyline(googleMap.addPolyline(polylineOptions));
+        } else if (mapType == OSMMAPTYPE){
+            org.osmdroid.views.overlay.Polyline polyline = new org.osmdroid.views.overlay.Polyline();
+            polyline.setColor(polyline.getColor());
+            polyline.setVisible(polylineOptions.isVisible());
+            ArrayList<GeoPoint> points = new ArrayList<>();
+            for (LatLng latlng : polylineOptions.getPoints()){
+                points.add(new GeoPoint(latlng.latitude,latlng.longitude));
+            }
+            polyline.setPoints(points);
+            polyline.setWidth(polylineOptions.getWidth());
+            osmMap.getOverlayManager().add(polyline);
+            osmMap.invalidate();
+            return new Polyline(polyline);
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");

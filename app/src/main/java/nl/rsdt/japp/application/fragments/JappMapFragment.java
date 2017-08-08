@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 
 import java.util.HashMap;
 
@@ -92,7 +93,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        boolean useOSM = true; // todo get from prefs
+        boolean useOSM = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean("pref_advanced_osm",false);
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
@@ -108,12 +109,17 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     private View createOSMMap(Bundle savedInstanceState, View v) {
         osmActive = true;
-        MapView googleMapView = (MapView)v.findViewById(R.id.googleMap);
+        googleMapView = (MapView)v.findViewById(R.id.googleMap);
         googleMapView.setVisibility(View.GONE);
         org.osmdroid.views.MapView osmView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
         Context ctx = getActivity().getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         osmView.setTileSource(TileSourceFactory.MAPNIK);
+        osmView.getController().setCenter(new GeoPoint(51.958852, 5.954517));
+        osmView.getController().setZoom(11);
+        osmView.setBuiltInZoomControls(true);
+        osmView.setMultiTouchControls(true);
+        jotiMap = JotiMap.getJotiMapInstance(osmView);
         return v;
     }
 
@@ -415,7 +421,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public void onPause() {
         super.onPause();
-        googleMapView.onPause();
+        if (!osmActive) {
+            googleMapView.onPause();
+        }
         movementManager.onPause();
     }
 
@@ -443,10 +451,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             googleMapView.onLowMemory();
         }
     }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.jotiMap = JotiMap.getJotiMapInstance(googleMap);
+    public void onMapReady(JotiMap jotiMap){
         jotiMap.clear();
 
         movementManager.onMapReady(jotiMap);
@@ -478,6 +483,11 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }
 
         pinningManager.onMapReady(jotiMap);
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.jotiMap = JotiMap.getJotiMapInstance(googleMap);
+        onMapReady(jotiMap);
 
         if(callback != null)
         {
