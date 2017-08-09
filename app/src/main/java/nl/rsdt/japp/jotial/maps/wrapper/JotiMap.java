@@ -175,11 +175,13 @@ public class JotiMap {
     }
 
     public Polygon addPolygon(PolygonOptions polygonOptions) {
-        if (mapType == GOOGLEMAPTYPE){
-            return new Polygon(googleMap.addPolygon(polygonOptions));
-        }else{
-            return null;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType) {
+            case GOOGLEMAPTYPE:
+                return new Polygon(googleMap.addPolygon(polygonOptions));
+            case OSMMAPTYPE:
+                return new Polygon(polygonOptions, osmMap);
+            default:
+                return null;
         }
     }
 
@@ -214,20 +216,26 @@ public class JotiMap {
     }
 
     public CameraPosition getCameraPosition() {
-        if (mapType == GOOGLEMAPTYPE){
-            return googleMap.getCameraPosition();
-        }else{
-            return null;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                return googleMap.getCameraPosition();
+            case OSMMAPTYPE:
+                return null;
+            default:
+                return null;
         }
     }
 
     public void snapshot(GoogleMap.SnapshotReadyCallback snapshotReadyCallback) {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.snapshot(snapshotReadyCallback);
-        }else{
-            return;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                googleMap.snapshot(snapshotReadyCallback);
+                break;
+            case OSMMAPTYPE:
+                //// TODO: 09/08/17 implement this?
+                break;
+            default:
+                break;
         }
     }
 
@@ -250,19 +258,28 @@ public class JotiMap {
     }
 
     public void cameraToLocation(boolean b, Location location, float zoom, float aoa, float bearing) {
-        if (mapType == GOOGLEMAPTYPE) {
-            CameraUtils.cameraToLocation(b, googleMap, location, zoom, aoa, bearing);
-        }else {
+        switch (mapType) {
+            case GOOGLEMAPTYPE:
+                CameraUtils.cameraToLocation(b, googleMap, location, zoom, aoa, bearing);
+                break;
+            case OSMMAPTYPE:
+                osmMap.getController().animateTo(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                break;
+            default:
+                break;
 
         }
     }
 
     public void clear() {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.clear();
-        }else{
-            return;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                googleMap.clear();
+                break;
+            case OSMMAPTYPE:
+                osmMap.getOverlays().clear();
+                break;
+            default:
         }
     }
 

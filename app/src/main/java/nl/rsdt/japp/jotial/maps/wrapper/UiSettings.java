@@ -26,32 +26,67 @@ public class UiSettings {
     }
 
     public void setAllGesturesEnabled(boolean allesturesEnabled) {
-        if (uisettingsType  == GOOGLE_UISETTINGS){
-            googleUiSettings.setAllGesturesEnabled(allesturesEnabled);
+        switch (uisettingsType){
+            case GOOGLE_UISETTINGS:
+                googleUiSettings.setAllGesturesEnabled(allesturesEnabled);
+                break;
+            case OSM_UISETTINGS:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
     public void setCompassEnabled(boolean compassEnabled) {
-        if (uisettingsType  == GOOGLE_UISETTINGS){
-            googleUiSettings.setCompassEnabled(compassEnabled);
+        switch (uisettingsType){
+            case GOOGLE_UISETTINGS:
+                googleUiSettings.setCompassEnabled(compassEnabled);
+                break;
+            case OSM_UISETTINGS:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
     public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
-        if (uisettingsType  == GOOGLE_UISETTINGS){
-            googleUiSettings.setZoomControlsEnabled(zoomControlsEnabled);
+        switch (uisettingsType){
+            case GOOGLE_UISETTINGS:
+                googleUiSettings.setZoomControlsEnabled(zoomControlsEnabled);
+                break;
+            case OSM_UISETTINGS:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
     public void setIndoorLevelPickerEnabled(boolean indoorLevelPickerEnabled) {
-        if (uisettingsType  == GOOGLE_UISETTINGS){
-            googleUiSettings.setIndoorLevelPickerEnabled(indoorLevelPickerEnabled);
+        switch (uisettingsType){
+            case GOOGLE_UISETTINGS:
+                googleUiSettings.setIndoorLevelPickerEnabled(indoorLevelPickerEnabled);
+                break;
+            case OSM_UISETTINGS:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
     public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
-        if (uisettingsType  == GOOGLE_UISETTINGS){
-            googleUiSettings.setMapToolbarEnabled(mapToolbarEnabled);
+        switch (uisettingsType){
+            case GOOGLE_UISETTINGS:
+                googleUiSettings.setMapToolbarEnabled(mapToolbarEnabled);
+                break;
+            case OSM_UISETTINGS:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 }

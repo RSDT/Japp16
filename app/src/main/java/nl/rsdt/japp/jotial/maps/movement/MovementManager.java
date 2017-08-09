@@ -237,6 +237,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
             /**
              * Animate the camera to the new position
              * */
+
             jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
         }
 
