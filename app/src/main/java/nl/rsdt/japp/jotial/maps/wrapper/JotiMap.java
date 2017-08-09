@@ -1,10 +1,13 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.util.Pair;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -75,26 +78,38 @@ public class JotiMap {
     }
 
     public void setInfoWindowAdapter(CustomInfoWindowAdapter infoWindowAdapter) {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.setInfoWindowAdapter(infoWindowAdapter);
-        }else{
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                googleMap.setInfoWindowAdapter(infoWindowAdapter);
+                break;
+            case OSMMAPTYPE:
+                //// TODO: 09/08/17 implement this
+                break;
+            default:
+                break;
         }
     }
 
     public void setGMapType(int mapType) {
-        if (this.mapType == GOOGLEMAPTYPE){
-            googleMap.setMapType(mapType);
-        }else{
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (this.mapType) {
+            case GOOGLEMAPTYPE:
+                googleMap.setMapType(mapType);
+                break;
+            case OSMMAPTYPE:
+                break;
+            default:
+                break;
         }
     }
 
     public boolean setMapStyle(MapStyleOptions mapStyleOptions) {
-        if (mapType == GOOGLEMAPTYPE){
-            return googleMap.setMapStyle(mapStyleOptions);
-        }else{
-            return false;
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                return googleMap.setMapStyle(mapStyleOptions);
+            case OSMMAPTYPE:
+                return false; //// TODO: 09/08/17 moet dit iets doen?
+            default:
+                return false;
             //throw new RuntimeException("only supported for googleMaps");
         }
     }
@@ -121,9 +136,14 @@ public class JotiMap {
         }
     }
 
-    public Marker addMarker(MarkerOptions markerOptions) {
+    public Marker addMarker(Pair<MarkerOptions, Bitmap> markerOptions) {
         if (mapType == GOOGLEMAPTYPE) {
-            return new Marker(googleMap.addMarker(markerOptions));
+            if (markerOptions.second != null){
+                markerOptions.first.icon(BitmapDescriptorFactory.fromBitmap(markerOptions.second));
+            }else{
+                markerOptions.first.icon(BitmapDescriptorFactory.defaultMarker());
+            }
+            return new Marker(googleMap.addMarker(markerOptions.first));
         }else if(mapType == OSMMAPTYPE){
             return new Marker(markerOptions, osmMap);
         }else{

@@ -1,9 +1,11 @@
 package nl.rsdt.japp.jotial.maps.management.controllers;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.util.Pair;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -159,16 +161,16 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
                     mOptions.anchor(0.5f, 0.5f);
                     mOptions.position(info.getLatLng());
                     mOptions.title(new Gson().toJson(identifier));
-
+                    Bitmap bm;
                     if(info.klaar == 1)
                     {
-                        mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20_klaar));
+                        bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.camera_20x20_klaar);
                     }
                     else
                     {
-                        mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_20x20));
+                        bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.camera_20x20);
                     }
-                    result.add(mOptions);
+                    result.add(new Pair<>(mOptions, bm));
                 }
             }
             return result;

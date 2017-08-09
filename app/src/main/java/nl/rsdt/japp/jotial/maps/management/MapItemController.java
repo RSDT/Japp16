@@ -1,7 +1,9 @@
 package nl.rsdt.japp.jotial.maps.management;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -165,7 +167,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     protected void processResult(O result)
     {
-        ArrayList<MarkerOptions> markers = result.getMarkers();
+        ArrayList<Pair<MarkerOptions, Bitmap>> markers = result.getMarkers();
         for(int m = 0; m < markers.size(); m++)
         {
             this.markers.add(jotiMap.addMarker(markers.get(m)));

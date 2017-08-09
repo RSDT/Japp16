@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
+import android.util.Pair;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
@@ -291,9 +291,9 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 2;
                 Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), lastestInfo.getAssociatedDrawable(), options);
-                mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
-                result.add(mOptions);
+
+                result.add(new Pair<MarkerOptions, Bitmap>(mOptions,bitmap));
 
             }
             return result;

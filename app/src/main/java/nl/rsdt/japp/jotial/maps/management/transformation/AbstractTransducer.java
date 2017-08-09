@@ -1,9 +1,11 @@
 package nl.rsdt.japp.jotial.maps.management.transformation;
 
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -73,16 +75,16 @@ public abstract class AbstractTransducer<I, O extends AbstractTransducer.Result>
         /**
          * The Marker list.
          */
-        protected ArrayList<MarkerOptions> markers;
+        protected ArrayList<Pair<MarkerOptions,Bitmap>> markers;
 
         /**
          * Adds a MarkerOptions object to the markers list.
          */
-        public void add(MarkerOptions options) {
+        public void add(Pair<MarkerOptions,Bitmap> options) {
             markers.add(options);
         }
 
-        public ArrayList<MarkerOptions> getMarkers() {
+        public ArrayList<Pair<MarkerOptions,Bitmap>> getMarkers() {
             return markers;
         }
 
@@ -149,16 +151,35 @@ public abstract class AbstractTransducer<I, O extends AbstractTransducer.Result>
          */
         protected Result(Parcel in) {
             bundleId = in.readString();
-            markers = in.createTypedArrayList(MarkerOptions.CREATOR);
+            markers = new ArrayList<>();
+            ArrayList<MarkerOptions> optionsList = in.createTypedArrayList(MarkerOptions.CREATOR);
+            ArrayList<Bitmap> bitmapList = in.createTypedArrayList(Bitmap.CREATOR);
+            ArrayList<Pair<MarkerOptions, Bitmap>> markers = new ArrayList<>();
+
             polylines = in.createTypedArrayList(PolylineOptions.CREATOR);
             polygons = in.createTypedArrayList(PolygonOptions.CREATOR);
             circles = in.createTypedArrayList(CircleOptions.CREATOR);
+            if (bitmapList.size() != optionsList.size()){
+                throw new RuntimeException("optionlist and bitmapList are not equal in size");
+            }
+            for (int i = 0; i < optionsList.size(); i++){
+                markers.add(new Pair<MarkerOptions, Bitmap>(optionsList.get(i),bitmapList.get(i)));
+            }
+            this.markers = markers;
         }
 
         @Override
         public void writeToParcel(Parcel dest, int i) {
             dest.writeString(bundleId);
-            dest.writeTypedList(markers);
+            ArrayList<MarkerOptions> optionsList = new ArrayList<>();
+            ArrayList<Bitmap> bitmapList = new ArrayList<>();
+            for (Pair<MarkerOptions,Bitmap> p : markers){
+                optionsList.add(p.first);
+                bitmapList.add(p.second);
+            }
+
+            dest.writeTypedList(optionsList);
+            dest.writeTypedList(bitmapList);
             dest.writeTypedList(polylines);
             dest.writeTypedList(polygons);
             dest.writeTypedList(circles);

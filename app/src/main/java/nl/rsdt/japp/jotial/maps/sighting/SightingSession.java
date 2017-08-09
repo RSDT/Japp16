@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,8 +15,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
@@ -98,27 +98,26 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
      * Initializes the SightingSession.
      * */
     private void initialize() {
-        BitmapDescriptor descriptor;
+        Bitmap bm;
         switch (type)
         {
             case SIGHT_HUNT:
-                descriptor = BitmapDescriptorFactory.fromResource(R.drawable.vos_x_4);
+                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_x_4);
                 break;
             case SIGHT_SPOT:
-                descriptor = BitmapDescriptorFactory.fromResource(R.drawable.vos_x_3);
+                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_x_3);
                 break;
             default:
-                descriptor = BitmapDescriptorFactory.defaultMarker();
+                bm = null;
                 break;
         }
         snackbar = Snackbar.make(targetView, R.string.sighting_standard_text, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.sighting_snackbar_action_text, this);
         snackbar.setCallback(this);
 
-        marker = jotiMap.addMarker(new MarkerOptions()
+        marker = jotiMap.addMarker(new Pair<>(new MarkerOptions()
                 .visible(false)
-                .position(new LatLng(0,0))
-                .icon(descriptor));
+                .position(new LatLng(0,0)), bm));
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.sighting_input_dialog, null);

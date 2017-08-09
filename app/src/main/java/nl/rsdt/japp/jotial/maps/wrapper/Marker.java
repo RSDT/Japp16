@@ -1,5 +1,9 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.Pair;
+
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -7,8 +11,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
-import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
+import nl.rsdt.japp.application.Japp;
 
 /**
  * Created by mattijn on 08/08/17.
@@ -27,10 +30,12 @@ public class Marker {
         osmMarker = null;
     }
 
-    public Marker(MarkerOptions markerOptions, MapView osmMap) {
+    public Marker(Pair<MarkerOptions,Bitmap> markerOptionsPair, MapView osmMap) {
         googleMarker = null;
         markerType = OSMMARKER;
         osmMarker = new org.osmdroid.views.overlay.Marker(osmMap);
+        MarkerOptions markerOptions = markerOptionsPair.first;
+        osmMarker.setIcon(new BitmapDrawable(Japp.getInstance().getResources(), markerOptionsPair.second));
         osmMarker.setPosition(new GeoPoint(markerOptions.getPosition().latitude,markerOptions.getPosition().longitude));
         osmMap.getOverlays().add(osmMarker);
         osmMap.invalidate();

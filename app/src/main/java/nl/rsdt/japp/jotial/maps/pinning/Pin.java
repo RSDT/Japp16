@@ -1,13 +1,15 @@
 package nl.rsdt.japp.jotial.maps.pinning;
 
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Pair;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
@@ -34,10 +36,9 @@ public class Pin {
                 .add("icon", String.valueOf(data.icon))
                 .create();
 
-        buffer.marker = jotiMap.addMarker(new MarkerOptions()
+        buffer.marker = jotiMap.addMarker(new Pair<>(new MarkerOptions()
                 .title(new Gson().toJson(identifier))
-                .position(data.position)
-                .icon(BitmapDescriptorFactory.fromResource(data.icon)));
+                .position(data.position), BitmapFactory.decodeResource(Japp.getInstance().getResources(), data.icon)));
         buffer.data = data;
         return buffer;
     }

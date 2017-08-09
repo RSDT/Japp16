@@ -3,7 +3,9 @@ package nl.rsdt.japp.jotial.maps.pinning;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -63,9 +65,9 @@ public class PinningSession extends Snackbar.Callback implements GoogleMap.OnMap
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
 
-        marker = jotiMap.addMarker(new MarkerOptions()
+        marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
                 .visible(false)
-                .position(new LatLng(0, 0)));
+                .position(new LatLng(0, 0)),null));
     }
 
     public void start() {

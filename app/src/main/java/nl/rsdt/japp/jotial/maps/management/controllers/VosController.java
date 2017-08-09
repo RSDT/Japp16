@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
+import android.util.Pair;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -264,8 +266,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                 }
                 Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), current.getAssociatedDrawable(), options);
                 mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-
-                result.add(mOptions);
+                result.add(new Pair<>(mOptions,bitmap));
 
                 pOptions.add(current.getLatLng());
             }

@@ -1,8 +1,11 @@
 package nl.rsdt.japp.jotial.maps.movement;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.View;
 
 import com.google.android.gms.location.LocationListener;
@@ -21,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.List;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
@@ -156,13 +160,12 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 .add("icon", String.valueOf(R.drawable.me))
                 .create();
 
-        marker = jotiMap.addMarker(
+        marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(
                 new MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
                         .position(new LatLng(52.021818, 6.059603))
                         .visible(false)
                         .flat(true)
-                        .title(new Gson().toJson(identifier)));
+                        .title(new Gson().toJson(identifier)), BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.me)));
 
         tail = jotiMap.addPolyline(
                 new PolylineOptions()
