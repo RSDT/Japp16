@@ -19,7 +19,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,39 +114,41 @@ public class JotiMap {
     }
 
     public UiSettings getUiSettings() {
-        if (mapType == GOOGLEMAPTYPE) {
-            UiSettings sett = new UiSettings(googleMap.getUiSettings());
-            return sett;
-        } else if (mapType == OSMMAPTYPE){
-            return new UiSettings(osmMap);
-        }else{
-            return null;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                return new UiSettings(googleMap.getUiSettings());
+            case OSMMAPTYPE:
+                return new UiSettings(osmMap);
+            default:
+                return null;
         }
     }
     public void animateCamera(LatLng latLng, int zoom)  {
-        if (mapType == GOOGLEMAPTYPE) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        } else  if (mapType == OSMMAPTYPE){
-            osmMap.getController().animateTo(new GeoPoint(latLng.latitude,latLng.longitude));
-            osmMap.getController().zoomTo(zoom);//// TODO: 07/08/17 controleren of de zoomlevels van googlemaps en osm enigzins overeenkomen.
-        }else{
-            //throw new RuntimeException("only supported for googleMaps&OSM");
+        switch (mapType) {
+            case GOOGLEMAPTYPE:
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+                break;
+            case OSMMAPTYPE:
+                osmMap.getController().animateTo(new GeoPoint(latLng.latitude, latLng.longitude));
+                osmMap.getController().zoomTo(zoom);//// TODO: 07/08/17 controleren of de zoomlevels van googlemaps en osm enigzins overeenkomen.
+            default:
+                break;
         }
     }
 
     public Marker addMarker(Pair<MarkerOptions, Bitmap> markerOptions) {
-        if (mapType == GOOGLEMAPTYPE) {
-            if (markerOptions.second != null){
-                markerOptions.first.icon(BitmapDescriptorFactory.fromBitmap(markerOptions.second));
-            }else{
-                markerOptions.first.icon(BitmapDescriptorFactory.defaultMarker());
-            }
-            return new Marker(googleMap.addMarker(markerOptions.first));
-        }else if(mapType == OSMMAPTYPE){
-            return new Marker(markerOptions, osmMap);
-        }else{
-            return null;
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                if (markerOptions.second != null){
+                    markerOptions.first.icon(BitmapDescriptorFactory.fromBitmap(markerOptions.second));
+                }else{
+                    markerOptions.first.icon(BitmapDescriptorFactory.defaultMarker());
+                }
+                return new Marker(googleMap.addMarker(markerOptions.first));
+            case OSMMAPTYPE:
+                return new Marker(markerOptions, osmMap);
+            default:
+                return null;
             //throw new RuntimeException("only supported for googleMaps");
         }
     }
@@ -198,11 +199,15 @@ public class JotiMap {
     }
 
     public void setOnMapClickListener(GoogleMap.OnMapClickListener onMapClickListener) {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.setOnMapClickListener(onMapClickListener);
-        }else{
-            return;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                googleMap.setOnMapClickListener(onMapClickListener);
+                break;
+            case OSMMAPTYPE:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
@@ -231,20 +236,28 @@ public class JotiMap {
     }
 
     public void animateCamera(CameraUpdate cameraUpdate, GoogleMap.CancelableCallback cancelableCallback) {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.animateCamera(cameraUpdate, cancelableCallback);
-        }else{
-            return;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType) {
+            case GOOGLEMAPTYPE:
+                googleMap.animateCamera(cameraUpdate, cancelableCallback);
+                break;
+            case OSMMAPTYPE:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
     public void setOnCameraMoveStartedListener(GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener) {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);
-        }else{
-            return;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                googleMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);
+                break;
+            case OSMMAPTYPE:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 
@@ -275,11 +288,15 @@ public class JotiMap {
     }
 
     public void setOnInfoWindowLongClickListener(GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener) {
-        if (mapType == GOOGLEMAPTYPE){
-            googleMap.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener);
-        }else{
-            return;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                googleMap.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener);
+                break;
+            case OSMMAPTYPE:
+                //// TODO: 09/08/17
+                break;
+            default:
+                break;
         }
     }
 }

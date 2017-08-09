@@ -20,18 +20,21 @@ public class Polyline {
     private final int polylineType;
     private final com.google.android.gms.maps.model.Polyline googlePolyline;
     private final org.osmdroid.views.overlay.Polyline osmPolyline;
+    private final MapView osmMap;
 
     public Polyline(com.google.android.gms.maps.model.Polyline polyline) {
         googlePolyline  = polyline;
         polylineType = GOOGLE_POLYLINE;
         osmPolyline = null;
+        osmMap = null;
     }
 
     public Polyline(PolylineOptions polylineOptions, MapView osmMap) {
         polylineType = OSM_POLYLINE;
         googlePolyline = null;
+        this.osmMap = osmMap;
         org.osmdroid.views.overlay.Polyline polyline = new org.osmdroid.views.overlay.Polyline();
-        polyline.setColor(polyline.getColor());
+        polyline.setColor(polylineOptions.getColor());
         polyline.setVisible(polylineOptions.isVisible());
         ArrayList<GeoPoint> points = new ArrayList<>();
         for (LatLng latlng : polylineOptions.getPoints()){
@@ -45,36 +48,47 @@ public class Polyline {
     }
 
     public void remove() {
-        if (polylineType == GOOGLE_POLYLINE){
-            googlePolyline.remove();
-        }else if (polylineType == OSM_POLYLINE){
-            osmPolyline.setVisible(false); //todo dit is heel lelijk
+        switch (polylineType){
+            case GOOGLE_POLYLINE:
+                googlePolyline.remove();
+                break;
+            case OSM_POLYLINE:
+                osmMap.getOverlays().remove(osmPolyline);
+                break;
+            default:
+                break;
         }
     }
 
     public List<LatLng> getPoints() {
-        if (polylineType == GOOGLE_POLYLINE) {
-            return googlePolyline.getPoints();
-        }else if(polylineType == OSM_POLYLINE){
-            ArrayList<LatLng> r = new ArrayList<>();
-            for (GeoPoint p : osmPolyline.getPoints()){
-                r.add(new LatLng(p.getLatitude(),p.getLongitude()));
-            }
-            return r;
-        }else {
-            return new ArrayList<>();
+        switch (polylineType){
+            case GOOGLE_POLYLINE:
+                return googlePolyline.getPoints();
+            case OSM_POLYLINE:
+                ArrayList<LatLng> r = new ArrayList<>();
+                for (GeoPoint p : osmPolyline.getPoints()){
+                    r.add(new LatLng(p.getLatitude(),p.getLongitude()));
+                }
+                return r;
+            default:
+                return new ArrayList<>();
         }
     }
 
     public void setPoints(List<LatLng> points) {
-        if (polylineType == GOOGLE_POLYLINE){
-            googlePolyline.setPoints(points);
-        }else if (polylineType == OSM_POLYLINE){
-            ArrayList<GeoPoint> r = new ArrayList<>();
-            for (LatLng p : points){
-                r.add(new GeoPoint(p.latitude,p.longitude));
-            }
-            osmPolyline.setPoints(r);
+        switch (polylineType){
+            case GOOGLE_POLYLINE:
+                googlePolyline.setPoints(points);
+                break;
+            case OSM_POLYLINE:
+                ArrayList<GeoPoint> r = new ArrayList<>();
+                for (LatLng p : points){
+                    r.add(new GeoPoint(p.latitude,p.longitude));
+                }
+                osmPolyline.setPoints(r);
+                break;
+            default:
+                break;
         }
     }
 }
