@@ -5,7 +5,6 @@ import android.location.Location;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -41,6 +40,7 @@ public class JotiMap {
     private JotiMap(GoogleMap map){
         mapType = GOOGLEMAPTYPE;
         googleMap = map;
+
         osmMap = null;
     }
     private JotiMap(MapView map){
@@ -100,9 +100,11 @@ public class JotiMap {
     }
 
     public UiSettings getUiSettings() {
-        if (mapType == GOOGLEMAPTYPE){
-            UiSettings sett = googleMap.getUiSettings();
+        if (mapType == GOOGLEMAPTYPE) {
+            UiSettings sett = new UiSettings(googleMap.getUiSettings());
             return sett;
+        } else if (mapType == OSMMAPTYPE){
+            return new UiSettings(osmMap);
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");

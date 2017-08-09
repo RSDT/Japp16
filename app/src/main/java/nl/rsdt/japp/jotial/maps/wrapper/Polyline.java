@@ -1,7 +1,5 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
-import android.system.Os;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.GeoPoint;
@@ -20,7 +18,6 @@ public class Polyline {
     private final int polylineType;
     private final com.google.android.gms.maps.model.Polyline googlePolyline;
     private final org.osmdroid.views.overlay.Polyline osmPolyline;
-    private List<LatLng> points;
 
     public Polyline(com.google.android.gms.maps.model.Polyline polyline) {
         googlePolyline  = polyline;

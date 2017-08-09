@@ -108,6 +108,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     }
 
     private View createOSMMap(Bundle savedInstanceState, View v) {
+        //todo check
         osmActive = true;
         googleMapView = (MapView)v.findViewById(R.id.googleMap);
         googleMapView.setVisibility(View.GONE);
@@ -120,6 +121,13 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         osmView.setBuiltInZoomControls(true);
         osmView.setMultiTouchControls(true);
         jotiMap = JotiMap.getJotiMapInstance(osmView);
+
+        movementManager.setSnackBarView(osmView);
+        setupHuntButton(v);
+        setupSpotButton(v);
+        setupPinButton(v);
+        setupFollowButton(v);
+        onMapReady(jotiMap);
         return v;
     }
 
@@ -127,6 +135,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         osmActive = false;
         googleMapView = (MapView)v.findViewById(R.id.googleMap);
         org.osmdroid.views.MapView osmMapView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
+        Context ctx = getActivity().getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         osmMapView.setVisibility(View.GONE);
         if(savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_MAP))
         {
@@ -137,236 +147,14 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             googleMapView.onCreate(savedInstanceState);
         }
         movementManager.setSnackBarView(googleMapView);
+        setupHuntButton(v);
+        setupSpotButton(v);
+        setupPinButton(v);
+        setupFollowButton(v);
 
-        FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
-        huntButton.setOnClickListener(new View.OnClickListener() {
-
-            SightingSession session;
-
-            @Override
-            public void onClick(View view) {
-
-                /*--- Hide the menu ---*/
-                View v = getView();
-                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
-                menu.hideMenu(true);
-
-
-                /*--- Build a SightingSession and start it ---*/
-                session = new SightingSession.Builder()
-                        .setType(SightingSession.SIGHT_HUNT)
-                        .setGoogleMap(jotiMap)
-                        .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
-                        .setDialogContext(JappMapFragment.this.getActivity())
-                        .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
-                            @Override
-                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
-
-                                /*--- Show the menu ---*/
-                                FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
-                                menu.showMenu(true);
-
-                                if(chosen != null)
-                                {
-                                     /*--- Construct a JSON string with the data ---*/
-                                    VosPostBody builder = VosPostBody.getDefault();
-                                    builder.setIcon(SightingIcon.HUNT);
-                                    builder.setLatLng(chosen);
-                                    builder.setTeam(deelgebied.getName().substring(0, 1));
-                                    builder.setInfo(optionalInfo);
-
-                                    VosApi api = Japp.getApi(VosApi.class);
-                                    api.post(builder).enqueue(new Callback<Void>() {
-                                        @Override
-                                        public void onResponse(Call<Void> call, Response<Void> response) {
-                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            switch (response.code()) {
-                                                case 200:
-                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
-                                                    break;
-                                                case 404:
-                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
-                                                    break;
-                                                default:
-                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
-                                                    break;
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Void> call, Throwable t) {
-                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();//// TODO: 08/08/17 magic string
-                                        }
-                                    });
-
-                                    /**
-                                     * TODO: send details?
-                                     * Log the hunt in firebase.
-                                     * */
-                                    Japp.getAnalytics().logEvent("EVENT_HUNT", new Bundle()); //// TODO: 08/08/17 magic string
-                                }
-                            }
-                        })
-                        .create();
-                session.start();
-            }
-        });
-
-        FloatingActionButton spotButton = (FloatingActionButton)v.findViewById(R.id.fab_spot);
-        spotButton.setOnClickListener(new View.OnClickListener() {
-
-            SightingSession session;
-
-            @Override
-            public void onClick(View view) {
-                 /*--- Hide the menu ---*/
-                View v = getView();
-                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
-                menu.hideMenu(true);
-
-                /*--- Build a SightingSession and start it ---*/
-                session = new SightingSession.Builder()
-                        .setType(SightingSession.SIGHT_SPOT)
-                        .setGoogleMap(jotiMap)
-                        .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
-                        .setDialogContext(JappMapFragment.this.getActivity())
-                        .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
-                            @Override
-                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
-
-                                /*--- Show the menu ---*/
-                                FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
-                                menu.showMenu(true);
-
-                                if(chosen != null)
-                                {
-                                    /*--- Construct a JSON string with the data ---*/
-                                    VosPostBody builder = VosPostBody.getDefault();
-                                    builder.setIcon(SightingIcon.SPOT);
-                                    builder.setLatLng(chosen);
-                                    builder.setTeam(deelgebied.getName().substring(0, 1));
-                                    builder.setInfo(optionalInfo);
-
-                                    VosApi api = Japp.getApi(VosApi.class);
-                                    api.post(builder).enqueue(new Callback<Void>() {
-                                        @Override
-                                        public void onResponse(Call<Void> call, Response<Void> response) {
-                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            switch (response.code()) {
-                                                case 200:
-                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
-                                                    break;
-                                                case 404:
-                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
-                                                    break;
-                                                default:
-                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
-                                                    break;
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Void> call, Throwable t) {
-                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();
-                                        }
-                                    });
-
-                                    /**
-                                     * TODO: send details?
-                                     * Log the spot in firebase.
-                                     * */
-                                    Japp.getAnalytics().logEvent("EVENT_SPOT", new Bundle());
-                                }
-                                session = null;
-                            }
-                        })
-                        .create();
-                session.start();
-            }
-        });
-
-
-        FloatingActionButton pinButton = (FloatingActionButton)v.findViewById(R.id.fab_mark);
-        pinButton.setOnClickListener(new View.OnClickListener() {
-
-            PinningSession session;
-
-            @Override
-            public void onClick(View view) {
-                View v = getView();
-
-                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
-
-                if(session != null) {
-                    /*--- Show the menu ---*/
-                    menu.showMenu(true);
-                    session.end();
-                    session = null;
-                } else {
-                    /*--- Hide the menu ---*/
-                    menu.hideMenu(true);
-
-                    session = new PinningSession.Builder()
-                            .setGoogleMap(jotiMap)
-                            .setCallback(new PinningSession.OnPinningCompletedCallback() {
-                                @Override
-                                public void onPinningCompleted(Pin pin) {
-                                    if(pin != null) {
-                                        pinningManager.add(pin);
-                                    }
-
-                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
-                                    menu.showMenu(true);
-
-                                    session.end();
-                                    session = null;
-                                }
-                            })
-                            .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
-                            .setDialogContext(JappMapFragment.this.getActivity())
-                            .create();
-                    session.start();
-                }
-
-            }
-        });
-
-        FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
-        followButton.setOnClickListener(new View.OnClickListener() {
-
-            MovementManager.FollowSession session;
-
-            @Override
-            public void onClick(View view) {
-                View v = getView();
-
-                FloatingActionButton followButton = (FloatingActionButton)v.findViewById(R.id.fab_follow);
-
-                /*--- Hide the menu ---*/
-                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
-
-                /**
-                 * TODO: use color to identify follow state?
-                 * */
-                if(session != null) {
-                    // followButton.setColorNormal(Color.parseColor("#DA4336"));
-                    followButton.setLabelText("Volg mij");
-                    session.end();
-                    session = null;
-                }
-                else {
-                    menu.close(true);
-                    //followButton.setColorNormal(Color.parseColor("#5cd65c"));
-                    followButton.setLabelText("Stop volgen");
-                    session = movementManager.newSession(jotiMap.getCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
-                }
-            }
-
-        });
         return v;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -451,6 +239,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             googleMapView.onLowMemory();
         }
     }
+
     public void onMapReady(JotiMap jotiMap){
         jotiMap.clear();
 
@@ -484,6 +273,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
         pinningManager.onMapReady(jotiMap);
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.jotiMap = JotiMap.getJotiMapInstance(googleMap);
@@ -544,5 +334,238 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 }
                 break;
         }
+    }
+
+    public void setupSpotButton(View v) {
+        FloatingActionButton spotButton = (FloatingActionButton)v.findViewById(R.id.fab_spot);
+        spotButton.setOnClickListener(new View.OnClickListener() {
+
+            SightingSession session;
+
+            @Override
+            public void onClick(View view) {
+                 /*--- Hide the menu ---*/
+                View v = getView();
+                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+                menu.hideMenu(true);
+
+                /*--- Build a SightingSession and start it ---*/
+                session = new SightingSession.Builder()
+                        .setType(SightingSession.SIGHT_SPOT)
+                        .setGoogleMap(jotiMap)
+                        .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
+                        .setDialogContext(JappMapFragment.this.getActivity())
+                        .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
+                            @Override
+                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
+
+                                /*--- Show the menu ---*/
+                                FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                menu.showMenu(true);
+
+                                if(chosen != null)
+                                {
+                                    /*--- Construct a JSON string with the data ---*/
+                                    VosPostBody builder = VosPostBody.getDefault();
+                                    builder.setIcon(SightingIcon.SPOT);
+                                    builder.setLatLng(chosen);
+                                    builder.setTeam(deelgebied.getName().substring(0, 1));
+                                    builder.setInfo(optionalInfo);
+
+                                    VosApi api = Japp.getApi(VosApi.class);
+                                    api.post(builder).enqueue(new Callback<Void>() {
+                                        @Override
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            switch (response.code()) {
+                                                case 200:
+                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                                case 404:
+                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                                default:
+                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
+                                                    break;
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();
+                                        }
+                                    });
+
+                                    /**
+                                     * TODO: send details?
+                                     * Log the spot in firebase.
+                                     * */
+                                    Japp.getAnalytics().logEvent("EVENT_SPOT", new Bundle());
+                                }
+                                session = null;
+                            }
+                        })
+                        .create();
+                session.start();
+            }
+        });
+    }
+
+    public void setupFollowButton(View v) {
+        FloatingActionButton followButton = (FloatingActionButton) v.findViewById(R.id.fab_follow);
+        followButton.setOnClickListener(new View.OnClickListener() {
+
+            MovementManager.FollowSession session;
+
+            @Override
+            public void onClick(View view) {
+                View v = getView();
+
+                FloatingActionButton followButton = (FloatingActionButton) v.findViewById(R.id.fab_follow);
+
+                /*--- Hide the menu ---*/
+                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+
+                /**
+                 * TODO: use color to identify follow state?
+                 * */
+                if (session != null) {
+                    // followButton.setColorNormal(Color.parseColor("#DA4336"));
+                    followButton.setLabelText("Volg mij");
+                    session.end();
+                    session = null;
+                } else {
+                    menu.close(true);
+                    //followButton.setColorNormal(Color.parseColor("#5cd65c"));
+                    followButton.setLabelText("Stop volgen");
+                    session = movementManager.newSession(jotiMap.getCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
+                }
+            }
+
+        });
+    }
+    private void setupPinButton(View v) {
+        FloatingActionButton pinButton = (FloatingActionButton)v.findViewById(R.id.fab_mark);
+        pinButton.setOnClickListener(new View.OnClickListener() {
+
+            PinningSession session;
+
+            @Override
+            public void onClick(View view) {
+                View v = getView();
+
+                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+
+                if(session != null) {
+                    /*--- Show the menu ---*/
+                    menu.showMenu(true);
+                    session.end();
+                    session = null;
+                } else {
+                    /*--- Hide the menu ---*/
+                    menu.hideMenu(true);
+
+                    session = new PinningSession.Builder()
+                            .setGoogleMap(jotiMap)
+                            .setCallback(new PinningSession.OnPinningCompletedCallback() {
+                                @Override
+                                public void onPinningCompleted(Pin pin) {
+                                    if(pin != null) {
+                                        pinningManager.add(pin);
+                                    }
+
+                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                    menu.showMenu(true);
+
+                                    session.end();
+                                    session = null;
+                                }
+                            })
+                            .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
+                            .setDialogContext(JappMapFragment.this.getActivity())
+                            .create();
+                    session.start();
+                }
+
+            }
+        });
+    }
+
+    private void setupHuntButton(View v){
+        FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
+        huntButton.setOnClickListener(new View.OnClickListener() {
+
+            SightingSession session;
+
+            @Override
+            public void onClick(View view) {
+
+                /*--- Hide the menu ---*/
+                View v = getView();
+                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+                menu.hideMenu(true);
+
+
+                /*--- Build a SightingSession and start it ---*/
+                session = new SightingSession.Builder()
+                        .setType(SightingSession.SIGHT_HUNT)
+                        .setGoogleMap(jotiMap)
+                        .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
+                        .setDialogContext(JappMapFragment.this.getActivity())
+                        .setOnSightingCompletedCallback(new SightingSession.OnSightingCompletedCallback() {
+                            @Override
+                            public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
+
+                                /*--- Show the menu ---*/
+                                FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                menu.showMenu(true);
+
+                                if(chosen != null)
+                                {
+                                     /*--- Construct a JSON string with the data ---*/
+                                    VosPostBody builder = VosPostBody.getDefault();
+                                    builder.setIcon(SightingIcon.HUNT);
+                                    builder.setLatLng(chosen);
+                                    builder.setTeam(deelgebied.getName().substring(0, 1));
+                                    builder.setInfo(optionalInfo);
+
+                                    VosApi api = Japp.getApi(VosApi.class);
+                                    api.post(builder).enqueue(new Callback<Void>() {
+                                        @Override
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            switch (response.code()) {
+                                                case 200:
+                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                    break;
+                                                case 404:
+                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                    break;
+                                                default:
+                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                    break;
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();//// TODO: 08/08/17 magic string
+                                        }
+                                    });
+
+                                    /**
+                                     * TODO: send details?
+                                     * Log the hunt in firebase.
+                                     * */
+                                    Japp.getAnalytics().logEvent("EVENT_HUNT", new Bundle()); //// TODO: 08/08/17 magic string
+                                }
+                            }
+                        })
+                        .create();
+                session.start();
+            }
+        });
     }
 }
