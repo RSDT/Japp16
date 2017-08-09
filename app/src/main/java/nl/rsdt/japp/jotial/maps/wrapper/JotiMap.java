@@ -125,7 +125,7 @@ public class JotiMap {
         if (mapType == GOOGLEMAPTYPE) {
             return new Marker(googleMap.addMarker(markerOptions));
         }else if(mapType == OSMMAPTYPE){
-            return new Marker(markerOptions);
+            return new Marker(markerOptions, osmMap);
         }else{
             return null;
             //throw new RuntimeException("only supported for googleMaps");

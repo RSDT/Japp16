@@ -25,6 +25,7 @@ import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
+import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
@@ -84,7 +85,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 /**
                  * Animate the marker to the new position
                  * */
-                marker.animateMarkerToICS(new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
+                AnimateMarkerTool.animateMarkerToICS(marker,new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
                 marker.setRotation(bearing);
             } else {
                 marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));

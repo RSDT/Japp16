@@ -14,7 +14,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 
 public class AnimateMarkerTool {
