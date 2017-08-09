@@ -25,7 +25,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.HashMap;
-
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
@@ -69,7 +68,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         return jotiMap;
     }
 
-    private OnMapReadyCallback callback;
+    private nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback callback;
 
     private PinningManager pinningManager = new PinningManager();
 
@@ -127,7 +126,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         setupSpotButton(v);
         setupPinButton(v);
         setupFollowButton(v);
-        onMapReady(jotiMap);
+
         return v;
     }
 
@@ -171,9 +170,13 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     }
 
 
-    public void getMapAsync(OnMapReadyCallback callback) {
-        MapView view = (MapView) getView().findViewById(R.id.googleMap);
-        view.getMapAsync(this);
+    public void getMapAsync(nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback callback) {
+        if (osmActive){
+            onMapReady(jotiMap);
+        }else {
+            MapView view = (MapView) getView().findViewById(R.id.googleMap);
+            view.getMapAsync(this);
+        }
         this.callback = callback;
     }
 
@@ -272,6 +275,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }
 
         pinningManager.onMapReady(jotiMap);
+        if(callback != null)
+        {
+            callback.onMapReady(jotiMap);
+        }
     }
 
     @Override
@@ -279,10 +286,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         this.jotiMap = JotiMap.getJotiMapInstance(googleMap);
         onMapReady(jotiMap);
 
-        if(callback != null)
-        {
-            callback.onMapReady(googleMap);
-        }
+
     }
 
     @Override
