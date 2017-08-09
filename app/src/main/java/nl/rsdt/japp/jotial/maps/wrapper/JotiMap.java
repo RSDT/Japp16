@@ -153,24 +153,13 @@ public class JotiMap {
     }
 
     public Polyline addPolyline(PolylineOptions polylineOptions) {
-        if (mapType == GOOGLEMAPTYPE) {
-            return new Polyline(googleMap.addPolyline(polylineOptions));
-        } else if (mapType == OSMMAPTYPE){
-            org.osmdroid.views.overlay.Polyline polyline = new org.osmdroid.views.overlay.Polyline();
-            polyline.setColor(polyline.getColor());
-            polyline.setVisible(polylineOptions.isVisible());
-            ArrayList<GeoPoint> points = new ArrayList<>();
-            for (LatLng latlng : polylineOptions.getPoints()){
-                points.add(new GeoPoint(latlng.latitude,latlng.longitude));
-            }
-            polyline.setPoints(points);
-            polyline.setWidth(polylineOptions.getWidth());
-            osmMap.getOverlayManager().add(polyline);
-            osmMap.invalidate();
-            return new Polyline(polyline);
-        }else{
-            return null;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                return new Polyline(googleMap.addPolyline(polylineOptions));
+            case OSMMAPTYPE:
+                return new Polyline(polylineOptions, osmMap);
+            default:
+                return null;
         }
     }
 
@@ -186,11 +175,13 @@ public class JotiMap {
     }
 
     public Circle addCircle(CircleOptions circleOptions) {
-        if (mapType == GOOGLEMAPTYPE){
-            return new Circle(googleMap.addCircle(circleOptions));
-        }else{
-            return null;
-            //throw new RuntimeException("only supported for googleMaps");
+        switch (mapType){
+            case GOOGLEMAPTYPE:
+                return new Circle(googleMap.addCircle(circleOptions));
+            case OSMMAPTYPE:
+                return new Circle(circleOptions, osmMap);
+            default:
+                return null;
         }
     }
 

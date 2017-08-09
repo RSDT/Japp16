@@ -1,8 +1,10 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +27,20 @@ public class Polyline {
         osmPolyline = null;
     }
 
-    public Polyline(org.osmdroid.views.overlay.Polyline polyline) {
+    public Polyline(PolylineOptions polylineOptions, MapView osmMap) {
         polylineType = OSM_POLYLINE;
         googlePolyline = null;
+        org.osmdroid.views.overlay.Polyline polyline = new org.osmdroid.views.overlay.Polyline();
+        polyline.setColor(polyline.getColor());
+        polyline.setVisible(polylineOptions.isVisible());
+        ArrayList<GeoPoint> points = new ArrayList<>();
+        for (LatLng latlng : polylineOptions.getPoints()){
+            points.add(new GeoPoint(latlng.latitude,latlng.longitude));
+        }
+        polyline.setPoints(points);
+        polyline.setWidth(polylineOptions.getWidth());
+        osmMap.getOverlayManager().add(polyline);
+        osmMap.invalidate();
         osmPolyline = polyline;
     }
 
