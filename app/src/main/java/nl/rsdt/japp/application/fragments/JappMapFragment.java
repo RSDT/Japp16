@@ -122,9 +122,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         jotiMap = JotiMap.getJotiMapInstance(osmView);
 
         movementManager.setSnackBarView(osmView);
-        setupHuntButton(v);
-        setupSpotButton(v);
-        setupPinButton(v);
+        setupHuntButton(v).setEnabled(false);
+        setupSpotButton(v).setEnabled(false);
+        setupPinButton(v).setEnabled(false);
         setupFollowButton(v);
 
         return v;
@@ -340,7 +340,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }
     }
 
-    public void setupSpotButton(View v) {
+    public FloatingActionButton setupSpotButton(View v) {
         FloatingActionButton spotButton = (FloatingActionButton)v.findViewById(R.id.fab_spot);
         spotButton.setOnClickListener(new View.OnClickListener() {
 
@@ -414,9 +414,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 session.start();
             }
         });
+        return spotButton;
     }
 
-    public void setupFollowButton(View v) {
+    public FloatingActionButton setupFollowButton(View v) {
         FloatingActionButton followButton = (FloatingActionButton) v.findViewById(R.id.fab_follow);
         followButton.setOnClickListener(new View.OnClickListener() {
 
@@ -448,8 +449,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             }
 
         });
+        return followButton;
     }
-    private void setupPinButton(View v) {
+    private FloatingActionButton setupPinButton(View v) {
         FloatingActionButton pinButton = (FloatingActionButton)v.findViewById(R.id.fab_mark);
         pinButton.setOnClickListener(new View.OnClickListener() {
 
@@ -494,9 +496,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
             }
         });
+        return pinButton;
     }
 
-    private void setupHuntButton(View v){
+    private FloatingActionButton setupHuntButton(View v){
         FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
         huntButton.setOnClickListener(new View.OnClickListener() {
 
@@ -571,5 +574,6 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 session.start();
             }
         });
+        return huntButton;
     }
 }

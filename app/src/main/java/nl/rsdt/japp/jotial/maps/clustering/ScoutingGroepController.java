@@ -15,6 +15,7 @@ import nl.rsdt.japp.jotial.IntentCreatable;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
 import nl.rsdt.japp.jotial.io.AppData;
+import nl.rsdt.japp.jotial.maps.clustering.osm.OsmScoutingGroepClusterManager;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
 import nl.rsdt.japp.jotial.net.apis.ScoutingGroepApi;
@@ -96,6 +97,8 @@ public class ScoutingGroepController implements Recreatable, IntentCreatable, Ma
     public void onMapReady(JotiMap jotiMap) {
         if (jotiMap.getMapType() == JotiMap.GOOGLEMAPTYPE) {
             clusterManager = new ScoutingGroepClusterManager(Japp.getInstance(), jotiMap.getGoogleMap());
+        } else if (jotiMap.getMapType() == JotiMap.OSMMAPTYPE){
+            clusterManager = new OsmScoutingGroepClusterManager(jotiMap);
         }else {
             clusterManager = new NoneClusterManager();
         }
