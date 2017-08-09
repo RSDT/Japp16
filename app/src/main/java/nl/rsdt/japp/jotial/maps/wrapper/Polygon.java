@@ -19,11 +19,13 @@ public class Polygon {
     private final com.google.android.gms.maps.model.Polygon googlePolygon;
     private final int polygonType;
     private final org.osmdroid.views.overlay.Polygon osmPolygon;
+    private final MapView osmMap;
 
     public Polygon(com.google.android.gms.maps.model.Polygon polygon) {
         polygonType = GOOGLE_POLYGON;
         googlePolygon = polygon;
         osmPolygon = null;
+        osmMap = null;
     }
 
     public Polygon(PolygonOptions polygonOptions, MapView  osmMap) {
@@ -38,24 +40,42 @@ public class Polygon {
             points.add(new GeoPoint(ll.latitude,ll.longitude));
         }
         osmPolygon.setPoints(points);
+        this.osmMap = osmMap;
         osmMap.getOverlays().add(osmPolygon);
     }
 
     public void remove() {
-        if (polygonType == GOOGLE_POLYGON) {
-            googlePolygon.remove();
+        switch (polygonType){
+            case GOOGLE_POLYGON:
+                googlePolygon.remove();
+                break;
+            case OSM_POLYGON:
+                osmMap.getOverlays().remove(osmPolygon);
         }
     }
 
     public void setStrokeWidth(int strokeWidth) {
-        if (polygonType == GOOGLE_POLYGON){
-            googlePolygon.setStrokeWidth(strokeWidth);
+        switch (polygonType){
+            case GOOGLE_POLYGON:
+                googlePolygon.setStrokeWidth(strokeWidth);
+                break;
+            case OSM_POLYGON:
+                osmPolygon.setStrokeWidth(strokeWidth);
+                break;
+            default:
+                break;
         }
     }
 
     public void setFillColor(int color) {
-        if (polygonType == GOOGLE_POLYGON){
-            googlePolygon.setFillColor(color);
+        switch (polygonType){
+            case GOOGLE_POLYGON:
+                googlePolygon.setFillColor(color);
+                break;
+            case OSM_POLYGON:
+                osmPolygon.setFillColor(color);
+                break;
+            default:
         }
     }
 }
