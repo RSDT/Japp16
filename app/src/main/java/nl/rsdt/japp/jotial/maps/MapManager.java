@@ -2,45 +2,30 @@ package nl.rsdt.japp.jotial.maps;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.GoogleMap;//// TODO: 07/08/17 make this class indepent from GoogleMap
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.gson.Gson;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 
-import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
-import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.BravoVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.CharlieVosController;
@@ -51,7 +36,8 @@ import nl.rsdt.japp.jotial.maps.management.controllers.FoxtrotVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
-import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;
@@ -62,7 +48,7 @@ import nl.rsdt.japp.service.cloud.messaging.MessageManager;
  * @since 24-7-2016
  * Manages the map
  */
-public class MapManager implements OnMapReadyCallback, Searchable, MessageManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MapManager implements Searchable, MessageManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * Defines the tag of this class.
@@ -82,10 +68,10 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     /**
      * The GoogleMap
      * */
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
-    public GoogleMap getGoogleMap() {
-        return googleMap;
+    public JotiMap getJotiMap() {
+        return jotiMap;
     }
 
     /**
@@ -261,30 +247,31 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
             case JappPreferences.MAP_TYPE:
-                if(googleMap != null) {
+                if(jotiMap != null) {
                     String value = sharedPreferences.getString(key, String.valueOf(GoogleMap.MAP_TYPE_NORMAL));
-                    googleMap.setMapType(Integer.valueOf(value));
+                    jotiMap.setGMapType(Integer.valueOf(value));
                 }
                 break;
             case JappPreferences.MAP_STYLE:
-                if(googleMap != null) {
+                if(jotiMap != null) {
                     int style = Integer.valueOf(sharedPreferences.getString(key, String.valueOf(MapStyle.DAY)));
                     if(style == MapStyle.AUTO) {
 
                     } else {
-                        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(style)));
+                        jotiMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(style)));
                     }
                 }
                 break;
             case JappPreferences.MAP_CONTROLS:
                 Set<String> set = sharedPreferences.getStringSet(key, null);
                 if(set != null) {
+                    //// TODO: 07/08/17 why the for loop?
                     for(String property : set) {
-                        if(googleMap != null) {
-                            googleMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
-                            googleMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
-                            googleMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
-                            googleMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
+                        if(jotiMap != null) {
+                            jotiMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
+                            jotiMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
+                            jotiMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
+                            jotiMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
                         }
                     }
                 }
@@ -307,26 +294,27 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
         sgController.onUpdateInvoked();
     }
 
-    @Override
     /**
      * Gets invoked when the GoogleMap is ready for use.
-     * */
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+     *
+     * @param jotiMap*/
+    public void onMapReady(JotiMap jotiMap) {
+        this.jotiMap = jotiMap;
 
         /**
          * Set the type and the style of the map.
          * */
-        googleMap.setMapType(JappPreferences.getMapType());
-        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(JappPreferences.getMapStyle())));
+        jotiMap.setGMapType(JappPreferences.getMapType());
+        jotiMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.getInstance(), MapStyle.getAssociatedRaw(JappPreferences.getMapStyle())));
 
         Set<String> controls = JappPreferences.getMapControls();
         if(controls != null) {
+            //// TODO: 07/08/17 why the for loop?
             for(String property : controls) {
-                googleMap.getUiSettings().setZoomControlsEnabled(controls.contains(String.valueOf(MapControls.ZOOM)));
-                googleMap.getUiSettings().setCompassEnabled(controls.contains(String.valueOf(MapControls.COMPASS)));
-                googleMap.getUiSettings().setIndoorLevelPickerEnabled(controls.contains(String.valueOf(MapControls.LEVEL)));
-                googleMap.getUiSettings().setMapToolbarEnabled(controls.contains(String.valueOf(MapControls.TOOLBAR)));
+                jotiMap.getUiSettings().setZoomControlsEnabled(controls.contains(String.valueOf(MapControls.ZOOM)));
+                jotiMap.getUiSettings().setCompassEnabled(controls.contains(String.valueOf(MapControls.COMPASS)));
+                jotiMap.getUiSettings().setIndoorLevelPickerEnabled(controls.contains(String.valueOf(MapControls.LEVEL)));
+                jotiMap.getUiSettings().setMapToolbarEnabled(controls.contains(String.valueOf(MapControls.TOOLBAR)));
             }
         }
 
@@ -337,7 +325,7 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
             /**
              * Move the camera to the default position(Netherlands).
              * */
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.015379, 6.025979), 10));
+            jotiMap.animateCamera(new LatLng(52.015379, 6.025979), 10);
 
             /**
              * Update the controllers.
@@ -352,10 +340,10 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
             MapItemController controller = pair.getValue();
             if(controller != null)
             {
-                controller.onMapReady(googleMap);
+                controller.onMapReady(jotiMap);
             }
         }
-        sgController.onMapReady(googleMap);
+        sgController.onMapReady(jotiMap);
     }
 
     /**
@@ -373,9 +361,9 @@ public class MapManager implements OnMapReadyCallback, Searchable, MessageManage
          * */
         Japp.getUpdateManager().remove(this);
 
-        if(googleMap != null)
+        if(jotiMap != null)
         {
-            googleMap = null;
+            jotiMap = null;
         }
 
         if(sgController != null) {

@@ -1,24 +1,21 @@
 package nl.rsdt.japp.jotial.maps.movement;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.View;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
@@ -27,16 +24,16 @@ import com.google.gson.reflect.TypeToken;
 import java.util.List;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
-import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
-import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
-import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
-import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
 
@@ -46,7 +43,7 @@ import nl.rsdt.japp.service.ServiceManager;
  * @since 2-8-2016
  * Description...
  */
-public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
+public class MovementManager implements ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
 
     private static final String STORAGE_KEY = "TAIL";
 
@@ -54,7 +51,7 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
 
     private LocationService service;
 
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
     private Marker marker;
 
@@ -85,25 +82,26 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
 
     @Override
     public void onLocationChanged(Location location) {
-        if(lastLocation != null) {
-            bearing = lastLocation.bearingTo(location);
+        if (marker != null) {
+            if (lastLocation != null) {
+                bearing = lastLocation.bearingTo(location);
 
-            /**
-             * Animate the marker to the new position
-             * */
-            AnimateMarkerTool.animateMarkerToICS(marker, new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
-            marker.setRotation(bearing);
-        } else {
-            marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                /**
+                 * Animate the marker to the new position
+                 * */
+                AnimateMarkerTool.animateMarkerToICS(marker,new LatLng(location.getLatitude(), location.getLongitude()), new LatLngInterpolator.Linear(), 1000);
+                marker.setRotation(bearing);
+            } else {
+                marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+
+            List<LatLng> points = tail.getPoints();
+            if (points.size() > 150) {
+                points = points.subList(points.size() / 3, points.size());
+            }
+            points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            tail.setPoints(points);
         }
-
-        List<LatLng> points = tail.getPoints();
-        if(points.size() > 150) {
-            points = points.subList(points.size()/3, points.size());
-        }
-        points.add(new LatLng(location.getLatitude(), location.getLongitude()));
-        tail.setPoints(points);
-
         boolean refresh = false;
         if(deelgebied != null) {
             if(!deelgebied.containsLocation(location)) {
@@ -129,14 +127,14 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                 FirebaseMessaging.getInstance().subscribeToTopic(deelgebied.getName());
             }
         }
-
-        /**
-         * Make the marker visible
-         * */
-        if(!marker.isVisible()) {
-            marker.setVisible(true);
+        if (marker  != null) {
+            /**
+             * Make the marker visible
+             * */
+            if (!marker.isVisible()) {
+                marker.setVisible(true);
+            }
         }
-
         if(activeSession != null) {
             activeSession.onLocationChanged(location);
         }
@@ -154,25 +152,22 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
     }
 
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+    public void onMapReady(JotiMap jotiMap) {
+        this.jotiMap = jotiMap;
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()
                 .setType(MarkerIdentifier.TYPE_ME)
                 .add("icon", String.valueOf(R.drawable.me))
                 .create();
 
-        marker = googleMap.addMarker(
+        marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(
                 new MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
                         .position(new LatLng(52.021818, 6.059603))
                         .visible(false)
                         .flat(true)
-                        .title(new Gson().toJson(identifier)));
+                        .title(new Gson().toJson(identifier)), BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.me)));
 
-        tail = googleMap.addPolyline(
+        tail = jotiMap.addPolyline(
                 new PolylineOptions()
                         .width(3)
                         .color(Color.BLUE));
@@ -211,15 +206,15 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Enable controls.
              * */
-            googleMap.getUiSettings().setAllGesturesEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
+            jotiMap.getUiSettings().setAllGesturesEnabled(true);
+            jotiMap.getUiSettings().setCompassEnabled(true);
 
-            googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            jotiMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
                 @Override
                 public void onCameraMoveStarted(int i) {
                     switch (i) {
                         case REASON_GESTURE:
-                            CameraPosition position = googleMap.getCameraPosition();
+                            CameraPosition position = jotiMap.getCameraPosition();
                             setZoom(position.zoom);
                             setAngleOfAttack(position.tilt);
                             break;
@@ -242,7 +237,8 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Animate the camera to the new position
              * */
-            CameraUtils.cameraToLocation(true, googleMap, location, zoom, aoa, bearing);
+
+            jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
         }
 
         public void end() {
@@ -256,12 +252,12 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             /**
              * Disable controls
              * */
-            googleMap.getUiSettings().setCompassEnabled(false);
+            jotiMap.getUiSettings().setCompassEnabled(false);
 
             /**
              * Remove callback
              * */
-            googleMap.setOnCameraMoveStartedListener(null);
+            jotiMap.setOnCameraMoveStartedListener(null);
 
             /**
              * Move the camera to the before position
@@ -310,8 +306,8 @@ public class MovementManager implements OnMapReadyCallback, ServiceManager.OnBin
             tail = null;
         }
 
-        if(googleMap != null) {
-            googleMap = null;
+        if(jotiMap != null) {
+            jotiMap = null;
         }
 
         if(marker != null) {

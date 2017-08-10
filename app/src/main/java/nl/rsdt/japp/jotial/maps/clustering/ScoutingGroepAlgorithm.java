@@ -1,6 +1,5 @@
 package nl.rsdt.japp.jotial.maps.clustering;
 
-import com.google.maps.android.clustering.algo.Algorithm;
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
 
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;

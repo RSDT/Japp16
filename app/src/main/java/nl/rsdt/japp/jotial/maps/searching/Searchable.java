@@ -1,11 +1,10 @@
 package nl.rsdt.japp.jotial.maps.searching;
 
-import com.google.android.gms.maps.model.Marker;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 /**
  * @author Dingenis Sieger Sinke

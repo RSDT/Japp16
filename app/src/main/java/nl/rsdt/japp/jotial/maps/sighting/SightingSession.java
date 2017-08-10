@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,10 +15,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
@@ -24,6 +23,8 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -51,7 +52,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     /**
      * The GoogleMap used to create markers.
      * */
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
     /**
      * The Marker that indicates the location.
@@ -97,27 +98,26 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
      * Initializes the SightingSession.
      * */
     private void initialize() {
-        BitmapDescriptor descriptor;
+        Bitmap bm;
         switch (type)
         {
             case SIGHT_HUNT:
-                descriptor = BitmapDescriptorFactory.fromResource(R.drawable.vos_x_4);
+                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_x_4);
                 break;
             case SIGHT_SPOT:
-                descriptor = BitmapDescriptorFactory.fromResource(R.drawable.vos_x_3);
+                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_x_3);
                 break;
             default:
-                descriptor = BitmapDescriptorFactory.defaultMarker();
+                bm = null;
                 break;
         }
         snackbar = Snackbar.make(targetView, R.string.sighting_standard_text, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.sighting_snackbar_action_text, this);
         snackbar.setCallback(this);
 
-        marker = googleMap.addMarker(new MarkerOptions()
+        marker = jotiMap.addMarker(new Pair<>(new MarkerOptions()
                 .visible(false)
-                .position(new LatLng(0,0))
-                .icon(descriptor));
+                .position(new LatLng(0,0)), bm));
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.sighting_input_dialog, null);
@@ -147,7 +147,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
      * Starts the SightingSession.
      * */
     public void start() {
-        googleMap.setOnMapClickListener(this);
+        jotiMap.setOnMapClickListener(this);
         snackbar.show();
     }
 
@@ -180,11 +180,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             switch (type)
             {
                 case SIGHT_HUNT:
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableHunt()));
+                    marker.setIcon(deelgebied.getDrawableHunt());
                     icon = String.valueOf(deelgebied.getDrawableHunt());
                     break;
                 case SIGHT_SPOT:
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(deelgebied.getDrawableSpot()));
+                    marker.setIcon(deelgebied.getDrawableSpot());
                     icon = String.valueOf(deelgebied.getDrawableSpot());
                     break;
             }
@@ -225,7 +225,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         if(deelgebied == null) {
             deelgebied = Deelgebied.Xray;
         }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), this);
+        jotiMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), this);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
             ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
         }
-        googleMap.snapshot(SightingSession.this);
+        jotiMap.snapshot(SightingSession.this);
     }
 
     @Override
@@ -245,7 +245,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
             ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
             ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
         }
-        googleMap.snapshot(SightingSession.this);
+        jotiMap.snapshot(SightingSession.this);
     }
 
 
@@ -263,10 +263,10 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     {
         type = null;
 
-        if(googleMap != null)
+        if(jotiMap != null)
         {
-            googleMap.setOnMapClickListener(null);
-            googleMap = null;
+            jotiMap.setOnMapClickListener(null);
+            jotiMap = null;
         }
 
         if(marker != null)
@@ -312,8 +312,8 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         /**
          * Sets the GoogleMap of the SightingSession.
          * */
-        public Builder setGoogleMap(GoogleMap googleMap){
-            buffer.googleMap = googleMap;
+        public Builder setGoogleMap(JotiMap jotiMap){
+            buffer.jotiMap = jotiMap;
             return this;
         }
 

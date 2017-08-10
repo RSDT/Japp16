@@ -47,7 +47,7 @@ public class KmlLoader {
                             ArrayList<LatLng> coordinates = p.getOuterBoundaryCoordinates();
                             if(created) {
                                 File file = new File(Environment.getExternalStoragePublicDirectory(
-                                        Environment.DIRECTORY_DOWNLOADS), "deelgebieden/" + name);
+                                        Environment.DIRECTORY_DOWNLOADS), "deelgebieden/" + name.toLowerCase());
                                 FileWriter fileWriter = new FileWriter(file);
                                 fileWriter.write(new Gson().toJson(coordinates));
                                 fileWriter.flush();

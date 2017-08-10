@@ -16,8 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import javax.crypto.spec.DESedeKeySpec;
-
 import nl.rsdt.japp.R;
 
 /**

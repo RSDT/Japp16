@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
+import android.util.Pair;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
@@ -27,15 +25,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.jotial.net.apis.HunterApi;
 import retrofit2.Call;
 
@@ -111,7 +108,7 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
                         }
                     }
                     HunterTransducer.Result result = getTransducer().generate(data);
-                    if(googleMap != null) {
+                    if(jotiMap != null) {
                         processResult(result);
                     } else {
                         buffer = result;
@@ -294,9 +291,9 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 2;
                 Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), lastestInfo.getAssociatedDrawable(), options);
-                mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
-                result.add(mOptions);
+
+                result.add(new Pair<MarkerOptions, Bitmap>(mOptions,bitmap));
 
             }
             return result;

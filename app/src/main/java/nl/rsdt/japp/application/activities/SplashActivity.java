@@ -7,12 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.iid.InstanceID;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -22,13 +18,13 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker;
+import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
+import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask;
-import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
 import nl.rsdt.japp.jotial.net.apis.AuthApi;
-import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -120,7 +116,7 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
          * Check if we have the permissions we need.
          * */
         permission_check = LocationPermissionsChecker.check(this);
-
+        StoragePermissionsChecker.check(this);
 
         /**
          * Load in the map data.

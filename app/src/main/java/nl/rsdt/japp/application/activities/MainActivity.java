@@ -10,7 +10,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,27 +17,23 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
-import java.util.List;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.fragments.HomeFragment;
-import nl.rsdt.japp.application.misc.SearchSuggestionsAdapter;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
-
 import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
-import nl.rsdt.japp.jotial.maps.misc.KmlLoader;
-import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.MapManager;
+import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
+import nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
@@ -178,12 +173,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(JotiMap jotiMap) {
         /**
          * First set the custom InfoWindowAdapter and then invoke the onMapReady on the MapManager.
          * */
-        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater(), googleMap));
-        mapManager.onMapReady(googleMap);
+        if (jotiMap.getMapType()  == JotiMap.GOOGLEMAPTYPE) {
+            jotiMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater(), jotiMap.getGoogleMap())); //// TODO: 07/08/17 change the GoogleMap to a JotiMap
+        }else {
+            //// TODO: 09/08/17 do stuff
+        }
+        mapManager.onMapReady(jotiMap);
     }
 
     /**

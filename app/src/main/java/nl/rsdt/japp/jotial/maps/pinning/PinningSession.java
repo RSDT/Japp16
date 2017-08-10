@@ -3,7 +3,9 @@ package nl.rsdt.japp.jotial.maps.pinning;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -12,11 +14,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -24,12 +27,12 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
  * @since 8-9-2016
  * Description...
  */
-public class PinningSession extends Snackbar.Callback implements OnMapReadyCallback, GoogleMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, GoogleMap.CancelableCallback {
+public class PinningSession extends Snackbar.Callback implements GoogleMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, GoogleMap.CancelableCallback {
 
     /**
      * The GoogleMap used to create markers.
      * */
-    private GoogleMap googleMap;
+    private JotiMap jotiMap;
 
     /**
      * The Marker that indicates the location.
@@ -62,13 +65,13 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
 
-        marker = googleMap.addMarker(new MarkerOptions()
+        marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
                 .visible(false)
-                .position(new LatLng(0, 0)));
+                .position(new LatLng(0, 0)),null));
     }
 
     public void start() {
-        googleMap.setOnMapClickListener(this);
+        jotiMap.setOnMapClickListener(this);
         snackbar.show();
     }
 
@@ -76,9 +79,9 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
         onDestroy();
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+
+    public void onMapReady(JotiMap jotiMap) {
+        this.jotiMap = jotiMap;
     }
 
     @Override
@@ -90,7 +93,7 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
     @Override
     public void onClick(View view) {
         if(marker.isVisible()) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 12), this);
+            jotiMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 12), this);
         } else {
             if(snackbar != null){
                 snackbar.dismiss();
@@ -142,7 +145,7 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
                 if(callback != null) {
                     String title = ((TextView)dialog.findViewById(R.id.pinning_dialog_title_edit)).getText().toString();
                     String description = ((TextView)dialog.findViewById(R.id.pinning_dialog_description_edit)).getText().toString();
-                    callback.onPinningCompleted(Pin.create(googleMap, new Pin.Data(title, description, marker.getPosition(), R.drawable.ic_place_white_48dp)));
+                    callback.onPinningCompleted(Pin.create(jotiMap, new Pin.Data(title, description, marker.getPosition(), R.drawable.ic_place_white_48dp)));
                 }
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
@@ -159,9 +162,9 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
             marker = null;
         }
 
-        if(googleMap != null) {
-            googleMap.setOnMapClickListener(null);
-            googleMap = null;
+        if(jotiMap != null) {
+            jotiMap.setOnMapClickListener(null);
+            jotiMap = null;
         }
 
         if(dialog != null) {
@@ -185,8 +188,8 @@ public class PinningSession extends Snackbar.Callback implements OnMapReadyCallb
         /**
          * Sets the GoogleMap of the SightingSession.
          * */
-        public Builder setGoogleMap(GoogleMap googleMap){
-            buffer.googleMap = googleMap;
+        public Builder setGoogleMap(JotiMap jotiMap){
+            buffer.jotiMap = jotiMap;
             return this;
         }
 

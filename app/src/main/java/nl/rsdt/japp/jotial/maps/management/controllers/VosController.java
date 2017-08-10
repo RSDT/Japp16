@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
+import android.util.Pair;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
@@ -37,6 +37,8 @@ import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.misc.VosUtils;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
+import nl.rsdt.japp.jotial.maps.wrapper.Circle;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import retrofit2.Call;
 
@@ -75,6 +77,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
         return new VosTransducer(getStorageId(), getBundleId());
     }
 
+    @Override
     public Marker searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         VosInfo info;
@@ -263,8 +266,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
                 }
                 Bitmap bitmap = BitmapFactory.decodeResource(Japp.getAppResources(), current.getAssociatedDrawable(), options);
                 mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-
-                result.add(mOptions);
+                result.add(new Pair<>(mOptions,bitmap));
 
                 pOptions.add(current.getLatLng());
             }

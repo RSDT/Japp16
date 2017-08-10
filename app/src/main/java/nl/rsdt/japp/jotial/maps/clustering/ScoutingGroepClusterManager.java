@@ -5,7 +5,9 @@ import android.content.Context;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.maps.android.clustering.ClusterManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
+
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
 
 /**
@@ -14,7 +16,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
  * @since 29-8-2016
  * Description...
  */
-public class ScoutingGroepClusterManager extends ClusterManager<ScoutingGroepInfo> {
+public class ScoutingGroepClusterManager extends ClusterManager<ScoutingGroepInfo> implements ClusterManagerInterface {
 
     /**
      * The algorithm used for the clustering.
@@ -36,6 +38,11 @@ public class ScoutingGroepClusterManager extends ClusterManager<ScoutingGroepInf
         setRenderer(renderer);
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
+    }
+
+    @Override
+    public void addItems(ArrayList<ScoutingGroepInfo> buffer) {
+        super.addItems(buffer);
     }
 
     /**

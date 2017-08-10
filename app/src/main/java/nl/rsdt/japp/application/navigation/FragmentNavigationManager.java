@@ -7,13 +7,8 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBar;
 
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.activities.MainActivity;
@@ -21,6 +16,9 @@ import nl.rsdt.japp.application.fragments.AboutFragment;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.application.fragments.JappPreferenceFragment;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback;
+import nl.rsdt.japp.jotial.net.DownloadDrawableTask;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -147,8 +145,9 @@ public class FragmentNavigationManager {
 
     public void setupMap(OnMapReadyCallback callback)
     {
-        if(mapFragment.getGoogleMap() == null) {
-            if (mapFragment == null) {
+
+        if(mapFragment.getJotiMap() == null || mapFragment.getJotiMap().getMapType() == JotiMap.OSMMAPTYPE) {
+            if (mapFragment == null) {//// TODO: 09/08/17 dit is nooit anders krijg je een runtime exception bij de vorige if statement
                 mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
                 mapFragment.getMapAsync(callback);
             } else {

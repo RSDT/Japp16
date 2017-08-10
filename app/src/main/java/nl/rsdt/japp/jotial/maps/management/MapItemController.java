@@ -1,17 +1,13 @@
 package nl.rsdt.japp.jotial.maps.management;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 
@@ -20,8 +16,9 @@ import nl.rsdt.japp.jotial.BundleIdentifiable;
 import nl.rsdt.japp.jotial.Identifiable;
 import nl.rsdt.japp.jotial.IntentCreatable;
 import nl.rsdt.japp.jotial.Recreatable;
-import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.io.StorageIdentifiable;
+import nl.rsdt.japp.jotial.maps.wrapper.Circle;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.MapItemHolder;
 import nl.rsdt.japp.jotial.maps.Mergable;
 import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
@@ -37,6 +34,9 @@ import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.management.transformation.Transducable;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncTransduceTask;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
+import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
+import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,12 +49,12 @@ import retrofit2.Response;
  * Description...
  */
 public abstract class MapItemController<I, O extends AbstractTransducer.Result> extends MapItemDateControl implements Recreatable,
-        MapItemHolder, MapItemUpdatable<I>, Transducable<I, O>, Identifiable, StorageIdentifiable, BundleIdentifiable, OnMapReadyCallback,
+        MapItemHolder, MapItemUpdatable<I>, Transducable<I, O>, Identifiable, StorageIdentifiable, BundleIdentifiable,
         AsyncTransduceTask.OnTransduceCompletedCallback<O>, IntentCreatable, Searchable, Callback<I>, Mergable<O> {
 
     public static final String TAG = "MapItemController";
 
-    protected GoogleMap googleMap;
+    protected JotiMap jotiMap;
 
     protected ArrayList<Marker> markers = new ArrayList<>();
 
@@ -65,7 +65,6 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     protected ArrayList<Polyline> polylines = new ArrayList<>();
 
-    @Override
     public ArrayList<Polyline> getPolylines() {
         return polylines;
     }
@@ -91,7 +90,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         if(bundle != null) {
             O result = bundle.getParcelable(getBundleId());
             if(result != null) {
-                if(googleMap != null) {
+                if(jotiMap != null) {
                     processResult(result);
                 } else {
                     buffer = result;
@@ -100,9 +99,9 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         }
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+
+    public void onMapReady(JotiMap jotiMap) {
+        this.jotiMap = jotiMap;
         if(buffer != null)
         {
             if(!markers.isEmpty() || !polylines.isEmpty() || !polygons.isEmpty()) {
@@ -153,7 +152,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     @Override
     public void onTransduceCompleted(O result) {
-        if(googleMap != null)
+        if(jotiMap != null)
         {
             if(!markers.isEmpty() || !polylines.isEmpty() || !polygons.isEmpty()) {merge(result);
             } else {
@@ -168,28 +167,28 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     protected void processResult(O result)
     {
-        ArrayList<MarkerOptions> markers = result.getMarkers();
+        ArrayList<Pair<MarkerOptions, Bitmap>> markers = result.getMarkers();
         for(int m = 0; m < markers.size(); m++)
         {
-            this.markers.add(googleMap.addMarker(markers.get(m)));
+            this.markers.add(jotiMap.addMarker(markers.get(m)));
         }
 
         ArrayList<PolylineOptions> polylines = result.getPolylines();
         for(int p = 0; p < polylines.size(); p++)
         {
-            this.polylines.add(googleMap.addPolyline(polylines.get(p)));
+            this.polylines.add(jotiMap.addPolyline(polylines.get(p)));
         }
 
         ArrayList<PolygonOptions> polygons = result.getPolygons();
         for(int g = 0; g < polygons.size(); g++)
         {
-            this.polygons.add(googleMap.addPolygon(polygons.get(g)));
+            this.polygons.add(jotiMap.addPolygon(polygons.get(g)));
         }
 
         ArrayList<CircleOptions> circles = result.getCircles();
         for(int c = 0; c < circles.size(); c++)
         {
-            this.circles.add(googleMap.addCircle(circles.get(c)));
+            this.circles.add(jotiMap.addCircle(circles.get(c)));
         }
     }
 
@@ -252,7 +251,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
         buffer = null;
 
-        googleMap = null;
+        jotiMap = null;
 
     }
 

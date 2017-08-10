@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
+import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -24,7 +25,7 @@ import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
  * @since 8-9-2016
  * Description...
  */
-public class PinningManager implements OnMapReadyCallback, Recreatable, GoogleMap.OnInfoWindowLongClickListener {
+public class PinningManager implements Recreatable, GoogleMap.OnInfoWindowLongClickListener {
 
     protected static final String STORAGE_ID = "PinData";
 
@@ -32,7 +33,7 @@ public class PinningManager implements OnMapReadyCallback, Recreatable, GoogleMa
 
     protected Context context;
 
-    protected GoogleMap googleMap;
+    protected JotiMap jotiMap;
 
     protected ArrayList<Pin> pins = new ArrayList<>();
 
@@ -52,7 +53,7 @@ public class PinningManager implements OnMapReadyCallback, Recreatable, GoogleMa
         }
 
         if(pins != null && !pins.isEmpty()) {
-            if(googleMap != null) {
+            if(jotiMap != null) {
                 process(pins);
             } else {
                 buffer = pins;
@@ -99,10 +100,9 @@ public class PinningManager implements OnMapReadyCallback, Recreatable, GoogleMa
         return null;
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        googleMap.setOnInfoWindowLongClickListener(this);
+    public void onMapReady(JotiMap jotiMap) {
+        this.jotiMap = jotiMap;
+        jotiMap.setOnInfoWindowLongClickListener(this);
 
         if(buffer != null) {
             process(buffer);
@@ -112,13 +112,13 @@ public class PinningManager implements OnMapReadyCallback, Recreatable, GoogleMa
     }
 
     private void process(ArrayList<Pin.Data> input) {
-        if(googleMap != null) {
+        if(jotiMap != null) {
             Pin.Data buffer;
             for(int i = 0; i < input.size(); i++) {
                 buffer = input.get(i);
 
                 if(buffer != null) {
-                    pins.add(Pin.create(googleMap, buffer));
+                    pins.add(Pin.create(jotiMap, buffer));
                 }
             }
         }
@@ -148,8 +148,8 @@ public class PinningManager implements OnMapReadyCallback, Recreatable, GoogleMa
     public void onDestroy() {
         save(false);
 
-        if(googleMap != null) {
-            googleMap = null;
+        if(jotiMap != null) {
+            jotiMap = null;
         }
 
         if(pins != null){

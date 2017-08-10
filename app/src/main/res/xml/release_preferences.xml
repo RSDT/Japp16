@@ -173,6 +173,14 @@
                     />
 
             </PreferenceCategory>
+            <PreferenceCategory android:title="Kaart">
+                <SwitchPreference
+                    android:key="pref_advanced_osm"
+                    android:title="@string/pref_advanced_auto_osm"
+                    android:summary="@string/pref_advanced_osm_sum"
+                    android:defaultValue="true"
+                    /><!--todo default value moet naar false. Hij staat nu op true om te kunnen testen-->
+            </PreferenceCategory>
 
         </PreferenceScreen>
 

@@ -2,11 +2,9 @@ package nl.rsdt.japp.application.fragments;
 
 import android.os.Bundle;
 import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.view.View;
-import android.widget.EditText;
 
 import nl.rsdt.japp.BuildConfig;
 import nl.rsdt.japp.R;
