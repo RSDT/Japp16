@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,13 +22,13 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.compass.CompassOverlay;
-import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 
 import java.util.HashMap;
+
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.movement.MovementManager;
@@ -101,7 +100,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        boolean useOSM = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean("pref_advanced_osm",false);
+        boolean useOSM = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean("pref_advanced_osm",false); //// TODO: 10/08/17 magic string
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
@@ -116,7 +115,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     }
 
     private View createOSMMap(Bundle savedInstanceState, View v) {
-        //todo check
+        StoragePermissionsChecker.check(getActivity());
         osmActive = true;
         googleMapView = (MapView)v.findViewById(R.id.googleMap);
         googleMapView.setVisibility(View.GONE);

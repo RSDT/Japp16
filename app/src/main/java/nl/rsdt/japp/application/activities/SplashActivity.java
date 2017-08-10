@@ -19,6 +19,7 @@ import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker;
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
+import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
@@ -115,7 +116,7 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
          * Check if we have the permissions we need.
          * */
         permission_check = LocationPermissionsChecker.check(this);
-
+        StoragePermissionsChecker.check(this);
 
         /**
          * Load in the map data.
