@@ -2,6 +2,7 @@ package nl.rsdt.japp.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
@@ -22,6 +23,7 @@ import java.util.Calendar;
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.application.activities.MainActivity;
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody;
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
 import nl.rsdt.japp.jotial.net.apis.HunterApi;
@@ -57,6 +59,10 @@ public class LocationService extends LocationProviderService {
     }
 
     private void showLocationNotification(String title, int color) {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle(title)
                 .setContentText("Klik om Japp te openen")
@@ -65,6 +71,7 @@ public class LocationService extends LocationProviderService {
                 .setColor(color)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(intent)
                 .build();
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(1923, notification);
