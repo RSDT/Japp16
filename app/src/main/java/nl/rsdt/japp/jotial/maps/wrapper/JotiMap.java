@@ -114,7 +114,7 @@ public class JotiMap {
     }
 
     public UiSettings getUiSettings() {
-        switch (mapType){
+         switch (mapType){
             case GOOGLEMAPTYPE:
                 return new UiSettings(googleMap.getUiSettings());
             case OSMMAPTYPE:

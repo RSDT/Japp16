@@ -32,7 +32,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
 
 
-    private final RadiusMarkerClusterer scoutingGroepMarkers;
+    private RadiusMarkerClusterer scoutingGroepMarkers;
     private final Collection<ScoutingGroepInfo> infos;
     private final Collection<Marker> markers;
     private final MapView osmMap;
@@ -97,8 +97,10 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
 
     @Override
     public void clearItems() {
-        for (Marker marker: markers){
-
-        }
+        osmMap.getOverlays().remove(scoutingGroepMarkers);
+        infos.clear();
+        markers.clear();
+        scoutingGroepMarkers = new RadiusMarkerClusterer(Japp.getInstance().getApplicationContext());
+        osmMap.getOverlays().add(scoutingGroepMarkers);
     }
 }

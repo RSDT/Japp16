@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 
 import java.util.HashMap;
 import nl.rsdt.japp.R;
@@ -58,6 +60,11 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     private static final String BUNDLE_MAP = "BUNDLE_MAP";
 
     private static final String BUNDLE_OSM_ACTIVE = "BUNDLE_OSM_ACTIVE_B";
+    private static final String OSM_ZOOM = "OSM_ZOOM";
+    private static final String OSM_LAT = "OSM_LAT";
+    private static final java.lang.String OSM_LNG = "OSM_LNG";
+    private static final String OSM_OR = "OSM_OR";
+    private static final String OSM_BUNDLE = "OSM_BUNDLE";
 
     private ServiceManager<LocationService, LocationService.LocationBinder> serviceManager = new ServiceManager<>(LocationService.class);
 
@@ -119,7 +126,18 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         osmView.getController().setZoom(11);
         osmView.setBuiltInZoomControls(true);
         osmView.setMultiTouchControls(true);
+        osmView.setFlingEnabled(true);
+                
         jotiMap = JotiMap.getJotiMapInstance(osmView);
+
+        if (savedInstanceState != null) {
+            Bundle osmbundle = savedInstanceState.getBundle(OSM_BUNDLE);
+            if (osmbundle != null) {
+                osmView.getController().setZoom(osmbundle.getInt(OSM_ZOOM));
+                osmView.getController().setCenter(new GeoPoint(osmbundle.getDouble(OSM_LAT), osmbundle.getDouble(OSM_LNG)));
+                osmView.setRotation(osmbundle.getFloat(OSM_OR));
+            }
+        }
 
         movementManager.setSnackBarView(osmView);
         setupHuntButton(v).setEnabled(false);
@@ -164,6 +182,14 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             googleMapView.onSaveInstanceState(mapBundle);
 
             savedInstanceState.putBundle(BUNDLE_MAP, mapBundle);
+        }else{
+            org.osmdroid.views.MapView osmMap = jotiMap.getOSMMap();
+            Bundle osmMapBundle = new Bundle();
+            osmMapBundle.putInt(OSM_ZOOM, osmMap.getZoomLevel());
+            osmMapBundle.putDouble(OSM_LAT, osmMap.getMapCenter().getLatitude());
+            osmMapBundle.putDouble(OSM_LNG, osmMap.getMapCenter().getLongitude());
+            osmMapBundle.putFloat(OSM_OR, osmMap.getMapOrientation());
+            savedInstanceState.putBundle(OSM_BUNDLE, osmMapBundle);
         }
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
