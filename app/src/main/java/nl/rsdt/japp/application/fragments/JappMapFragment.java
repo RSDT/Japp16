@@ -100,7 +100,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        boolean useOSM = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean("pref_advanced_osm",false); //// TODO: 10/08/17 magic string
+        boolean useOSM = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean("pref_advanced_osm",true); //// TODO: 10/08/17 magic string
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
