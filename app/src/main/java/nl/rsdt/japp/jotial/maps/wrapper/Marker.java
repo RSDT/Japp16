@@ -2,14 +2,24 @@ package nl.rsdt.japp.jotial.maps.wrapper;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.JsonReader;
 import android.util.Pair;
+import android.util.StringBuilderPrinter;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import nl.rsdt.japp.application.Japp;
 
@@ -37,6 +47,30 @@ public class Marker {
         MarkerOptions markerOptions = markerOptionsPair.first;
         osmMarker.setIcon(new BitmapDrawable(Japp.getInstance().getResources(), markerOptionsPair.second));
         osmMarker.setPosition(new GeoPoint(markerOptions.getPosition().latitude,markerOptions.getPosition().longitude));
+        try {
+            JSONObject mainObject = new JSONObject(markerOptions.getTitle());
+            String type = mainObject.getString("type");
+            JSONObject properties = mainObject.getJSONObject("properties");
+            StringBuilder buff = new StringBuilder();
+            if (type.equals("VOS")) {
+
+                buff.append(properties.getString("extra")).append("\n");
+                buff.append(properties.getString("time")).append("\n");
+                buff.append(properties.getString("note")).append("\n");
+                buff.append(properties.getString("team")).append("\n");
+            }else if(type.equals("HUNTER")){
+                buff.append(properties.getString("hunter")).append("\n");
+                buff.append(properties.getString("time")).append("\n");
+            }else {
+                buff.append(markerOptions.getTitle());
+            }
+            osmMarker.setTitle(buff.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            osmMarker.setTitle(markerOptions.getTitle());
+        }
+
+
         osmMap.getOverlays().add(osmMarker);
         osmMap.invalidate();
     }

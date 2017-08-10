@@ -87,8 +87,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pinningManager.intialize(getActivity());
-        pinningManager.onCreate(savedInstanceState);
+
 
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -96,6 +95,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        pinningManager.intialize(getActivity());
+        pinningManager.onCreate(savedInstanceState);
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -127,7 +129,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         osmView.setBuiltInZoomControls(true);
         osmView.setMultiTouchControls(true);
         osmView.setFlingEnabled(true);
-                
+
         jotiMap = JotiMap.getJotiMapInstance(osmView);
 
         if (savedInstanceState != null) {

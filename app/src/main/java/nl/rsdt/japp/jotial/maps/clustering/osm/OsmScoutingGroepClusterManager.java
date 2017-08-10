@@ -54,7 +54,11 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
             Marker marker = new Marker(osmMap);
             marker.setIcon(Japp.getInstance().getResources().getDrawable( R.drawable.scouting_groep_icon_30x22 ));
             marker.setPosition(new GeoPoint(info.getPosition().latitude,info.getPosition().longitude));
-            marker.setTitle(info.naam);
+            StringBuilder buff = new StringBuilder();
+            buff.append(info.naam).append("\n");
+            buff.append(info.team).append("\n");
+            buff.append(info.adres).append("\n");
+            marker.setTitle(buff.toString());
             marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
                 Circle circle = null;
                 boolean visible = false;
@@ -76,6 +80,7 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
                             visible = true;
                         }
                     }
+                    marker.showInfoWindow();
                     return true;
                 }
             });
