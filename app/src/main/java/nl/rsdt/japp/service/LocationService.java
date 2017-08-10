@@ -3,6 +3,7 @@ package nl.rsdt.japp.service;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -50,6 +51,8 @@ public class LocationService extends LocationProviderService {
         wasSending = JappPreferences.isUpdatingLocationToServer();
         if(!wasSending) {
             showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
+        } else {
+            showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
         }
     }
 
@@ -90,7 +93,7 @@ public class LocationService extends LocationProviderService {
                 title = "Japp verzendt je locatie";
                 color = Color.rgb(113, 244, 66);
             } else {
-                title = "Japp verzendt je locatie niet";
+                title = "Japp verzendt je locatie niet!";
                 color = Color.rgb(244, 66, 66);
             }
             showLocationNotification(title, color);
