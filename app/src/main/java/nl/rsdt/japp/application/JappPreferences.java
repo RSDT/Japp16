@@ -85,6 +85,8 @@ public class JappPreferences {
 
     public static final String AREAS_COLOR_ALPHA = "pref_advanced_areas_color_alpha";
 
+    public static final String USE_OSM = "pref_advanced_osm";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -254,6 +256,10 @@ public class JappPreferences {
 
     public static int getAreasColorAlpha() {
         return Integer.valueOf(getVisiblePreferences().getString(AREAS_COLOR_ALPHA, "25"));
+    }
+
+    public static boolean useOSM() {
+        return getVisiblePreferences().getBoolean(USE_OSM, false);
     }
 
 
