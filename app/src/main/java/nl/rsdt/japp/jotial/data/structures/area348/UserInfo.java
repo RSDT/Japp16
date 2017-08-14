@@ -76,7 +76,7 @@ public class UserInfo implements Parcelable {
      * 75 - Admin
      * As defined in the API docs.
      * */
-    public int toeganslvl;
+    public int toegangslvl;
 
     /**
      * The relative path to the avatar of the user.
@@ -88,7 +88,7 @@ public class UserInfo implements Parcelable {
      *
      * @return The text representation of the user's clearance.
      * */
-    public String rank() { return intLvlToStringRank(toeganslvl); }
+    public String rank() { return intLvlToStringRank(toegangslvl); }
 
     /**
      * Initializes a new instance of UserInfo from the given Parcel.
@@ -104,7 +104,7 @@ public class UserInfo implements Parcelable {
         sinds = in.readString();
         last = in.readString();
         actief = in.readInt();
-        toeganslvl = in.readInt();
+        toegangslvl = in.readInt();
         avatar = in.readString();
     }
 
@@ -123,7 +123,7 @@ public class UserInfo implements Parcelable {
         dest.writeString(sinds);
         dest.writeString(last);
         dest.writeInt(actief);
-        dest.writeInt(toeganslvl);
+        dest.writeInt(toegangslvl);
         dest.writeString(avatar);
     }
 
