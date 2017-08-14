@@ -11,10 +11,10 @@ public final class API {
     /**
      * The root of the Area348 V2 API
      * */
-    public static final String API_V2_ROOT = "http://jotihunt-api-v2.area348.nl";
+    public static final String API_V2_ROOT = "http://jotihunt-api-v3.area348.nl";
 
     public static final String API_V1_ROOT = "http://jotihunt-api.area348.nl";
 
-    public static final String SITE_2016_ROOT = "http://jotihunt2016.area348.nl";
+    public static final String SITE_2016_ROOT = "http://jotihunt2017.area348.nl";
 
 }
