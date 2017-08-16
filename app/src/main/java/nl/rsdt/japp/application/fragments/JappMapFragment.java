@@ -100,7 +100,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        boolean useOSM = JappPreferences.useOSM(); //// TODO: 10/08/17 magic string
+        boolean useOSM = JappPreferences.useOSM();
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
@@ -239,7 +239,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public void onPause() {
         super.onPause();
-        if (!osmActive) {
+        if (!osmActive && googleMapView != null) {
             googleMapView.onPause();
         }
         movementManager.onPause();
