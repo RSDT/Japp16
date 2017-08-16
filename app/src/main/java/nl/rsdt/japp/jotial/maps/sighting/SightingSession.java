@@ -151,7 +151,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
+    public boolean onMapClick(LatLng latLng) {
         lastLatLng = latLng;
 
         marker.setPosition(latLng);
@@ -199,6 +199,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         if(!marker.isVisible()) {
             marker.setVisible(true);
         }
+        return false;
     }
 
 

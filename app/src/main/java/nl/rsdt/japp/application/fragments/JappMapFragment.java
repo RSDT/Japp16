@@ -2,8 +2,10 @@ package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -39,6 +41,7 @@ import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
+import nl.rsdt.japp.jotial.navigation.NavigationSession;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
@@ -149,6 +152,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         setupSpotButton(v).setEnabled(true);
         setupPinButton(v).setEnabled(true);
         setupFollowButton(v);
+        setupNavigetionButton(v);
 
         return v;
     }
@@ -173,7 +177,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         setupSpotButton(v);
         setupPinButton(v);
         setupFollowButton(v);
-
+        setupNavigetionButton(v);
         return v;
     }
 
@@ -531,6 +535,58 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             }
         });
         return pinButton;
+    }
+
+    private FloatingActionButton setupNavigetionButton(View v) {
+        FloatingActionButton navigationButton = (FloatingActionButton)v.findViewById(R.id.fab_nav);
+        navigationButton.setOnClickListener(new View.OnClickListener() {
+
+            NavigationSession session;
+
+            @Override
+            public void onClick(View view) {
+                View v = getView();
+
+                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+
+                if(session != null) {
+                    /*--- Show the menu ---*/
+                    menu.showMenu(true);
+                    session.end();
+                    session = null;
+                } else {
+                    /*--- Hide the menu ---*/
+                    menu.hideMenu(true);
+
+                    session = new NavigationSession.Builder()
+                            .setGoogleMap(jotiMap)
+                            .setCallback(new NavigationSession.OnNavigationCompletedCallback() {
+                                @Override
+                                public void onNavigationCompleted(LatLng navigateTo) {
+                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                    menu.showMenu(true);
+
+                                    session.end();
+                                    session = null;
+                                    if (navigateTo != null) {
+                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
+                                        Uri gmmIntentUri = Uri.parse(uristr);
+                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                        startActivity(mapIntent);
+                                    }
+
+                                }
+                            })
+                            .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
+                            .setDialogContext(JappMapFragment.this.getActivity())
+                            .create();
+                    session.start();
+                }
+
+            }
+        });
+        return navigationButton;
     }
 
     private FloatingActionButton setupHuntButton(View v){

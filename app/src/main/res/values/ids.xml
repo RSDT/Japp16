@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="navigation_dialog_title_edit" type="id">GoogleMaps navigeren</item>
+    <item name="navigation_dialog_description_edit" type="id">Wil je naar deze locatie navigeren?
+    </item>
+</resources>

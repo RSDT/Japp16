@@ -17,6 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.*;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -32,10 +34,12 @@ import nl.rsdt.japp.application.Japp;
 public class Marker {
     public static final int GOOGLEMARKER = 0;
     public static final int OSMMARKER = 1;
+    private static AllOnClickListener allOnClickLister = null;
     private final int markerType;
     private final com.google.android.gms.maps.model.Marker googleMarker;
     private final org.osmdroid.views.overlay.Marker osmMarker;
     private final MapView osmMap;
+    private OnClickListener onClickListener = null;
 
     public Marker(com.google.android.gms.maps.model.Marker marker) {
         this.googleMarker = marker;
@@ -51,8 +55,7 @@ public class Marker {
         osmMarker = new org.osmdroid.views.overlay.Marker(osmMap);
         MarkerOptions markerOptions = markerOptionsPair.first;
         this.setIcon(markerOptionsPair.second);
-        osmMarker.setIcon(new BitmapDrawable(Japp.getInstance().getResources(), markerOptionsPair.second));
-        osmMarker.setPosition(new GeoPoint(markerOptions.getPosition().latitude,markerOptions.getPosition().longitude));
+        this.setPosition(markerOptions.getPosition());
         if (markerOptions.getTitle() == null){
             markerOptions.title("");
         }
@@ -79,13 +82,55 @@ public class Marker {
             osmMarker.setTitle(markerOptions.getTitle());
         }
 
-
+        osmMarker.setOnMarkerClickListener(new org.osmdroid.views.overlay.Marker.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(org.osmdroid.views.overlay.Marker marker, MapView mapView) {
+                if (marker == osmMarker) {
+                    onClick();
+                }
+                return false;
+            }
+        });
         osmMap.getOverlays().add(osmMarker);
         osmMap.invalidate();
     }
+    public static void setAllOnClickLister(Marker.AllOnClickListener onClickListener){
+        allOnClickLister = onClickListener;
+    }
 
+    private boolean onClick(){
+        if (allOnClickLister != null){
+            if (!allOnClickLister.OnClick(this)){
+                if (this.onClickListener == null) {
+                    showInfoWindow();
+                    return false;
+                }else{
+                    return this.onClickListener.OnClick(this);
+                }
+            }
+        }else {
+            if (this.onClickListener == null) {
+                showInfoWindow();
+                return false;
+            }else{
+                return this.onClickListener.OnClick(this);
+            }
+        }
+        return false;
+    }
 
-
+    public void showInfoWindow(){
+        switch (markerType){
+            case GOOGLEMARKER:
+                googleMarker.showInfoWindow();
+                break;
+            case OSMMARKER:
+                osmMarker.showInfoWindow();
+                break;
+            default:
+                break;
+        }
+    }
     public void remove() {
         switch (markerType){
             case GOOGLEMARKER:
@@ -93,6 +138,7 @@ public class Marker {
                 break;
             case OSMMARKER:
                 osmMap.getOverlays().remove(osmMarker);
+                osmMap.invalidate();
                 break;
             default:
                 break;
@@ -128,13 +174,16 @@ public class Marker {
                 break;
             case OSMMARKER:
                 this.osmMarker.setPosition(new GeoPoint(latLng.latitude,latLng.longitude));
+                osmMap.invalidate();
                 break;
             default:
                 break;
         }
     }
 
-
+    public void setOnClickListener(Marker.OnClickListener onClickListener){
+        this.onClickListener = onClickListener;
+    }
     public void setIcon(int drawableHunt) {
         this.setIcon(BitmapFactory.decodeResource(Japp.getAppResources(),drawableHunt));
 
@@ -145,8 +194,11 @@ public class Marker {
                 this.googleMarker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
                 break;
             case OSMMARKER:
-                Drawable d = new BitmapDrawable(Japp.getAppResources(), bitmap);
-                this.osmMarker.setIcon(d);
+                if (bitmap != null) {
+                    Drawable d = new BitmapDrawable(Japp.getAppResources(), bitmap);
+                    this.osmMarker.setIcon(d);
+                    osmMap.invalidate();
+                }
                 break;
             default:
                 break;
@@ -171,7 +223,7 @@ public class Marker {
             case GOOGLEMARKER:
                 return this.googleMarker.isVisible();
             case OSMMARKER:
-                return this.osmMarker.isEnabled(); //// TODO: 09/08/17 is dit hetzelfde?
+                return true; //// TODO: 09/08/17 is dit hetzelfde?
             default:
                 return false;
         }
@@ -183,7 +235,7 @@ public class Marker {
                 googleMarker.setVisible(visible);
                 break;
             case OSMMARKER:
-                osmMarker.setEnabled(visible); //// TODO: 09/08/17 is dit hetzelfde?
+                //osmMarker.setEnabled(visible); //// TODO: 09/08/17 is dit hetzelfde?
         }
     }
 
@@ -194,6 +246,7 @@ public class Marker {
                 break;
             case OSMMARKER:
                 osmMarker.setRotation(rotation);
+                osmMap.invalidate();
                 break;
             default:
                 break;
@@ -209,5 +262,16 @@ public class Marker {
             default:
                 return null;
         }
+    }
+
+    public org.osmdroid.views.overlay.Marker getOSMMarker() {
+        return osmMarker;
+    }
+
+    public interface AllOnClickListener {
+        public boolean OnClick(Marker m);
+    }
+    public interface OnClickListener{
+        public boolean OnClick(Marker m);
     }
 }

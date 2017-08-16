@@ -32,7 +32,7 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
-import nl.rsdt.japp.jotial.maps.wrapper.osmNavigation.Navigator;
+import nl.rsdt.japp.jotial.navigation.Navigator;
 
 /**
  * Created by mattijn on 07/08/17.
@@ -240,7 +240,7 @@ public class JotiMap {
                     @Override
                     public boolean singleTapConfirmedHelper(GeoPoint p) {
                         if (onMapClickListener != null) {
-                            onMapClickListener.onMapClick(new LatLng(p.getLatitude(), p.getLongitude()));
+                            return onMapClickListener.onMapClick(new LatLng(p.getLatitude(), p.getLongitude()));
                         }
                         return false;
                     }
@@ -383,7 +383,7 @@ public class JotiMap {
     }
     public interface OnMapClickListener{
 
-        void onMapClick(LatLng latLng);
+        boolean onMapClick(LatLng latLng);
     }
 
     public interface CancelableCallback {
