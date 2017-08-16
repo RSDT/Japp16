@@ -1,5 +1,8 @@
 package nl.rsdt.japp.jotial.navigation;
 
+import android.app.PendingIntent;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -14,72 +17,90 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 
 /**
  * Created by mattijn on 16/08/17.
  */
 
-public class Navigator extends Thread {
-    private final Handler polylineHandler;
-    private Handler endPointHandler;
+public class Navigator {
+    private final JotiMap map;
+    private Handler onFinishedHandler;
     private nl.rsdt.japp.jotial.maps.wrapper.Polyline oldPolyline;
     public Navigator(final JotiMap map){
-        polylineHandler = new Handler(){
+        this.map = map;
+        onFinishedHandler = new Handler(){
             @Override
             public void handleMessage(Message msg){
-                Polyline newPolyline = (Polyline) msg.obj;
-                if (oldPolyline != null){
-                    oldPolyline.remove();
+                if (msg.obj instanceof Polyline){
+                    setPolyline((Polyline) msg.obj);
                 }
-                if (newPolyline == null){
-                    return;
-                }
-
-                PolylineOptions options = new PolylineOptions()
-                        .color(newPolyline.getColor())
-                        .visible(newPolyline.isVisible())
-                        .width(newPolyline.getWidth())
-                        ;
-                for (GeoPoint p : newPolyline.getPoints()){
-                    options.add(new LatLng(p.getLatitude(), p.getLongitude()));
-                }
-                oldPolyline = map.addPolyline(options);
-
             }
         };
     }
 
     public void setEndLocation(LatLng end){
-        if (endPointHandler != null) {
-            this.endPointHandler.sendMessage(Message.obtain(endPointHandler, 0, end));
+        if (Japp.getLastLocation() != null && end != null){
+            RouteCalculator r = new RouteCalculator(this);
+            Location start = Japp.getLastLocation();
+            AsyncTask<LatLng, Void, Polyline> t = r.execute(new LatLng(start.getLatitude(), start.getLongitude()), end);
         }
     }
+    public void clear(){
+        oldPolyline.remove();
+    }
+    public void setPolyline(Polyline newPolyline){
+        if (oldPolyline != null){
+            oldPolyline.remove();
+        }
+        if (newPolyline == null){
+            return;
+        }
 
-    @Override
-    public void run() {
-        Looper.prepare();
-        endPointHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                LatLng end = (LatLng) msg.obj;
-                if (end == null) {
-                    polylineHandler.sendMessage(Message.obtain(polylineHandler, 0, null));
-                } else {
-                    RoadManager roadManager = new OSRMRoadManager(Japp.getInstance().getApplicationContext());
-                    ArrayList<GeoPoint> waypoints = new ArrayList<>();
+        PolylineOptions options = new PolylineOptions()
+                .color(newPolyline.getColor())
+                .visible(newPolyline.isVisible())
+                .width(newPolyline.getWidth())
+                ;
+        for (GeoPoint p : newPolyline.getPoints()){
+            options.add(new LatLng(p.getLatitude(), p.getLongitude()));
+        }
+        oldPolyline = map.addPolyline(options);
+    }
 
-                    waypoints.add(new GeoPoint(Japp.getLastLocation()));
-                    waypoints.add(new GeoPoint(end.latitude,end.longitude));
-                    Road road = roadManager.getRoad(waypoints);
-                    Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
-                    polylineHandler.sendMessage(Message.obtain(polylineHandler, 0, roadOverlay));
-                }
+    public void onFinished(Polyline newPolyline) {
+        onFinishedHandler.sendMessage(Message.obtain(onFinishedHandler, 0, newPolyline));
+    }
+
+    static class RouteCalculator extends AsyncTask<LatLng,Void, Polyline>{
+
+        private Navigator callback;
+
+        public RouteCalculator(Navigator onFinished){
+            callback= onFinished;
+        }
+        @Override
+        protected Polyline doInBackground(LatLng... params) {
+            RoadManager roadManager = new OSRMRoadManager(Japp.getInstance().getApplicationContext());
+            ArrayList<GeoPoint> waypoints = new ArrayList<>();
+            for (LatLng p : params){
+                waypoints.add(new GeoPoint(p.latitude,p.longitude));
             }
-        };
+            Road road = roadManager.getRoad(waypoints);
+            Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+            callback.onFinished(roadOverlay);
+            return roadOverlay;
+        }
 
+        interface OnFinished {
+            void onFinished(Polyline p);
+        }
     }
 }

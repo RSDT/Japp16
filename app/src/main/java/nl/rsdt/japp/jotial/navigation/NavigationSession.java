@@ -73,13 +73,14 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
 
     public void start() {
         Marker.setAllOnClickLister(this);
-        navigator.start();
+        //navigator.start();
         jotiMap.setOnMapClickListener(this);
         snackbar.show();
     }
 
     public void end() {
         Marker.setAllOnClickLister(null);
+        navigator.clear();
         onDestroy();
     }
 
