@@ -11,13 +11,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
-import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 
@@ -27,7 +24,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.Marker;
  * @since 8-9-2016
  * Description...
  */
-public class PinningSession extends Snackbar.Callback implements GoogleMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, GoogleMap.CancelableCallback {
+public class PinningSession extends Snackbar.Callback implements JotiMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, JotiMap.CancelableCallback {
 
     /**
      * The GoogleMap used to create markers.
@@ -93,7 +90,7 @@ public class PinningSession extends Snackbar.Callback implements GoogleMap.OnMap
     @Override
     public void onClick(View view) {
         if(marker.isVisible()) {
-            jotiMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 12), this);
+            jotiMap.animateCamera(marker.getPosition(), 12, this);
         } else {
             if(snackbar != null){
                 snackbar.dismiss();

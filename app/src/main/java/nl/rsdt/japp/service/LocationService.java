@@ -87,7 +87,7 @@ public class LocationService extends LocationProviderService {
     @Override
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
-
+        Japp.setLastLocation(location);
         long dif = Calendar.getInstance().getTimeInMillis() - lastUpdate.getTimeInMillis();
 
         boolean shouldSend = JappPreferences.isUpdatingLocationToServer();

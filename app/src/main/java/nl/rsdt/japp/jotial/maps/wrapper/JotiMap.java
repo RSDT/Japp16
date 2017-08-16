@@ -1,6 +1,7 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Pair;
 
@@ -16,14 +17,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
+import nl.rsdt.japp.jotial.maps.wrapper.osmNavigation.Navigator;
 
 /**
  * Created by mattijn on 07/08/17.
@@ -38,18 +47,34 @@ public class JotiMap {
     private final GoogleMap googleMap;
     private final MapView osmMap; //todo fix type
     private static Map<MapView,JotiMap> osm_instances = new HashMap<>();
+    private final Navigator navigator;
+    private MapEventsOverlay eventsOverlay;
 
     private JotiMap(GoogleMap map){
         mapType = GOOGLEMAPTYPE;
         googleMap = map;
-
+        navigator = new Navigator(this);
         osmMap = null;
+        eventsOverlay = null;
     }
+
     private JotiMap(MapView map){
         mapType = OSMMAPTYPE;
         osmMap  = map;
         googleMap = null;
+        navigator = new Navigator(this);
+        eventsOverlay = new MapEventsOverlay(new MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+                return false;
+            }
 
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                return false;
+            }
+        });
+        osmMap.getOverlays().add(0,eventsOverlay);
     }
 
     public static JotiMap getJotiMapInstance(GoogleMap map){
@@ -198,17 +223,39 @@ public class JotiMap {
         return osmMap;
     }
 
-    public void setOnMapClickListener(GoogleMap.OnMapClickListener onMapClickListener) {
+    public void setOnMapClickListener(final OnMapClickListener onMapClickListener) {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                googleMap.setOnMapClickListener(onMapClickListener);
+                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        onMapClickListener.onMapClick(latLng);
+                    }
+                });
                 break;
             case OSMMAPTYPE:
-                //// TODO: 09/08/17
+                osmMap.getOverlays().remove(eventsOverlay);
+                final JotiMap jotiMap = this;
+                eventsOverlay =new MapEventsOverlay(new MapEventsReceiver() {
+                    @Override
+                    public boolean singleTapConfirmedHelper(GeoPoint p) {
+                        if (onMapClickListener != null) {
+                            onMapClickListener.onMapClick(new LatLng(p.getLatitude(), p.getLongitude()));
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean longPressHelper(GeoPoint p) {
+                        return false;
+                    }
+                });
+                osmMap.getOverlays().add(0,eventsOverlay);
                 break;
             default:
                 break;
         }
+
     }
 
     public CameraPosition getCameraPosition() {
@@ -222,39 +269,74 @@ public class JotiMap {
         }
     }
 
-    public void snapshot(GoogleMap.SnapshotReadyCallback snapshotReadyCallback) {
+    public void snapshot(final JotiMap.SnapshotReadyCallback snapshotReadyCallback) {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                googleMap.snapshot(snapshotReadyCallback);
+                googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap bitmap) {
+                        snapshotReadyCallback.onSnapshotReady(bitmap);
+                    }
+                });
                 break;
             case OSMMAPTYPE:
-                //// TODO: 09/08/17 implement this?
+                    Bitmap bm = BitmapFactory.decodeResource(Japp.getAppResources(), R.drawable.about_bram);
+                    snapshotReadyCallback.onSnapshotReady(bm);
                 break;
             default:
                 break;
         }
     }
 
-    public void animateCamera(CameraUpdate cameraUpdate, GoogleMap.CancelableCallback cancelableCallback) {
+    public void animateCamera(LatLng latLng,int zoom, final JotiMap.CancelableCallback cancelableCallback) {
         switch (mapType) {
             case GOOGLEMAPTYPE:
-                googleMap.animateCamera(cameraUpdate, cancelableCallback);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+                googleMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        cancelableCallback.onFinish();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        cancelableCallback.onCancel();
+                    }
+                });
                 break;
             case OSMMAPTYPE:
-                //// TODO: 09/08/17
+                osmMap.getController().setCenter(new GeoPoint(latLng.latitude,latLng.longitude));
+                osmMap.getController().setZoom(zoom);
+                cancelableCallback.onFinish();
                 break;
             default:
                 break;
         }
     }
 
-    public void setOnCameraMoveStartedListener(GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener) {
+    public void setOnCameraMoveStartedListener(final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener) {
         switch (mapType){
             case GOOGLEMAPTYPE:
                 googleMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);
                 break;
             case OSMMAPTYPE:
-                //// TODO: 09/08/17
+                if (onCameraMoveStartedListener != null) {
+                    osmMap.setMapListener(new MapListener() {
+                        @Override
+                        public boolean onScroll(ScrollEvent event) {
+                            onCameraMoveStartedListener.onCameraMoveStarted(GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onZoom(ZoomEvent event) {
+                            onCameraMoveStartedListener.onCameraMoveStarted(GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE);
+                            return false;
+                        }
+                    });
+                }else{
+                    osmMap.setMapListener(null);
+                }
                 break;
             default:
                 break;
@@ -298,5 +380,18 @@ public class JotiMap {
             default:
                 break;
         }
+    }
+    public interface OnMapClickListener{
+
+        void onMapClick(LatLng latLng);
+    }
+
+    public interface CancelableCallback {
+        void onFinish();
+
+        void onCancel();
+    }
+    public interface SnapshotReadyCallback {
+        void onSnapshotReady(Bitmap var1);
     }
 }

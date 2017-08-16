@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
@@ -32,7 +31,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.Marker;
  * @since 13-7-2016
  * Class for Sighting
  */
-public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, GoogleMap.SnapshotReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.CancelableCallback {
+public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, JotiMap.SnapshotReadyCallback, JotiMap.OnMapClickListener, JotiMap.CancelableCallback {
 
     /**
      * Defines the SightingSession type HUNT.
@@ -225,7 +224,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         if(deelgebied == null) {
             deelgebied = Deelgebied.Xray;
         }
-        jotiMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng, 12), this);
+        jotiMap.animateCamera(lastLatLng, 12, this);
     }
 
     @Override

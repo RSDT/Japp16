@@ -1,7 +1,9 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.JsonReader;
 import android.util.Pair;
 import android.util.StringBuilderPrinter;
@@ -33,20 +35,27 @@ public class Marker {
     private final int markerType;
     private final com.google.android.gms.maps.model.Marker googleMarker;
     private final org.osmdroid.views.overlay.Marker osmMarker;
+    private final MapView osmMap;
 
     public Marker(com.google.android.gms.maps.model.Marker marker) {
         this.googleMarker = marker;
         markerType = GOOGLEMARKER;
         osmMarker = null;
+        osmMap = null;
     }
 
     public Marker(Pair<MarkerOptions,Bitmap> markerOptionsPair, MapView osmMap) {
         googleMarker = null;
         markerType = OSMMARKER;
+        this.osmMap = osmMap;
         osmMarker = new org.osmdroid.views.overlay.Marker(osmMap);
         MarkerOptions markerOptions = markerOptionsPair.first;
+        this.setIcon(markerOptionsPair.second);
         osmMarker.setIcon(new BitmapDrawable(Japp.getInstance().getResources(), markerOptionsPair.second));
         osmMarker.setPosition(new GeoPoint(markerOptions.getPosition().latitude,markerOptions.getPosition().longitude));
+        if (markerOptions.getTitle() == null){
+            markerOptions.title("");
+        }
         try {
             JSONObject mainObject = new JSONObject(markerOptions.getTitle());
             String type = mainObject.getString("type");
@@ -75,13 +84,15 @@ public class Marker {
         osmMap.invalidate();
     }
 
+
+
     public void remove() {
         switch (markerType){
             case GOOGLEMARKER:
                 this.googleMarker.remove();
                 break;
             case OSMMARKER:
-                //// TODO: 09/08/17 implement this
+                osmMap.getOverlays().remove(osmMarker);
                 break;
             default:
                 break;
@@ -125,16 +136,22 @@ public class Marker {
 
 
     public void setIcon(int drawableHunt) {
+        this.setIcon(BitmapFactory.decodeResource(Japp.getAppResources(),drawableHunt));
+
+    }
+    private void setIcon(Bitmap bitmap) {
         switch (markerType){
             case GOOGLEMARKER:
-                this.googleMarker.setIcon(BitmapDescriptorFactory.fromResource(drawableHunt));
+                this.googleMarker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
                 break;
             case OSMMARKER:
-                //// TODO: 09/08/17 implemnt this
+                Drawable d = new BitmapDrawable(Japp.getAppResources(), bitmap);
+                this.osmMarker.setIcon(d);
                 break;
             default:
                 break;
         }
+
     }
 
     public void setTitle(String title) {

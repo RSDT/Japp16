@@ -100,6 +100,10 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
+        return createMap(savedInstanceState, v);
+    }
+
+    private View createMap(Bundle savedInstanceState, View v){
         boolean useOSM = JappPreferences.useOSM();
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
@@ -141,9 +145,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }
 
         movementManager.setSnackBarView(osmView);
-        setupHuntButton(v).setEnabled(false);
-        setupSpotButton(v).setEnabled(false);
-        setupPinButton(v).setEnabled(false);
+        setupHuntButton(v).setEnabled(true);
+        setupSpotButton(v).setEnabled(true);
+        setupPinButton(v).setEnabled(true);
         setupFollowButton(v);
 
         return v;
@@ -320,6 +324,9 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Polygon polygon;
         switch (key){
+            case JappPreferences.USE_OSM:
+
+                break;
             case JappPreferences.AREAS_EDGES:
                 boolean edges = JappPreferences.getAreasEdgesEnabled();
                 for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
