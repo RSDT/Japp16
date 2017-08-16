@@ -182,7 +182,7 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
 
         callback = null;
     }
-    
+
     private void moveMarker(LatLng latLng, boolean priority){
         if (priority || System.currentTimeMillis() - lastmoved > 800) {
             navigator.setEndLocation(latLng);

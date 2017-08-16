@@ -226,16 +226,19 @@ public class JotiMap {
     public void setOnMapClickListener(final OnMapClickListener onMapClickListener) {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng) {
-                        onMapClickListener.onMapClick(latLng);
-                    }
-                });
+                if (onMapClickListener == null){
+                    googleMap.setOnMapClickListener(null);
+                }else {
+                    googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                        @Override
+                        public void onMapClick(LatLng latLng) {
+                            onMapClickListener.onMapClick(latLng);
+                        }
+                    });
+                }
                 break;
             case OSMMAPTYPE:
                 osmMap.getOverlays().remove(eventsOverlay);
-                final JotiMap jotiMap = this;
                 eventsOverlay =new MapEventsOverlay(new MapEventsReceiver() {
                     @Override
                     public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -272,12 +275,17 @@ public class JotiMap {
     public void snapshot(final JotiMap.SnapshotReadyCallback snapshotReadyCallback) {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
-                    @Override
-                    public void onSnapshotReady(Bitmap bitmap) {
-                        snapshotReadyCallback.onSnapshotReady(bitmap);
-                    }
-                });
+                if (snapshotReadyCallback != null) {
+                    googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                        @Override
+                        public void onSnapshotReady(Bitmap bitmap) {
+                            snapshotReadyCallback.onSnapshotReady(bitmap);
+                        }
+                    });
+                } else {
+                    googleMap.snapshot(null);
+                }
+
                 break;
             case OSMMAPTYPE:
                     Bitmap bm = BitmapFactory.decodeResource(Japp.getAppResources(), R.drawable.about_bram);
@@ -292,17 +300,21 @@ public class JotiMap {
         switch (mapType) {
             case GOOGLEMAPTYPE:
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
-                googleMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
-                    @Override
-                    public void onFinish() {
-                        cancelableCallback.onFinish();
-                    }
+                if (cancelableCallback != null) {
+                    googleMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
+                        @Override
+                        public void onFinish() {
+                            cancelableCallback.onFinish();
+                        }
 
-                    @Override
-                    public void onCancel() {
-                        cancelableCallback.onCancel();
-                    }
-                });
+                        @Override
+                        public void onCancel() {
+                            cancelableCallback.onCancel();
+                        }
+                    });
+                } else {
+                    googleMap.animateCamera(cameraUpdate, null);
+                }
                 break;
             case OSMMAPTYPE:
                 osmMap.getController().setCenter(new GeoPoint(latLng.latitude,latLng.longitude));
@@ -317,8 +329,12 @@ public class JotiMap {
     public void setOnCameraMoveStartedListener(final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener) {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                googleMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);
-                break;
+                if (onCameraMoveStartedListener != null) {
+                    googleMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);
+                }else{
+                    googleMap.setOnCameraMoveStartedListener(null);
+                }
+                    break;
             case OSMMAPTYPE:
                 if (onCameraMoveStartedListener != null) {
                     osmMap.setMapListener(new MapListener() {
@@ -372,7 +388,11 @@ public class JotiMap {
     public void setOnInfoWindowLongClickListener(GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener) {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                googleMap.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener);
+                if (onInfoWindowLongClickListener == null){
+                    googleMap.setOnInfoWindowLongClickListener(null);
+                }else {
+                    googleMap.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener);
+                }
                 break;
             case OSMMAPTYPE:
                 //// TODO: 09/08/17
