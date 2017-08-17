@@ -8,8 +8,7 @@ import android.util.Pair;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -47,13 +46,11 @@ public class JotiMap {
     private final GoogleMap googleMap;
     private final MapView osmMap; //todo fix type
     private static Map<MapView,JotiMap> osm_instances = new HashMap<>();
-    private final Navigator navigator;
     private MapEventsOverlay eventsOverlay;
 
     private JotiMap(GoogleMap map){
         mapType = GOOGLEMAPTYPE;
         googleMap = map;
-        navigator = new Navigator(this);
         osmMap = null;
         eventsOverlay = null;
     }
@@ -62,7 +59,6 @@ public class JotiMap {
         mapType = OSMMAPTYPE;
         osmMap  = map;
         googleMap = null;
-        navigator = new Navigator(this);
         eventsOverlay = new MapEventsOverlay(new MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -264,9 +260,9 @@ public class JotiMap {
     public CameraPosition getCameraPosition() {
         switch (mapType){
             case GOOGLEMAPTYPE:
-                return googleMap.getCameraPosition();
+                return new CameraPosition(googleMap.getCameraPosition());
             case OSMMAPTYPE:
-                return null;
+                return new CameraPosition(osmMap);
             default:
                 return null;
         }

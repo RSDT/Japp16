@@ -61,7 +61,7 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
 
     }
     private void initialize() {
-        snackbar = Snackbar.make(targetView, "Markeer een positie op de kaart. Swipe dit weg om te annuleren", Snackbar.LENGTH_INDEFINITE);
+        snackbar = Snackbar.make(targetView, "Markeer een positie op de kaart om naar toe te navigeren. Swipe dit weg om te annuleren", Snackbar.LENGTH_INDEFINITE);
         ;
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
@@ -112,7 +112,7 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
     public void onFinish() {
         if (dialog != null) {
             dialog.show();
-            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText("Bevestig de markering");
+            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText("Open navigatie in Google maps ");
         }
     }
 
@@ -120,7 +120,7 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
     public void onCancel() {
         if (dialog != null) {
             dialog.show();
-            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText("Bevestig de markering");
+            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText("Open navigatie in google maps");
         }
     }
 

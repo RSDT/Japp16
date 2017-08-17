@@ -12,8 +12,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -31,6 +29,7 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
+import nl.rsdt.japp.jotial.maps.wrapper.CameraPosition;
 import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.Marker;
 import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
@@ -215,8 +214,8 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                     switch (i) {
                         case REASON_GESTURE:
                             CameraPosition position = jotiMap.getCameraPosition();
-                            setZoom(position.zoom);
-                            setAngleOfAttack(position.tilt);
+                            setZoom(position.getZoom());
+                            setAngleOfAttack(position.getTilt());
                             break;
                     }
                 }
