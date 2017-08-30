@@ -194,6 +194,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }else{
             org.osmdroid.views.MapView osmMap = jotiMap.getOSMMap();
             Bundle osmMapBundle = new Bundle();
+            osmMap.on
             osmMapBundle.putInt(OSM_ZOOM, osmMap.getZoomLevel());
             osmMapBundle.putDouble(OSM_LAT, osmMap.getMapCenter().getLatitude());
             osmMapBundle.putDouble(OSM_LNG, osmMap.getMapCenter().getLongitude());
