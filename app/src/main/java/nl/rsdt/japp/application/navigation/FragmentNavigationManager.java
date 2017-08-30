@@ -16,9 +16,8 @@ import nl.rsdt.japp.application.fragments.AboutFragment;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.application.fragments.JappPreferenceFragment;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback;
-import nl.rsdt.japp.jotial.net.DownloadDrawableTask;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -143,10 +142,10 @@ public class FragmentNavigationManager {
         updateCheckedState();
     }
 
-    public void setupMap(OnMapReadyCallback callback)
+    public void setupMap(IJotiMap.OnMapReadyCallback callback)
     {
 
-        if(mapFragment.getJotiMap() == null || mapFragment.getJotiMap().getMapType() == JotiMap.OSMMAPTYPE) {
+        if(mapFragment.getJotiMap() == null || mapFragment.getJotiMap() instanceof OsmJotiMap) {
             if (mapFragment == null) {//// TODO: 09/08/17 dit is nooit anders krijg je een runtime exception bij de vorige if statement
                 mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
                 mapFragment.getMapAsync(callback);

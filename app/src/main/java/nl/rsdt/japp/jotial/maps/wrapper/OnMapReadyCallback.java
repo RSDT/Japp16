@@ -5,5 +5,5 @@ package nl.rsdt.japp.jotial.maps.wrapper;
  */
 
 public interface OnMapReadyCallback {
-    void onMapReady(JotiMap jotiMap);
+    void onMapReady(IJotiMap jotiMap);
 }

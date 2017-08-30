@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -33,7 +32,7 @@ public class PinningManager implements Recreatable, GoogleMap.OnInfoWindowLongCl
 
     protected Context context;
 
-    protected JotiMap jotiMap;
+    protected IJotiMap jotiMap;
 
     protected ArrayList<Pin> pins = new ArrayList<>();
 
@@ -100,7 +99,7 @@ public class PinningManager implements Recreatable, GoogleMap.OnInfoWindowLongCl
         return null;
     }
 
-    public void onMapReady(JotiMap jotiMap) {
+    public void onMapReady(IJotiMap jotiMap) {
         this.jotiMap = jotiMap;
         jotiMap.setOnInfoWindowLongClickListener(this);
 

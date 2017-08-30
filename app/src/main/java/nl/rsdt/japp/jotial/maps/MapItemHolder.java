@@ -5,10 +5,10 @@ package nl.rsdt.japp.jotial.maps;
 
 import java.util.ArrayList;
 
-import nl.rsdt.japp.jotial.maps.wrapper.Circle;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
-import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
-import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
+import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolyline;
 
 
 /**
@@ -19,12 +19,12 @@ import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
  */
 public interface MapItemHolder {
 
-    ArrayList<Marker> getMarkers();
+    ArrayList<IMarker> getMarkers();
 
-    ArrayList<Polyline> getPolylines();
+    ArrayList<IPolyline> getPolylines();
 
-    ArrayList<Polygon> getPolygons();
+    ArrayList<IPolygon> getPolygons();
 
-    ArrayList<Circle> getCircles();
+    ArrayList<ICircle> getCircles();
 
 }

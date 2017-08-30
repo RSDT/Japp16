@@ -32,7 +32,7 @@ import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.net.apis.HunterApi;
 import retrofit2.Call;
 
@@ -129,8 +129,8 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
     }
 
     @Override
-    public Marker searchFor(String query) {
-        Marker marker;
+    public IMarker searchFor(String query) {
+        IMarker marker;
         for(int m = 0; m < markers.size(); m++) {
             marker = markers.get(m);
 

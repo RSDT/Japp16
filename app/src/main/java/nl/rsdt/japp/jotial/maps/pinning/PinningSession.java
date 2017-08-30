@@ -10,13 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -24,17 +23,18 @@ import nl.rsdt.japp.jotial.maps.wrapper.Marker;
  * @since 8-9-2016
  * Description...
  */
-public class PinningSession extends Snackbar.Callback implements JotiMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, JotiMap.CancelableCallback {
+public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapClickListener, DialogInterface.OnClickListener,
+        View.OnClickListener, IJotiMap.CancelableCallback {
 
     /**
      * The GoogleMap used to create markers.
      * */
-    private JotiMap jotiMap;
+    private IJotiMap jotiMap;
 
     /**
      * The Marker that indicates the location.
      * */
-    private Marker marker;
+    private IMarker marker;
 
     /**
      * The callback that gets invoked when the pinning is completed.
@@ -77,7 +77,7 @@ public class PinningSession extends Snackbar.Callback implements JotiMap.OnMapCl
     }
 
 
-    public void onMapReady(JotiMap jotiMap) {
+    public void onMapReady(IJotiMap jotiMap) {
         this.jotiMap = jotiMap;
     }
 
@@ -186,7 +186,7 @@ public class PinningSession extends Snackbar.Callback implements JotiMap.OnMapCl
         /**
          * Sets the GoogleMap of the SightingSession.
          * */
-        public Builder setGoogleMap(JotiMap jotiMap){
+        public Builder setJotiMap(IJotiMap jotiMap){
             buffer.jotiMap = jotiMap;
             return this;
         }

@@ -5,11 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;//// TODO: 07/08/17 make this class indepent from GoogleMap
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
@@ -36,8 +33,8 @@ import nl.rsdt.japp.jotial.maps.management.controllers.FoxtrotVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;
@@ -68,9 +65,9 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
     /**
      * The GoogleMap
      * */
-    private JotiMap jotiMap;
+    private IJotiMap jotiMap;
 
-    public JotiMap getJotiMap() {
+    public IJotiMap getJotiMap() {
         return jotiMap;
     }
 
@@ -298,7 +295,7 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
      * Gets invoked when the GoogleMap is ready for use.
      *
      * @param jotiMap*/
-    public void onMapReady(JotiMap jotiMap) {
+    public void onMapReady(IJotiMap jotiMap) {
         this.jotiMap = jotiMap;
 
         /**
@@ -394,7 +391,7 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
     }
 
     @Override
-    public Marker searchFor(String query) {
+    public IMarker searchFor(String query) {
         return null;
     }
 

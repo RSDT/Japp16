@@ -3,10 +3,8 @@ package nl.rsdt.japp.jotial.navigation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.util.Pair;
-import android.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -15,25 +13,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import nl.rsdt.japp.R;
-import nl.rsdt.japp.application.Japp;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
 /**
  * Created by mattijn on 16/08/17.
  */
 
-public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, JotiMap.CancelableCallback, Marker.AllOnClickListener {
+public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnMapClickListener, DialogInterface.OnClickListener,
+        View.OnClickListener, IJotiMap.CancelableCallback, IJotiMap.OnMarkerClickListener {
 
     /**
      * The GoogleMap used to create markers.
      */
-    private JotiMap jotiMap;
+    private IJotiMap jotiMap;
 
     /**
      * The Marker that indicates the location.
      */
-    private Marker marker;
+    private IMarker marker;
 
     /**
      * The callback that gets invoked when the navigation is completed.
@@ -72,14 +70,14 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
     }
 
     public void start() {
-        Marker.setAllOnClickLister(this);
+        jotiMap.setMarkerOnClickListener(this);
         //navigator.start();
         jotiMap.setOnMapClickListener(this);
         snackbar.show();
     }
 
     public void end() {
-        Marker.setAllOnClickLister(null);
+        jotiMap.setMarkerOnClickListener(null);
         navigator.clear();
         onDestroy();
     }
@@ -192,8 +190,9 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
             this.lastmoved= System.currentTimeMillis();
         }
     }
+
     @Override
-    public boolean OnClick(Marker m) {
+    public boolean OnClick(IMarker m) {
         m.showInfoWindow();
         moveMarker(m.getPosition(), true);
         return false;
@@ -206,7 +205,7 @@ public class NavigationSession extends Snackbar.Callback implements JotiMap.OnMa
         /**
          * Sets the GoogleMap of the SightingSession.
          */
-        public NavigationSession.Builder setGoogleMap(JotiMap jotiMap) {
+        public NavigationSession.Builder setJotiMap(IJotiMap jotiMap) {
             buffer.jotiMap = jotiMap;
             buffer.navigator = new Navigator(jotiMap);
             return this;

@@ -1,10 +1,8 @@
 package nl.rsdt.japp.jotial.navigation;
 
-import android.app.PendingIntent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -17,24 +15,20 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 
 import nl.rsdt.japp.application.Japp;
-import nl.rsdt.japp.jotial.maps.locations.LocationProvider;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolyline;
 
 /**
  * Created by mattijn on 16/08/17.
  */
 
 public class Navigator {
-    private final JotiMap map;
+    private final IJotiMap map;
     private Handler onFinishedHandler;
-    private nl.rsdt.japp.jotial.maps.wrapper.Polyline oldPolyline;
-    public Navigator(final JotiMap map){
+    private IPolyline oldPolyline;
+    public Navigator(final IJotiMap map){
         this.map = map;
         onFinishedHandler = new Handler(){
             @Override

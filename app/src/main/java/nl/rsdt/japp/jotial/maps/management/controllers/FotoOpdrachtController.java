@@ -15,19 +15,15 @@ import java.util.List;
 import java.util.Locale;
 
 import nl.rsdt.japp.R;
-
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.FotoOpdrachtInfo;
-
 import nl.rsdt.japp.jotial.io.AppData;
-
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
-
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.net.apis.FotoApi;
 import retrofit2.Call;
 
@@ -78,7 +74,7 @@ public class FotoOpdrachtController extends StandardMapItemController<FotoOpdrac
     }
 
     @Override
-    public Marker searchFor(String query) {
+    public IMarker searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         FotoOpdrachtInfo info;
         for(int i = 0; i < items.size(); i++) {

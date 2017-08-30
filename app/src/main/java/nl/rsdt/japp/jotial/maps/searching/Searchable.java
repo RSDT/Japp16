@@ -4,7 +4,7 @@ package nl.rsdt.japp.jotial.maps.searching;
 
 import java.util.List;
 
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -16,6 +16,6 @@ public interface Searchable {
 
     List<String> provide();
 
-    Marker searchFor(String query);
+    IMarker searchFor(String query);
 
 }

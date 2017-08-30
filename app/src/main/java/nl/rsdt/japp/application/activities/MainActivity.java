@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
@@ -30,10 +29,10 @@ import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.MapManager;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
-import nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
@@ -43,7 +42,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
+        implements IJotiMap.OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
 
     /**
      * Defines a tag for this class.
@@ -173,12 +172,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapReady(JotiMap jotiMap) {
+    public void onMapReady(IJotiMap jotiMap) {
         /**
          * First set the custom InfoWindowAdapter and then invoke the onMapReady on the MapManager.
          * */
-        if (jotiMap.getMapType()  == JotiMap.GOOGLEMAPTYPE) {
-            jotiMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater(), jotiMap.getGoogleMap())); //// TODO: 07/08/17 change the GoogleMap to a JotiMap
+        if (jotiMap instanceof GoogleJotiMap) {
+            GoogleJotiMap googleJotiMap = (GoogleJotiMap) jotiMap;
+            jotiMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getLayoutInflater(), googleJotiMap.getGoogleMap())); //// TODO: 07/08/17 change the GoogleMap to a JotiMap
         }else {
             //// TODO: 09/08/17 do stuff
         }

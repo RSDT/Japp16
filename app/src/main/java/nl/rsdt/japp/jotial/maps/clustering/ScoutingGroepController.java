@@ -16,8 +16,10 @@ import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.clustering.osm.OsmScoutingGroepClusterManager;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
 import nl.rsdt.japp.jotial.net.apis.ScoutingGroepApi;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import retrofit2.Call;
@@ -94,10 +96,11 @@ public class ScoutingGroepController implements Recreatable, IntentCreatable, Ma
         }
     }
 
-    public void onMapReady(JotiMap jotiMap) {
-        if (jotiMap.getMapType() == JotiMap.GOOGLEMAPTYPE) {
-            clusterManager = new ScoutingGroepClusterManager(Japp.getInstance(), jotiMap.getGoogleMap());
-        } else if (jotiMap.getMapType() == JotiMap.OSMMAPTYPE){
+    public void onMapReady(IJotiMap jotiMap) {
+        if (jotiMap instanceof GoogleJotiMap) {
+            GoogleJotiMap googleJotiMap = (GoogleJotiMap) jotiMap;
+            clusterManager = new ScoutingGroepClusterManager(Japp.getInstance(), googleJotiMap.getGoogleMap());
+        } else if (jotiMap instanceof OsmJotiMap) {
             clusterManager = new OsmScoutingGroepClusterManager(jotiMap);
         }else {
             clusterManager = new NoneClusterManager();

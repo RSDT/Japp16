@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
@@ -22,8 +21,8 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -31,7 +30,8 @@ import nl.rsdt.japp.jotial.maps.wrapper.Marker;
  * @since 13-7-2016
  * Class for Sighting
  */
-public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, JotiMap.SnapshotReadyCallback, JotiMap.OnMapClickListener, JotiMap.CancelableCallback {
+public class SightingSession extends Snackbar.Callback implements View.OnClickListener, DialogInterface.OnClickListener, IJotiMap.SnapshotReadyCallback,
+        IJotiMap.OnMapClickListener, IJotiMap.CancelableCallback {
 
     /**
      * Defines the SightingSession type HUNT.
@@ -51,12 +51,12 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     /**
      * The GoogleMap used to create markers.
      * */
-    private JotiMap jotiMap;
+    private IJotiMap jotiMap;
 
     /**
      * The Marker that indicates the location.
      * */
-    private Marker marker;
+    private IMarker marker;
 
     /**
      * The Context used for creating dialogs etc.
@@ -312,7 +312,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         /**
          * Sets the GoogleMap of the SightingSession.
          * */
-        public Builder setGoogleMap(JotiMap jotiMap){
+        public Builder setGoogleMap(IJotiMap jotiMap){
             buffer.jotiMap = jotiMap;
             return this;
         }
