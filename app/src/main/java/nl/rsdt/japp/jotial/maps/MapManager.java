@@ -262,14 +262,11 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
             case JappPreferences.MAP_CONTROLS:
                 Set<String> set = sharedPreferences.getStringSet(key, null);
                 if(set != null) {
-                    //// TODO: 07/08/17 why the for loop?
-                    for(String property : set) {
-                        if(jotiMap != null) {
-                            jotiMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
-                            jotiMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
-                            jotiMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
-                            jotiMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
-                        }
+                    if(jotiMap != null) {
+                        jotiMap.getUiSettings().setZoomControlsEnabled(set.contains(String.valueOf(MapControls.ZOOM)));
+                        jotiMap.getUiSettings().setCompassEnabled(set.contains(String.valueOf(MapControls.COMPASS)));
+                        jotiMap.getUiSettings().setIndoorLevelPickerEnabled(set.contains(String.valueOf(MapControls.LEVEL)));
+                        jotiMap.getUiSettings().setMapToolbarEnabled(set.contains(String.valueOf(MapControls.TOOLBAR)));
                     }
                 }
                 break;

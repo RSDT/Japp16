@@ -15,6 +15,5 @@
     <string name="pinning_input_dialog_icon_hint">icon</string>
 
     <string name="splash_activity_socket_timed_out">Er is een fout opgetreden tijdens het verbinden met area348.nl, je kunt de app offline gebruiken maar sommige functies zoals Hunter/Spotten en updates zullen niet beschikbaar zijn.</string>
-    <string name="pref_advanced_auto_osm">Gebruik OpenStreetMaps</string>
-    <string name="pref_advanced_osm_sum">herstart de app om verandering te kunnen zien.</string>
+
 </resources>

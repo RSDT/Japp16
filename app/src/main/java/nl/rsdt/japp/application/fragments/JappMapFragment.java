@@ -108,6 +108,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     private View createMap(Bundle savedInstanceState, View v){
         boolean useOSM = JappPreferences.useOSM();
+
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
@@ -124,9 +125,10 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     private View createOSMMap(Bundle savedInstanceState, View v) {
         StoragePermissionsChecker.check(getActivity());
         osmActive = true;
-        googleMapView = (MapView) v.findViewById(R.id.googleMap);
-        googleMapView.setVisibility(View.GONE);
-        org.osmdroid.views.MapView osmView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
+
+        org.osmdroid.views.MapView osmView = new org.osmdroid.views.MapView(getActivity());
+        ((ViewGroup)v).addView(osmView);
+
         Context ctx = getActivity().getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         osmView.setTileSource(TileSourceFactory.MAPNIK);
@@ -153,17 +155,17 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         setupPinButton(v).setEnabled(true);
         setupFollowButton(v);
         setupNavigetionButton(v);
-        OsmJotiMap.getJotiMapInstance(osmView).getMapAsync(this);
+        jotiMap = OsmJotiMap.getJotiMapInstance(osmView);
         return v;
     }
 
     private View createGoogleMap(Bundle savedInstanceState, View v){
         osmActive = false;
-        googleMapView = (MapView) v.findViewById(R.id.googleMap);
-        org.osmdroid.views.MapView osmMapView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
+        googleMapView = new MapView(getActivity());
+        ((ViewGroup)v).addView(googleMapView);
+
         Context ctx = getActivity().getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        osmMapView.setVisibility(View.GONE);
         if(savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_MAP))
         {
             googleMapView.onCreate(savedInstanceState.getBundle(BUNDLE_MAP));
@@ -178,7 +180,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         setupPinButton(v);
         setupFollowButton(v);
         setupNavigetionButton(v);
-        GoogleJotiMap.getJotiMapInstance(googleMapView).getMapAsync(this);
+        jotiMap = GoogleJotiMap.getJotiMapInstance(googleMapView);
         return v;
     }
 

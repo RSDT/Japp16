@@ -1,6 +1,7 @@
 package nl.rsdt.japp.application.activities;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -224,7 +225,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
+        switch (key) {
+            case JappPreferences.USE_OSM:
+                recreate();
+                break;
+        }
     }
 
     @Override

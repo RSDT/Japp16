@@ -144,14 +144,11 @@ public class FragmentNavigationManager {
 
     public void setupMap(IJotiMap.OnMapReadyCallback callback)
     {
-
-        if(mapFragment.getJotiMap() == null || mapFragment.getJotiMap() instanceof OsmJotiMap) {
-            if (mapFragment == null) {//// TODO: 09/08/17 dit is nooit anders krijg je een runtime exception bij de vorige if statement
-                mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
-                mapFragment.getMapAsync(callback);
-            } else {
-                mapFragment.getMapAsync(callback);
-            }
+        if (mapFragment == null) {//// TODO: 09/08/17 dit is nooit anders krijg je een runtime exception bij de vorige if statement
+            mapFragment = (JappMapFragment) manager.findFragmentByTag(FRAGMENT_MAP);
+            mapFragment.getMapAsync(callback);
+        } else {
+            mapFragment.getMapAsync(callback);
         }
     }
 

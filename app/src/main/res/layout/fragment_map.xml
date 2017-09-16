@@ -5,15 +5,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/googleMap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <org.osmdroid.views.MapView
-        android:id="@+id/osmMap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_menu"
         android:layout_width="wrap_content"

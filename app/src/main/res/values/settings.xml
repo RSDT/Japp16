@@ -226,6 +226,9 @@
     <string name="pref_advanced_areas_color_alpha_title">Doorzichtigheid kleuren</string>
     <string name="pref_advanced_areas_color_alpha_sum">Doorzictighheid van de deelgebied kleuren in procenten</string>
 
+    <string name="pref_advanced_auto_osm">Gebruik OpenStreetMaps</string>
+    <string name="pref_advanced_osm_sum">Dit duurt even!</string>
+
     <!-- END SCREEN -->
 
 
