@@ -109,11 +109,17 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     private View createMap(Bundle savedInstanceState, View v){
         boolean useOSM = JappPreferences.useOSM();
 
+        View view;
         if (useOSM){
-            return createOSMMap(savedInstanceState, v);
+            view = createOSMMap(savedInstanceState, v);
         }else {
-            return createGoogleMap(savedInstanceState, v);
+            view = createGoogleMap(savedInstanceState, v);
         }
+
+        FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
+        menu.bringToFront();
+
+        return view;
     }
 
     private View createOSMMap(Bundle savedInstanceState, View v) {
@@ -146,7 +152,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         setupSpotButton(v).setEnabled(true);
         setupPinButton(v).setEnabled(true);
         setupFollowButton(v);
-        setupNavigetionButton(v);
+        setupNavigationButton(v);
         jotiMap = OsmJotiMap.getJotiMapInstance(osmView);
         return v;
     }
@@ -174,7 +180,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         setupSpotButton(v);
         setupPinButton(v);
         setupFollowButton(v);
-        setupNavigetionButton(v);
+        setupNavigationButton(v);
         jotiMap = GoogleJotiMap.getJotiMapInstance(googleMapView);
         if(savedInstanceState != null) {
             Bundle osmbundle = savedInstanceState.getBundle(OSM_BUNDLE);
@@ -531,7 +537,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         return pinButton;
     }
 
-    private FloatingActionButton setupNavigetionButton(View v) {
+    private FloatingActionButton setupNavigationButton(View v) {
         FloatingActionButton navigationButton = (FloatingActionButton)v.findViewById(R.id.fab_nav);
         navigationButton.setOnClickListener(new View.OnClickListener() {
 
