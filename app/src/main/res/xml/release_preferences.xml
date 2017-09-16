@@ -214,6 +214,14 @@
 
             </PreferenceCategory>
 
+            <PreferenceCategory android:title="@string/pref_cat_developer_random">
+                <SwitchPreference
+                    android:title="@string/pref_developer_random_shaco_title"
+                    android:key="pref_developer_random_shaco"
+                    android:summary="@string/pref_developer_random_shaco_sum"
+                    android:defaultValue="false"/>
+            </PreferenceCategory>
+
         </PreferenceScreen>
     </PreferenceCategory>
 

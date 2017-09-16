@@ -250,7 +250,11 @@
     <string name="pref_developer_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
 
 
+    <string name="pref_cat_developer_random">Random</string>
 
+    <string name="pref_developer_random_shaco">pref_random_shaco</string>
+    <string name="pref_developer_random_shaco_title">Shaco the Tank Engine</string>
+    <string name="pref_developer_random_shaco_sum">Speciaal voor david!</string>
 
 
     <!-- END SCREEN -->

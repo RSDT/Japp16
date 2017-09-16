@@ -87,6 +87,8 @@ public class JappPreferences {
 
     public static final String USE_OSM = "pref_advanced_osm";
 
+    public static final String SHACO_ENABLED = "pref_developer_random_shaco";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -260,6 +262,10 @@ public class JappPreferences {
 
     public static boolean useOSM() {
         return getVisiblePreferences().getBoolean(USE_OSM, true);
+    }
+
+    public static boolean shacoEnabled() {
+        return getVisiblePreferences().getBoolean(SHACO_ENABLED, false);
     }
 
 

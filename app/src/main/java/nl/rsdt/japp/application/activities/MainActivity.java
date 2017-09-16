@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(JappPreferences.getAccountUsername().equals("David")) {
+        if(JappPreferences.getAccountUsername().equals("David") && JappPreferences.shacoEnabled()) {
             MediaPlayer player = MediaPlayer.create(this, R.raw.shaco_tank_engine);
             player.start();
         }
