@@ -109,7 +109,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     private View createMap(Bundle savedInstanceState, View v){
         boolean useOSM = JappPreferences.useOSM();
 
-        if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
             }
@@ -129,7 +129,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         org.osmdroid.views.MapView osmView = new org.osmdroid.views.MapView(getActivity());
         ((ViewGroup)v).addView(osmView);
 
-        Context ctx = getActivity().getApplicationContext();
+        Context ctx = Japp.getInstance();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         osmView.setTileSource(TileSourceFactory.MAPNIK);
         osmView.getController().setCenter(new GeoPoint(51.958852, 5.954517));
@@ -137,8 +137,6 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         osmView.setBuiltInZoomControls(true);
         osmView.setMultiTouchControls(true);
         osmView.setFlingEnabled(true);
-
-
 
         if (savedInstanceState != null) {
             Bundle osmbundle = savedInstanceState.getBundle(OSM_BUNDLE);
@@ -163,16 +161,14 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         osmActive = false;
         googleMapView = new MapView(getActivity());
         ((ViewGroup)v).addView(googleMapView);
-
-        Context ctx = getActivity().getApplicationContext();
+        
+        Context ctx = Japp.getInstance();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        if(savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_MAP))
+        if(savedInstanceState != null)
         {
-            googleMapView.onCreate(savedInstanceState.getBundle(BUNDLE_MAP));
-        }
-        else
-        {
-            googleMapView.onCreate(savedInstanceState);
+            if(savedInstanceState.containsKey(BUNDLE_MAP)) {
+                googleMapView.onCreate(savedInstanceState.getBundle(BUNDLE_MAP));
+            }
         }
         movementManager.setSnackBarView(googleMapView);
         setupHuntButton(v);
@@ -473,7 +469,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                     menu.close(true);
                     //followButton.setColorNormal(Color.parseColor("#5cd65c"));
                     followButton.setLabelText("Stop volgen");
-                    session = movementManager.newSession(jotiMap.getCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
+                    session = movementManager.newSession(jotiMap.getPreviousCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
                 }
             }
 

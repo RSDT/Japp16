@@ -44,7 +44,7 @@ public interface IJotiMap {
 
     public void setOnMapClickListener(final OnMapClickListener onMapClickListener) ;
 
-    public ICameraPosition getCameraPosition() ;
+    public ICameraPosition getPreviousCameraPosition() ;
 
     public void snapshot(final IJotiMap.SnapshotReadyCallback snapshotReadyCallback) ;
 
@@ -62,6 +62,11 @@ public interface IJotiMap {
 
     public void getMapAsync(IJotiMap.OnMapReadyCallback callback) ;
 
+    void setPreviousCameraPosition(double latitude, double longitude);
+
+    void setPreviousZoom(int zoom);
+
+    void setPreviousRotation(float rotation);
 
     public interface OnMapReadyCallback{
         public void onMapReady(IJotiMap map) ;

@@ -8,8 +8,8 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -36,15 +36,23 @@ import nl.rsdt.japp.jotial.maps.wrapper.IUiSettings;
  * Created by mattijn on 07/08/17.
  */
 
-public class GoogleJotiMap implements IJotiMap{
+public class GoogleJotiMap implements IJotiMap {
+
     private static Map<MapView, GoogleJotiMap> google_instances= new HashMap<>();
-    private GoogleMap googleMap ;
+
+    private GoogleMap googleMap;
+
     private final MapView view;
+
+    private LatLng previousCameraPosition;
+
+    private int previousZoom;
+
+    private float previousRotation;
 
     private GoogleJotiMap(MapView map){
         view = map;
     }
-
 
 
     public static GoogleJotiMap getJotiMapInstance(MapView map){
@@ -58,6 +66,21 @@ public class GoogleJotiMap implements IJotiMap{
     @Override
     public void delete() {
         google_instances.remove(this.getGoogleMap());
+    }
+
+    @Override
+    public void setPreviousCameraPosition(double latitude, double longitude) {
+        previousCameraPosition = new LatLng(latitude, longitude);
+    }
+
+    @Override
+    public void setPreviousZoom(int zoom) {
+        previousZoom = zoom;
+    }
+
+    @Override
+    public void setPreviousRotation(float rotation) {
+        this.previousRotation = rotation;
     }
 
     @Override
@@ -130,8 +153,7 @@ public class GoogleJotiMap implements IJotiMap{
         }
     }
 
-    @Override
-    public ICameraPosition getCameraPosition() {
+    public ICameraPosition getPreviousCameraPosition() {
         return new GoogleCameraPosition(googleMap.getCameraPosition());
     }
 
@@ -209,6 +231,9 @@ public class GoogleJotiMap implements IJotiMap{
             @Override
             public void onMapReady(GoogleMap map) {
                 googleMap = map;
+                if(previousCameraPosition != null) {
+                    map.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(previousCameraPosition, previousZoom, previousRotation, 0)));
+                }
                 callback.onMapReady(t);
             }
         });

@@ -213,7 +213,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 public void onCameraMoveStarted(int i) {
                     switch (i) {
                         case REASON_GESTURE:
-                            ICameraPosition position = jotiMap.getCameraPosition();
+                            ICameraPosition position = jotiMap.getPreviousCameraPosition();
                             setZoom(position.getZoom());
                             setAngleOfAttack(position.getTilt());
                             break;

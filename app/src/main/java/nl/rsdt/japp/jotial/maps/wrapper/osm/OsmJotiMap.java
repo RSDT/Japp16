@@ -5,10 +5,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Pair;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -29,7 +26,6 @@ import java.util.Map;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
-import nl.rsdt.japp.jotial.maps.misc.CameraUtils;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.wrapper.ICameraPosition;
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
@@ -47,8 +43,16 @@ import nl.rsdt.japp.jotial.maps.wrapper.IUiSettings;
 public class OsmJotiMap implements IJotiMap{
 
     private final MapView osmMap; //todo fix type
+
     private static Map<MapView,OsmJotiMap> osm_instances = new HashMap<>();
+
     private MapEventsOverlay eventsOverlay;
+
+    private GeoPoint previousCameraPosition;
+
+    private int previousZoom;
+
+    private float previousRoation;
 
 
     private OsmJotiMap(MapView map){
@@ -74,6 +78,21 @@ public class OsmJotiMap implements IJotiMap{
             osm_instances.put(map,jm);
         }
         return osm_instances.get(map);
+    }
+
+    @Override
+    public void setPreviousCameraPosition(double latitude, double longitude) {
+        previousCameraPosition = new GeoPoint(latitude, longitude);
+    }
+
+    @Override
+    public void setPreviousZoom(int previousZoom) {
+        this.previousZoom = previousZoom;
+    }
+
+    @Override
+    public void setPreviousRotation(float rotation) {
+        this.previousRoation = rotation;
     }
 
     public void delete() {
@@ -141,7 +160,7 @@ public class OsmJotiMap implements IJotiMap{
         osmMap.getOverlays().add(0,eventsOverlay);
     }
 
-    public ICameraPosition getCameraPosition() {
+    public ICameraPosition getPreviousCameraPosition() {
         return new OsmCameraPosition(osmMap);
     }
 
