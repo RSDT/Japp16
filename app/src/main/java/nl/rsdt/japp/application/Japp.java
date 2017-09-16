@@ -2,6 +2,7 @@ package nl.rsdt.japp.application;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.multidex.MultiDexApplication;
@@ -32,6 +33,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public final class Japp extends MultiDexApplication {
 
     private static Japp instance;
+    private static Location lastLocation = null;
 
     public static Japp getInstance() { return instance; }
 
@@ -74,6 +76,14 @@ public final class Japp extends MultiDexApplication {
         ConnectivityManager cm = (ConnectivityManager)instance.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();
         return info != null && info.isConnectedOrConnecting();
+    }
+
+    public static void setLastLocation(Location lastLocation) {
+        Japp.lastLocation = lastLocation;
+    }
+
+    public static Location getLastLocation() {
+        return lastLocation;
     }
 
     @Override

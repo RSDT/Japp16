@@ -259,7 +259,7 @@ public class JappPreferences {
     }
 
     public static boolean useOSM() {
-        return getVisiblePreferences().getBoolean(USE_OSM, false);
+        return getVisiblePreferences().getBoolean(USE_OSM, true);
     }
 
 

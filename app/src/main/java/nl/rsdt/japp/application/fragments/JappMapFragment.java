@@ -2,8 +2,10 @@ package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -13,9 +15,7 @@ import android.view.ViewGroup;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolygonOptions;
 
@@ -37,8 +37,11 @@ import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
 import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
+import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
+import nl.rsdt.japp.jotial.navigation.NavigationSession;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
@@ -52,7 +55,7 @@ import retrofit2.Response;
  * @since 8-7-2016
  * Description...
  */
-public class JappMapFragment extends Fragment implements OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener{
+public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener{
 
     public static final String TAG = "JappMapFragment";
 
@@ -67,20 +70,20 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
 
     private ServiceManager<LocationService, LocationService.LocationBinder> serviceManager = new ServiceManager<>(LocationService.class);
 
+    private IJotiMap jotiMap;
     private MapView googleMapView;
-    private JotiMap jotiMap;
 
-    public JotiMap getJotiMap() {
+    public IJotiMap getJotiMap() {
         return jotiMap;
     }
 
-    private nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback callback;
+    private IJotiMap.OnMapReadyCallback callback;
 
     private PinningManager pinningManager = new PinningManager();
 
     private MovementManager movementManager = new MovementManager();
 
-    private HashMap<String, Polygon> areas = new HashMap<>();
+    private HashMap<String, IPolygon> areas = new HashMap<>();
 
     private boolean osmActive = false;
     @Override
@@ -100,7 +103,11 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        boolean useOSM = JappPreferences.useOSM(); //// TODO: 10/08/17 magic string
+        return createMap(savedInstanceState, v);
+    }
+
+    private View createMap(Bundle savedInstanceState, View v){
+        boolean useOSM = JappPreferences.useOSM();
         if  (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_OSM_ACTIVE)) {
             if (useOSM != savedInstanceState.getBoolean(BUNDLE_OSM_ACTIVE)){
                 savedInstanceState = null;
@@ -117,7 +124,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     private View createOSMMap(Bundle savedInstanceState, View v) {
         StoragePermissionsChecker.check(getActivity());
         osmActive = true;
-        googleMapView = (MapView)v.findViewById(R.id.googleMap);
+        googleMapView = (MapView) v.findViewById(R.id.googleMap);
         googleMapView.setVisibility(View.GONE);
         org.osmdroid.views.MapView osmView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
         Context ctx = getActivity().getApplicationContext();
@@ -129,7 +136,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         osmView.setMultiTouchControls(true);
         osmView.setFlingEnabled(true);
 
-        jotiMap = JotiMap.getJotiMapInstance(osmView);
+
 
         if (savedInstanceState != null) {
             Bundle osmbundle = savedInstanceState.getBundle(OSM_BUNDLE);
@@ -141,17 +148,18 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }
 
         movementManager.setSnackBarView(osmView);
-        setupHuntButton(v).setEnabled(false);
-        setupSpotButton(v).setEnabled(false);
-        setupPinButton(v).setEnabled(false);
+        setupHuntButton(v).setEnabled(true);
+        setupSpotButton(v).setEnabled(true);
+        setupPinButton(v).setEnabled(true);
         setupFollowButton(v);
-
+        setupNavigetionButton(v);
+        OsmJotiMap.getJotiMapInstance(osmView).getMapAsync(this);
         return v;
     }
 
     private View createGoogleMap(Bundle savedInstanceState, View v){
         osmActive = false;
-        googleMapView = (MapView)v.findViewById(R.id.googleMap);
+        googleMapView = (MapView) v.findViewById(R.id.googleMap);
         org.osmdroid.views.MapView osmMapView = (org.osmdroid.views.MapView) v.findViewById(R.id.osmMap);
         Context ctx = getActivity().getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -169,7 +177,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         setupSpotButton(v);
         setupPinButton(v);
         setupFollowButton(v);
-
+        setupNavigetionButton(v);
+        GoogleJotiMap.getJotiMapInstance(googleMapView).getMapAsync(this);
         return v;
     }
 
@@ -183,8 +192,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             googleMapView.onSaveInstanceState(mapBundle);
 
             savedInstanceState.putBundle(BUNDLE_MAP, mapBundle);
-        }else{
-            org.osmdroid.views.MapView osmMap = jotiMap.getOSMMap();
+        }else if (jotiMap instanceof OsmJotiMap){
+            org.osmdroid.views.MapView osmMap = ((OsmJotiMap) jotiMap).getOSMMap();
             Bundle osmMapBundle = new Bundle();
             osmMapBundle.putInt(OSM_ZOOM, osmMap.getZoomLevel());
             osmMapBundle.putDouble(OSM_LAT, osmMap.getMapCenter().getLatitude());
@@ -197,13 +206,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     }
 
 
-    public void getMapAsync(nl.rsdt.japp.jotial.maps.wrapper.OnMapReadyCallback callback) {
-        if (osmActive){
-            onMapReady(jotiMap);
-        }else {
-            MapView view = (MapView) getView().findViewById(R.id.googleMap);
-            view.getMapAsync(this);
-        }
+    public void getMapAsync(IJotiMap.OnMapReadyCallback callback) {
+        jotiMap.getMapAsync(this);
         this.callback = callback;
     }
 
@@ -239,7 +243,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     @Override
     public void onPause() {
         super.onPause();
-        if (!osmActive) {
+        if (!osmActive && googleMapView != null) {
             googleMapView.onPause();
         }
         movementManager.onPause();
@@ -270,7 +274,8 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
         }
     }
 
-    public void onMapReady(JotiMap jotiMap){
+    public void onMapReady(IJotiMap jotiMap){
+        this.jotiMap = jotiMap;
         jotiMap.clear();
 
         movementManager.onMapReady(jotiMap);
@@ -309,20 +314,15 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.jotiMap = JotiMap.getJotiMapInstance(googleMap);
-        onMapReady(jotiMap);
-
-
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Polygon polygon;
+        IPolygon polygon;
         switch (key){
+            case JappPreferences.USE_OSM:
+
+                break;
             case JappPreferences.AREAS_EDGES:
                 boolean edges = JappPreferences.getAreasEdgesEnabled();
-                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                for(HashMap.Entry<String, IPolygon> pair : areas.entrySet()){
                     polygon = pair.getValue();
                     if(edges) {
                         polygon.setStrokeWidth(JappPreferences.getAreasEdgesWidth());
@@ -333,7 +333,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 break;
             case JappPreferences.AREAS_EDGES_WIDTH:
                 boolean edgesEnabled = JappPreferences.getAreasEdgesEnabled();
-                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                for(HashMap.Entry<String, IPolygon> pair : areas.entrySet()){
                     polygon = pair.getValue();
                     if(edgesEnabled) {
                         polygon.setStrokeWidth(JappPreferences.getAreasEdgesWidth());
@@ -342,7 +342,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 break;
             case JappPreferences.AREAS_COLOR:
                 boolean color = JappPreferences.getAreasColorEnabled();
-                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                for(HashMap.Entry<String, IPolygon> pair : areas.entrySet()){
                     polygon = pair.getValue();
                     if(color) {
                         int alphaPercent = JappPreferences.getAreasColorAlpha();
@@ -355,7 +355,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                 break;
             case JappPreferences.AREAS_COLOR_ALPHA:
                 boolean areasColorEnabled = JappPreferences.getAreasColorEnabled();
-                for(HashMap.Entry<String, Polygon> pair : areas.entrySet()){
+                for(HashMap.Entry<String, IPolygon> pair : areas.entrySet()){
                     polygon = pair.getValue();
                     if(areasColorEnabled) {
                         int alphaPercent = JappPreferences.getAreasColorAlpha();
@@ -500,7 +500,7 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
                     menu.hideMenu(true);
 
                     session = new PinningSession.Builder()
-                            .setGoogleMap(jotiMap)
+                            .setJotiMap(jotiMap)
                             .setCallback(new PinningSession.OnPinningCompletedCallback() {
                                 @Override
                                 public void onPinningCompleted(Pin pin) {
@@ -524,6 +524,58 @@ public class JappMapFragment extends Fragment implements OnMapReadyCallback, Sha
             }
         });
         return pinButton;
+    }
+
+    private FloatingActionButton setupNavigetionButton(View v) {
+        FloatingActionButton navigationButton = (FloatingActionButton)v.findViewById(R.id.fab_nav);
+        navigationButton.setOnClickListener(new View.OnClickListener() {
+
+            NavigationSession session;
+
+            @Override
+            public void onClick(View view) {
+                View v = getView();
+
+                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+
+                if(session != null) {
+                    /*--- Show the menu ---*/
+                    menu.showMenu(true);
+                    session.end();
+                    session = null;
+                } else {
+                    /*--- Hide the menu ---*/
+                    menu.hideMenu(true);
+
+                    session = new NavigationSession.Builder()
+                            .setJotiMap(jotiMap)
+                            .setCallback(new NavigationSession.OnNavigationCompletedCallback() {
+                                @Override
+                                public void onNavigationCompleted(LatLng navigateTo) {
+                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                    menu.showMenu(true);
+
+                                    session.end();
+                                    session = null;
+                                    if (navigateTo != null) {
+                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
+                                        Uri gmmIntentUri = Uri.parse(uristr);
+                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                        startActivity(mapIntent);
+                                    }
+
+                                }
+                            })
+                            .setTargetView(JappMapFragment.this.getActivity().findViewById(R.id.container))
+                            .setDialogContext(JappMapFragment.this.getActivity())
+                            .create();
+                    session.start();
+                }
+
+            }
+        });
+        return navigationButton;
     }
 
     private FloatingActionButton setupHuntButton(View v){

@@ -11,8 +11,8 @@ import com.google.gson.Gson;
 
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -22,11 +22,11 @@ import nl.rsdt.japp.jotial.maps.wrapper.Marker;
  */
 public class Pin {
 
-    protected Marker marker;
+    protected IMarker marker;
 
     protected Data data;
 
-    public static Pin create(JotiMap jotiMap, Data data) {
+    public static Pin create(IJotiMap jotiMap, Data data) {
         Pin buffer = new Pin();
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()

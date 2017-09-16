@@ -12,8 +12,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -31,9 +29,10 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool;
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
-import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
+import nl.rsdt.japp.jotial.maps.wrapper.ICameraPosition;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolyline;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
 
@@ -51,11 +50,11 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
 
     private LocationService service;
 
-    private JotiMap jotiMap;
+    private IJotiMap jotiMap;
 
-    private Marker marker;
+    private IMarker marker;
 
-    private Polyline tail;
+    private IPolyline tail;
 
     private float bearing;
 
@@ -71,7 +70,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
         this.snackBarView = snackBarView;
     }
 
-    public FollowSession newSession(CameraPosition before, float zoom, float aoa) {
+    public FollowSession newSession(ICameraPosition before, float zoom, float aoa) {
         if(activeSession != null) {
             activeSession.end();
             activeSession = null;
@@ -152,7 +151,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
     }
 
-    public void onMapReady(JotiMap jotiMap) {
+    public void onMapReady(IJotiMap jotiMap) {
         this.jotiMap = jotiMap;
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()
@@ -196,9 +195,9 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
 
         private float aoa = 45f;
 
-        private CameraPosition before;
+        private ICameraPosition before;
 
-        public FollowSession(CameraPosition before, float zoom, float aoa) {
+        public FollowSession(ICameraPosition before, float zoom, float aoa) {
             this.before = before;
             this.zoom = zoom;
             this.aoa = aoa;
@@ -214,9 +213,9 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 public void onCameraMoveStarted(int i) {
                     switch (i) {
                         case REASON_GESTURE:
-                            CameraPosition position = jotiMap.getCameraPosition();
-                            setZoom(position.zoom);
-                            setAngleOfAttack(position.tilt);
+                            ICameraPosition position = jotiMap.getCameraPosition();
+                            setZoom(position.getZoom());
+                            setAngleOfAttack(position.getTilt());
                             break;
                     }
                 }

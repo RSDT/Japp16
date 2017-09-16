@@ -10,15 +10,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-
 import java.util.ArrayList;
+
 import nl.rsdt.japp.jotial.BundleIdentifiable;
 import nl.rsdt.japp.jotial.Identifiable;
 import nl.rsdt.japp.jotial.IntentCreatable;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.StorageIdentifiable;
-import nl.rsdt.japp.jotial.maps.wrapper.Circle;
-import nl.rsdt.japp.jotial.maps.wrapper.JotiMap;
 import nl.rsdt.japp.jotial.maps.MapItemHolder;
 import nl.rsdt.japp.jotial.maps.Mergable;
 import nl.rsdt.japp.jotial.maps.management.controllers.AlphaVosController;
@@ -34,9 +32,11 @@ import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.management.transformation.Transducable;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncTransduceTask;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
-import nl.rsdt.japp.jotial.maps.wrapper.Polygon;
-import nl.rsdt.japp.jotial.maps.wrapper.Polyline;
+import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
+import nl.rsdt.japp.jotial.maps.wrapper.IPolyline;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,32 +54,32 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     public static final String TAG = "MapItemController";
 
-    protected JotiMap jotiMap;
+    protected IJotiMap jotiMap;
 
-    protected ArrayList<Marker> markers = new ArrayList<>();
+    protected ArrayList<IMarker> markers = new ArrayList<>();
 
     @Override
-    public ArrayList<Marker> getMarkers() {
+    public ArrayList<IMarker> getMarkers() {
         return markers;
     }
 
-    protected ArrayList<Polyline> polylines = new ArrayList<>();
+    protected ArrayList<IPolyline> polylines = new ArrayList<>();
 
-    public ArrayList<Polyline> getPolylines() {
+    public ArrayList<IPolyline> getPolylines() {
         return polylines;
     }
 
-    protected ArrayList<Polygon> polygons = new ArrayList<>();
+    protected ArrayList<IPolygon> polygons = new ArrayList<>();
 
     @Override
-    public ArrayList<Polygon> getPolygons() {
+    public ArrayList<IPolygon> getPolygons() {
         return polygons;
     }
 
-    public ArrayList<Circle> circles = new ArrayList<>();
+    public ArrayList<ICircle> circles = new ArrayList<>();
 
     @Override
-    public ArrayList<Circle> getCircles() {
+    public ArrayList<ICircle> getCircles() {
         return circles;
     }
 
@@ -100,7 +100,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
     }
 
 
-    public void onMapReady(JotiMap jotiMap) {
+    public void onMapReady(IJotiMap jotiMap) {
         this.jotiMap = jotiMap;
         if(buffer != null)
         {
@@ -217,8 +217,8 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
 
     @Override
-    public Marker searchFor(String query) {
-        Marker marker;
+    public IMarker searchFor(String query) {
+        IMarker marker;
         for(int i = 0; i < markers.size(); i++) {
             marker = markers.get(i);
             if(marker.getTitle().equals(String.valueOf(query))) {

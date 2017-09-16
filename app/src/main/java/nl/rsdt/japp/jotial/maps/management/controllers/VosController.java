@@ -3,14 +3,12 @@ package nl.rsdt.japp.jotial.maps.management.controllers;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,8 +35,8 @@ import nl.rsdt.japp.jotial.maps.management.StandardMapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer;
 import nl.rsdt.japp.jotial.maps.misc.VosUtils;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
-import nl.rsdt.japp.jotial.maps.wrapper.Circle;
-import nl.rsdt.japp.jotial.maps.wrapper.Marker;
+import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import retrofit2.Call;
 
@@ -78,7 +76,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
     }
 
     @Override
-    public Marker searchFor(String query) {
+    public IMarker searchFor(String query) {
         ArrayList<BaseInfo> results = new ArrayList<>();
         VosInfo info;
         for(int i = 0; i < items.size(); i++) {
@@ -317,7 +315,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
         @Override
         public void run() {
             if(!circles.isEmpty()) {
-                Circle circle = circles.get(0);
+                ICircle circle = circles.get(0);
 
                 int last = items.size() - 1;
                 VosInfo info = items.get(last);
