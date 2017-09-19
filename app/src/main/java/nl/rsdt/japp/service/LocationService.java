@@ -37,7 +37,7 @@ import retrofit2.Response;
  * @since 8-7-2016
  * Description...
  */
-public class LocationService extends LocationProviderService {
+public class LocationService extends LocationProviderService implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = "LocationService";
 
@@ -50,6 +50,7 @@ public class LocationService extends LocationProviderService {
     @Override
     public void onCreate() {
         super.onCreate();
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
         wasSending = JappPreferences.isUpdatingLocationToServer();
         if(!wasSending) {
             showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
@@ -108,25 +109,48 @@ public class LocationService extends LocationProviderService {
 
         if(shouldSend) {
             if(dif >= Math.round(JappPreferences.getLocationUpdateIntervalInMs())) {
-                HunterPostBody builder = HunterPostBody.getDefault();
-                builder.setLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-
-                HunterApi api = Japp.getApi(HunterApi.class);
-                api.post(builder).enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.i(TAG, "Location was sent!");
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e(TAG, t.toString(), t);
-                    }
-                });
-
-                lastUpdate = Calendar.getInstance();
-                wasSending = true;
+                sendLocation(location);
             }
+        }
+    }
+
+    private void sendLocation(Location location) {
+        HunterPostBody builder = HunterPostBody.getDefault();
+        builder.setLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+
+        HunterApi api = Japp.getApi(HunterApi.class);
+        api.post(builder).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i(TAG, "Location was sent!");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, t.toString(), t);
+            }
+        });
+        lastUpdate = Calendar.getInstance();
+        wasSending = true;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        switch (s) {
+            case JappPreferences.UPDATE_LOCATION:
+                boolean shouldSend = JappPreferences.isUpdatingLocationToServer();
+                String title;
+                int color;
+                if(shouldSend) {
+                    title = "Japp verzendt je locatie";
+                    color = Color.rgb(113, 244, 66);
+                } else {
+                    title = "Japp verzendt je locatie niet!";
+                    color = Color.rgb(244, 66, 66);
+                }
+                showLocationNotification(title, color);
+
+                break;
         }
     }
 
@@ -139,6 +163,12 @@ public class LocationService extends LocationProviderService {
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        JappPreferences.getVisiblePreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     public class LocationBinder extends Binder {
