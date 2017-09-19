@@ -307,23 +307,25 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         {
             current = all[i];
 
-            PolygonOptions options = new PolygonOptions().addAll(current.getCoordinates());
-            if(JappPreferences.getAreasColorEnabled()) {
-                int alphaPercent = JappPreferences.getAreasColorAlpha();
-                float alpha = ((float)(100 - alphaPercent))/100 * 255;
-                options.fillColor(current.alphaled(Math.round(alpha)));
-            } else {
-                options.fillColor(Color.TRANSPARENT);
-            }
+            if(!current.getCoordinates().isEmpty()) {
+                PolygonOptions options = new PolygonOptions().addAll(current.getCoordinates());
+                if(JappPreferences.getAreasColorEnabled()) {
+                    int alphaPercent = JappPreferences.getAreasColorAlpha();
+                    float alpha = ((float)(100 - alphaPercent))/100 * 255;
+                    options.fillColor(current.alphaled(Math.round(alpha)));
+                } else {
+                    options.fillColor(Color.TRANSPARENT);
+                }
 
-            options.strokeColor(current.getColor());
-            if(JappPreferences.getAreasEdgesEnabled()) {
-                options.strokeWidth(JappPreferences.getAreasEdgesWidth());
-            } else {
-                options.strokeWidth(0);
-            }
+                options.strokeColor(current.getColor());
+                if(JappPreferences.getAreasEdgesEnabled()) {
+                    options.strokeWidth(JappPreferences.getAreasEdgesWidth());
+                } else {
+                    options.strokeWidth(0);
+                }
 
-            areas.put(current.getName(), jotiMap.addPolygon(options));
+                areas.put(current.getName(), jotiMap.addPolygon(options));
+            }
         }
     }
 
