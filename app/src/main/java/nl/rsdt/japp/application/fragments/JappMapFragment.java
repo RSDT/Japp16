@@ -291,7 +291,16 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
         movementManager.onMapReady(jotiMap);
 
+        setupDeelgebieden();
 
+        pinningManager.onMapReady(jotiMap);
+        if(callback != null)
+        {
+            callback.onMapReady(jotiMap);
+        }
+    }
+
+    private void setupDeelgebieden() {
         Deelgebied[] all = Deelgebied.all();
         Deelgebied current;
         for(int i = 0; i < all.length; i++)
@@ -315,12 +324,6 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
             }
 
             areas.put(current.getName(), jotiMap.addPolygon(options));
-        }
-
-        pinningManager.onMapReady(jotiMap);
-        if(callback != null)
-        {
-            callback.onMapReady(jotiMap);
         }
     }
 

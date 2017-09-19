@@ -209,25 +209,27 @@ public final class Deelgebied {
                     stream = resources.openRawResource(R.raw.foxtrot);
                     break;
                 default:
-                    stream = resources.openRawResource(R.raw.alpha);
+                    stream = null;
                     break;
             }
 
-            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
-            StringBuilder total = new StringBuilder();
-            String line;
-            try {
-                while ((line = r.readLine()) != null) {
-                    total.append(line).append('\n');
+            if(stream != null) {
+                BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+                StringBuilder total = new StringBuilder();
+                String line;
+                try {
+                    while ((line = r.readLine()) != null) {
+                        total.append(line).append('\n');
+                    }
+                } catch (IOException e)
+                {
+                    Log.e("Deelgebied", "Error occurred while reading stream", e);
                 }
-            } catch (IOException e)
-            {
-                Log.e("Deelgebied", "Error occurred while reading stream", e);
+
+                String data = total.toString();
+
+                current.coordinates = new Gson().fromJson(data, new TypeToken<ArrayList<LatLng>>() { }.getType());
             }
-
-            String data = total.toString();
-
-            current.coordinates = new Gson().fromJson(data, new TypeToken<ArrayList<LatLng>>() { }.getType());
         }
     }
 
