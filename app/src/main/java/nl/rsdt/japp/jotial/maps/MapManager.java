@@ -104,6 +104,7 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
      * */
     public void onIntentCreate(Intent intent)
     {
+        // NOTE: no longer used
         if(intent != null && intent.hasExtra(SplashActivity.LOAD_ID))
         {
             Bundle bundle = intent.getBundleExtra(SplashActivity.LOAD_ID);
@@ -141,6 +142,20 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
             sgController.onCreate(savedInstanceState);
 
             isRecreated = savedInstanceState.getBoolean(RECREATED_KEY);
+        } else {
+            MapStorage storage = MapStorage.getInstance();
+            Bundle data = storage.getData();
+            if(data != null) {
+                for (Map.Entry<String, MapItemController> pair : controllers.entrySet()) {
+                    MapItemController controller = pair.getValue();
+                    if(controller != null)
+                    {
+                        controller.onIntentCreate(data);
+                    }
+                }
+                sgController.onIntentCreate(data);
+                storage.clear();
+            }
         }
     }
 

@@ -21,6 +21,7 @@ import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker;
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
 import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.io.AppData;
+import nl.rsdt.japp.jotial.maps.MapStorage;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask;
@@ -36,13 +37,11 @@ import retrofit2.Response;
  * @since 8-7-2016
  * Description...
  */
-public class SplashActivity extends Activity implements AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
+public class SplashActivity extends Activity implements MapStorage.OnMapDataLoadedCallback {
 
     public static final String TAG = "SplashActivity";
 
     public static final String LOAD_ID = "LOAD_RESULTS";
-
-    Bundle bundle;
 
     int permission_check;
 
@@ -118,46 +117,49 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
         permission_check = LocationPermissionsChecker.check(this);
         StoragePermissionsChecker.check(this);
 
-        /**
-         * Load in the map data.
-         * */
-        new AsyncBundleTransduceTask(this).execute(MapItemController.getAll());
+        MapStorage storage = MapStorage.getInstance();
+        storage.add(this);
+        storage.load();
+
     }
 
-    @Override
-    public void onTransduceCompleted(Bundle bundle) {
-        this.bundle = bundle;
-        ScoutingGroepController.loadAndPutToBundle(bundle);
-        continueToNext();
-    }
 
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-
-        if(LocationPermissionsChecker.hasPermissionOfPermissionRequestResult(requestCode, permissions, grantResults)) {
-            if(GooglePlayServicesChecker.check(this) != GooglePlayServicesChecker.FAILURE) {
-                validate();
+        if(LocationPermissionsChecker.permissionRequestResultContainsLocation(permissions)) {
+            if(LocationPermissionsChecker.hasPermissionOfPermissionRequestResult(requestCode, permissions, grantResults)) {
+                if(GooglePlayServicesChecker.check(this) != GooglePlayServicesChecker.FAILURE) {
+                    validate();
+                }
+            }
+            else {
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle("Locatie permissie")
+                        .setMessage("De app heeft de locatie permissie nodig om goed te kunnen functioneren")
+                        .setPositiveButton("Oke", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                permission_check = LocationPermissionsChecker.check(SplashActivity.this);
+                            }
+                        })
+                        .create();
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+                    }
+                });
+                dialog.show();
             }
         }
-        else {
-            AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle("Locatie permissie")
-                    .setMessage("De app heeft de locatie permissie nodig om goed te kunnen functioneren")
-                    .setPositiveButton("Oke", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            permission_check = LocationPermissionsChecker.check(SplashActivity.this);
-                        }
-                    })
-                    .create();
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
-                }
-            });
-            dialog.show();
-        }
+
+    }
+
+    @Override
+    public void onMapDataLoaded() {
+        MapStorage storage = MapStorage.getInstance();
+        storage.remove(this);
+        continueToNext();
     }
 
     public void continueToNext() {
@@ -250,10 +252,11 @@ public class SplashActivity extends Activity implements AsyncBundleTransduceTask
             {
 
                 Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(LOAD_ID, bundle);
                 startActivity(intent);
                 finish();
             }
         }
     }
+
+
 }

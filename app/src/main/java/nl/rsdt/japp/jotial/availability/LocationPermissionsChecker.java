@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 
+import nl.rsdt.japp.application.Japp;
+
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
@@ -24,7 +26,8 @@ public final class LocationPermissionsChecker {
 
     public static int check(Activity activity) {
         if(PermissionsUtil.shouldAskForPermission()) {
-            if(PermissionsUtil.hasPermission(activity, Manifest.permission_group.LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if(PermissionsUtil.hasPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    PermissionsUtil.hasPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION } , PERMISSION_GROUP_LOCATION);
                 return PERMISSIONS_REQUEST_REQUIRED;
             }
@@ -52,6 +55,15 @@ public final class LocationPermissionsChecker {
                 {
                     return false;
                 }
+        }
+        return false;
+    }
+
+    public static boolean permissionRequestResultContainsLocation(String permissions[]) {
+        for(String permission : permissions) {
+            if(permission.equals(Manifest.permission.ACCESS_FINE_LOCATION) || permission.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                return true;
+            }
         }
         return false;
     }
