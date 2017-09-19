@@ -210,6 +210,7 @@ public final class Deelgebied {
                     break;
                 default:
                     stream = null;
+                    Log.i("Deelgebied", "No polygon data was found for " + current.name);
                     break;
             }
 
