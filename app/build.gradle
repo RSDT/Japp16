@@ -54,6 +54,7 @@ dependencies {
     compile 'org.osmdroid:osmdroid-android:5.6.5'
     compile 'com.github.MKergall:osmbonuspack:6.4'
     compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.google.firebase:firebase-database:10.0.1'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'
