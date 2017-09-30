@@ -16,4 +16,7 @@
 
     <string name="splash_activity_socket_timed_out">Er is een fout opgetreden tijdens het verbinden met area348.nl, je kunt de app offline gebruiken maar sommige functies zoals Hunter/Spotten en updates zullen niet beschikbaar zijn.</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
