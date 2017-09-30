@@ -2,6 +2,24 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
+    <PreferenceCategory android:title="@string/pref_cat_navigation">
+
+        <SwitchPreference
+            android:key="pref_navigation_phone"
+            android:title="@string/pref_navigation_phone_title"
+            android:summary="@string/pref_navigation_phone_sum"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:title="@string/pref_navigation_app_title"
+            android:key="pref_navigation_app"
+            android:summary="@string/pref_navigation_app_sum"
+            android:defaultValue="@string/pref_navigation_app_def"
+            android:entries="@array/pref_navigation_app"
+            android:entryValues="@array/pref_navigation_app_data"/>
+
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_account">
 
