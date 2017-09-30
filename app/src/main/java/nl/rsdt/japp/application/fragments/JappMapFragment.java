@@ -567,18 +567,30 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                             .setJotiMap(jotiMap)
                             .setCallback(new NavigationSession.OnNavigationCompletedCallback() {
                                 @Override
-                                public void onNavigationCompleted(LatLng navigateTo) {
+                                public void onNavigationCompleted(LatLng navigateTo, boolean toNavigationPhone) {
                                     FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
                                     menu.showMenu(true);
 
                                     session.end();
                                     session = null;
                                     if (navigateTo != null) {
-                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
-                                        Uri gmmIntentUri = Uri.parse(uristr);
-                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                                        mapIntent.setPackage("com.google.android.apps.maps");
-                                        startActivity(mapIntent);
+                                        if (!toNavigationPhone) {
+                                            switch(JappPreferences.navigationApp()){
+                                                case GoogleMaps:
+                                                    String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
+                                                    Uri gmmIntentUri = Uri.parse(uristr);
+                                                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                                    mapIntent.setPackage("com.google.android.apps.maps");
+                                                    startActivity(mapIntent);
+                                                    break;
+                                                case Waze:
+                                                    String uri = "waze://?ll=40.761043, -73.980545&navigate=yes";
+                                                    startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
+                                                    break;
+                                            }
+                                        }else{
+                                            
+                                        }
                                     }
 
                                 }

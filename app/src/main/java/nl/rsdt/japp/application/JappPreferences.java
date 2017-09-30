@@ -90,6 +90,8 @@ public class JappPreferences {
 
     public static final String SHACO_ENABLED = "pref_developer_random_shaco";
 
+    public static final String NAVIGATION_APP = "pref_navigation_app";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -269,10 +271,28 @@ public class JappPreferences {
         return getVisiblePreferences().getBoolean(SHACO_ENABLED, false);
     }
 
+    public static NavigationApp navigationApp(){
+        return NavigationApp.fromString(getVisiblePreferences().getString(NAVIGATION_APP, "Google Maps"));
+    }
 
     public static void clear() {
         getVisiblePreferences().edit().clear().apply();
         getAppPreferences().edit().clear().apply();
+    }
+
+    public enum NavigationApp{
+        GoogleMaps, Waze;
+        public static NavigationApp fromString(String appName){
+            if (appName.equals("waze")){
+                return Waze;
+            }
+            else if (appName.equals("Google Maps")){
+                return Waze;
+            }
+            else{
+                return GoogleMaps; //default google maps
+            }
+        }
     }
 
 }
