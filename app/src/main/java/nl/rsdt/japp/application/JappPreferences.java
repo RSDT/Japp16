@@ -287,11 +287,11 @@ public class JappPreferences {
     public enum NavigationApp{
         GoogleMaps, Waze;
         public static NavigationApp fromString(String appName){
-            if (appName.equals("waze")){
+            if (appName.equals("Waze")){
                 return Waze;
             }
             else if (appName.equals("Google Maps")){
-                return Waze;
+                return GoogleMaps;
             }
             else{
                 return GoogleMaps; //default google maps
