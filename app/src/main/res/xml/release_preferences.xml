@@ -4,11 +4,7 @@
 
     <PreferenceCategory android:title="@string/pref_cat_navigation">
 
-        <SwitchPreference
-            android:key="pref_navigation_phone"
-            android:title="@string/pref_navigation_phone_title"
-            android:summary="@string/pref_navigation_phone_sum"
-            android:defaultValue="false" />
+
 
         <ListPreference
             android:title="@string/pref_navigation_app_title"
@@ -229,6 +225,12 @@
                     android:editable="false"
                     android:summary="@string/pref_developer_debug_version_sum"
                     android:defaultValue="@string/versionName"/>
+
+                <SwitchPreference
+                    android:key="pref_navigation_phone"
+                    android:title="@string/pref_navigation_phone_title"
+                    android:summary="@string/pref_navigation_phone_sum"
+                    android:defaultValue="false" />
 
             </PreferenceCategory>
 

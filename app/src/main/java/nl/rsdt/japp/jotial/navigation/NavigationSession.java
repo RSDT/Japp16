@@ -247,7 +247,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
             buffer.dialog = new android.app.AlertDialog.Builder(context)
                     .setCancelable(false)
                     .setPositiveButton("Zelf navigeren", buffer)
-                    .setNeutralButton("Op de Navigatie Navigeren", buffer)
+                    //.setNeutralButton("Op de Navigatie Navigeren", buffer)
                     .setNegativeButton("Annuleren", buffer)
                     .setView(view)
                     .create();
