@@ -18,6 +18,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pref_developer_hunter_all_title">Haal alle hunter op</string>
+    <string name="pref_developer_hunter_all_sum">haal alle hunters op inclusief jezelf</string>
 
 
 </resources>

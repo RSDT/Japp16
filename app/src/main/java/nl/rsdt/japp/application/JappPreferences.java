@@ -92,6 +92,8 @@ public class JappPreferences {
 
     public static final String NAVIGATION_APP = "pref_navigation_app";
 
+    private static final String HUNTER_ALL = "pref_developer_hunter_all";
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -282,6 +284,10 @@ public class JappPreferences {
     public static void clear() {
         getVisiblePreferences().edit().clear().apply();
         getAppPreferences().edit().clear().apply();
+    }
+
+    public static boolean getGetAllHunters() {
+        return getVisiblePreferences().getBoolean(HUNTER_ALL, false);
     }
 
     public enum NavigationApp{

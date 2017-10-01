@@ -152,20 +152,19 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
     }
 
     @Override
-    public Call<HashMap<String, ArrayList<HunterInfo>>> update(String mode) {
+    public Call<HashMap<String, ArrayList<HunterInfo>>> update(String unused) {
         String name = JappPreferences.getHuntname();
         if(name.isEmpty()) {
             name = JappPreferences.getAccountUsername();
         }
 
         HunterApi api = Japp.getApi(HunterApi.class);
-        switch (mode){
-            case MODE_ALL:
-                return api.getAllExcept(JappPreferences.getAccountKey(), name);
-            case MODE_LATEST:
-                return api.getAllExcept(JappPreferences.getAccountKey(), name);
+        boolean getAll = JappPreferences.getGetAllHunters();
+        if (getAll) {
+            return api.getAll(JappPreferences.getAccountKey());
+        }else {
+            return api.getAllExcept(JappPreferences.getAccountKey(), name);
         }
-        return null;
     }
 
     @Override
