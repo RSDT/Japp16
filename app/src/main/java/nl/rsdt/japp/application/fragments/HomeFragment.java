@@ -147,9 +147,11 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
                 .setSmallIcon(R.drawable.fox3)
                 .setStyle(style)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-        NotificationManager mNotifyMgr = (NotificationManager) this.getActivity().getSystemService(Activity.NOTIFICATION_SERVICE);
-        mNotifyMgr.notify(NOTIFICATION_ID, builder.build());
-
+        Activity activity = this.getActivity();
+        if (activity != null) {
+            NotificationManager mNotifyMgr = (NotificationManager) this.getActivity().getSystemService(Activity.NOTIFICATION_SERVICE);
+            mNotifyMgr.notify(NOTIFICATION_ID, builder.build());
+        }
     }
 
     public void showNotification(VosStatusInfo.Status status) {
