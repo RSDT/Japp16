@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
 import nl.rsdt.japp.jotial.maps.clustering.ClusterManagerInterface;
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
@@ -33,66 +34,25 @@ import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmMarker;
 
 public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
 
-
-    private MarkerClusterer scoutingGroepMarkers;
     private final Collection<ScoutingGroepInfo> infos;
-    private final Collection<IMarker> markers;
     private final MapView osmMap;
+    private final OsmMarkerContainer markers;
 
-    public OsmScoutingGroepClusterManager(IJotiMap jotiMap) {
-        scoutingGroepMarkers = new RadiusMarkerClusterer(Japp.getInstance().getApplicationContext());
+    public OsmScoutingGroepClusterManager(OsmJotiMap jotiMap) {
         if (!(jotiMap instanceof OsmJotiMap)){
             throw new RuntimeException("this class can only be usd with osm");
         }
         OsmJotiMap osmJotiMap = (OsmJotiMap) jotiMap;
         this.osmMap = osmJotiMap.getOSMMap();
         infos = new ArrayList<>();
-        markers = new ArrayList<>();
-        osmMap.getOverlays().add(scoutingGroepMarkers);
+        markers = new OsmMarkerContainer(osmJotiMap);
     }
 
     @Override
     public void addItems(final ArrayList<ScoutingGroepInfo> buffer) {
         for (final ScoutingGroepInfo info : buffer){
-            MarkerOptions options = new MarkerOptions();
-            Bitmap bm = BitmapFactory.decodeResource(Japp.getAppResources(), R.drawable.scouting_groep_icon_30x22 );
-            options.position(info.getPosition());
-            StringBuilder buff = new StringBuilder();
-            buff.append(info.naam).append("\n");
-            buff.append(info.team).append("\n");
-            buff.append(info.adres).append("\n");
-            options.title(buff.toString());
-            final IJotiMap jm = OsmJotiMap.getJotiMapInstance(osmMap);
-            IMarker marker = jm.addMarker(new Pair<MarkerOptions, Bitmap>(options, bm));
-            marker.remove();
-            marker.setOnClickListener(new IMarker.OnClickListener() {
-                @Override
-                public boolean OnClick(IMarker m) {
-                    if (circle == null) {
-                        circle = jm.addCircle(new CircleOptions()
-                                .center(new LatLng(info.getPosition().latitude, info.getPosition().longitude))
-                                .radius(500)
-                                .fillColor(Color.argb(80, 200, 200, 200)));
-                        visible = true;
-                    }else {
-                        if (visible){
-                            circle.setRadius(0);
-                            visible = false;
-                        }else {
-                            circle.setRadius(500);
-                            visible = true;
-                        }
-                    }
-                    m.showInfoWindow();
-                    return true;
-                }
-
-                ICircle circle = null;
-                boolean visible = false;
-            });
-            scoutingGroepMarkers.add(((OsmMarker) marker).getOSMMarker());
             infos.add(info);
-            markers.add(marker);
+            markers.add(info);
         }
     }
 
@@ -108,10 +68,7 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
 
     @Override
     public void clearItems() {
-        osmMap.getOverlays().remove(scoutingGroepMarkers);
         infos.clear();
         markers.clear();
-        scoutingGroepMarkers = new RadiusMarkerClusterer(Japp.getInstance().getApplicationContext());
-        osmMap.getOverlays().add(scoutingGroepMarkers);
     }
 }
