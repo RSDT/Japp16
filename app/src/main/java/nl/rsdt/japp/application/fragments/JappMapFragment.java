@@ -1,6 +1,7 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -588,18 +589,23 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                     session = null;
                                     if (navigateTo != null) {
                                         if (!toNavigationPhone) {
-                                            switch(JappPreferences.navigationApp()){
-                                                case GoogleMaps:
-                                                    String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
-                                                    Uri gmmIntentUri = Uri.parse(uristr);
-                                                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                                                    mapIntent.setPackage("com.google.android.apps.maps");
-                                                    startActivity(mapIntent);
-                                                    break;
-                                                case Waze:
-                                                    String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.longitude) +"&navigate=yes";
-                                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
-                                                    break;
+                                            try{
+                                                switch(JappPreferences.navigationApp()){
+                                                    case GoogleMaps:
+                                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
+                                                        Uri gmmIntentUri = Uri.parse(uristr);
+                                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                                        startActivity(mapIntent);
+                                                        break;
+                                                    case Waze:
+                                                        String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.longitude) +"&navigate=yes";
+                                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+                                                        break;
+                                                }
+                                            } catch (ActivityNotFoundException e){
+                                                System.out.println(e.toString());
+                                                //todo notify user that a app is not installed
                                             }
                                         }else{
                                             int id = JappPreferences.getAccountId();
