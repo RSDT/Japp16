@@ -194,7 +194,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     }
 
     private void moveMarker(LatLng latLng, boolean priority){
-        if (priority || System.currentTimeMillis() - lastmoved > 800) {
+        if (priority || System.currentTimeMillis() - lastmoved > 800) {// // TODO: 01/10/17 magic number
             navigator.setEndLocation(latLng);
             if (!marker.isVisible()) marker.setVisible(true);
             marker.setPosition(latLng);

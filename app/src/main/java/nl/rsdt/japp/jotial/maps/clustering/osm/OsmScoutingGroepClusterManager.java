@@ -9,8 +9,10 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.osmdroid.bonuspack.clustering.MarkerClusterer;
 import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Overlay;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +34,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmMarker;
 public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
 
 
-    private RadiusMarkerClusterer scoutingGroepMarkers;
+    private MarkerClusterer scoutingGroepMarkers;
     private final Collection<ScoutingGroepInfo> infos;
     private final Collection<IMarker> markers;
     private final MapView osmMap;
@@ -62,6 +64,7 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
             options.title(buff.toString());
             final IJotiMap jm = OsmJotiMap.getJotiMapInstance(osmMap);
             IMarker marker = jm.addMarker(new Pair<MarkerOptions, Bitmap>(options, bm));
+            marker.remove();
             marker.setOnClickListener(new IMarker.OnClickListener() {
                 @Override
                 public boolean OnClick(IMarker m) {
@@ -87,7 +90,6 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
                 ICircle circle = null;
                 boolean visible = false;
             });
-
             scoutingGroepMarkers.add(((OsmMarker) marker).getOSMMarker());
             infos.add(info);
             markers.add(marker);
