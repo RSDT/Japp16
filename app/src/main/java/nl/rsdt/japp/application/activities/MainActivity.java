@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity
                 marker.setPosition(new LatLng(0,0));
             }
         });
+        navigationLocationManager.setAutoEigenaar("mattijn");
         mapManager.onMapReady(jotiMap);
     }
 

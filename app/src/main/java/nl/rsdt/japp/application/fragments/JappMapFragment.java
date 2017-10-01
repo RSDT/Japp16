@@ -597,7 +597,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                     startActivity(mapIntent);
                                                     break;
                                                 case Waze:
-                                                    String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.latitude) +"&navigate=yes";
+                                                    String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.longitude) +"&navigate=yes";
                                                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
                                                     break;
                                             }
