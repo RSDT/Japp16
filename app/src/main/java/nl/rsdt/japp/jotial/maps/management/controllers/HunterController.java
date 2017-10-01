@@ -175,6 +175,7 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
 
     @Override
     protected void processResult(HunterTransducer.Result result) {
+        clear();
         super.processResult(result);
         data = result.data;
     }

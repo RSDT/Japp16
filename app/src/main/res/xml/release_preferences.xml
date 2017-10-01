@@ -192,7 +192,7 @@
                     android:key="pref_advanced_osm"
                     android:title="@string/pref_advanced_auto_osm"
                     android:summary="@string/pref_advanced_osm_sum"
-                    android:defaultValue="false"
+                    android:defaultValue="true"
                     />
             </PreferenceCategory>
 
