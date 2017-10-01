@@ -3,6 +3,7 @@ package nl.rsdt.japp.application.activities;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,11 +13,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
@@ -30,10 +34,15 @@ import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
+import nl.rsdt.japp.jotial.data.firebase.Location;
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
+import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
+import nl.rsdt.japp.jotial.net.apis.AutoApi;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
@@ -41,6 +50,8 @@ import nl.rsdt.japp.service.cloud.messaging.MessageManager;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity
         implements IJotiMap.OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
@@ -59,6 +70,8 @@ public class MainActivity extends AppCompatActivity
      * Manages the navigation between the fragments.
      * */
     private NavigationManager navigationManager = new NavigationManager();
+
+    private NavigationLocationManager navigationLocationManager = new NavigationLocationManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +113,9 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(JappPreferences.getAccountUsername().equals("David") && JappPreferences.shacoEnabled()) {
+        if(JappPreferences.shacoEnabled() &&
+                (JappPreferences.getAccountUsername().equals("David") || JappPreferences.getAccountUsername().equals("test"))
+                ) {
             MediaPlayer player = MediaPlayer.create(this, R.raw.shaco_tank_engine);
             player.start();
         }
@@ -183,6 +198,22 @@ public class MainActivity extends AppCompatActivity
         }else {
             //// TODO: 09/08/17 do stuff
         }
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(new LatLng(0,0))
+                .visible(true);
+        Bitmap icon = null;
+        final IMarker marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(markerOptions, icon));
+        navigationLocationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
+            @Override
+            public void onNewLocation(Location location) {
+                marker.setPosition(new LatLng(location.lat,location.lon));
+            }
+
+            @Override
+            public void onNotInCar(String notInCar, String inCar) {
+                marker.setPosition(new LatLng(0,0));
+            }
+        });
         mapManager.onMapReady(jotiMap);
     }
 
@@ -253,7 +284,25 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.refresh:
                 mapManager.update();
+                AutoApi api = Japp.getApi(AutoApi.class);
+                api.getInfoById(JappPreferences.getAccountKey(),JappPreferences.getAccountId()).enqueue(new Callback<AutoInzittendeInfo>() {
+                    @Override
+                    public void onResponse(Call<AutoInzittendeInfo> call, retrofit2.Response<AutoInzittendeInfo> response) {
+                        if (response.code() == 200){
+                            AutoInzittendeInfo info = response.body();
+                            if (info != null){
+                                navigationLocationManager.setAutoEigenaar(info.autoEigenaar);
+                            }
+                        }else if(response.code() == 404){
+                            navigationLocationManager.setAutoEigenaar(null);
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<AutoInzittendeInfo> call, Throwable t) {
+
+                    }
+                });
                 /**
                  * Update the vos status on the home fragment.
                  * */

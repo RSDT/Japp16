@@ -132,6 +132,10 @@ public class JappPreferences {
         return getVisiblePreferences().getString(ACCOUNT_RANK, "Guest");
     }
 
+    public static int getAccountId(){
+        return getVisiblePreferences().getInt(ACCOUNT_ID, -1);
+    }
+
     /**
      * Gets the icon that the user has selected to be displayed to the others.
      * */

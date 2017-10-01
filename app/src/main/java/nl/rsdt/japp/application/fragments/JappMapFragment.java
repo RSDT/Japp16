@@ -4,11 +4,13 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +19,16 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.util.HashMap;
 
@@ -30,6 +37,10 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody;
+import nl.rsdt.japp.jotial.data.firebase.Location;
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
+import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
+import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.movement.MovementManager;
 import nl.rsdt.japp.jotial.maps.pinning.Pin;
@@ -38,10 +49,13 @@ import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
 import nl.rsdt.japp.jotial.navigation.NavigationSession;
+import nl.rsdt.japp.jotial.net.apis.AutoApi;
+import nl.rsdt.japp.jotial.net.apis.UserApi;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
@@ -85,12 +99,12 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     private HashMap<String, IPolygon> areas = new HashMap<>();
 
+
+
     private boolean osmActive = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -99,7 +113,6 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                              Bundle savedInstanceState) {
         pinningManager.intialize(getActivity());
         pinningManager.onCreate(savedInstanceState);
-
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -567,7 +580,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                             .setJotiMap(jotiMap)
                             .setCallback(new NavigationSession.OnNavigationCompletedCallback() {
                                 @Override
-                                public void onNavigationCompleted(LatLng navigateTo, boolean toNavigationPhone) {
+                                public void onNavigationCompleted(final LatLng navigateTo, boolean toNavigationPhone) {
                                     FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
                                     menu.showMenu(true);
 
@@ -584,12 +597,33 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                     startActivity(mapIntent);
                                                     break;
                                                 case Waze:
-                                                    String uri = "waze://?ll=40.761043, -73.980545&navigate=yes";
-                                                    startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
+                                                    String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.latitude) +"&navigate=yes";
+                                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
                                                     break;
                                             }
                                         }else{
-                                            
+                                            int id = JappPreferences.getAccountId();
+                                            if (id >=0) {
+                                                AutoApi autoApi = Japp.getApi(AutoApi.class);
+                                                autoApi.getInfoById(JappPreferences.getAccountKey(), id).enqueue(new Callback<AutoInzittendeInfo>() {
+                                                    @Override
+                                                    public void onResponse(Call<AutoInzittendeInfo> call, Response<AutoInzittendeInfo> response) {
+                                                        if (response.code() == 200) {
+                                                            AutoInzittendeInfo autoInfo = response.body();
+                                                            if (autoInfo != null) {
+                                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                                DatabaseReference ref = database.getReference("autos/" + autoInfo.autoEigenaar);
+                                                                ref.setValue(new Location(navigateTo));
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<AutoInzittendeInfo> call, Throwable t) {
+
+                                                    }
+                                                });
+                                            }
                                         }
                                     }
 
