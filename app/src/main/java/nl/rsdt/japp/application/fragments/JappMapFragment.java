@@ -151,6 +151,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         osmView.setBuiltInZoomControls(true);
         osmView.setMultiTouchControls(true);
         osmView.setFlingEnabled(true);
+        osmView.setTilesScaledToDpi(true);
 
         if (savedInstanceState != null) {
             Bundle osmbundle = savedInstanceState.getBundle(OSM_BUNDLE);
