@@ -226,16 +226,25 @@
                     android:summary="@string/pref_developer_debug_version_sum"
                     android:defaultValue="@string/versionName"/>
 
+                <!--todo move this to navigation-->
                 <SwitchPreference
                     android:key="pref_navigation_phone"
                     android:title="@string/pref_navigation_phone_title"
                     android:summary="@string/pref_navigation_phone_sum"
                     android:defaultValue="false" />
+
                 <SwitchPreference
                     android:title="@string/pref_developer_hunter_all_title"
                     android:key="pref_developer_hunter_all"
                     android:summary="@string/pref_developer_hunter_all_sum"
                     android:defaultValue="false"/>
+
+                <SwitchPreference
+                    android:title="@string/pref_developer_load_old_data_title"
+                    android:key="pref_developer_load_old_data"
+                    android:summary="@string/pref_developer_load_old_data_sum"
+                    android:defaultValue="true"/>
+                
             </PreferenceCategory>
 
             <PreferenceCategory android:title="@string/pref_cat_developer_random">

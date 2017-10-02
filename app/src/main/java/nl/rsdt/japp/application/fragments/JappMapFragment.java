@@ -605,7 +605,8 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                 }
                                             } catch (ActivityNotFoundException e){
                                                 System.out.println(e.toString());
-                                                //todo notify user that a app is not installed
+                                                View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                                Snackbar.make(snackbarView, "De App: " + JappPreferences.navigationApp().toString() +" is niet geinstaleerd.", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
                                             }
                                         }else{
                                             int id = JappPreferences.getAccountId();

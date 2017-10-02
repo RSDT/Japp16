@@ -94,6 +94,9 @@ public class JappPreferences {
 
     private static final String HUNTER_ALL = "pref_developer_hunter_all";
 
+    private static final String LOAD_OLD_DATA = "pref_developer_load_old_data";
+
+
     /**
      * Gets the visible release_preferences of Japp.
      * */
@@ -288,6 +291,10 @@ public class JappPreferences {
 
     public static boolean getGetAllHunters() {
         return getVisiblePreferences().getBoolean(HUNTER_ALL, false);
+    }
+
+    public static boolean loadOldData() {
+        return getVisiblePreferences().getBoolean(LOAD_OLD_DATA, true);
     }
 
     public enum NavigationApp{

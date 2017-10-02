@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -114,6 +115,9 @@ public class AppData {
     @Nullable
     public static <T> T getObject(String filename, Type type)
     {
+        if (!JappPreferences.loadOldData()){
+            return null;
+        }
         if(hasSave(filename)) {
             try
             {

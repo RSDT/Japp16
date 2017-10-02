@@ -269,6 +269,11 @@
     <string name="pref_developer_debug_version_title">Versie</string>
     <string name="pref_developer_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
 
+    <string name="pref_developer_hunter_all_title">Haal alle hunter op</string>
+    <string name="pref_developer_hunter_all_sum">haal alle hunters op inclusief jezelf</string>
+
+    <string name="pref_developer_load_old_data_title">Laad oude data in.</string>
+    <string name="pref_developer_load_old_data_sum">Laad oude data in van de vorige keer dat de app draaide. Let op als deze uit staat wordt je eigen tail continu gewist.</string>
 
     <string name="pref_cat_developer_random">Random</string>
 
