@@ -56,6 +56,15 @@
             />
 
         <ListPreference
+            android:title="@string/pref_map_osm_source_title"
+            android:summary="@string/pref_map_osm_source_sum"
+            android:key="pref_map_osm_source"
+            android:entries="@array/pref_map_osm_source_options"
+            android:entryValues="@array/pref_map_osm_source_options_data"
+            android:defaultValue="@string/pref_map_osm_source_options_def"
+            />
+
+        <ListPreference
             android:title="@string/pref_map_style_title"
             android:summary="@string/pref_map_style_sum"
             android:key="pref_map_style"

@@ -95,6 +95,7 @@ public class JappPreferences {
     private static final String HUNTER_ALL = "pref_developer_hunter_all";
 
     private static final String LOAD_OLD_DATA = "pref_developer_load_old_data";
+    private static final String OSM_MAP_TYPE = "pref_map_osm_source";
 
 
     /**
@@ -296,7 +297,31 @@ public class JappPreferences {
     public static boolean loadOldData() {
         return getVisiblePreferences().getBoolean(LOAD_OLD_DATA, true);
     }
-
+    public static OsmMapType getOsmMapSource(){
+        String value = getVisiblePreferences().getString(OSM_MAP_TYPE, "Default");
+        if ("0".equals(value)){
+            return OsmMapType.Default;
+        }
+        return OsmMapType.valueOf(value);
+    }
+    public enum OsmMapType{
+        Default,
+        OpenTopo,
+        Mapnik,
+        HikeBike,
+        Public_Transport,
+        Base_NL,
+        Fiets_NL,
+        Road_NL,
+        OpenSeaMap,
+        CloudMade_Small,
+        CloudMade_Normal,
+        USGS_Topo,
+        USGS_Sat,
+        ChartBundle_ENRH,
+        ChartBundle_ENRL,
+        ChartBundle_WAC
+    }
     public enum NavigationApp{
         GoogleMaps, Waze;
         public static NavigationApp fromString(String appName){

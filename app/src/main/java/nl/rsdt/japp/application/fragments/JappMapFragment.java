@@ -145,7 +145,59 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
         Context ctx = getActivity().getApplication();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        osmView.setTileSource(TileSourceFactory.MAPNIK);
+        switch (JappPreferences.getOsmMapSource()){
+            case Mapnik:
+                osmView.setTileSource(TileSourceFactory.MAPNIK);
+                break;
+            case OpenSeaMap:
+                osmView.setTileSource(TileSourceFactory.OPEN_SEAMAP);
+                break;
+            case HikeBike:
+                osmView.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+                break;
+            case OpenTopo:
+                osmView.setTileSource(TileSourceFactory.OpenTopo);
+                break;
+            case Fiets_NL:
+                osmView.setTileSource(TileSourceFactory.FIETS_OVERLAY_NL);
+                break;
+            case Default:
+                osmView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+                break;
+            case CloudMade_Normal:
+                osmView.setTileSource(TileSourceFactory.CLOUDMADESTANDARDTILES);
+                break;
+            case CloudMade_Small:
+                osmView.setTileSource(TileSourceFactory.CLOUDMADESMALLTILES);
+                break;
+            case ChartBundle_ENRH:
+                osmView.setTileSource(TileSourceFactory.ChartbundleENRH);
+                break;
+            case ChartBundle_ENRL:
+                osmView.setTileSource(TileSourceFactory.ChartbundleENRH);
+                break;
+            case ChartBundle_WAC:
+                osmView.setTileSource(TileSourceFactory.ChartbundleWAC);
+                break;
+            case USGS_Sat:
+                osmView.setTileSource(TileSourceFactory.USGS_SAT);
+                break;
+            case USGS_Topo:
+                osmView.setTileSource(TileSourceFactory.USGS_TOPO);
+                break;
+            case Public_Transport:
+                osmView.setTileSource(TileSourceFactory.PUBLIC_TRANSPORT);
+                break;
+            case Road_NL:
+                osmView.setTileSource(TileSourceFactory.ROADS_OVERLAY_NL);
+                break;
+            case Base_NL:
+                osmView.setTileSource(TileSourceFactory.BASE_OVERLAY_NL);
+                break;
+            default:
+                osmView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+                break;
+        }
         osmView.getController().setCenter(new GeoPoint(51.958852, 5.954517));
         osmView.getController().setZoom(11);
         osmView.setBuiltInZoomControls(true);

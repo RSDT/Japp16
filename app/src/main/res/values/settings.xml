@@ -111,6 +111,49 @@
                 <item>4</item>
             </string-array>
 
+            <string name="pref_map_osm_source_title">Type OSM</string>
+            <string name="pref_map_osm_source_sum">Verander hier het type van de kaart. De kaart zelf blijft hetzelfde. Aan te raden: Mapnik, OpenTopo</string>
+            <string name="pref_map_osm_source_options_def">Default</string>
+
+            <string-array name="pref_map_osm_source_options">
+                <item>Default</item>
+                <item>OpenTopo</item>
+                <item>Mapnik</item>
+                <item>HikeBike</item>
+                <item>Public_Transport</item>
+                <item>Base_NL</item>
+                <item>Fiets_NL</item>
+                <item>Road_NL</item>
+                <item>OpenSeaMap</item>
+                <item>CloudMade_Small</item>
+                <item>CloudMade_Normal</item>
+                <item>USGS_Topo</item>
+                <item>USGS_Sat</item>
+                <item>ChartBundle_ENRH</item>
+                <item>ChartBundle_ENRL</item>
+                <item>ChartBundle_WAC</item>
+            </string-array>
+
+
+            <string-array name="pref_map_osm_source_options_data">
+                <item>Default</item>
+                <item>OpenTopo</item>
+                <item>Mapnik</item>
+                <item>HikeBike</item>
+                <item>Public_Transport</item>
+                <item>Base_NL</item>
+                <item>Fiets_NL</item>
+                <item>Road_NL</item>
+                <item>OpenSeaMap</item>
+                <item>CloudMade_Small</item>
+                <item>CloudMade_Normal</item>
+                <item>USGS_Topo</item>
+                <item>USGS_Sat</item>
+                <item>ChartBundle_ENRH</item>
+                <item>ChartBundle_ENRL</item>
+                <item>ChartBundle_WAC</item>
+            </string-array>
+
             <string name="pref_map_style_title">Stijl</string>
             <string name="pref_map_style_sum">Verander hier de stijl van de kaart</string>
             <string name="pref_map_style_options_def">2</string>
