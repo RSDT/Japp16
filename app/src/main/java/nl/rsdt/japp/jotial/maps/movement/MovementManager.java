@@ -236,8 +236,12 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
             /**
              * Animate the camera to the new position
              * */
+            if(JappPreferences.followNorth()) {
+                jotiMap.cameraToLocation(true, location, zoom, aoa, 0);
+            } else {
+                jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
+            }
 
-            jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
         }
 
         public void end() {

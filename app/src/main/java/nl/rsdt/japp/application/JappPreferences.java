@@ -92,9 +92,12 @@ public class JappPreferences {
 
     public static final String NAVIGATION_APP = "pref_navigation_app";
 
+    public static final String NAVIGATION_FOLLOW_NORTH = "pref_navigation_follow_north";
+
     private static final String HUNTER_ALL = "pref_developer_hunter_all";
 
     private static final String LOAD_OLD_DATA = "pref_developer_load_old_data";
+
     private static final String OSM_MAP_TYPE = "pref_map_osm_source";
 
 
@@ -285,6 +288,10 @@ public class JappPreferences {
         return NavigationApp.fromString(getVisiblePreferences().getString(NAVIGATION_APP, "Google Maps"));
     }
 
+    public static boolean followNorth() {
+        return getVisiblePreferences().getBoolean(NAVIGATION_FOLLOW_NORTH, false);
+    }
+
     public static void clear() {
         getVisiblePreferences().edit().clear().apply();
         getAppPreferences().edit().clear().apply();
@@ -304,6 +311,7 @@ public class JappPreferences {
         }
         return OsmMapType.valueOf(value);
     }
+
     public enum OsmMapType{
         Default,
         OpenTopo,

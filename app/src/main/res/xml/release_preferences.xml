@@ -2,21 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <PreferenceCategory android:title="@string/pref_cat_navigation">
-
-
-
-        <ListPreference
-            android:title="@string/pref_navigation_app_title"
-            android:key="pref_navigation_app"
-            android:summary="@string/pref_navigation_app_sum"
-            android:defaultValue="@string/pref_navigation_app_def"
-            android:entries="@array/pref_navigation_app"
-            android:entryValues="@array/pref_navigation_app_data"/>
-
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/pref_cat_account">
 
         <EditTextPreference
@@ -42,7 +27,6 @@
             android:icon="@drawable/hunter_0"/>
 
     </PreferenceCategory>
-
 
     <PreferenceCategory android:title="@string/pref_cat_map">
 
@@ -90,6 +74,23 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_cat_navigation">
+
+        <ListPreference
+            android:title="@string/pref_navigation_app_title"
+            android:key="pref_navigation_app"
+            android:summary="@string/pref_navigation_app_sum"
+            android:defaultValue="@string/pref_navigation_app_def"
+            android:entries="@array/pref_navigation_app"
+            android:entryValues="@array/pref_navigation_app_data"/>
+
+        <SwitchPreference
+            android:key="pref_navigation_follow_north"
+            android:title="@string/pref_navigation_follow_title"
+            android:summary="@string/pref_navigation_follow_sum"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_updates">
 
