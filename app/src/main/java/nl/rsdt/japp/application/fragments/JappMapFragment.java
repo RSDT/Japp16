@@ -107,13 +107,18 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         pinningManager.intialize(getActivity());
         pinningManager.onCreate(savedInstanceState);
+
+        movementManager.onCreate(savedInstanceState);
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -263,6 +268,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        movementManager.onSaveInstanceState(savedInstanceState);
         pinningManager.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(BUNDLE_OSM_ACTIVE, osmActive);
         if (!osmActive) {
