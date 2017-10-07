@@ -139,7 +139,7 @@ public class JappPreferences {
     }
 
     public static int getAccountId(){
-        return getVisiblePreferences().getInt(ACCOUNT_ID, -1);
+        return getAppPreferences().getInt(ACCOUNT_ID, -1);
     }
 
     /**

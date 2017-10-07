@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity
      * */
     private NavigationManager navigationManager = new NavigationManager();
 
-    private NavigationLocationManager navigationLocationManager = new NavigationLocationManager();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,23 +196,7 @@ public class MainActivity extends AppCompatActivity
         }else {
             //// TODO: 09/08/17 do stuff
         }
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(new LatLng(0,0))
-                .visible(true);
-        Bitmap icon = null;
-        final IMarker marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(markerOptions, icon));
-        navigationLocationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
-            @Override
-            public void onNewLocation(Location location) {
-                marker.setPosition(new LatLng(location.lat,location.lon));
-            }
 
-            @Override
-            public void onNotInCar(String notInCar, String inCar) {
-                marker.setPosition(new LatLng(0,0));
-            }
-        });
-        navigationLocationManager.setAutoEigenaar("mattijn");
         mapManager.onMapReady(jotiMap);
     }
 
@@ -285,25 +267,6 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.refresh:
                 mapManager.update();
-                AutoApi api = Japp.getApi(AutoApi.class);
-                api.getInfoById(JappPreferences.getAccountKey(),JappPreferences.getAccountId()).enqueue(new Callback<AutoInzittendeInfo>() {
-                    @Override
-                    public void onResponse(Call<AutoInzittendeInfo> call, retrofit2.Response<AutoInzittendeInfo> response) {
-                        if (response.code() == 200){
-                            AutoInzittendeInfo info = response.body();
-                            if (info != null){
-                                navigationLocationManager.setAutoEigenaar(info.autoEigenaar);
-                            }
-                        }else if(response.code() == 404){
-                            navigationLocationManager.setAutoEigenaar(null);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AutoInzittendeInfo> call, Throwable t) {
-
-                    }
-                });
                 /**
                  * Update the vos status on the home fragment.
                  * */
