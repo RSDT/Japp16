@@ -2,24 +2,6 @@
 <resources>
 
     <!-- START SCREEN DEFAULT -->
-        <!-- START CAT NAVIGATION -->
-            <string name="pref_cat_navigation">Navigatie</string>
-            <string name="pref_navigation_phone_title">Dit is de Navigatietelefoon</string>
-            <string name="pref_navigation_phone_sum">Let op! hiermee kunnen andere telefoons in je auto de navigatie aanzetten/ aanpassen op deze telefoon.</string>
-
-            <string name="pref_navigation_app_title">App om te navigeren</string>
-            <string name="pref_navigation_app_sum">welke app wil je gebruiken om te navigeren?</string>
-            <string name="pref_navigation_app_def">Google Maps</string>
-            <string-array name="pref_navigation_app">
-                <item>Google Maps</item>
-                <item>Waze</item>
-            </string-array>
-            <string-array name="pref_navigation_app_data">
-                <item>Google Maps</item>
-                <item>Waze</item>
-            </string-array>
-        <!-- END NAVIGATION -->
-
         <!-- START CAT ACCOUNT-->
 
             <!--
@@ -96,7 +78,7 @@
             <string name="pref_map_type_title">Type</string>
             <string name="pref_map_type_sum">Verander hier het type van de kaart</string>
             <string name="pref_map_type_options_def">1</string>
-
+            <string name="pref_map_type_dialog_title">Kies je map type</string>
             <string-array name="pref_map_type_options">
                 <item>Normaal</item>
                 <item>Satelliet</item>
@@ -157,6 +139,7 @@
             <string name="pref_map_style_title">Stijl</string>
             <string name="pref_map_style_sum">Verander hier de stijl van de kaart</string>
             <string name="pref_map_style_options_def">2</string>
+            <string name="pref_map_style_dialog_title">Kies je map stijl</string>
 
             <string-array name="pref_map_style_options">
                 <item>Automatisch</item>
@@ -201,6 +184,28 @@
 
 
         <!-- END CAT -->
+
+    <!-- START CAT NAVIGATION -->
+    <string name="pref_cat_navigation">Navigatie</string>
+    <string name="pref_navigation_phone_title">Dit is de Navigatietelefoon</string>
+    <string name="pref_navigation_phone_sum">Let op! hiermee kunnen andere telefoons in je auto de navigatie aanzetten/ aanpassen op deze telefoon.</string>
+
+    <string name="pref_navigation_app_title">Navigatie App</string>
+    <string name="pref_navigation_app_sum">Kies je app waarmee je wilt navigeren</string>
+    <string name="pref_navigation_app_def">Google Maps</string>
+    <string-array name="pref_navigation_app">
+        <item>Google Maps</item>
+        <item>Waze</item>
+    </string-array>
+    <string-array name="pref_navigation_app_data">
+        <item>Google Maps</item>
+        <item>Waze</item>
+    </string-array>
+
+    <string name="pref_navigation_follow_title">Volgen met noorden boven</string>
+    <string name="pref_navigation_follow_sum">Volg mezelf met het noorden altijd aan de bovenkant</string>
+
+    <!-- END NAVIGATION -->
 
         <!-- START CAT UPDATES -->
             <string name="pref_cat_updates">Updates</string>

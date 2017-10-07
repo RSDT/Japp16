@@ -4,18 +4,24 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.util.HashMap;
+
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
@@ -35,31 +41,42 @@ public class OsmMarker implements IMarker{
         MarkerOptions markerOptions = markerOptionsPair.first;
         this.setIcon(markerOptionsPair.second);
         this.setPosition(markerOptions.getPosition());
-        if (markerOptions.getTitle() == null){
-            markerOptions.title("");
-        }
-        try {
-            JSONObject mainObject = new JSONObject(markerOptions.getTitle());
-            String type = mainObject.getString("type");
-            JSONObject properties = mainObject.getJSONObject("properties");
-            StringBuilder buff = new StringBuilder();
-            if (type.equals("VOS")) {
 
-                buff.append(properties.getString("extra")).append("\n");
-                buff.append(properties.getString("time")).append("\n");
-                buff.append(properties.getString("note")).append("\n");
-                buff.append(properties.getString("team")).append("\n");
-            }else if(type.equals("HUNTER")){
-                buff.append(properties.getString("hunter")).append("\n");
-                buff.append(properties.getString("time")).append("\n");
-            }else {
-                buff.append(markerOptions.getTitle());
+        if(markerOptions.getTitle() != null && !markerOptions.getTitle().isEmpty()) {
+            StringBuilder buff = new StringBuilder();
+            MarkerIdentifier identifier = null;
+            try {
+                identifier = new Gson().fromJson(markerOptions.getTitle(), MarkerIdentifier.class);
             }
-            osmMarker.setTitle(buff.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            osmMarker.setTitle(markerOptions.getTitle());
+            catch(Exception e) {
+                Log.e("OsmMarker", e.toString());
+            }
+            if(identifier != null) {
+                HashMap<String, String> properties = identifier.getProperties();
+                switch (identifier.getType()) {
+                    case MarkerIdentifier.TYPE_VOS:
+                        buff.append(properties.get("extra")).append("\n");
+                        buff.append(properties.get("time")).append("\n");
+                        buff.append(properties.get("note")).append("\n");
+                        buff.append(properties.get("team")).append("\n");
+                        break;
+                    case MarkerIdentifier.TYPE_HUNTER:
+                        buff.append(properties.get("hunter")).append("\n");
+                        buff.append(properties.get("time")).append("\n");
+                        break;
+                    case MarkerIdentifier.TYPE_SC:
+                        buff.append(properties.get("name")).append("\n");
+                        buff.append(properties.get("adres")).append("\n");
+                        buff.append(properties.get("team")).append("\n");
+                        break;
+                }
+                osmMarker.setTitle(buff.toString());
+            } else {
+                osmMarker.setTitle(markerOptions.getTitle());
+            }
         }
+
+
 
         osmMarker.setOnMarkerClickListener(new org.osmdroid.views.overlay.Marker.OnMarkerClickListener() {
             @Override

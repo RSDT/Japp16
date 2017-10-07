@@ -2,21 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <PreferenceCategory android:title="@string/pref_cat_navigation">
-
-
-
-        <ListPreference
-            android:title="@string/pref_navigation_app_title"
-            android:key="pref_navigation_app"
-            android:summary="@string/pref_navigation_app_sum"
-            android:defaultValue="@string/pref_navigation_app_def"
-            android:entries="@array/pref_navigation_app"
-            android:entryValues="@array/pref_navigation_app_data"/>
-
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/pref_cat_account">
 
         <EditTextPreference
@@ -43,35 +28,7 @@
 
     </PreferenceCategory>
 
-
-    <PreferenceCategory android:title="@string/pref_cat_map">
-
-        <ListPreference
-            android:title="@string/pref_map_type_title"
-            android:summary="@string/pref_map_type_sum"
-            android:key="pref_map_type"
-            android:entries="@array/pref_map_type_options"
-            android:entryValues="@array/pref_map_type_options_data"
-            android:defaultValue="@string/pref_map_type_options_def"
-            />
-
-        <ListPreference
-            android:title="@string/pref_map_osm_source_title"
-            android:summary="@string/pref_map_osm_source_sum"
-            android:key="pref_map_osm_source"
-            android:entries="@array/pref_map_osm_source_options"
-            android:entryValues="@array/pref_map_osm_source_options_data"
-            android:defaultValue="@string/pref_map_osm_source_options_def"
-            />
-
-        <ListPreference
-            android:title="@string/pref_map_style_title"
-            android:summary="@string/pref_map_style_sum"
-            android:key="pref_map_style"
-            android:entries="@array/pref_map_style_options"
-            android:entryValues="@array/pref_map_style_options_data"
-            android:defaultValue="@string/pref_map_style_options_def"
-            />
+    <PreferenceCategory android:key="pref_cat_map" android:title="@string/pref_cat_map">
 
         <EditTextPreference
             android:title="@string/pref_map_hunt_name_title"
@@ -90,6 +47,23 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_cat_navigation">
+
+        <ListPreference
+            android:title="@string/pref_navigation_app_title"
+            android:key="pref_navigation_app"
+            android:summary="@string/pref_navigation_app_sum"
+            android:defaultValue="@string/pref_navigation_app_def"
+            android:entries="@array/pref_navigation_app"
+            android:entryValues="@array/pref_navigation_app_data"/>
+
+        <SwitchPreference
+            android:key="pref_navigation_follow_north"
+            android:title="@string/pref_navigation_follow_title"
+            android:summary="@string/pref_navigation_follow_sum"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_updates">
 
