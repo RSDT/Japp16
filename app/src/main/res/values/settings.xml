@@ -190,7 +190,7 @@
     <string name="pref_navigation_phone_sum">Let op! hiermee kunnen andere telefoons in je auto de navigatie aanzetten/ aanpassen op deze telefoon.</string>
 
     <string name="pref_navigation_app_title">Navigatie App</string>
-    <string name="pref_navigation_app_sum">Welke app wil je gebruiken om te navigeren?</string>
+    <string name="pref_navigation_app_sum">Kies je app waarmee je wilt navigeren</string>
     <string name="pref_navigation_app_def">Google Maps</string>
     <string-array name="pref_navigation_app">
         <item>Google Maps</item>
