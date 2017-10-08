@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.util.Pair;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.rsdt.japp.R;
@@ -66,6 +69,8 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
 
     private View snackBarView;
 
+    private ArrayList<LatLng> list;
+
     public void setSnackBarView(View snackBarView) {
         this.snackBarView = snackBarView;
     }
@@ -77,6 +82,21 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
         }
         activeSession = new FollowSession(before, zoom, aoa);
         return activeSession;
+    }
+
+    public void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            list = savedInstanceState.getParcelableArrayList(BUNDLE_KEY);
+        } else {
+            list = AppData.getObject(STORAGE_KEY, new TypeToken<ArrayList<LatLng>>() {}.getType());
+        }
+    }
+
+
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        if(tail != null) {
+            saveInstanceState.putParcelableArrayList(BUNDLE_KEY, new ArrayList<>(tail.getPoints()));
+        }
     }
 
     @Override
@@ -171,13 +191,8 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                         .width(3)
                         .color(Color.BLUE));
 
-        /**
-         * TODO: use the onSaveInstane way instead of loading the list of locations each time the fragment gets recreated.
-         * */
-        List<LatLng> list = AppData.getObject(STORAGE_KEY, new TypeToken<List<LatLng>>() {}.getType());
         if(list != null && !list.isEmpty()) {
             tail.setPoints(list);
-
             int last;
             if(list.size() > 1) {
                 last = list.size() - 1;
@@ -236,8 +251,12 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
             /**
              * Animate the camera to the new position
              * */
+            if(JappPreferences.followNorth()) {
+                jotiMap.cameraToLocation(true, location, zoom, aoa, 0);
+            } else {
+                jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
+            }
 
-            jotiMap.cameraToLocation(true, location, zoom, aoa, bearing);
         }
 
         public void end() {

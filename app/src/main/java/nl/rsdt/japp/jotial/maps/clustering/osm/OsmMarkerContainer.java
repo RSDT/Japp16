@@ -8,6 +8,7 @@ import android.util.Pair;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import org.osmdroid.bonuspack.clustering.MarkerClusterer;
 import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
@@ -20,6 +21,7 @@ import java.util.Map;
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
@@ -43,11 +45,15 @@ public class OsmMarkerContainer {
         MarkerOptions options = new MarkerOptions();
         Bitmap bm = BitmapFactory.decodeResource(Japp.getAppResources(), R.drawable.scouting_groep_icon_30x22 );
         options.position(info.getPosition());
-        StringBuilder buff = new StringBuilder();
-        buff.append(info.naam).append("\n");
-        buff.append(info.team).append("\n");
-        buff.append(info.adres).append("\n");
-        options.title(buff.toString());
+
+        MarkerIdentifier identifier = new MarkerIdentifier.Builder()
+                .setType(MarkerIdentifier.TYPE_SC)
+                .add("name", info.naam)
+                .add("adres", info.adres)
+                .add("team", info.team)
+                .create();
+        options.title(new Gson().toJson(identifier));
+
         IMarker marker = map.addMarker(new Pair<MarkerOptions, Bitmap>(options, bm));
         marker.remove();
         marker.setOnClickListener(new IMarker.OnClickListener() {
