@@ -165,7 +165,9 @@ public class OsmJotiMap implements IJotiMap{
     }
 
     public void snapshot(final IJotiMap.SnapshotReadyCallback snapshotReadyCallback) {
-        Bitmap bm = BitmapFactory.decodeResource(Japp.getAppResources(), R.drawable.about_bram);
+        this.osmMap.setDrawingCacheEnabled(true);
+        this.osmMap.buildDrawingCache();
+        Bitmap bm = this.osmMap.getDrawingCache();
         snapshotReadyCallback.onSnapshotReady(bm);
     }
 
