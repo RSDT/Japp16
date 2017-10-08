@@ -73,7 +73,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                 if (JappPreferences.isNavigationPhone()) {
                     try {
                         String mesg = "Japp: locatie ontvangen van "+ location.createdBy +", navigeren naar: " +location.lat+ ", " +location.lon;
-                        showToast(mesg, Toast.LENGTH_SHORT);
+                        showToast(mesg, Toast.LENGTH_LONG);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
                                 String uristr = "google.navigation:q=" + Double.toString(location.lat) + "," + Double.toString(location.lon);
@@ -101,7 +101,7 @@ public class LocationService extends LocationProviderService implements SharedPr
             @Override
             public void onNotInCar() {
                 String mesg = "Japp: Fout: Zet jezelf eerst in een auto via telegram.";
-                showToast(mesg, Toast.LENGTH_SHORT);
+                showToast(mesg, Toast.LENGTH_LONG);
             }
         });
     }
