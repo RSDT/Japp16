@@ -12,12 +12,15 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,6 +72,8 @@ public class LocationService extends LocationProviderService implements SharedPr
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
                 if (JappPreferences.isNavigationPhone()) {
                     try {
+                        String mesg = "locatie ontvangen, navigeren naar: " + location.lat+ ", " +location.lon;
+                        showToast(mesg, Toast.LENGTH_SHORT);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
                                 String uristr = "google.navigation:q=" + Double.toString(location.lat) + "," + Double.toString(location.lon);
@@ -88,7 +93,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                     } catch (ActivityNotFoundException e) {
                         System.out.println(e.toString());
                         String mesg = "De App: " + JappPreferences.navigationApp().toString() + " is niet geinstaleerd.";
-                        showLocationNotification(mesg, Color.rgb(113, 244, 66));
+                        showToast(mesg, Toast.LENGTH_SHORT);
                     }
                 }
             }
@@ -96,11 +101,22 @@ public class LocationService extends LocationProviderService implements SharedPr
             @Override
             public void onNotInCar() {
                 String mesg = "Fout: Zet jezelf eerst in een auto via telegram.";
-                showLocationNotification(mesg, Color.rgb(113, 244, 66));
+                showToast(mesg, Toast.LENGTH_SHORT);
             }
         });
     }
+    private void showToast(final String message, final int length){
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
 
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),
+                        message,
+                        length).show();
+            }
+        });
+    }
     private void showLocationNotification(String title, int color) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
