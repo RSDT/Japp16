@@ -697,7 +697,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                             if (autoInfo != null) {
                                                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                                 DatabaseReference ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar);
-                                                                ref.setValue(new Location(navigateTo));
+                                                                ref.setValue(new Location(navigateTo, JappPreferences.getAccountUsername()));
                                                             }
                                                         }
                                                         if (response.code() == 404){

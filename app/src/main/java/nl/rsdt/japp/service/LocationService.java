@@ -72,7 +72,7 @@ public class LocationService extends LocationProviderService implements SharedPr
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
                 if (JappPreferences.isNavigationPhone()) {
                     try {
-                        String mesg = "Japp: locatie ontvangen, navigeren naar: " +location.lat+ ", " +location.lon;
+                        String mesg = "Japp: locatie ontvangen van "+ location.createdBy +", navigeren naar: " +location.lat+ ", " +location.lon;
                         showToast(mesg, Toast.LENGTH_SHORT);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
