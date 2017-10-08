@@ -93,6 +93,8 @@ public class JappPreferences {
     public static final String NAVIGATION_APP = "pref_navigation_app";
 
     public static final String NAVIGATION_FOLLOW_NORTH = "pref_navigation_follow_north";
+  
+    public static final String IS_NAVIGATION_PHONE = "pref_navigation_phone";
 
     private static final String HUNTER_ALL = "pref_developer_hunter_all";
 
@@ -142,7 +144,7 @@ public class JappPreferences {
     }
 
     public static int getAccountId(){
-        return getVisiblePreferences().getInt(ACCOUNT_ID, -1);
+        return getAppPreferences().getInt(ACCOUNT_ID, -1);
     }
 
     /**
@@ -310,6 +312,10 @@ public class JappPreferences {
             return OsmMapType.Default;
         }
         return OsmMapType.valueOf(value);
+    }
+
+    public static boolean isNavigationPhone(){
+        return getVisiblePreferences().getBoolean(IS_NAVIGATION_PHONE, false);
     }
 
     public enum OsmMapType{

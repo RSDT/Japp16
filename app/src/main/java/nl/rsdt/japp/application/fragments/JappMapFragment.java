@@ -87,6 +87,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     private IJotiMap jotiMap;
     private MapView googleMapView;
+    private NavigationLocationManager navigationLocationManager ;
 
     public IJotiMap getJotiMap() {
         return jotiMap;
@@ -106,6 +107,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        navigationLocationManager = new NavigationLocationManager();
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
 
     }
@@ -371,6 +373,22 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         {
             callback.onMapReady(jotiMap);
         }
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(new LatLng(0,0))
+                .visible(true);
+        Bitmap icon = null;
+        final IMarker marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(markerOptions, icon));
+        navigationLocationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
+            @Override
+            public void onNewLocation(Location location) {
+                marker.setPosition(new LatLng(location.lat,location.lon));
+            }
+
+            @Override
+            public void onNotInCar() {
+                marker.setPosition(new LatLng(0,0));
+            }
+        });
     }
 
     private void setupDeelgebieden() {
@@ -669,8 +687,8 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                             }
                                         }else{
                                             int id = JappPreferences.getAccountId();
-                                            if (id >=0) {
-                                                AutoApi autoApi = Japp.getApi(AutoApi.class);
+                                            if (id >= 0) {
+                                                final AutoApi autoApi = Japp.getApi(AutoApi.class);
                                                 autoApi.getInfoById(JappPreferences.getAccountKey(), id).enqueue(new Callback<AutoInzittendeInfo>() {
                                                     @Override
                                                     public void onResponse(Call<AutoInzittendeInfo> call, Response<AutoInzittendeInfo> response) {
@@ -678,9 +696,13 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                             AutoInzittendeInfo autoInfo = response.body();
                                                             if (autoInfo != null) {
                                                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                                DatabaseReference ref = database.getReference("autos/" + autoInfo.autoEigenaar);
+                                                                DatabaseReference ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar);
                                                                 ref.setValue(new Location(navigateTo));
                                                             }
+                                                        }
+                                                        if (response.code() == 404){
+                                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                                            Snackbar.make(snackbarView, "Fout: plaats jezelf eerst in een auto via telegram.", Snackbar.LENGTH_LONG).show();
                                                         }
                                                     }
 
