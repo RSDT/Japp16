@@ -92,10 +92,13 @@ public class JappPreferences {
 
     public static final String NAVIGATION_APP = "pref_navigation_app";
 
-    private static final String HUNTER_ALL = "pref_developer_hunter_all";
+    public static final String HUNTER_ALL = "pref_developer_hunter_all";
 
-    private static final String LOAD_OLD_DATA = "pref_developer_load_old_data";
-    private static final String OSM_MAP_TYPE = "pref_map_osm_source";
+    public static final String IS_NAVIGATION_PHONE = "pref_navigation_phone";
+
+    public static final String LOAD_OLD_DATA = "pref_developer_load_old_data";
+
+    public static final String OSM_MAP_TYPE = "pref_map_osm_source";
 
 
     /**
@@ -304,6 +307,10 @@ public class JappPreferences {
         }
         return OsmMapType.valueOf(value);
     }
+    public static boolean isNavigationPhone(){
+        return getVisiblePreferences().getBoolean(IS_NAVIGATION_PHONE, false);
+    }
+
     public enum OsmMapType{
         Default,
         OpenTopo,

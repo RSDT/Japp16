@@ -3,17 +3,21 @@ package nl.rsdt.japp.service;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,7 +28,9 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.MainActivity;
+import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody;
+import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService;
 import nl.rsdt.japp.jotial.net.apis.HunterApi;
 import retrofit2.Call;
@@ -46,17 +52,53 @@ public class LocationService extends LocationProviderService implements SharedPr
     private boolean wasSending = false;
 
     Calendar lastUpdate = Calendar.getInstance();
-
+    private NavigationLocationManager locationManager;
     @Override
     public void onCreate() {
         super.onCreate();
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
         wasSending = JappPreferences.isUpdatingLocationToServer();
-        if(!wasSending) {
+        if (!wasSending) {
             showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
         } else {
             showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
         }
+        locationManager = new NavigationLocationManager();
+        locationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
+            @Override
+            public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
+                if (JappPreferences.isNavigationPhone()) {
+                    try {
+                        switch (JappPreferences.navigationApp()) {
+                            case GoogleMaps:
+                                String uristr = "google.navigation:q=" + Double.toString(location.lat) + "," + Double.toString(location.lon);
+                                Uri gmmIntentUri = Uri.parse(uristr);
+                                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mapIntent.setPackage("com.google.android.apps.maps");
+                                startActivity(mapIntent);
+                                break;
+                            case Waze:
+                                String uri = "waze://?ll=" + Double.toString(location.lat) + "," + Double.toString(location.lon) + "&navigate=yes";
+                                Intent wazeIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                                wazeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(wazeIntent);
+                                break;
+                        }
+                    } catch (ActivityNotFoundException e) {
+                        System.out.println(e.toString());
+                        String mesg = "De App: " + JappPreferences.navigationApp().toString() + " is niet geinstaleerd.";
+                        showLocationNotification(mesg, Color.rgb(113, 244, 66));
+                    }
+                }
+            }
+
+            @Override
+            public void onNotInCar() {
+                String mesg = "Fout: Zet jezelf eerst in een auto via telegram.";
+                showLocationNotification(mesg, Color.rgb(113, 244, 66));
+            }
+        });
     }
 
     private void showLocationNotification(String title, int color) {
