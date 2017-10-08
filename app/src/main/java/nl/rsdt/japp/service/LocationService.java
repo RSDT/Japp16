@@ -72,7 +72,7 @@ public class LocationService extends LocationProviderService implements SharedPr
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
                 if (JappPreferences.isNavigationPhone()) {
                     try {
-                        String mesg = "locatie ontvangen, navigeren naar: " + location.lat+ ", " +location.lon;
+                        String mesg = "Japp: locatie ontvangen, navigeren naar: " +location.lat+ ", " +location.lon;
                         showToast(mesg, Toast.LENGTH_SHORT);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
@@ -92,7 +92,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                         }
                     } catch (ActivityNotFoundException e) {
                         System.out.println(e.toString());
-                        String mesg = "De App: " + JappPreferences.navigationApp().toString() + " is niet geinstaleerd.";
+                        String mesg = "Japp: De App: " + JappPreferences.navigationApp().toString() + " is niet geinstaleerd.";
                         showToast(mesg, Toast.LENGTH_SHORT);
                     }
                 }
@@ -100,7 +100,7 @@ public class LocationService extends LocationProviderService implements SharedPr
 
             @Override
             public void onNotInCar() {
-                String mesg = "Fout: Zet jezelf eerst in een auto via telegram.";
+                String mesg = "Japp: Fout: Zet jezelf eerst in een auto via telegram.";
                 showToast(mesg, Toast.LENGTH_SHORT);
             }
         });
