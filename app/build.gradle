@@ -8,8 +8,8 @@ android {
         applicationId "nl.rsdt.japp"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 37
-        versionName "v3.1.1"
+        versionCode 39
+        versionName "v3.1.2-beta-e6f108"
         multiDexEnabled true
     }
     applicationVariants.all { variant ->
@@ -36,7 +36,6 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile 'com.google.firebase:firebase-core:11.0.4'
     compile 'com.google.firebase:firebase-messaging:11.0.4'
     compile 'com.google.firebase:firebase-crash:11.0.4'
@@ -54,5 +53,8 @@ dependencies {
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     compile 'org.osmdroid:osmdroid-android:5.6.5'
     compile 'com.github.MKergall:osmbonuspack:6.4'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.google.firebase:firebase-database:10.0.1'
+    testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -2,8 +2,11 @@ package nl.rsdt.japp.application.fragments;
 
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.view.View;
 
 import nl.rsdt.japp.BuildConfig;
@@ -34,6 +37,33 @@ public class JappPreferenceFragment extends PreferenceFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupIconChange();
+        PreferenceScreen screen = getPreferenceScreen();
+        PreferenceCategory map = (PreferenceCategory) screen.findPreference("pref_cat_map");
+        ListPreference type = new ListPreference(this.getActivity());
+        if(JappPreferences.useOSM()) {
+            type.setTitle(R.string.pref_map_osm_source_title);
+            type.setSummary(R.string.pref_map_osm_source_sum);
+            type.setEntries(R.array.pref_map_osm_source_options);
+            type.setEntryValues(R.array.pref_map_osm_source_options_data);
+            type.setDefaultValue(getString(R.string.pref_map_osm_source_options_def));
+        } else {
+            type.setTitle(R.string.pref_map_type_title);
+            type.setSummary(R.string.pref_map_type_sum);
+            type.setEntries(R.array.pref_map_type_options);
+            type.setEntryValues(R.array.pref_map_type_options_data);
+            type.setDefaultValue(getString(R.string.pref_map_type_options_def));
+            type.setDialogTitle(R.string.pref_map_type_dialog_title);
+
+            ListPreference style = new ListPreference(this.getActivity());
+            style.setTitle(R.string.pref_map_style_title);
+            style.setSummary(R.string.pref_map_style_sum);
+            style.setEntries(R.array.pref_map_style_options);
+            style.setEntryValues(R.array.pref_map_style_options_data);
+            style.setDefaultValue(getString(R.string.pref_map_style_options_def));
+            style.setDialogTitle(R.string.pref_map_style_dialog_title);
+            map.addPreference(style);
+        }
+        map.addPreference(type);
         EditTextPreference preference = (EditTextPreference)findPreference(JappPreferences.DEBUG_VERSION_NAME);
         preference.setText(getString(R.string.versionName));
     }

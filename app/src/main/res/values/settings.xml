@@ -2,7 +2,6 @@
 <resources>
 
     <!-- START SCREEN DEFAULT -->
-
         <!-- START CAT ACCOUNT-->
 
             <!--
@@ -79,7 +78,7 @@
             <string name="pref_map_type_title">Type</string>
             <string name="pref_map_type_sum">Verander hier het type van de kaart</string>
             <string name="pref_map_type_options_def">1</string>
-
+            <string name="pref_map_type_dialog_title">Kies je map type</string>
             <string-array name="pref_map_type_options">
                 <item>Normaal</item>
                 <item>Satelliet</item>
@@ -94,9 +93,53 @@
                 <item>4</item>
             </string-array>
 
+            <string name="pref_map_osm_source_title">Type OSM</string>
+            <string name="pref_map_osm_source_sum">Verander hier het type van de kaart. De kaart zelf blijft hetzelfde. Aan te raden: Mapnik, OpenTopo</string>
+            <string name="pref_map_osm_source_options_def">Default</string>
+
+            <string-array name="pref_map_osm_source_options">
+                <item>Default</item>
+                <item>OpenTopo</item>
+                <item>Mapnik</item>
+                <item>HikeBike</item>
+                <item>Public_Transport</item>
+                <item>Base_NL</item>
+                <item>Fiets_NL</item>
+                <item>Road_NL</item>
+                <item>OpenSeaMap</item>
+                <item>CloudMade_Small</item>
+                <item>CloudMade_Normal</item>
+                <item>USGS_Topo</item>
+                <item>USGS_Sat</item>
+                <item>ChartBundle_ENRH</item>
+                <item>ChartBundle_ENRL</item>
+                <item>ChartBundle_WAC</item>
+            </string-array>
+
+
+            <string-array name="pref_map_osm_source_options_data">
+                <item>Default</item>
+                <item>OpenTopo</item>
+                <item>Mapnik</item>
+                <item>HikeBike</item>
+                <item>Public_Transport</item>
+                <item>Base_NL</item>
+                <item>Fiets_NL</item>
+                <item>Road_NL</item>
+                <item>OpenSeaMap</item>
+                <item>CloudMade_Small</item>
+                <item>CloudMade_Normal</item>
+                <item>USGS_Topo</item>
+                <item>USGS_Sat</item>
+                <item>ChartBundle_ENRH</item>
+                <item>ChartBundle_ENRL</item>
+                <item>ChartBundle_WAC</item>
+            </string-array>
+
             <string name="pref_map_style_title">Stijl</string>
             <string name="pref_map_style_sum">Verander hier de stijl van de kaart</string>
             <string name="pref_map_style_options_def">2</string>
+            <string name="pref_map_style_dialog_title">Kies je map stijl</string>
 
             <string-array name="pref_map_style_options">
                 <item>Automatisch</item>
@@ -141,6 +184,28 @@
 
 
         <!-- END CAT -->
+
+    <!-- START CAT NAVIGATION -->
+    <string name="pref_cat_navigation">Navigatie</string>
+    <string name="pref_navigation_phone_title">Dit is de Navigatietelefoon</string>
+    <string name="pref_navigation_phone_sum">Let op! hiermee kunnen andere telefoons in je auto de navigatie aanzetten/ aanpassen op deze telefoon.</string>
+
+    <string name="pref_navigation_app_title">Navigatie App</string>
+    <string name="pref_navigation_app_sum">Kies je app waarmee je wilt navigeren</string>
+    <string name="pref_navigation_app_def">Google Maps</string>
+    <string-array name="pref_navigation_app">
+        <item>Google Maps</item>
+        <item>Waze</item>
+    </string-array>
+    <string-array name="pref_navigation_app_data">
+        <item>Google Maps</item>
+        <item>Waze</item>
+    </string-array>
+
+    <string name="pref_navigation_follow_title">Volgen met noorden boven</string>
+    <string name="pref_navigation_follow_sum">Volg mezelf met het noorden altijd aan de bovenkant</string>
+
+    <!-- END NAVIGATION -->
 
         <!-- START CAT UPDATES -->
             <string name="pref_cat_updates">Updates</string>
@@ -252,6 +317,11 @@
     <string name="pref_developer_debug_version_title">Versie</string>
     <string name="pref_developer_debug_version_sum">Hier kan je de versie van Japp bekijken</string>
 
+    <string name="pref_developer_hunter_all_title">Haal alle hunter op</string>
+    <string name="pref_developer_hunter_all_sum">haal alle hunters op inclusief jezelf</string>
+
+    <string name="pref_developer_load_old_data_title">Laad oude data in.</string>
+    <string name="pref_developer_load_old_data_sum">Laad oude data in van de vorige keer dat de app draaide. Let op als deze uit staat wordt je eigen tail continu gewist.</string>
 
     <string name="pref_cat_developer_random">Random</string>
 

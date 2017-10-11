@@ -129,7 +129,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
         switch (event) {
             case Snackbar.Callback.DISMISS_EVENT_SWIPE:
                 if (callback != null) {
-                    callback.onNavigationCompleted(null);
+                    callback.onNavigationCompleted(null, false);
                 }
                 break;
         }
@@ -145,7 +145,18 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
                     if (marker != null) {
                         LatLng pos = marker.getPosition();
                         marker.remove();
-                        callback.onNavigationCompleted(pos);
+                        callback.onNavigationCompleted(pos, false);
+                    }
+                }
+                break;
+            case DialogInterface.BUTTON_NEUTRAL:
+                if (callback != null) {
+                    //String title = ((TextView) dialog.findViewById(R.id.navigation_dialog_title_edit)).getText().toString();
+                    //String description = ((TextView) dialog.findViewById(R.id.navigation_dialog_description_edit)).getText().toString();
+                    if (marker != null) {
+                        LatLng pos = marker.getPosition();
+                        marker.remove();
+                        callback.onNavigationCompleted(pos, true); // // TODO: 30/09/17
                     }
                 }
                 break;
@@ -183,7 +194,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     }
 
     private void moveMarker(LatLng latLng, boolean priority){
-        if (priority || System.currentTimeMillis() - lastmoved > 800) {
+        if (priority || System.currentTimeMillis() - lastmoved > 800) {// // TODO: 01/10/17 magic number
             navigator.setEndLocation(latLng);
             if (!marker.isVisible()) marker.setVisible(true);
             marker.setPosition(latLng);
@@ -235,7 +246,8 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
             View view = inflater.inflate(R.layout.navigation_input_dialog, null);
             buffer.dialog = new android.app.AlertDialog.Builder(context)
                     .setCancelable(false)
-                    .setPositiveButton("Bevestigen", buffer)
+                    .setPositiveButton("Zelf navigeren", buffer)
+                    .setNeutralButton("Op de Navigatie Navigeren", buffer)
                     .setNegativeButton("Annuleren", buffer)
                     .setView(view)
                     .create();
@@ -259,6 +271,6 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
      * Description...
      */
     public interface OnNavigationCompletedCallback {
-        void onNavigationCompleted(LatLng navigateTo);
+        void onNavigationCompleted(LatLng navigateTo, boolean toNavigationPhone);
     }
 }

@@ -8,6 +8,7 @@ import android.os.Message;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.osmdroid.bonuspack.routing.GoogleRoadManager;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -48,7 +49,9 @@ public class Navigator {
         }
     }
     public void clear(){
-        oldPolyline.remove();
+        if (oldPolyline != null){
+            oldPolyline.remove();
+        }
     }
     public void setPolyline(Polyline newPolyline){
         if (oldPolyline != null){
@@ -82,7 +85,7 @@ public class Navigator {
         }
         @Override
         protected Polyline doInBackground(LatLng... params) {
-            RoadManager roadManager = new OSRMRoadManager(Japp.getInstance().getApplicationContext());
+            RoadManager roadManager = new GoogleRoadManager();
             ArrayList<GeoPoint> waypoints = new ArrayList<>();
             for (LatLng p : params){
                 waypoints.add(new GeoPoint(p.latitude,p.longitude));

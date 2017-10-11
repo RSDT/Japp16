@@ -1,14 +1,17 @@
 package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +20,16 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.util.HashMap;
 
@@ -30,6 +38,10 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody;
+import nl.rsdt.japp.jotial.data.firebase.Location;
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
+import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
+import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.movement.MovementManager;
 import nl.rsdt.japp.jotial.maps.pinning.Pin;
@@ -38,10 +50,13 @@ import nl.rsdt.japp.jotial.maps.pinning.PinningSession;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.sighting.SightingSession;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
+import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
 import nl.rsdt.japp.jotial.navigation.NavigationSession;
+import nl.rsdt.japp.jotial.net.apis.AutoApi;
+import nl.rsdt.japp.jotial.net.apis.UserApi;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.ServiceManager;
@@ -72,6 +87,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     private IJotiMap jotiMap;
     private MapView googleMapView;
+    private NavigationLocationManager navigationLocationManager ;
 
     public IJotiMap getJotiMap() {
         return jotiMap;
@@ -85,20 +101,25 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     private HashMap<String, IPolygon> areas = new HashMap<>();
 
+
+
     private boolean osmActive = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        navigationLocationManager = new NavigationLocationManager();
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         pinningManager.intialize(getActivity());
         pinningManager.onCreate(savedInstanceState);
+
+        movementManager.onCreate(savedInstanceState);
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map, container, false);
@@ -131,12 +152,65 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
         Context ctx = getActivity().getApplication();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        osmView.setTileSource(TileSourceFactory.MAPNIK);
+        switch (JappPreferences.getOsmMapSource()){
+            case Mapnik:
+                osmView.setTileSource(TileSourceFactory.MAPNIK);
+                break;
+            case OpenSeaMap:
+                osmView.setTileSource(TileSourceFactory.OPEN_SEAMAP);
+                break;
+            case HikeBike:
+                osmView.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+                break;
+            case OpenTopo:
+                osmView.setTileSource(TileSourceFactory.OpenTopo);
+                break;
+            case Fiets_NL:
+                osmView.setTileSource(TileSourceFactory.FIETS_OVERLAY_NL);
+                break;
+            case Default:
+                osmView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+                break;
+            case CloudMade_Normal:
+                osmView.setTileSource(TileSourceFactory.CLOUDMADESTANDARDTILES);
+                break;
+            case CloudMade_Small:
+                osmView.setTileSource(TileSourceFactory.CLOUDMADESMALLTILES);
+                break;
+            case ChartBundle_ENRH:
+                osmView.setTileSource(TileSourceFactory.ChartbundleENRH);
+                break;
+            case ChartBundle_ENRL:
+                osmView.setTileSource(TileSourceFactory.ChartbundleENRH);
+                break;
+            case ChartBundle_WAC:
+                osmView.setTileSource(TileSourceFactory.ChartbundleWAC);
+                break;
+            case USGS_Sat:
+                osmView.setTileSource(TileSourceFactory.USGS_SAT);
+                break;
+            case USGS_Topo:
+                osmView.setTileSource(TileSourceFactory.USGS_TOPO);
+                break;
+            case Public_Transport:
+                osmView.setTileSource(TileSourceFactory.PUBLIC_TRANSPORT);
+                break;
+            case Road_NL:
+                osmView.setTileSource(TileSourceFactory.ROADS_OVERLAY_NL);
+                break;
+            case Base_NL:
+                osmView.setTileSource(TileSourceFactory.BASE_OVERLAY_NL);
+                break;
+            default:
+                osmView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+                break;
+        }
         osmView.getController().setCenter(new GeoPoint(51.958852, 5.954517));
         osmView.getController().setZoom(11);
         osmView.setBuiltInZoomControls(true);
         osmView.setMultiTouchControls(true);
         osmView.setFlingEnabled(true);
+        osmView.setTilesScaledToDpi(true);
 
         if (savedInstanceState != null) {
             Bundle osmbundle = savedInstanceState.getBundle(OSM_BUNDLE);
@@ -196,6 +270,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        movementManager.onSaveInstanceState(savedInstanceState);
         pinningManager.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(BUNDLE_OSM_ACTIVE, osmActive);
         if (!osmActive) {
@@ -298,6 +373,22 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         {
             callback.onMapReady(jotiMap);
         }
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(new LatLng(0,0))
+                .visible(true);
+        Bitmap icon = null;
+        final IMarker marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(markerOptions, icon));
+        navigationLocationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
+            @Override
+            public void onNewLocation(Location location) {
+                marker.setPosition(new LatLng(location.lat,location.lon));
+            }
+
+            @Override
+            public void onNotInCar() {
+                marker.setPosition(new LatLng(0,0));
+            }
+        });
     }
 
     private void setupDeelgebieden() {
@@ -567,18 +658,61 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                             .setJotiMap(jotiMap)
                             .setCallback(new NavigationSession.OnNavigationCompletedCallback() {
                                 @Override
-                                public void onNavigationCompleted(LatLng navigateTo) {
+                                public void onNavigationCompleted(final LatLng navigateTo, boolean toNavigationPhone) {
                                     FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
                                     menu.showMenu(true);
 
                                     session.end();
                                     session = null;
                                     if (navigateTo != null) {
-                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
-                                        Uri gmmIntentUri = Uri.parse(uristr);
-                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                                        mapIntent.setPackage("com.google.android.apps.maps");
-                                        startActivity(mapIntent);
+                                        if (!toNavigationPhone) {
+                                            try{
+                                                switch(JappPreferences.navigationApp()){
+                                                    case GoogleMaps:
+                                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
+                                                        Uri gmmIntentUri = Uri.parse(uristr);
+                                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                                        startActivity(mapIntent);
+                                                        break;
+                                                    case Waze:
+                                                        String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.longitude) +"&navigate=yes";
+                                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+                                                        break;
+                                                }
+                                            } catch (ActivityNotFoundException e){
+                                                System.out.println(e.toString());
+                                                View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                                Snackbar.make(snackbarView, "De App: " + JappPreferences.navigationApp().toString() +" is niet geinstaleerd.", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                            }
+                                        }else{
+                                            int id = JappPreferences.getAccountId();
+                                            if (id >= 0) {
+                                                final AutoApi autoApi = Japp.getApi(AutoApi.class);
+                                                autoApi.getInfoById(JappPreferences.getAccountKey(), id).enqueue(new Callback<AutoInzittendeInfo>() {
+                                                    @Override
+                                                    public void onResponse(Call<AutoInzittendeInfo> call, Response<AutoInzittendeInfo> response) {
+                                                        if (response.code() == 200) {
+                                                            AutoInzittendeInfo autoInfo = response.body();
+                                                            if (autoInfo != null) {
+                                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                                DatabaseReference ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar);
+                                                                ref.setValue(new Location(navigateTo, JappPreferences.getAccountUsername()));
+                                                            }
+                                                        }
+                                                        if (response.code() == 404){
+                                                            View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
+                                                            Snackbar.make(snackbarView, "Fout: plaats jezelf eerst in een auto via telegram.", Snackbar.LENGTH_LONG).show();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<AutoInzittendeInfo> call, Throwable t) {
+
+                                                    }
+                                                });
+                                            }
+                                        }
                                     }
 
                                 }

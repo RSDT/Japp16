@@ -101,7 +101,7 @@ public class ScoutingGroepController implements Recreatable, IntentCreatable, Ma
             GoogleJotiMap googleJotiMap = (GoogleJotiMap) jotiMap;
             clusterManager = new ScoutingGroepClusterManager(Japp.getInstance(), googleJotiMap.getGoogleMap());
         } else if (jotiMap instanceof OsmJotiMap) {
-            clusterManager = new OsmScoutingGroepClusterManager(jotiMap);
+            clusterManager = new OsmScoutingGroepClusterManager((OsmJotiMap) jotiMap);
         }else {
             clusterManager = new NoneClusterManager();
         }
