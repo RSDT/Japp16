@@ -53,6 +53,10 @@ public class ScoutingGroepRenderer extends DefaultClusterRenderer<ScoutingGroepI
         }
     }
 
+    public void update() {
+        onClustersChanged(null);
+    }
+
     @Override
     protected void onClusterItemRendered(ScoutingGroepInfo clusterItem, Marker marker) {
         super.onClusterItemRendered(clusterItem, marker);

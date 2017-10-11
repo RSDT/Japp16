@@ -20,6 +20,7 @@ import java.util.Set;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
+import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepClusterManager;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
@@ -303,7 +304,12 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
                     }
                 }
 
-                sgController.getClusterManager().cluster();
+
+                //TODO: make this nicer and less hacky
+                if(sgController.getClusterManager() instanceof ScoutingGroepClusterManager) {
+                    ScoutingGroepClusterManager clusterManager = (ScoutingGroepClusterManager) sgController.getClusterManager();
+                    clusterManager.reRender();
+                }
 
                 break;
             case JappPreferences.MAP_TYPE:
