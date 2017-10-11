@@ -371,7 +371,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         movementManager.onMapReady(jotiMap);
 
         setupDeelgebieden();
-        
+
         pinningManager.onMapReady(jotiMap);
         if(callback != null)
         {
