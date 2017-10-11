@@ -83,6 +83,13 @@ public class ScoutingGroepRenderer extends DefaultClusterRenderer<ScoutingGroepI
 
     @Override
     protected boolean shouldRenderAsCluster(Cluster<ScoutingGroepInfo> cluster) {
+        Deelgebied deelgebied = Deelgebied.resolveOnLocation(cluster.getPosition());
+        if(deelgebied != null) {
+            Set<String> enabled = JappPreferences.getAreasEnabled();
+            if(!enabled.contains(deelgebied.getName())) {
+                return false;
+            }
+        }
         return super.shouldRenderAsCluster(cluster);
     }
 
