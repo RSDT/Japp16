@@ -33,4 +33,9 @@ public class GoogleCircle implements ICircle{
     public void setRadius(float radius) {
         googleCircle.setRadius(radius);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        googleCircle.setVisible(visible);
+    }
 }

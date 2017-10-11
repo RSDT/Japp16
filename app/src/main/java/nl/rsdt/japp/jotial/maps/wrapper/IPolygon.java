@@ -20,4 +20,6 @@ public interface IPolygon {
     public void setStrokeWidth(int strokeWidth);
 
     public void setFillColor(int color);
+
+    void setVisible(boolean visible);
 }

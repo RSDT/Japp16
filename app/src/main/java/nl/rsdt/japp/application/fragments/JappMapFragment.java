@@ -31,7 +31,11 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
@@ -392,31 +396,33 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     }
 
     private void setupDeelgebieden() {
-        Deelgebied[] all = Deelgebied.all();
-        Deelgebied current;
-        for(int i = 0; i < all.length; i++)
-        {
-            current = all[i];
-
-            if(!current.getCoordinates().isEmpty()) {
-                PolygonOptions options = new PolygonOptions().addAll(current.getCoordinates());
-                if(JappPreferences.getAreasColorEnabled()) {
-                    int alphaPercent = JappPreferences.getAreasColorAlpha();
-                    float alpha = ((float)(100 - alphaPercent))/100 * 255;
-                    options.fillColor(current.alphaled(Math.round(alpha)));
-                } else {
-                    options.fillColor(Color.TRANSPARENT);
-                }
-
-                options.strokeColor(current.getColor());
-                if(JappPreferences.getAreasEdgesEnabled()) {
-                    options.strokeWidth(JappPreferences.getAreasEdgesWidth());
-                } else {
-                    options.strokeWidth(0);
-                }
-
-                areas.put(current.getName(), jotiMap.addPolygon(options));
+        Set<String> enabled = JappPreferences.getAreasEnabled();
+        for(String area : enabled) {
+            if(!areas.containsKey(area)) {
+                setupDeelgebied(Deelgebied.parse(area));
             }
+        }
+    }
+
+    public void setupDeelgebied(Deelgebied deelgebied) {
+        if(!deelgebied.getCoordinates().isEmpty()) {
+            PolygonOptions options = new PolygonOptions().addAll(deelgebied.getCoordinates());
+            if(JappPreferences.getAreasColorEnabled()) {
+                int alphaPercent = JappPreferences.getAreasColorAlpha();
+                float alpha = ((float)(100 - alphaPercent))/100 * 255;
+                options.fillColor(deelgebied.alphaled(Math.round(alpha)));
+            } else {
+                options.fillColor(Color.TRANSPARENT);
+            }
+
+            options.strokeColor(deelgebied.getColor());
+            if(JappPreferences.getAreasEdgesEnabled()) {
+                options.strokeWidth(JappPreferences.getAreasEdgesWidth());
+            } else {
+                options.strokeWidth(0);
+            }
+
+            areas.put(deelgebied.getName(), jotiMap.addPolygon(options));
         }
     }
 
@@ -426,6 +432,28 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         switch (key){
             case JappPreferences.USE_OSM:
 
+                break;
+            case JappPreferences.AREAS:
+                if(jotiMap == null) break;
+                Set<String> enabled = JappPreferences.getAreasEnabled();
+                for(String area : enabled) {
+                    if(!areas.containsKey(area)) {
+                        setupDeelgebied(Deelgebied.parse(area));
+                    }
+                }
+
+                List<String> toBeRemoved = new ArrayList<>();
+                for(String area : areas.keySet()) {
+                    if(!enabled.contains(area)) {
+                        IPolygon poly = areas.get(area);
+                        poly.remove();
+                        toBeRemoved.add(area);
+                    }
+                }
+
+                for(String area : toBeRemoved) {
+                    areas.remove(area);
+                }
                 break;
             case JappPreferences.AREAS_EDGES:
                 boolean edges = JappPreferences.getAreasEdgesEnabled();

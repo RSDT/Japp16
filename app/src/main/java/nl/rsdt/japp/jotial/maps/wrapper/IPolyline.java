@@ -20,4 +20,6 @@ public interface IPolyline {
     public List<LatLng> getPoints();
 
     public void setPoints(List<LatLng> points) ;
+
+    void setVisible(boolean visible);
 }

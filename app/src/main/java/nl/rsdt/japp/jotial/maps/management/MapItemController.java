@@ -85,6 +85,8 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
     protected O buffer;
 
+    protected boolean visiblity = true;
+
     @Override
     public void onIntentCreate(Bundle bundle) {
         if(bundle != null) {
@@ -168,27 +170,58 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
     protected void processResult(O result)
     {
         ArrayList<Pair<MarkerOptions, Bitmap>> markers = result.getMarkers();
+        IMarker marker;
         for(int m = 0; m < markers.size(); m++)
         {
-            this.markers.add(jotiMap.addMarker(markers.get(m)));
+            marker = jotiMap.addMarker(markers.get(m));
+            marker.setVisible(visiblity);
+            this.markers.add(marker);
         }
 
         ArrayList<PolylineOptions> polylines = result.getPolylines();
+        IPolyline polyline;
         for(int p = 0; p < polylines.size(); p++)
         {
-            this.polylines.add(jotiMap.addPolyline(polylines.get(p)));
+            polyline = jotiMap.addPolyline(polylines.get(p));
+            polyline.setVisible(visiblity);
+            this.polylines.add(polyline);
         }
 
         ArrayList<PolygonOptions> polygons = result.getPolygons();
+        IPolygon polygon;
         for(int g = 0; g < polygons.size(); g++)
         {
-            this.polygons.add(jotiMap.addPolygon(polygons.get(g)));
+            polygon = jotiMap.addPolygon(polygons.get(g));
+            polygon.setVisible(visiblity);
+            this.polygons.add(polygon);
         }
 
         ArrayList<CircleOptions> circles = result.getCircles();
         for(int c = 0; c < circles.size(); c++)
         {
-            this.circles.add(jotiMap.addCircle(circles.get(c)));
+            ICircle circle = jotiMap.addCircle(circles.get(c));
+            circle.setVisible(visiblity);
+            this.circles.add(circle);
+        }
+    }
+
+    public void setVisiblity(boolean visiblity) {
+        this.visiblity = visiblity;
+
+        for(int i = 0; i < markers.size(); i++) {
+            markers.get(i).setVisible(visiblity);
+        }
+
+        for(int i = 0; i < polylines.size(); i++) {
+            polylines.get(i).setVisible(visiblity);
+        }
+
+        for(int i = 0; i < polygons.size(); i++) {
+            polygons.get(i).setVisible(visiblity);
+        }
+
+        for(int i = 0; i < circles.size(); i++) {
+            circles.get(i).setVisible(visiblity);
         }
     }
 

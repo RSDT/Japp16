@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import nl.rsdt.japp.jotial.maps.MapStyle;
@@ -77,6 +78,8 @@ public class JappPreferences {
     public static final String AUTO_ENLARGMENT_INTERVAL = "pref_advanced_auto_enlargement_interval";
 
     public static final String WALK_SPEED = "pref_advanced_auto_enlargement_walking_speed";
+
+    public static final String AREAS = "pref_advanced_areas";
 
     public static final String AREAS_EDGES = "pref_advanced_areas_edges";
 
@@ -260,6 +263,10 @@ public class JappPreferences {
 
     public static float getWalkSpeed() {
         return Float.parseFloat(getVisiblePreferences().getString(WALK_SPEED, "6.0f"));
+    }
+
+    public static Set<String> getAreasEnabled() {
+        return getVisiblePreferences().getStringSet(AREAS, new HashSet<String>());
     }
 
     public static boolean getAreasEdgesEnabled() {

@@ -35,4 +35,9 @@ public class GooglePolygon implements IPolygon{
     public void setFillColor(int color) {
         googlePolygon.setFillColor(color);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        googlePolygon.setVisible(visible);
+    }
 }
