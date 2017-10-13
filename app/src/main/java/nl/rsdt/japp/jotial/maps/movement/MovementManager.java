@@ -147,6 +147,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
 
                 int color = deelgebied.getColor();
                 List<LatLng> coordinates = tail.getPoints();
+                tail.remove();
                 tail = jotiMap.addPolyline(
                         new PolylineOptions()
                                 .width(3)
