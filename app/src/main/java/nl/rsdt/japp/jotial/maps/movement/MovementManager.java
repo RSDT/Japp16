@@ -144,6 +144,14 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                  * Subscribe to the new deelgebied messages.
                  * */
                 FirebaseMessaging.getInstance().subscribeToTopic(deelgebied.getName());
+
+                int color = deelgebied.getColor();
+                List<LatLng> coordinates = tail.getPoints();
+                tail = jotiMap.addPolyline(
+                        new PolylineOptions()
+                                .width(3)
+                                .color(Color.rgb(255 - Color.red(color), 255 - Color.green(color), 255 - Color.blue(color)))
+                                .addAll(coordinates));
             }
         }
         if (marker  != null) {
