@@ -95,7 +95,7 @@
 
             <string name="pref_map_osm_source_title">Type OSM</string>
             <string name="pref_map_osm_source_sum">Verander hier het type van de kaart. De kaart zelf blijft hetzelfde. Aan te raden: Mapnik, OpenTopo</string>
-            <string name="pref_map_osm_source_options_def">Default</string>
+            <string name="pref_map_osm_source_options_def">OpenTopo</string>
 
             <string-array name="pref_map_osm_source_options">
                 <item>Default</item>
