@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -60,11 +61,11 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     }
     private void initialize() {
         snackbar = Snackbar.make(targetView, "Markeer een positie op de kaart om naar toe te navigeren. Swipe dit weg om te annuleren", Snackbar.LENGTH_INDEFINITE);
-        ;
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
 
         marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp))
                 .visible(true)
                 .position(new LatLng(0, 0)), null));
     }
