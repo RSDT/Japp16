@@ -37,4 +37,10 @@ public class GooglePolyline implements IPolyline {
     public void setPoints(List<LatLng> points) {
         googlePolyline.setPoints(points);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        googlePolyline.setVisible(visible);
+    }
 }
+

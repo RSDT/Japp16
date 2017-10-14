@@ -18,4 +18,6 @@ public interface ICircle {
     public void remove();
 
     public void setRadius(float radius);
+
+    void setVisible(boolean visible);
 }

@@ -18,6 +18,11 @@ import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
  */
 public class ScoutingGroepClusterManager extends ClusterManager<ScoutingGroepInfo> implements ClusterManagerInterface {
 
+
+    protected Context context;
+
+    protected GoogleMap map;
+
     /**
      * The algorithm used for the clustering.
      * */
@@ -33,12 +38,20 @@ public class ScoutingGroepClusterManager extends ClusterManager<ScoutingGroepInf
      * */
     public ScoutingGroepClusterManager(Context context, GoogleMap map) {
         super(context, map);
+        this.context = context;
+        this.map = map;
         setAlgorithm(algorithm);
         renderer = new ScoutingGroepRenderer(context, map, this);
         setRenderer(renderer);
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(this);
     }
+
+    public void reRender() {
+        renderer = new ScoutingGroepRenderer(context, map, this);
+        setRenderer(renderer);
+    }
+
 
     @Override
     public void addItems(ArrayList<ScoutingGroepInfo> buffer) {

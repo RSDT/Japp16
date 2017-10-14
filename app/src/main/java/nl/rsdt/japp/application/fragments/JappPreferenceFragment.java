@@ -41,12 +41,14 @@ public class JappPreferenceFragment extends PreferenceFragment {
         PreferenceCategory map = (PreferenceCategory) screen.findPreference("pref_cat_map");
         ListPreference type = new ListPreference(this.getActivity());
         if(JappPreferences.useOSM()) {
+            type.setKey("pref_map_osm_source");
             type.setTitle(R.string.pref_map_osm_source_title);
             type.setSummary(R.string.pref_map_osm_source_sum);
             type.setEntries(R.array.pref_map_osm_source_options);
             type.setEntryValues(R.array.pref_map_osm_source_options_data);
             type.setDefaultValue(getString(R.string.pref_map_osm_source_options_def));
         } else {
+            type.setKey("pref_map_type");
             type.setTitle(R.string.pref_map_type_title);
             type.setSummary(R.string.pref_map_type_sum);
             type.setEntries(R.array.pref_map_type_options);
@@ -55,6 +57,7 @@ public class JappPreferenceFragment extends PreferenceFragment {
             type.setDialogTitle(R.string.pref_map_type_dialog_title);
 
             ListPreference style = new ListPreference(this.getActivity());
+            style.setKey("pref_map_style");
             style.setTitle(R.string.pref_map_style_title);
             style.setSummary(R.string.pref_map_style_sum);
             style.setEntries(R.array.pref_map_style_options);

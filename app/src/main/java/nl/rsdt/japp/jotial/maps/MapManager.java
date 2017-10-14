@@ -20,6 +20,7 @@ import java.util.Set;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.SplashActivity;
+import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepClusterManager;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable;
@@ -31,6 +32,7 @@ import nl.rsdt.japp.jotial.maps.management.controllers.EchoVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.FotoOpdrachtController;
 import nl.rsdt.japp.jotial.maps.management.controllers.FoxtrotVosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.HunterController;
+import nl.rsdt.japp.jotial.maps.management.controllers.VosController;
 import nl.rsdt.japp.jotial.maps.management.controllers.XrayVosController;
 import nl.rsdt.japp.jotial.maps.searching.Searchable;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
@@ -196,6 +198,34 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
         return (T)controllers.get(id);
     }
 
+    @SuppressWarnings("unchecked")
+    @Nullable
+    /**
+     * Gets the MapItemController associated with the given id.
+     *
+     * @param id The id of the MapItemController, for example VosAlphaController.CONTROLLER_ID .
+     * @return The MapItemController associated with the id, returns null if none.
+     * */
+    public <T extends VosController> T getVosControllerByDeelgebied(String deelgebied) {
+        switch (deelgebied) {
+            case "alpha":
+                return get(AlphaVosController.CONTROLLER_ID);
+            case "bravo":
+                return get(BravoVosController.CONTROLLER_ID);
+            case "charlie":
+                return get(CharlieVosController.CONTROLLER_ID);
+            case "delta":
+                return get(DeltaVosController.CONTROLLER_ID);
+            case "echo":
+                return get(EchoVosController.CONTROLLER_ID);
+            case "foxtrot":
+                return get(FoxtrotVosController.CONTROLLER_ID);
+        }
+        return null;
+    }
+
+
+
     /**
      * Gets all the controllers.
      * */
@@ -258,6 +288,30 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
+            case JappPreferences.AREAS:
+
+                for(MapItemController controller : controllers.values()) {
+                    if(controller instanceof VosController) {
+                        controller.setVisiblity(false);
+                    }
+                }
+
+                Set<String> enabled = JappPreferences.getAreasEnabled();
+                for(String area : enabled) {
+                    VosController controller = getVosControllerByDeelgebied(area);
+                    if(controller != null) {
+                        controller.setVisiblity(true);
+                    }
+                }
+
+
+                //TODO: make this nicer and less hacky
+                if(sgController.getClusterManager() instanceof ScoutingGroepClusterManager) {
+                    ScoutingGroepClusterManager clusterManager = (ScoutingGroepClusterManager) sgController.getClusterManager();
+                    clusterManager.reRender();
+                }
+
+                break;
             case JappPreferences.MAP_TYPE:
                 if(jotiMap != null) {
                     String value = sharedPreferences.getString(key, String.valueOf(GoogleMap.MAP_TYPE_NORMAL));
@@ -318,19 +372,17 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
 
         Set<String> controls = JappPreferences.getMapControls();
         if(controls != null) {
-            //// TODO: 07/08/17 why the for loop?
-            for(String property : controls) {
-                jotiMap.getUiSettings().setZoomControlsEnabled(controls.contains(String.valueOf(MapControls.ZOOM)));
-                jotiMap.getUiSettings().setCompassEnabled(controls.contains(String.valueOf(MapControls.COMPASS)));
-                jotiMap.getUiSettings().setIndoorLevelPickerEnabled(controls.contains(String.valueOf(MapControls.LEVEL)));
-                jotiMap.getUiSettings().setMapToolbarEnabled(controls.contains(String.valueOf(MapControls.TOOLBAR)));
-            }
+            jotiMap.getUiSettings().setZoomControlsEnabled(controls.contains(String.valueOf(MapControls.ZOOM)));
+            jotiMap.getUiSettings().setCompassEnabled(controls.contains(String.valueOf(MapControls.COMPASS)));
+            jotiMap.getUiSettings().setIndoorLevelPickerEnabled(controls.contains(String.valueOf(MapControls.LEVEL)));
+            jotiMap.getUiSettings().setMapToolbarEnabled(controls.contains(String.valueOf(MapControls.TOOLBAR)));
         }
 
         /**
          * Checks if this is the first instance of MapManager.
          * */
         if(!isRecreated) {
+
             /**
              * Move the camera to the default position(Netherlands).
              * */
@@ -353,6 +405,22 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
             }
         }
         sgController.onMapReady(jotiMap);
+
+        for(MapItemController controller : controllers.values()) {
+            if(controller instanceof VosController) {
+                controller.setVisiblity(false);
+            }
+        }
+
+        Set<String> enabled = JappPreferences.getAreasEnabled();
+        for(String area : enabled) {
+            VosController controller = getVosControllerByDeelgebied(area);
+            if(controller != null) {
+                controller.setVisiblity(true);
+            }
+        }
+
+
     }
 
     /**

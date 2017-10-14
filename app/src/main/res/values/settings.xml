@@ -95,7 +95,7 @@
 
             <string name="pref_map_osm_source_title">Type OSM</string>
             <string name="pref_map_osm_source_sum">Verander hier het type van de kaart. De kaart zelf blijft hetzelfde. Aan te raden: Mapnik, OpenTopo</string>
-            <string name="pref_map_osm_source_options_def">Default</string>
+            <string name="pref_map_osm_source_options_def">HikeBike</string>
 
             <string-array name="pref_map_osm_source_options">
                 <item>Default</item>
@@ -187,8 +187,8 @@
 
     <!-- START CAT NAVIGATION -->
     <string name="pref_cat_navigation">Navigatie</string>
-    <string name="pref_navigation_phone_title">Dit is de Navigatietelefoon</string>
-    <string name="pref_navigation_phone_sum">Let op! hiermee kunnen andere telefoons in je auto de navigatie aanzetten/ aanpassen op deze telefoon.</string>
+    <string name="pref_navigation_phone_title">Navigatie Telefoon</string>
+    <string name="pref_navigation_phone_sum">Let op! Hiermee kunnen andere telefoons in je auto de navigatie aanzetten/aanpassen op deze telefoon.</string>
 
     <string name="pref_navigation_app_title">Navigatie App</string>
     <string name="pref_navigation_app_sum">Kies je app waarmee je wilt navigeren</string>
@@ -278,6 +278,35 @@
     <string name="pref_advanced_hunter_update_interval_sum">De interval waarmee de hunters worden binnengehaald in minuten</string>
 
     <string name="pref_advanced_cat_areas">Deelgebieden</string>
+
+    <string name="pref_advanced_areas_options_title">Deelgebieden</string>
+    <string name="pref_advanced_areas_options_sum">Kies welke deelgebieden je wilt zien</string>
+    <string-array name="pref_advanced_areas_options">
+        <item>Alpha</item>
+        <item>Bravo</item>
+        <item>Charlie</item>
+        <item>Delta</item>
+        <item>Echo</item>
+        <item>Foxtrot</item>
+    </string-array>
+
+    <string-array name="pref_advanced_areas_options_data">
+        <item>alpha</item>
+        <item>bravo</item>
+        <item>charlie</item>
+        <item>delta</item>
+        <item>echo</item>
+        <item>foxtrot</item>
+    </string-array>
+
+    <string-array name="pref_advanced_areas_options_def">
+        <item>alpha</item>
+        <item>bravo</item>
+        <item>charlie</item>
+        <item>delta</item>
+        <item>echo</item>
+        <item>foxtrot</item>
+    </string-array>
 
     <string name="pref_advanced_areas_edges_title">Randen</string>
     <string name="pref_advanced_areas_edges_sum">Laat de randen zien van de deelgebieden</string>

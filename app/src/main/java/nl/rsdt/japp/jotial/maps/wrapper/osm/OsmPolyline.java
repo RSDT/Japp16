@@ -54,4 +54,9 @@ public class OsmPolyline implements IPolyline{
         }
         osmPolyline.setPoints(r);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        osmPolyline.setVisible(visible);
+    }
 }

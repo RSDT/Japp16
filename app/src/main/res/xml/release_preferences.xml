@@ -87,6 +87,50 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_advanced_cat_areas">
+
+        <MultiSelectListPreference
+            android:title="@string/pref_advanced_areas_options_title"
+            android:key="pref_advanced_areas"
+            android:summary="@string/pref_advanced_areas_options_sum"
+            android:entries="@array/pref_advanced_areas_options"
+            android:entryValues="@array/pref_advanced_areas_options_data"
+            android:defaultValue="@array/pref_advanced_areas_options_def"/>
+
+        <SwitchPreference
+            android:key="pref_advanced_areas_edges"
+            android:title="@string/pref_advanced_areas_edges_title"
+            android:summary="@string/pref_advanced_areas_edges_sum"
+            android:defaultValue="true"
+            />
+
+        <EditTextPreference
+            android:key="pref_advanced_areas_edges_width"
+            android:title="@string/pref_advanced_areas_edges_width_title"
+            android:summary="@string/pref_advanced_areas_edges_width_sum"
+            android:inputType="number"
+            android:defaultValue="5"
+            android:dependency="pref_advanced_areas_edges"
+            />
+
+        <SwitchPreference
+            android:key="pref_advanced_areas_color"
+            android:title="@string/pref_advanced_areas_color_title"
+            android:summary="@string/pref_advanced_areas_color_sum"
+            android:defaultValue="true"
+            />
+
+        <EditTextPreference
+            android:key="pref_advanced_areas_color_alpha"
+            android:title="@string/pref_advanced_areas_color_alpha_title"
+            android:summary="@string/pref_advanced_areas_color_alpha_sum"
+            android:inputType="number"
+            android:defaultValue="70"
+            android:dependency="pref_advanced_areas_color"
+            />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_cat_advanced">
         <PreferenceScreen
             android:title="@string/pref_advanced_title"
@@ -141,47 +185,12 @@
                     />
             </PreferenceCategory>
 
-            <PreferenceCategory android:title="@string/pref_advanced_cat_areas">
-
-                <SwitchPreference
-                    android:key="pref_advanced_areas_edges"
-                    android:title="@string/pref_advanced_areas_edges_title"
-                    android:summary="@string/pref_advanced_areas_edges_sum"
-                    android:defaultValue="true"
-                    />
-
-                <EditTextPreference
-                    android:key="pref_advanced_areas_edges_width"
-                    android:title="@string/pref_advanced_areas_edges_width_title"
-                    android:summary="@string/pref_advanced_areas_edges_width_sum"
-                    android:inputType="number"
-                    android:defaultValue="5"
-                    android:dependency="pref_advanced_areas_edges"
-                    />
-
-                <SwitchPreference
-                    android:key="pref_advanced_areas_color"
-                    android:title="@string/pref_advanced_areas_color_title"
-                    android:summary="@string/pref_advanced_areas_color_sum"
-                    android:defaultValue="true"
-                    />
-
-                <EditTextPreference
-                    android:key="pref_advanced_areas_color_alpha"
-                    android:title="@string/pref_advanced_areas_color_alpha_title"
-                    android:summary="@string/pref_advanced_areas_color_alpha_sum"
-                    android:inputType="number"
-                    android:defaultValue="70"
-                    android:dependency="pref_advanced_areas_color"
-                    />
-
-            </PreferenceCategory>
             <PreferenceCategory android:title="Kaart">
                 <SwitchPreference
                     android:key="pref_advanced_osm"
                     android:title="@string/pref_advanced_auto_osm"
                     android:summary="@string/pref_advanced_osm_sum"
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     />
             </PreferenceCategory>
 

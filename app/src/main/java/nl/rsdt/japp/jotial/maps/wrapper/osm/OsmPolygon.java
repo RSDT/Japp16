@@ -43,4 +43,10 @@ public class OsmPolygon  implements IPolygon{
     public void setFillColor(int color) {
         osmPolygon.setFillColor(color);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        osmPolygon.setVisible(visible);
+    }
+
 }

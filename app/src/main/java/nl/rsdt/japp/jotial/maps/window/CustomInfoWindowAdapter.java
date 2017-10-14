@@ -104,6 +104,10 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                     layout.addView(createTextView(context, params, "Houd dit lang ingedrukt om te verwijderen"));
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
+                case MarkerIdentifier.TYPE_NAVIGATE:
+                    layout.addView(createTextView(context, params, "Hier naar zal je genavigeerd worden!"));
+                    indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_place_black_24dp));
+                    break;
                 case MarkerIdentifier.TYPE_ME:
                     String name = JappPreferences.getHuntname();
                     if(name.isEmpty()) {

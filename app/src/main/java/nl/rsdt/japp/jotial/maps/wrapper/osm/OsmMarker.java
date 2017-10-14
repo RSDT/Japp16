@@ -69,6 +69,9 @@ public class OsmMarker implements IMarker{
                         buff.append(properties.get("adres")).append("\n");
                         buff.append(properties.get("team")).append("\n");
                         break;
+                    case MarkerIdentifier.TYPE_NAVIGATE:
+                        buff.append("Hier naar zal je genavigeerd worden!");
+                        break;
                 }
                 osmMarker.setTitle(buff.toString());
             } else {
@@ -158,11 +161,10 @@ public class OsmMarker implements IMarker{
     }
 
     public boolean isVisible() {
-        return true; //// TODO: 09/08/17 is dit hetzelfde?
-    }
+        return true; }
 
     public void setVisible(boolean visible) {
-        //osmMarker.setEnabled(visible); //// TODO: 09/08/17 is dit hetzelfde?
+        osmMarker.setEnabled(visible);
     }
 
     public void setRotation(float rotation) {

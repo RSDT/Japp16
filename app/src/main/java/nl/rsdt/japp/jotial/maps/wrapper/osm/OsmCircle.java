@@ -46,4 +46,9 @@ public class OsmCircle implements ICircle {
         }
         osmCircle.setPoints(circlePoints);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        osmCircle.setVisible(visible);
+    }
 }

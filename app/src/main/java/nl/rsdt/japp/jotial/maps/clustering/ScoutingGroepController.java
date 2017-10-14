@@ -47,6 +47,7 @@ public class ScoutingGroepController implements Recreatable, IntentCreatable, Ma
         return clusterManager;
     }
 
+
     ArrayList<ScoutingGroepInfo> buffer = new ArrayList<>();
 
     @Override
