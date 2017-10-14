@@ -402,6 +402,9 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                 setupDeelgebied(Deelgebied.parse(area));
             }
         }
+        if(jotiMap instanceof OsmJotiMap) {
+            ((OsmJotiMap) jotiMap).getOSMMap().invalidate();
+        }
     }
 
     public void setupDeelgebied(Deelgebied deelgebied) {
@@ -454,6 +457,9 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
                 for(String area : toBeRemoved) {
                     areas.remove(area);
+                }
+                if(jotiMap instanceof OsmJotiMap) {
+                    ((OsmJotiMap) jotiMap).getOSMMap().invalidate();
                 }
                 break;
             case JappPreferences.AREAS_EDGES:
