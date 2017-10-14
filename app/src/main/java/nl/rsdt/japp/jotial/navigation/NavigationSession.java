@@ -12,8 +12,10 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 
@@ -64,7 +66,12 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
         snackbar.setAction("Klaar!", this);
         snackbar.setCallback(this);
 
+        MarkerIdentifier identifier = new MarkerIdentifier.Builder()
+                .setType(MarkerIdentifier.TYPE_NAVIGATE)
+                .create();
+
         marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
+                .title(new Gson().toJson(identifier))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp))
                 .visible(true)
                 .position(new LatLng(0, 0)), null));

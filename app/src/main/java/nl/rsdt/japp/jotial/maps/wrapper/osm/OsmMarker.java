@@ -69,6 +69,9 @@ public class OsmMarker implements IMarker{
                         buff.append(properties.get("adres")).append("\n");
                         buff.append(properties.get("team")).append("\n");
                         break;
+                    case MarkerIdentifier.TYPE_NAVIGATE:
+                        buff.append("Hier naar zal je genavigeerd worden!");
+                        break;
                 }
                 osmMarker.setTitle(buff.toString());
             } else {
