@@ -400,6 +400,11 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         for(String area : enabled) {
             if(!areas.containsKey(area)) {
                 setupDeelgebied(Deelgebied.parse(area));
+            } else{ // vraag me niet hoe maar dit fixed #112
+                IPolygon poly = areas.get(area);
+                poly.remove();
+                areas.remove(area);
+                setupDeelgebied(Deelgebied.parse(area));
             }
         }
         if(jotiMap instanceof OsmJotiMap) {
