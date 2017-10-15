@@ -72,7 +72,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
 
         marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
                 .title(new Gson().toJson(identifier))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_24dp))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.binoculars))
                 .visible(true)
                 .position(new LatLng(0, 0)), null));
     }

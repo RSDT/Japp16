@@ -54,6 +54,7 @@ public class OsmScoutingGroepClusterManager implements ClusterManagerInterface {
             infos.add(info);
             markers.add(info);
         }
+        markers.showMarkers();
     }
 
     @Override

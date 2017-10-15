@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.clustering.osm;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import com.google.gson.Gson;
 
 import org.osmdroid.bonuspack.clustering.MarkerClusterer;
 import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
+import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import java.util.HashMap;
@@ -20,7 +22,9 @@ import java.util.Map;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo;
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
@@ -32,13 +36,14 @@ import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmMarker;
  * Created by mattijn on 01/10/17.
  */
 
-public class OsmMarkerContainer {
+public class OsmMarkerContainer implements SharedPreferences.OnSharedPreferenceChangeListener{
     private final OsmJotiMap map;
-    private final Map<String, MarkerClusterer> markers;
+    private final Map<Deelgebied, MarkerClusterer> markers;
 
     public OsmMarkerContainer(OsmJotiMap map){
         this.map = map;
         markers = new HashMap<>();
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     public IMarker add(final ScoutingGroepInfo info){
@@ -81,11 +86,11 @@ public class OsmMarkerContainer {
             ICircle circle = null;
             boolean visible = false;
         });
-        this.add(info.team, ((OsmMarker) marker).getOSMMarker());
+        this.add(Deelgebied.parse(info.team), ((OsmMarker) marker).getOSMMarker());
         return marker;
     }
 
-    private void add(String key, Marker osmMarker) {
+    private void add(Deelgebied key, Marker osmMarker) {
         if (!markers.containsKey(key)){
             markers.put(key, new RadiusMarkerClusterer(Japp.getInstance().getApplicationContext()));
             map.getOSMMap().getOverlays().add(markers.get(key));
@@ -98,5 +103,24 @@ public class OsmMarkerContainer {
             map.getOSMMap().getOverlays().remove(markerClusterer);
         }
         markers.clear();
+    }
+    public void showMarkers(){
+        for (Deelgebied d : markers.keySet()){
+            if (JappPreferences.getAreasEnabled().contains(d.getName())){
+                if (!this.map.getOSMMap().getOverlays().contains(markers.get(d))){
+                    this.map.getOSMMap().getOverlays().add(markers.get(d));
+                }
+            }else{
+                if (this.map.getOSMMap().getOverlays().contains(markers.get(d))){
+                    this.map.getOSMMap().getOverlays().remove(markers.get(d));
+                }
+            }
+        }
+    }
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(JappPreferences.AREAS)){
+            showMarkers();
+        }
     }
 }

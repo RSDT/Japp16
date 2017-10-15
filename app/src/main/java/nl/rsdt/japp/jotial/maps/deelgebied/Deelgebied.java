@@ -281,18 +281,41 @@ public final class Deelgebied {
     public static Deelgebied parse(String name) {
         switch (name.toLowerCase()){
             case "alpha":
+            case "Alpha":
+            case "a":
+            case "A":
                 return Alpha;
             case "bravo":
+            case "Bravo":
+            case "b":
+            case "B":
                 return Bravo;
             case "charlie":
+            case "Charlie":
+            case "c":
+            case "C":
                 return Charlie;
             case "delta":
+            case "Delta":
+            case "d":
+            case "D":
                 return Delta;
             case "echo":
+            case "Echo":
+            case "e":
+            case "E":
                 return Echo;
             case "foxtrot":
+            case "Foxtrot":
+            case "f":
+            case "F":
                 return Foxtrot;
             case "xray":
+            case "Xray":
+            case "X-ray":
+            case "x-ray":
+            case "x":
+            case "X":
                 return Xray;
             default:
                 return null;
