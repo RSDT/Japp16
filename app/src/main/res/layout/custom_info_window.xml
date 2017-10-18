@@ -25,11 +25,10 @@
 
     <LinearLayout
         android:id="@+id/custom_info_window_text_fields"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_weight="0.7"
         android:layout_width="0dp"
         android:layout_height="wrap_content">
-
     </LinearLayout>
 
 

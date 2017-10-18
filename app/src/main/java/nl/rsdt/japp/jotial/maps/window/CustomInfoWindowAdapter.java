@@ -45,6 +45,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
     public View getInfoWindow(Marker marker) {
         Context context = inflater.getContext();
         View view = inflater.inflate(R.layout.custom_info_window, null);
+
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.custom_info_window_text_fields);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) layout.getLayoutParams();
         params.rightMargin = 10;
@@ -56,27 +57,47 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
 
         MarkerIdentifier identifier = new Gson().fromJson(marker.getTitle(), MarkerIdentifier.class);
         if(identifier != null) {
+
+            StringBuilder text = new StringBuilder();
+
+            TextView buffer = new TextView(context);
+            buffer.setTextColor(Color.DKGRAY);
+            buffer.setLayoutParams(params);
+
             HashMap<String, String> properties = identifier.getProperties();
             switch (identifier.getType()) {
                 case MarkerIdentifier.TYPE_VOS:
-                    layout.addView(createTextView(context, params, properties.get("note")));
-                    layout.addView(createTextView(context, params, properties.get("extra")));
-                    layout.addView(createTextView(context, params, properties.get("time")));
+                    text.append(properties.get("note"));
+                    text.append("\n");
+                    text.append(properties.get("extra"));
+                    text.append("\n");
+                    text.append(properties.get("time"));
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
                 case MarkerIdentifier.TYPE_FOTO:
-                    layout.addView(createTextView(context, params, properties.get("info")));
-                    layout.addView(createTextView(context, params, properties.get("extra")));
+                    text.append(properties.get("info"));
+                    text.append("\n");
+                    text.append(properties.get("extra"));
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
                 case MarkerIdentifier.TYPE_HUNTER:
-                    layout.addView(createTextView(context, params, properties.get("hunter")));
-                    layout.addView(createTextView(context, params, properties.get("time")));
+                    text.append(properties.get("hunter"));
+                    text.append("\n");
+                    text.append(properties.get("time"));
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
                 case MarkerIdentifier.TYPE_SC:
-                    layout.addView(createTextView(context, params, properties.get("name")));
-                    layout.addView(createTextView(context, params, properties.get("adres")));
+                    text.append(properties.get("name"));
+                    text.append("\n");
+                    text.append(properties.get("adres"));
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
 
                     if(session != null) {
@@ -91,21 +112,31 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                     }
                     break;
                 case MarkerIdentifier.TYPE_SC_CLUSTER:
-                    layout.addView(createTextView(context, params, properties.get("size")));
+                    text.append(properties.get("size"));
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.scouting_groep_icon_30x22));
                     break;
                 case MarkerIdentifier.TYPE_SIGHTING:
-                    layout.addView(createTextView(context, params, properties.get("text")));
+                    text.append(properties.get("text"));
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
                 case MarkerIdentifier.TYPE_PIN:
-                    layout.addView(createTextView(context, params, properties.get("title")));
-                    layout.addView(createTextView(context, params, properties.get("description")));
-                    layout.addView(createTextView(context, params, "Houd dit lang ingedrukt om te verwijderen"));
+                    text.append(properties.get("title"));
+                    text.append("\n");
+                    text.append(properties.get("description"));
+                    text.append("\n");
+                    text.append("Houd dit lang ingedrukt om te verwijderen");
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
                 case MarkerIdentifier.TYPE_NAVIGATE:
-                    layout.addView(createTextView(context, params, "Hier naar zal je genavigeerd worden!"));
+                    text.append("Hier naar zal je genavigeerd worden!");
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.binoculars));
                     break;
                 case MarkerIdentifier.TYPE_ME:
@@ -114,10 +145,15 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                         name = JappPreferences.getAccountUsername();
                     }
 
-                    layout.addView(createTextView(context, params, name));
+                    text.append(name);
+                    text.append("\n");
+
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
             }
+
+            buffer.setText(text.toString());
+            layout.addView(buffer);
 
             if(end) {
                 if(session != null) {
@@ -141,8 +177,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
     private TextView createTextView(Context context, ViewGroup.LayoutParams params, String text) {
         TextView buffer = new TextView(context);
         buffer.setText(text);
-        buffer.setSingleLine();
-        buffer.setEllipsize(TextUtils.TruncateAt.END);
         buffer.setTextColor(Color.DKGRAY);
         buffer.setLayoutParams(params);
         return buffer;
