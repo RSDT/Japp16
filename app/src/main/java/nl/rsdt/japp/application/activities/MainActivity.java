@@ -29,6 +29,7 @@ import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.fragments.HomeFragment;
+import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
@@ -43,6 +44,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
 import nl.rsdt.japp.jotial.net.apis.AutoApi;
+import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
@@ -301,6 +303,31 @@ public class MainActivity extends AppCompatActivity
         navigationManager.setupMap(this);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String action = intent.getAction();
+        if(action != null && action.equals(LocationService.ACTION_REQUEST_LOCATION_SETTING)) {
+            JappMapFragment mapFragment = (JappMapFragment) navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_MAP);
+            if(mapFragment != null) {
+                mapFragment.getMovementManager().requestLocationSettingRequest();
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        switch (requestCode) {
+            case JappMapFragment.REQUEST_CHECK_SETTINGS:
+                JappMapFragment mapFragment = (JappMapFragment) navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_MAP);
+                if(mapFragment != null) {
+                    mapFragment.getMovementManager().postResolutionResultToService(resultCode);
+                }
+                break;
+        }
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

@@ -12,9 +12,16 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.ArrayList;
 
@@ -26,7 +33,7 @@ import nl.rsdt.japp.application.Japp;
  * @since 25-7-2016
  * Description...
  */
-public abstract class LocationProviderService<B extends Binder> extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener  {
+public abstract class LocationProviderService<B extends Binder> extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
 
     public static final String TAG = "LocationProviderService";
 
@@ -90,7 +97,37 @@ public abstract class LocationProviderService<B extends Binder> extends Service 
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        startLocationUpdates();
+        checkLocationSettings();
+    }
+
+    public void checkLocationSettings() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(request);
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(client,
+                        builder.build());
+        result.setResultCallback(this);
+    }
+
+    @Override
+    public void onResult(LocationSettingsResult result) {
+        final Status status = result.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                // All location settings are satisfied. The client can
+                // initialize location requests here.
+                startLocationUpdates();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                // Location settings are not satisfied. However, we have no way
+                // to fix the settings so we won't show the dialog.
+
+                break;
+        }
     }
 
     @Override

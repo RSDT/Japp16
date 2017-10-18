@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -87,6 +89,8 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     private static final String OSM_OR = "OSM_OR";
     private static final String OSM_BUNDLE = "OSM_BUNDLE";
 
+    public static final int REQUEST_CHECK_SETTINGS = 32;
+
     private ServiceManager<LocationService, LocationService.LocationBinder> serviceManager = new ServiceManager<>(LocationService.class);
 
     private IJotiMap jotiMap;
@@ -105,7 +109,9 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     private HashMap<String, IPolygon> areas = new HashMap<>();
 
-
+    public MovementManager getMovementManager() {
+        return movementManager;
+    }
 
     private boolean osmActive = false;
     @Override
@@ -323,6 +329,20 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         }else {
             Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
         }
+        movementManager.setListener(new LocationService.OnResolutionRequiredListener() {
+            @Override
+            public void onResolutionRequired(Status status) {
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    status.startResolutionForResult(
+                            getActivity(),
+                            REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    // Ignore the error.
+                }
+            }
+        });
         serviceManager.add(movementManager);
         movementManager.onResume();
         if(!serviceManager.isBound()) {

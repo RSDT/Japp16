@@ -8,7 +8,7 @@ android {
         applicationId "nl.rsdt.japp"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 36
+        versionCode 46
         versionName "v3.4"
         multiDexEnabled true
     }

@@ -59,6 +59,12 @@ public class FragmentNavigationManager {
         switch(tag) {
             case FRAGMENT_HOME:
                 return homeFragment;
+            case FRAGMENT_MAP:
+                return mapFragment;
+            case FRAGMENT_SETTINGS:
+                return preferenceFragment;
+            case FRAGMENT_ABOUT:
+                return aboutFragment;
         }
         return null;
     }

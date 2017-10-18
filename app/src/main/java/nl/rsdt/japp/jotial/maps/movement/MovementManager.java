@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.util.Pair;
 import android.view.View;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,6 +71,12 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
     private View snackBarView;
 
     private ArrayList<LatLng> list;
+
+    private LocationService.OnResolutionRequiredListener listener;
+
+    public void setListener(LocationService.OnResolutionRequiredListener listener) {
+        this.listener = listener;
+    }
 
     public void setSnackBarView(View snackBarView) {
         this.snackBarView = snackBarView;
@@ -173,11 +180,24 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
     @Override
     public void onBind(LocationService.LocationBinder binder) {
         service = binder.getInstance();
+        service.setListener(listener);
         service.add(this);
         service.setRequest(new LocationRequest()
                 .setInterval(700)
                 .setFastestInterval(100)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
+    }
+
+    public void postResolutionResultToService(int code) {
+        if(service != null) {
+            service.handleResolutionResult(code);
+        }
+    }
+
+    public void requestLocationSettingRequest() {
+        if(service != null) {
+            service.checkLocationSettings();
+        }
     }
 
     public void onMapReady(IJotiMap jotiMap) {
@@ -351,6 +371,7 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
         }
 
         if(service != null) {
+            service.setListener(null);
             service.remove(this);
             service = null;
         }

@@ -1,20 +1,26 @@
 package nl.rsdt.japp.service;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
@@ -22,7 +28,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
@@ -50,22 +60,48 @@ public class LocationService extends LocationProviderService implements SharedPr
 
     public static final String TAG = "LocationService";
 
+    public static final String ACTION_REQUEST_LOCATION_SETTING = "ACTION_REQUEST_LOCATION_SETTING";
+
     private final LocationBinder binder = new LocationBinder();
 
     private boolean wasSending = false;
 
+    private OnResolutionRequiredListener listener;
+
     Calendar lastUpdate = Calendar.getInstance();
+
     private NavigationLocationManager locationManager;
+
+    private BroadcastReceiver locationSettingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().matches("android.location.PROVIDERS_CHANGED")) {
+                // Make an action or refresh an already managed state.
+                LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                if(!gps) {
+                    Intent notificationIntent = new Intent(LocationService.this, MainActivity.class);
+                    notificationIntent.setAction(ACTION_REQUEST_LOCATION_SETTING);
+                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(LocationService.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    showLocationNotification("Japp verzend je locatie niet!", "Klik om je GPS aan te zetten", Color.rgb(244, 66, 66), pendingIntent);
+                }
+            }
+        }
+    };
+
+    public void setListener(OnResolutionRequiredListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
-        wasSending = JappPreferences.isUpdatingLocationToServer();
-        if (!wasSending) {
-            showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
-        } else {
-            showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
-        }
+
+        registerReceiver(locationSettingReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+
         locationManager = new NavigationLocationManager();
         locationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
             @Override
@@ -117,14 +153,20 @@ public class LocationService extends LocationProviderService implements SharedPr
             }
         });
     }
-    private void showLocationNotification(String title, int color) {
+    public void showLocationNotification(String title, int color) {
+        showLocationNotification(title, "Klik om Japp te openen", color);
+    }
+    public void showLocationNotification(String title, String description, int color) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        showLocationNotification(title, description, color, intent);
+    }
 
+    public void showLocationNotification(String title, String description, int color, PendingIntent intent) {
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle(title)
-                .setContentText("Klik om Japp te openen")
+                .setContentText(description)
                 .setSmallIcon(R.drawable.ic_my_location_white_48dp)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setColor(color)
@@ -169,6 +211,49 @@ public class LocationService extends LocationProviderService implements SharedPr
             if(dif >= Math.round(JappPreferences.getLocationUpdateIntervalInMs())) {
                 sendLocation(location);
             }
+        }
+    }
+
+    @Override
+    public void onResult(LocationSettingsResult result) {
+        Status status = result.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                wasSending = JappPreferences.isUpdatingLocationToServer();
+                if (!wasSending) {
+                    showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
+                } else {
+                    showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
+                }
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                if(listener != null) {
+                    listener.onResolutionRequired(status);
+                }
+                break;
+        }
+    }
+
+    public void handleResolutionResult(int code) {
+        switch (code) {
+            case Activity.RESULT_OK:
+                startLocationUpdates();
+                boolean wasSending = JappPreferences.isUpdatingLocationToServer();
+                if (!wasSending) {
+                    showLocationNotification("Japp verzendt je locatie niet!", "Zet locatie delen aan in de app", Color.rgb(244, 66, 66));
+                } else {
+                    showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
+                }
+                break;
+            case Activity.RESULT_CANCELED:
+                Intent notificationIntent = new Intent(this, MainActivity.class);
+                notificationIntent.setAction(ACTION_REQUEST_LOCATION_SETTING);
+                notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                showLocationNotification("Japp verzend je locatie niet!", "Klik om je locatie instelling te activeren", Color.rgb(244, 66, 66), intent);
+                break;
         }
     }
 
@@ -234,5 +319,10 @@ public class LocationService extends LocationProviderService implements SharedPr
             return LocationService.this;
         }
     }
+
+    public interface OnResolutionRequiredListener {
+        void onResolutionRequired(Status status);
+    }
+
 
 }
