@@ -314,6 +314,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
 
         @Override
         public void run() {
+            ArrayList<ICircle> circles = new ArrayList<>(VosController.this.circles.keySet());
             if(!circles.isEmpty()) {
                 ICircle circle = circles.get(0);
 
