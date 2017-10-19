@@ -28,6 +28,7 @@ public class KmlLoader {
     private final String DEELGEBIEDEN_OVERLAY_KEY = "pref_deelgebieden_overlay";
     private final int kmlfile;
     GoogleMap Gmap;
+
     public KmlLoader(GoogleMap gmap, int KmlFile){
         Gmap=gmap;
         this.kmlfile = KmlFile;

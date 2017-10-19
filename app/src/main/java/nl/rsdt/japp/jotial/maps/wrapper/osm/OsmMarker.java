@@ -69,6 +69,13 @@ public class OsmMarker implements IMarker{
                         buff.append(properties.get("adres")).append("\n");
                         buff.append(properties.get("team")).append("\n");
                         break;
+                    case MarkerIdentifier.TYPE_NAVIGATE_CAR:
+                        buff.append("Dit is waar de navigatie telefoon naartoe naar navigeerd");
+                        buff.append("\n");
+                        buff.append("geplaatst door: ");
+                        buff.append(properties.get("addedBy"));
+                        //todo voeg leuk icoon toe
+                        break;
                     case MarkerIdentifier.TYPE_NAVIGATE:
                         buff.append("Hier naar zal je genavigeerd worden!");
                         break;

@@ -139,6 +139,13 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
 
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.binoculars));
                     break;
+                case MarkerIdentifier.TYPE_NAVIGATE_CAR:
+                    text.append("Dit is waar de navigatie telefoon naartoe naar navigeerd");
+                    text.append("\n");
+                    text.append("geplaatst door: ");
+                    text.append(properties.get("addedBy"));
+                    //todo voeg leuk icoon toe
+                    break;
                 case MarkerIdentifier.TYPE_ME:
                     String name = JappPreferences.getHuntname();
                     if(name.isEmpty()) {

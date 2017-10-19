@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -49,6 +50,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
 import nl.rsdt.japp.jotial.maps.movement.MovementManager;
 import nl.rsdt.japp.jotial.maps.pinning.Pin;
 import nl.rsdt.japp.jotial.maps.pinning.PinningManager;
@@ -397,19 +399,28 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         {
             callback.onMapReady(jotiMap);
         }
+
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(new LatLng(0,0))
-                .visible(true);
+                .visible(false);
         Bitmap icon = null;
         final IMarker marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(markerOptions, icon));
         navigationLocationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
             @Override
             public void onNewLocation(Location location) {
+                MarkerIdentifier.Builder identifier = new MarkerIdentifier.Builder();
+                identifier.setType(MarkerIdentifier.TYPE_NAVIGATE_CAR);
+
+                identifier.add("addedBy", location.createdBy);
+                identifier.add("createdOn", String.valueOf(location.createdOn));
+                marker.setTitle(new Gson().toJson(identifier.create()));
+                marker.setVisible(true);
                 marker.setPosition(new LatLng(location.lat,location.lon));
             }
 
             @Override
             public void onNotInCar() {
+                marker.setVisible(false);
                 marker.setPosition(new LatLng(0,0));
             }
         });

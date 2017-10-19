@@ -27,6 +27,7 @@ public class MarkerIdentifier {
     public static final String TYPE_NAVIGATE = "NAVIGATE";
 
     public static final String TYPE_ME = "ME";
+    public static final String TYPE_NAVIGATE_CAR = "NAVIGATE_CAR";
 
     private String type;
 
