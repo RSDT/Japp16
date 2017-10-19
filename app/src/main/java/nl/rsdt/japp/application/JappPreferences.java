@@ -105,6 +105,8 @@ public class JappPreferences {
 
     private static final String OSM_MAP_TYPE = "pref_map_osm_source";
 
+    public static final String FILL_CIRCLES = "pref_advanced_acircles_color";
+
 
     /**
      * Gets the visible release_preferences of Japp.
@@ -323,6 +325,10 @@ public class JappPreferences {
 
     public static boolean isNavigationPhone(){
         return getVisiblePreferences().getBoolean(IS_NAVIGATION_PHONE, false);
+    }
+
+    public static boolean fillCircles(){
+        return getVisiblePreferences().getBoolean(FILL_CIRCLES, true);
     }
 
     public enum OsmMapType{

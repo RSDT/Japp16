@@ -1,5 +1,7 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
+import android.graphics.Color;
+
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,4 +22,8 @@ public interface ICircle {
     public void setRadius(float radius);
 
     void setVisible(boolean visible);
+
+    int getFillColor();
+
+    void setFillColor(int color);
 }

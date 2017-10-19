@@ -38,4 +38,14 @@ public class GoogleCircle implements ICircle{
     public void setVisible(boolean visible) {
         googleCircle.setVisible(visible);
     }
+
+    @Override
+    public int getFillColor() {
+        return googleCircle.getFillColor();
+    }
+
+    @Override
+    public void setFillColor(int color) {
+        googleCircle.setFillColor(color);
+    }
 }

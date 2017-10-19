@@ -51,4 +51,14 @@ public class OsmCircle implements ICircle {
     public void setVisible(boolean visible) {
         osmCircle.setVisible(visible);
     }
+
+    @Override
+    public int getFillColor() {
+        return osmCircle.getFillColor();
+    }
+
+    @Override
+    public void setFillColor(int color) {
+        osmCircle.setFillColor(color);
+    }
 }

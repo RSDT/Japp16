@@ -123,6 +123,12 @@
             android:summary="@string/pref_advanced_areas_color_sum"
             android:defaultValue="true"
             />
+        <SwitchPreference
+            android:key="pref_advanced_acircles_color"
+            android:title="@string/pref_advanced_circle_color_title"
+            android:summary="@string/pref_advanced_circle_color_sum"
+            android:defaultValue="true"
+            />
 
         <EditTextPreference
             android:key="pref_advanced_areas_color_alpha"

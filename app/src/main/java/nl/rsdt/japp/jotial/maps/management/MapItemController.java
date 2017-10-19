@@ -1,17 +1,24 @@
 package nl.rsdt.japp.jotial.maps.management;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.BundleIdentifiable;
 import nl.rsdt.japp.jotial.Identifiable;
 import nl.rsdt.japp.jotial.IntentCreatable;
@@ -50,7 +57,7 @@ import retrofit2.Response;
  */
 public abstract class MapItemController<I, O extends AbstractTransducer.Result> extends MapItemDateControl implements Recreatable,
         MapItemHolder, MapItemUpdatable<I>, Transducable<I, O>, Identifiable, StorageIdentifiable, BundleIdentifiable,
-        AsyncTransduceTask.OnTransduceCompletedCallback<O>, IntentCreatable, Searchable, Callback<I>, Mergable<O> {
+        AsyncTransduceTask.OnTransduceCompletedCallback<O>, IntentCreatable, Searchable, Callback<I>, Mergable<O>, SharedPreferences.OnSharedPreferenceChangeListener{
 
     public static final String TAG = "MapItemController";
 
@@ -76,11 +83,11 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         return polygons;
     }
 
-    public ArrayList<ICircle> circles = new ArrayList<>();
+    public Map<ICircle, Integer> circles = new HashMap<>();
 
     @Override
     public ArrayList<ICircle> getCircles() {
-        return circles;
+        return new ArrayList<>(circles.keySet());
     }
 
     protected O buffer;
@@ -201,7 +208,10 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         {
             ICircle circle = jotiMap.addCircle(circles.get(c));
             circle.setVisible(visiblity);
-            this.circles.add(circle);
+            this.circles.put(circle, circle.getFillColor());
+            if (!JappPreferences.fillCircles()){
+                circle.setFillColor(Color.TRANSPARENT);
+            }
         }
     }
 
@@ -219,7 +229,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         for(int i = 0; i < polygons.size(); i++) {
             polygons.get(i).setVisible(visiblity);
         }
-
+        ArrayList<ICircle> circles = new ArrayList(this.circles.keySet());
         for(int i = 0; i < circles.size(); i++) {
             circles.get(i).setVisible(visiblity);
         }
@@ -240,7 +250,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
             polygons.get(i).remove();
         }
         polygons.clear();
-
+        ArrayList<ICircle> circles = new ArrayList(this.circles.keySet());
         for(int i = 0; i < circles.size(); i++) {
             circles.get(i).remove();
         }
@@ -286,6 +296,20 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
 
         jotiMap = null;
 
+    }
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
+        if (key.equals(JappPreferences.FILL_CIRCLES)){
+            if (JappPreferences.fillCircles()){
+                for (Map.Entry<ICircle, Integer> entry: circles.entrySet()){
+                    entry.getKey().setFillColor(entry.getValue());
+                }
+            }else{
+                for (Map.Entry<ICircle, Integer> entry: circles.entrySet()){
+                    entry.getKey().setFillColor(Color.TRANSPARENT);
+                }
+            }
+        }
     }
 
     public static MapItemController[] getAll() {
