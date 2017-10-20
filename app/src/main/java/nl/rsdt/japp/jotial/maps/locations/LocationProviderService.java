@@ -97,7 +97,9 @@ public abstract class LocationProviderService<B extends Binder> extends Service 
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        checkLocationSettings();
+       startLocationUpdates();
+        //// TODO: 20/10/17 quickfix #127 de bug is erin gekomen in df4e994826ede9b014335c573deb30b7b9fd3455
+        // checkLocationSettings();
     }
 
     public void checkLocationSettings() {
