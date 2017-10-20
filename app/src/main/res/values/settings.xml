@@ -320,6 +320,9 @@
     <string name="pref_advanced_circle_color_title">Kleuren cirkels</string>
     <string name="pref_advanced_circle_color_sum">Laat de kleur zien van alle cirkels</string>
 
+    <string name="pref_advanced_only_today_title">Alleen Hunts van vandaag</string>
+    <string name="pref_advanced_only_today_sum">Laat aalleen de hunts van vandaag in. Waarschuwing kan buggy zijn(ongetest)</string>
+
     <string name="pref_advanced_areas_color_alpha_title">Doorzichtigheid kleuren</string>
     <string name="pref_advanced_areas_color_alpha_sum">Doorzictighheid van de deelgebied kleuren in procenten</string>
 

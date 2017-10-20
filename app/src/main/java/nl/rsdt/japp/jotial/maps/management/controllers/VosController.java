@@ -16,12 +16,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +41,10 @@ import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.net.apis.VosApi;
+import okhttp3.Request;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -60,12 +66,71 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
 
     @Override
     public Call<ArrayList<VosInfo>> update(String mode) {
-        VosApi api = Japp.getApi(VosApi.class);
+        Call<ArrayList<VosInfo>> call = new Call<ArrayList<VosInfo>>() {
+            private VosApi api = Japp.getApi(VosApi.class);
+            private Call<ArrayList<VosInfo>> apiCall = api.getAll(JappPreferences.getAccountKey(), getTeam());
+            private SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            @Override
+            public Response<ArrayList<VosInfo>> execute() throws IOException {
+                Response<ArrayList<VosInfo>> response = apiCall.execute();
+                if (JappPreferences.onlyToday()){
+                    ArrayList<VosInfo> delete = new ArrayList<>();
+                    for (VosInfo info : response.body()){
+                        try {
+                            Date date = format.parse(info.getDatetime());
+                            Calendar c = new GregorianCalendar();
+                            c.set(Calendar.HOUR_OF_DAY, 0);
+                            c.set(Calendar.MINUTE, 0);
+                            c.set(Calendar.SECOND, 0);
+                            if (c.before(date)){
+                                delete.add(info);
+                            }
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    response.body().removeAll(delete);
+                }
+
+                return response;
+            }
+
+            @Override
+            public void enqueue(Callback<ArrayList<VosInfo>> callback) {
+                apiCall.enqueue(callback);
+            }
+
+            @Override
+            public boolean isExecuted() {
+                return apiCall.isExecuted();
+            }
+
+            @Override
+            public void cancel() {
+                apiCall.cancel();
+            }
+
+            @Override
+            public boolean isCanceled() {
+                return apiCall.isCanceled();
+            }
+
+            @Override
+            public Call<ArrayList<VosInfo>> clone() {
+                return apiCall.clone();
+            }
+
+            @Override
+            public Request request() {
+                return null;
+            }
+        };
         switch (mode) {
             case MODE_ALL:
-                return api.getAll(JappPreferences.getAccountKey(), getTeam());
+
+                return call;
             case MODE_LATEST:
-                return api.getAll(JappPreferences.getAccountKey(), getTeam());
+                return call;
         }
         return null;
     }
