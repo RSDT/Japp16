@@ -30,32 +30,32 @@ public final class Deelgebied {
     /**
      * Defines the Alpha Deelgebied.
      * */
-    public static final Deelgebied Alpha = new Deelgebied("alpha", R.drawable.vos_a_4, R.drawable.vos_a_3, Color.argb(255, 255, 0, 0) );
+    public static final Deelgebied Alpha = new Deelgebied("alpha", R.drawable.vos_b_4, R.drawable.vos_b_3, Color.argb(255, 0, 193, 64) );
 
     /**
      * Defines the Bravo Deelgebied.
      * */
-    public static final Deelgebied Bravo = new Deelgebied("bravo", R.drawable.vos_b_4, R.drawable.vos_b_3, Color.argb(255, 0, 255, 0));
+    public static final Deelgebied Bravo = new Deelgebied("bravo", R.drawable.vos_d_4, R.drawable.vos_d_3, Color.argb(255, 19, 201, 247));
 
     /**
      * Defines the Charlie Deelgebied.
      * */
-    public static final Deelgebied Charlie = new Deelgebied("charlie", R.drawable.vos_c_4, R.drawable.vos_c_3, Color.argb(255, 0, 0, 255));
+    public static final Deelgebied Charlie = new Deelgebied("charlie", R.drawable.vos_e_4, R.drawable.vos_e_3, Color.argb(255, 136, 19, 247));
 
     /**
      * Defines the Delta Deelgebied.
      * */
-    public static final Deelgebied Delta = new Deelgebied("delta", R.drawable.vos_d_4, R.drawable.vos_d_3, Color.argb(255, 0, 255, 255));
+    public static final Deelgebied Delta = new Deelgebied("delta", R.drawable.vos_f_4, R.drawable.vos_f_3, Color.argb(255, 247, 53, 19));
 
     /**
      * Defines the Echo Deelgebied.
      * */
-    public static final Deelgebied Echo = new Deelgebied("echo", R.drawable.vos_e_4, R.drawable.vos_e_3, Color.argb(255, 255, 0, 255));
+    public static final Deelgebied Echo = new Deelgebied("echo", R.drawable.vos_c_4, R.drawable.vos_c_3, Color.argb(255, 19, 41, 247));
 
     /**
      * Defines the Foxtrot Deelgebied.
      * */
-    public static final Deelgebied Foxtrot = new Deelgebied("foxtrot", R.drawable.vos_f_4, R.drawable.vos_f_3, Color.argb(255, 255, 162, 0));
+    public static final Deelgebied Foxtrot = new Deelgebied("foxtrot", R.drawable.vos_a_4, R.drawable.vos_a_3, Color.argb(255, 247, 19, 69));
 
     /**
      * Defines the Xray Deelgebied.

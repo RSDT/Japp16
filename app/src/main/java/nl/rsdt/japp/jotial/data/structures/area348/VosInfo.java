@@ -212,17 +212,17 @@ public class VosInfo extends BaseInfo implements Parcelable {
                 switch (info.team)
                 {
                     case "a":
-                        return R.drawable.vos_a_2;
-                    case "b":
                         return R.drawable.vos_b_2;
-                    case "c":
-                        return R.drawable.vos_c_2;
-                    case "d":
+                    case "b":
                         return R.drawable.vos_d_2;
-                    case "e":
+                    case "c":
                         return R.drawable.vos_e_2;
-                    case "f":
+                    case "d":
                         return R.drawable.vos_f_2;
+                    case "e":
+                        return R.drawable.vos_c_2;
+                    case "f":
+                        return R.drawable.vos_a_2;
                     case "x":
                         return R.drawable.vos_x_2;
                 }
@@ -231,17 +231,17 @@ public class VosInfo extends BaseInfo implements Parcelable {
                 switch (info.team)
                 {
                     case "a":
-                        return R.drawable.vos_a_4;
-                    case "b":
                         return R.drawable.vos_b_4;
-                    case "c":
-                        return R.drawable.vos_c_4;
-                    case "d":
+                    case "b":
                         return R.drawable.vos_d_4;
-                    case "e":
+                    case "c":
                         return R.drawable.vos_e_4;
-                    case "f":
+                    case "d":
                         return R.drawable.vos_f_4;
+                    case "e":
+                        return R.drawable.vos_c_4;
+                    case "f":
+                        return R.drawable.vos_a_4;
                     case "x":
                         return R.drawable.vos_x_4;
                 }
@@ -250,17 +250,17 @@ public class VosInfo extends BaseInfo implements Parcelable {
                 switch (info.team)
                 {
                     case "a":
-                        return R.drawable.vos_a_3;
-                    case "b":
                         return R.drawable.vos_b_3;
-                    case "c":
-                        return R.drawable.vos_c_3;
-                    case "d":
+                    case "b":
                         return R.drawable.vos_d_3;
-                    case "e":
+                    case "c":
                         return R.drawable.vos_e_3;
-                    case "f":
+                    case "d":
                         return R.drawable.vos_f_3;
+                    case "e":
+                        return R.drawable.vos_c_3;
+                    case "f":
+                        return R.drawable.vos_a_3;
                     case "x":
                         return R.drawable.vos_x_3;
                 }
@@ -269,17 +269,17 @@ public class VosInfo extends BaseInfo implements Parcelable {
                 switch (info.team)
                 {
                     case "a":
-                        return R.drawable.vos_a_1;
-                    case "b":
                         return R.drawable.vos_b_1;
-                    case "c":
-                        return R.drawable.vos_c_1;
-                    case "d":
+                    case "b":
                         return R.drawable.vos_d_1;
-                    case "e":
+                    case "c":
                         return R.drawable.vos_e_1;
-                    case "f":
+                    case "d":
                         return R.drawable.vos_f_1;
+                    case "e":
+                        return R.drawable.vos_c_1;
+                    case "f":
+                        return R.drawable.vos_a_1;
                     case "x":
                         return R.drawable.vos_x_1;
                 }
@@ -288,17 +288,17 @@ public class VosInfo extends BaseInfo implements Parcelable {
                 switch (info.team)
                 {
                     case "a":
-                        return R.drawable.vos_a_2;
-                    case "b":
                         return R.drawable.vos_b_2;
-                    case "c":
-                        return R.drawable.vos_c_2;
-                    case "d":
+                    case "b":
                         return R.drawable.vos_d_2;
-                    case "e":
+                    case "c":
                         return R.drawable.vos_e_2;
-                    case "f":
+                    case "d":
                         return R.drawable.vos_f_2;
+                    case "e":
+                        return R.drawable.vos_c_2;
+                    case "f":
+                        return R.drawable.vos_a_2;
                     case "x":
                         return R.drawable.vos_x_2;
                 }
