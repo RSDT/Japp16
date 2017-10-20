@@ -120,6 +120,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
             }
             buffer = null;
         }
+        JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override

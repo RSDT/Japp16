@@ -72,32 +72,43 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
             private SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             @Override
             public Response<ArrayList<VosInfo>> execute() throws IOException {
-                Response<ArrayList<VosInfo>> response = apiCall.execute();
-                if (JappPreferences.onlyToday()){
-                    ArrayList<VosInfo> delete = new ArrayList<>();
-                    for (VosInfo info : response.body()){
-                        try {
-                            Date date = format.parse(info.getDatetime());
-                            Calendar c = new GregorianCalendar();
-                            c.set(Calendar.HOUR_OF_DAY, 0);
-                            c.set(Calendar.MINUTE, 0);
-                            c.set(Calendar.SECOND, 0);
-                            if (c.before(date)){
-                                delete.add(info);
-                            }
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    response.body().removeAll(delete);
-                }
-
-                return response;
+                return apiCall.execute();
             }
 
             @Override
-            public void enqueue(Callback<ArrayList<VosInfo>> callback) {
-                apiCall.enqueue(callback);
+            public void enqueue(final Callback<ArrayList<VosInfo>> callback) {
+                Callback<ArrayList<VosInfo>> callback2 = new Callback<ArrayList<VosInfo>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<VosInfo>> call, Response<ArrayList<VosInfo>> response) {
+                        if (JappPreferences.onlyToday()) {
+                            ArrayList<VosInfo> delete = new ArrayList<>();
+                            for (VosInfo info : response.body()) {
+                                try {
+                                    Date date = format.parse(info.getDatetime());
+                                    Calendar c = new GregorianCalendar();
+                                    c.set(Calendar.HOUR_OF_DAY, 0);
+                                    c.set(Calendar.MINUTE, 0);
+                                    c.set(Calendar.SECOND, 0);
+                                    Calendar d = new GregorianCalendar();
+                                    d.setTime(date);
+                                    if (c.after(d)) {
+                                        delete.add(info);
+                                    }
+                                } catch (ParseException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            response.body().removeAll(delete);
+                        }
+                        callback.onResponse(call, response);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ArrayList<VosInfo>> call, Throwable t) {
+                        callback.onFailure(call, t);
+                    }
+                };
+                apiCall.enqueue(callback2);
             }
 
             @Override
@@ -181,6 +192,7 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        super.onSharedPreferenceChanged(sharedPreferences, key);
         switch (key) {
             case JappPreferences.AUTO_ENLARGMENT:
                 handler.removeCallbacks(runnable);

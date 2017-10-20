@@ -105,7 +105,8 @@ public class JappPreferences {
 
     private static final String OSM_MAP_TYPE = "pref_map_osm_source";
 
-    public static final String FILL_CIRCLES = "pref_advanced_acircles_color";
+    public static final String FILL_CIRCLES = "pref_advanced_circles_color";
+    private static final String ONLY_TODAY = "pref_advanced_only_today";
 
 
     /**
@@ -329,6 +330,10 @@ public class JappPreferences {
 
     public static boolean fillCircles(){
         return getVisiblePreferences().getBoolean(FILL_CIRCLES, true);
+    }
+
+    public static boolean onlyToday() {
+        return getVisiblePreferences().getBoolean(ONLY_TODAY, false);
     }
 
     public enum OsmMapType{
