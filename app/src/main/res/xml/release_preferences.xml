@@ -5,31 +5,30 @@
     <PreferenceCategory android:title="@string/pref_cat_account">
 
         <EditTextPreference
-            android:title="@string/pref_account_username_title"
-            android:key="pref_account_username"
             android:editable="false"
-            android:summary="@string/pref_account_username_sum"/>
+            android:key="pref_account_username"
+            android:summary="@string/pref_account_username_sum"
+            android:title="@string/pref_account_username_title" />
 
         <EditTextPreference
-            android:title="@string/pref_account_rank_title"
-            android:key="pref_account_rank"
+            android:defaultValue="@string/pref_account_rank_def"
             android:editable="false"
+            android:key="pref_account_rank"
             android:summary="@string/pref_account_rank_sum"
-            android:defaultValue="@string/pref_account_rank_def"/>
+            android:title="@string/pref_account_rank_title" />
 
         <ListPreference
-            android:title="@string/pref_account_icon_title"
-            android:key="pref_account_icon"
-            android:summary="@string/pref_account_icon_sum"
             android:defaultValue="@string/pref_account_icon_def"
             android:entries="@array/pref_account_icon"
             android:entryValues="@array/pref_account_icon_data"
-            android:icon="@drawable/hunter_0"/>
+            android:icon="@drawable/hunter_0"
+            android:key="pref_account_icon"
+            android:summary="@string/pref_account_icon_sum"
+            android:title="@string/pref_account_icon_title" />
 
     </PreferenceCategory>
 
     <PreferenceCategory android:key="pref_cat_map" android:title="@string/pref_cat_map">
-
         <EditTextPreference
             android:title="@string/pref_map_hunt_name_title"
             android:key="pref_map_hunt_name"
@@ -240,7 +239,7 @@
                     android:key="pref_developer_debug_version_name"
                     android:editable="false"
                     android:summary="@string/pref_developer_debug_version_sum"
-                    android:defaultValue="@string/versionName"/>
+                    android:defaultValue="2.1"/>
 
 
                 <SwitchPreference

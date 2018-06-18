@@ -1,11 +1,6 @@
 package nl.rsdt.japp.jotial.data.firebase;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.vision.face.Face;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
-
-import java.util.Map;
 
 /**
  * Created by mattijn on 30/09/17.
