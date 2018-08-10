@@ -1,51 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="0.7">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/rp_logo_binocular_500x500"
-            android:adjustViewBounds="true"
-            />
-    </RelativeLayout>
+        android:src="@drawable/rp_logo_binocular_500x500"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50" />
 
     <EditText
         android:id="@+id/username"
         android:layout_width="250dp"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:inputType="text"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.1"
         android:hint="username"
-        />
+        android:inputType="text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="250dp"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:inputType="textPassword"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.1"
         android:hint="password"
-        />
+        android:inputType="textPassword"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/username" />
 
     <Button
         android:id="@+id/login"
         android:layout_width="150dp"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.1"
         android:text="login"
-        android:layout_margin="20dp"
-        />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/password" />
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/password_forgotten"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:maxLines="2"
+        android:text="@string/password_forgotten"
+        android:autoLink="web"
+        android:clickable="true"
+        android:focusable="true"
+        android:linksClickable="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login" />
+
+</android.support.constraint.ConstraintLayout>

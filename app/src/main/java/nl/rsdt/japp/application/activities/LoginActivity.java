@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
@@ -31,6 +33,15 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
+
+        TextView passwordLost = (TextView)findViewById(R.id.password_forgotten);
+        passwordLost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse("http://jotihunt2017.area348.nl/user_forget_password.php"));
+                startActivity(browser);
+            }
+        });
 
         Button button = (Button)findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {
