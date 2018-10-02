@@ -101,10 +101,10 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         switch (type)
         {
             case SIGHT_HUNT:
-                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_x_4);
+                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_zwart_4);
                 break;
             case SIGHT_SPOT:
-                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_x_3);
+                bm = BitmapFactory.decodeResource(Japp.getInstance().getResources(), R.drawable.vos_zwart_3);
                 break;
             default:
                 bm = null;
@@ -112,7 +112,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         }
         snackbar = Snackbar.make(targetView, R.string.sighting_standard_text, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.sighting_snackbar_action_text, this);
-        snackbar.setCallback(this);
+        snackbar.addCallback(this);
 
         marker = jotiMap.addMarker(new Pair<>(new MarkerOptions()
                 .visible(false)

@@ -107,6 +107,8 @@ public class JappPreferences {
 
     public static final String FILL_CIRCLES = "pref_advanced_circles_color";
     private static final String ONLY_TODAY = "pref_advanced_only_today";
+    private static final String COLOR_NAME = "pref_color_name_";
+    private static final String COLOR_HEX = "pref_color_hex_";
 
 
     /**
@@ -334,6 +336,23 @@ public class JappPreferences {
 
     public static boolean onlyToday() {
         return getVisiblePreferences().getBoolean(ONLY_TODAY, false);
+    }
+
+    public static String getColorName(String team) {
+        return getVisiblePreferences().getString(COLOR_NAME+team,"Zwart");
+    }
+    public static void setColorName(String team, String color) {
+        getVisiblePreferences().edit().putString(COLOR_NAME+team,color).apply();
+    }
+
+    public static void setColorHex(String team, String hex) {
+        if (!hex.startsWith("#")){
+            hex =  "#" + hex;
+        }
+        getVisiblePreferences().edit().putString(COLOR_HEX+team, hex).apply();
+    }
+    public static String getColorHex(String team){
+        return getVisiblePreferences().getString(COLOR_HEX+team, "#FFFFFF");
     }
 
     public enum OsmMapType{

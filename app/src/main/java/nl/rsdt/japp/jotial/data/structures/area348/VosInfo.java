@@ -18,6 +18,7 @@ import java.util.Date;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon;
 
 /**
@@ -206,105 +207,96 @@ public class VosInfo extends BaseInfo implements Parcelable {
      * */
     public static int getAssociatedDrawable(VosInfo info)
     {
+        MetaColorInfo.ColorNameInfo.DeelgebiedColor color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(info.team));
         switch (info.icon)
         {
+            default:
             case SightingIcon.DEFAULT:
-                switch (info.team)
+                switch (color)
                 {
-                    case "a":
-                        return R.drawable.vos_b_2;
-                    case "b":
-                        return R.drawable.vos_d_2;
-                    case "c":
-                        return R.drawable.vos_e_2;
-                    case "d":
-                        return R.drawable.vos_f_2;
-                    case "e":
-                        return R.drawable.vos_c_2;
-                    case "f":
-                        return R.drawable.vos_a_2;
-                    case "x":
-                        return R.drawable.vos_x_2;
+                    case Groen:
+                        return R.drawable.vos_groen_2;
+                    case Rood:
+                        return R.drawable.vos_rood_2;
+                    case Paars:
+                        return R.drawable.vos_paars_2;
+                    case Oranje:
+                        return R.drawable.vos_oranje_2;
+                    case Blauw:
+                        return R.drawable.vos_blauw_2;
+                    case Zwart:
+                        return R.drawable.vos_zwart_2;
+                    case Turquoise:
+                        return R.drawable.vos_turquoise_2;
+                    case Onbekend:
+                        return R.drawable.vos_zwart_2;
                 }
                 break;
             case SightingIcon.HUNT:
-                switch (info.team)
+                switch (color)
                 {
-                    case "a":
-                        return R.drawable.vos_b_4;
-                    case "b":
-                        return R.drawable.vos_d_4;
-                    case "c":
-                        return R.drawable.vos_e_4;
-                    case "d":
-                        return R.drawable.vos_f_4;
-                    case "e":
-                        return R.drawable.vos_c_4;
-                    case "f":
-                        return R.drawable.vos_a_4;
-                    case "x":
-                        return R.drawable.vos_x_4;
+                    case Groen:
+                        return R.drawable.vos_groen_4;
+                    case Rood:
+                        return R.drawable.vos_rood_4;
+                    case Paars:
+                        return R.drawable.vos_paars_4;
+                    case Oranje:
+                        return R.drawable.vos_oranje_4;
+                    case Blauw:
+                        return R.drawable.vos_blauw_4;
+                    case Zwart:
+                        return R.drawable.vos_zwart_4;
+                    case Turquoise:
+                        return R.drawable.vos_turquoise_4;
+                    case Onbekend:
+                        return R.drawable.vos_zwart_4;
                 }
                 break;
             case SightingIcon.SPOT:
-                switch (info.team)
+                switch (color)
                 {
-                    case "a":
-                        return R.drawable.vos_b_3;
-                    case "b":
-                        return R.drawable.vos_d_3;
-                    case "c":
-                        return R.drawable.vos_e_3;
-                    case "d":
-                        return R.drawable.vos_f_3;
-                    case "e":
-                        return R.drawable.vos_c_3;
-                    case "f":
-                        return R.drawable.vos_a_3;
-                    case "x":
-                        return R.drawable.vos_x_3;
+                    case Groen:
+                        return R.drawable.vos_groen_3;
+                    case Rood:
+                        return R.drawable.vos_rood_3;
+                    case Paars:
+                        return R.drawable.vos_paars_3;
+                    case Oranje:
+                        return R.drawable.vos_oranje_3;
+                    case Blauw:
+                        return R.drawable.vos_blauw_3;
+                    case Zwart:
+                        return R.drawable.vos_zwart_3;
+                    case Turquoise:
+                        return R.drawable.vos_turquoise_3;
+                    case Onbekend:
+                        return R.drawable.vos_zwart_3;
                 }
                 break;
             case SightingIcon.LAST_LOCATION:
-                switch (info.team)
+                switch (color)
                 {
-                    case "a":
-                        return R.drawable.vos_b_1;
-                    case "b":
-                        return R.drawable.vos_d_1;
-                    case "c":
-                        return R.drawable.vos_e_1;
-                    case "d":
-                        return R.drawable.vos_f_1;
-                    case "e":
-                        return R.drawable.vos_c_1;
-                    case "f":
-                        return R.drawable.vos_a_1;
-                    case "x":
-                        return R.drawable.vos_x_1;
-                }
-                break;
-            default:
-                switch (info.team)
-                {
-                    case "a":
-                        return R.drawable.vos_b_2;
-                    case "b":
-                        return R.drawable.vos_d_2;
-                    case "c":
-                        return R.drawable.vos_e_2;
-                    case "d":
-                        return R.drawable.vos_f_2;
-                    case "e":
-                        return R.drawable.vos_c_2;
-                    case "f":
-                        return R.drawable.vos_a_2;
-                    case "x":
-                        return R.drawable.vos_x_2;
+                    case Groen:
+                        return R.drawable.vos_groen_1;
+                    case Rood:
+                        return R.drawable.vos_rood_1;
+                    case Paars:
+                        return R.drawable.vos_paars_1;
+                    case Oranje:
+                        return R.drawable.vos_oranje_1;
+                    case Blauw:
+                        return R.drawable.vos_blauw_1;
+                    case Zwart:
+                        return R.drawable.vos_zwart_1;
+                    case Turquoise:
+                        return R.drawable.vos_turquoise_1;
+                    case Onbekend:
+                        return R.drawable.vos_zwart_1;
                 }
                 break;
         }
-        return 0;
+        return R.drawable.vos_zwart_1;
     }
 
 
@@ -319,22 +311,24 @@ public class VosInfo extends BaseInfo implements Parcelable {
     }
 
     public static int getAssociatedColor(String team, int alpha) {
-        switch (team.toLowerCase())
+        MetaColorInfo.ColorNameInfo.DeelgebiedColor color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(team));
+        switch (color)
         {
-            case "a":
+            case Rood:
                 return Color.argb(alpha, 255, 0, 0);
-            case "b":
+            case Groen:
                 return Color.argb(alpha, 0, 255, 0);
-            case "c":
+            case Blauw:
                 return Color.argb(alpha, 0, 0, 255);
-            case "d":
+            case Turquoise:
                 return Color.argb(alpha, 0, 255, 255);
-            case "e":
+            case Paars:
                 return Color.argb(alpha, 255, 0, 255);
-            case "f":
+            case Oranje:
                 return Color.argb(alpha, 255, 162, 0);
-            case "x":
+            case Zwart:
                 return Color.argb(alpha, 0, 0, 0);
+            case Onbekend:
             default:
                 return Color.WHITE;
         }
