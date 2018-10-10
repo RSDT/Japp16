@@ -38,7 +38,7 @@ public class LoginActivity extends Activity {
         passwordLost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse("http://jotihunt2017.area348.nl/user_forget_password.php"));
+                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse("http://jotihunt2018.area348.nl/user_forget_password.php"));
                 startActivity(browser);
             }
         });
