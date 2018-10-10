@@ -18,6 +18,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
+    <string name="password_forgotten"><a href="https://stackoverflow.com/questions/9852184/android-textview-hyperlink?rq=1">Wachtwoord vergeten?</a></string>
+    <string name="googlemaps_navigeren">GoogleMaps navigeren</string>
+    <string name="navigate_to_confirm">Wil je naar deze locatie navigeren?</string>
 </resources>

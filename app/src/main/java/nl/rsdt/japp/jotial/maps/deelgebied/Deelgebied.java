@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -30,37 +32,37 @@ public final class Deelgebied {
     /**
      * Defines the Alpha Deelgebied.
      * */
-    public static final Deelgebied Alpha = new Deelgebied("alpha", R.drawable.vos_b_4, R.drawable.vos_b_3, Color.argb(255, 0, 193, 64) );
+    public static final Deelgebied Alpha = new Deelgebied("alpha", JappPreferences.getColorName("a"));
 
     /**
      * Defines the Bravo Deelgebied.
      * */
-    public static final Deelgebied Bravo = new Deelgebied("bravo", R.drawable.vos_d_4, R.drawable.vos_d_3, Color.argb(255, 19, 201, 247));
+    public static final Deelgebied Bravo = new Deelgebied("bravo", JappPreferences.getColorName("b"));
 
     /**
      * Defines the Charlie Deelgebied.
      * */
-    public static final Deelgebied Charlie = new Deelgebied("charlie", R.drawable.vos_e_4, R.drawable.vos_e_3, Color.argb(255, 136, 19, 247));
+    public static final Deelgebied Charlie = new Deelgebied("charlie", JappPreferences.getColorName("c"));
 
     /**
      * Defines the Delta Deelgebied.
      * */
-    public static final Deelgebied Delta = new Deelgebied("delta", R.drawable.vos_f_4, R.drawable.vos_f_3, Color.argb(255, 247, 53, 19));
+    public static final Deelgebied Delta = new Deelgebied("delta", JappPreferences.getColorName("d"));
 
     /**
      * Defines the Echo Deelgebied.
      * */
-    public static final Deelgebied Echo = new Deelgebied("echo", R.drawable.vos_c_4, R.drawable.vos_c_3, Color.argb(255, 19, 41, 247));
+    public static final Deelgebied Echo = new Deelgebied("echo", JappPreferences.getColorName("e"));
 
     /**
      * Defines the Foxtrot Deelgebied.
      * */
-    public static final Deelgebied Foxtrot = new Deelgebied("foxtrot", R.drawable.vos_a_4, R.drawable.vos_a_3, Color.argb(255, 247, 19, 69));
+    public static final Deelgebied Foxtrot = new Deelgebied("foxtrot", JappPreferences.getColorName("f"));
 
     /**
      * Defines the Xray Deelgebied.
      * */
-    public static final Deelgebied Xray = new Deelgebied("xray", R.drawable.vos_x_4, R.drawable.vos_x_3, Color.argb(255, 0, 0, 0));
+    public static final Deelgebied Xray = new Deelgebied("xray", JappPreferences.getColorName("x"));
 
     /**
      * Gets a array of all the Deelgebieden.
@@ -141,16 +143,51 @@ public final class Deelgebied {
      * Initializes a new instance of Deelgebied.
      *
      * @param name The name of the Deelgebied.
-     * @param drawable_hunt The hunt drawable of the Deelgebied.
-     * @param drawable_spot The spot drawable of the Deelgebied.
-     * @param color The color of the Deelgebied.
      * */
-    private Deelgebied(String name, int drawable_hunt, int drawable_spot, int color)
+    private Deelgebied(String name,String colorName)
     {
         this.name = name;
-        this.drawable_hunt = drawable_hunt;
-        this.drawable_spot = drawable_spot;
-        this.color = color;
+        switch(MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(colorName)){
+
+            case Groen:
+                this.drawable_hunt = R.drawable.vos_groen_4;
+                this.drawable_spot = R.drawable.vos_groen_3;
+                this.color = Color.argb(255, 0, 255, 0);
+                break;
+            case Rood:
+                this.drawable_hunt = R.drawable.vos_rood_4;
+                this.drawable_spot = R.drawable.vos_rood_3;
+                this.color = Color.argb(255, 255, 0, 0);
+                break;
+            case Paars:
+                this.drawable_hunt = R.drawable.vos_paars_4;
+                this.drawable_spot = R.drawable.vos_paars_3;
+                this.color = Color.argb(255, 255, 0, 255);
+                break;
+            case Oranje:
+                this.drawable_hunt = R.drawable.vos_oranje_4;
+                this.drawable_spot = R.drawable.vos_oranje_3;
+                this.color = Color.argb(255, 255, 162, 0);
+                break;
+            case Blauw:
+                this.drawable_hunt = R.drawable.vos_oranje_4;
+                this.drawable_spot = R.drawable.vos_oranje_3;
+                this.color = Color.argb(255, 0, 0, 255);
+                break;
+            default:
+            case Onbekend:
+            case Zwart:
+                this.drawable_hunt = R.drawable.vos_zwart_4;
+                this.drawable_spot = R.drawable.vos_zwart_3;
+                this.color = Color.argb(255, 0, 0, 0);
+                break;
+            case Turquoise:
+                this.drawable_hunt = R.drawable.vos_groen_4;
+                this.drawable_spot = R.drawable.vos_groen_3;
+                this.color = Color.argb(255, 0, 255, 255);
+                break;
+        }
+
     }
 
     /**

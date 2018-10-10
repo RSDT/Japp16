@@ -19,6 +19,7 @@ public class NavigationLocationService extends Service {
     private final NavigationLocationManager locationManager;
     Binder binder = new NavigationLocationBinder();
 
+
     public NavigationLocationService() {
         locationManager = new NavigationLocationManager();
         locationManager.setCallback(new NavigationLocationManager.OnNewLocation() {

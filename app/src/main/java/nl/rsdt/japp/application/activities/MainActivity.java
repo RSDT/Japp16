@@ -37,6 +37,8 @@ import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
 import nl.rsdt.japp.jotial.data.firebase.Location;
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
+import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo;
+import nl.rsdt.japp.jotial.data.structures.area348.MetaInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
@@ -44,6 +46,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
 import nl.rsdt.japp.jotial.net.apis.AutoApi;
+import nl.rsdt.japp.jotial.net.apis.MetaApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity
         /**
          * Set a interceptor so that requests that give a 401 will result in a login activity.
          * */
+        /*
         Japp.setInterceptor(new Interceptor() {
 
             @Override
@@ -97,7 +101,7 @@ public class MainActivity extends AppCompatActivity
                 return response;
             }
         });
-
+        */
 
         /**
          * Add this as a listener for UpdateMessages.
@@ -125,10 +129,7 @@ public class MainActivity extends AppCompatActivity
          * */
         if(JappPreferences.isFirstRun())
         {
-            /**
-             * Set the the first run value to false.
-             * */
-            JappPreferences.setFirstRun(false);
+
 
             /**
              * Send the token to the server.
@@ -146,7 +147,38 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             sequence.start();
+            MetaApi metaApi = Japp.getApi(MetaApi.class);
+            //MetaInfo metaInfo = metaApi.getMetaInfo(JappPreferences.getAccountKey());
+            metaApi.getMetaColor(JappPreferences.getAccountKey()).enqueue(new Callback<MetaColorInfo>() {
+                @Override
+                public void onResponse(Call<MetaColorInfo> call, retrofit2.Response<MetaColorInfo> response) {
+                    MetaColorInfo colorInfo = response.body();
+                    JappPreferences.setColorHex("a", colorInfo.ColorCode.a);
+                    JappPreferences.setColorHex("b", colorInfo.ColorCode.b);
+                    JappPreferences.setColorHex("c", colorInfo.ColorCode.c);
+                    JappPreferences.setColorHex("d", colorInfo.ColorCode.d);
+                    JappPreferences.setColorHex("e", colorInfo.ColorCode.e);
+                    JappPreferences.setColorHex("f", colorInfo.ColorCode.f);
+                    JappPreferences.setColorHex("x", colorInfo.ColorCode.x);
+                    JappPreferences.setColorName("a",colorInfo.ColorName.a);
+                    JappPreferences.setColorName("b",colorInfo.ColorName.b);
+                    JappPreferences.setColorName("c",colorInfo.ColorName.c);
+                    JappPreferences.setColorName("d",colorInfo.ColorName.d);
+                    JappPreferences.setColorName("e",colorInfo.ColorName.e);
+                    JappPreferences.setColorName("f",colorInfo.ColorName.f);
+                    JappPreferences.setColorName("x",colorInfo.ColorName.x);
+                }
 
+                @Override
+                public void onFailure(Call<MetaColorInfo> call, Throwable t) {
+
+                }
+            });
+
+            /**
+             * Set the the first run value to false.
+             * */
+            JappPreferences.setFirstRun(false);
         }
 
         /**

@@ -23,14 +23,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_label="Hunt"
-            android:src="@drawable/vos_x_4" />
+            android:src="@drawable/vos_zwart_4" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_spot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_label="Spot"
-            android:src="@drawable/vos_x_3" />
+            android:src="@drawable/vos_zwart_3" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_mark"

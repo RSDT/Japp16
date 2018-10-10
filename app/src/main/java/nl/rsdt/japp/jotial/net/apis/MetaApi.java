@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.net.apis;
 
+import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.MetaInfo;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,4 +17,6 @@ public interface MetaApi {
     @GET("/meta/{key}")
     Call<MetaInfo> getMetaInfo(@Path("key") String key);
 
+    @GET("/meta/{key}/color")
+    Call<MetaColorInfo> getMetaColor(@Path("key") String key);
 }

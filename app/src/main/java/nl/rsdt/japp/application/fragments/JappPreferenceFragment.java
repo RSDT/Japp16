@@ -68,7 +68,7 @@ public class JappPreferenceFragment extends PreferenceFragment {
         }
         map.addPreference(type);
         EditTextPreference preference = (EditTextPreference)findPreference(JappPreferences.DEBUG_VERSION_NAME);
-        preference.setText(getString(R.string.versionName));
+        //TODO set version preference value
     }
 
     private void setupIconChange() {
