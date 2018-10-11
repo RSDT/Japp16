@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import nl.rsdt.japp.R;
@@ -153,7 +154,12 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
                 FirebaseMessaging.getInstance().subscribeToTopic(deelgebied.getName());
 
                 int color = deelgebied.getColor();
-                List<LatLng> coordinates = tail.getPoints();
+                List<LatLng> coordinates;
+                try {
+                    coordinates = tail.getPoints();
+                } catch (NullPointerException e){
+                    coordinates = new LinkedList<LatLng>();
+                }
                 tail.remove();
                 tail = jotiMap.addPolyline(
                         new PolylineOptions()
