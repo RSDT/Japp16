@@ -3,7 +3,7 @@ package nl.rsdt.japp.application.misc;
 import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 
 import java.util.Iterator;

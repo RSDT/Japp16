@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.firebase.FirebaseApp;

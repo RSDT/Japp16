@@ -3,7 +3,8 @@ package nl.rsdt.japp.service.cloud.messaging;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+//import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
@@ -19,11 +20,11 @@ import retrofit2.Response;
  * @since 4-8-2016
  * Description...
  */
-public class JappFirebaseInstanceIdService extends FirebaseInstanceIdService {
+public class JappFirebaseInstanceIdService extends FirebaseMessagingService {
 
     public static final String TAG = "InstanceIdService";
 
-    @Override
+    //@Override
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         JappPreferences.setFcmToken(refreshedToken);
