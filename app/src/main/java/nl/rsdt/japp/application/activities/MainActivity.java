@@ -3,7 +3,6 @@ package nl.rsdt.japp.application.activities;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -13,48 +12,35 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.io.IOException;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
+import nl.rsdt.japp.application.fragments.TmpCarFragment;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
 import nl.rsdt.japp.application.showcase.ShowcaseSequence;
 import nl.rsdt.japp.jotial.auth.Authentication;
-import nl.rsdt.japp.jotial.data.firebase.Location;
-import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo;
-import nl.rsdt.japp.jotial.data.structures.area348.MetaInfo;
 import nl.rsdt.japp.jotial.maps.MapManager;
-import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap;
-import nl.rsdt.japp.jotial.net.apis.AutoApi;
 import nl.rsdt.japp.jotial.net.apis.MetaApi;
 import nl.rsdt.japp.service.LocationService;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import nl.rsdt.japp.service.cloud.data.UpdateInfo;
 import nl.rsdt.japp.service.cloud.messaging.JappFirebaseInstanceIdService;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -112,7 +98,6 @@ public class MainActivity extends AppCompatActivity
          * Register a on changed listener to the visible release_preferences.
          * */
         JappPreferences.getVisiblePreferences().registerOnSharedPreferenceChangeListener(this);
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -230,7 +215,6 @@ public class MainActivity extends AppCompatActivity
         }else {
             //// TODO: 09/08/17 do stuff
         }
-
         mapManager.onMapReady(jotiMap);
     }
 
@@ -308,6 +292,10 @@ public class MainActivity extends AppCompatActivity
                 if(fragment != null) {
                     fragment.refresh();
                 }
+                TmpCarFragment carfragment = (TmpCarFragment) navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_CAR);
+                if(carfragment != null) {
+                    carfragment.refresh();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -373,13 +361,15 @@ public class MainActivity extends AppCompatActivity
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_MAP);
         } else if (id == R.id.nav_settings) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_SETTINGS);
+        } else if (id == R.id.nav_car) {
+            navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_CAR);
         } else if (id == R.id.nav_about) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT);
         } else if (id == R.id.nav_log_out) {
             Authentication.startLoginActivity(this);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

@@ -57,6 +57,7 @@ public class OsmJotiMap implements IJotiMap{
 
     private OsmJotiMap(MapView map){
         osmMap  = map;
+
         eventsOverlay = new MapEventsOverlay(new MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {

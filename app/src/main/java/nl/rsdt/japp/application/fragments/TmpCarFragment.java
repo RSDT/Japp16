@@ -1,109 +1,167 @@
 package nl.rsdt.japp.application.fragments;
 
-import android.content.Context;
-import android.net.Uri;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.InzittendenAdapter;
+import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.application.AutosAdapter;
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
+import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo;
+import nl.rsdt.japp.jotial.net.apis.AutoApi;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TmpCarFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TmpCarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class TmpCarFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class TmpCarFragment extends Fragment implements Callback<HashMap<String, List<AutoInzittendeInfo>>> {
+    public static final String TAG = "CarFragment";
+    private RecyclerView autosRecyclerView;
+    private RecyclerView inzittendenRecyclerView;
+    private LinearLayout inzittendeLayout;
+    private AutosAdapter autosAdapter;
+    private InzittendenAdapter inzittendenAdapter;
+    private Button stapUitButton;
 
-    private OnFragmentInteractionListener mListener;
 
     public TmpCarFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TmpCarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TmpCarFragment newInstance(String param1, String param2) {
-        TmpCarFragment fragment = new TmpCarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onResume(){
+        super.onResume();
+        refresh();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_tmp_car, container, false);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tmp_car, container, false);
+        autosRecyclerView = (RecyclerView) v.findViewById(R.id.autos_recycler_view);
+        inzittendeLayout = (LinearLayout) v.findViewById(R.id.inzittenden_linear_view);
+        inzittendenRecyclerView = (RecyclerView) v.findViewById(R.id.inzittenden_recycler_view);
+        stapUitButton = (Button) v.findViewById(R.id.stap_uit_button);
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        autosRecyclerView.setHasFixedSize(true);
+        inzittendenRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        RecyclerView.LayoutManager inzittendeLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager autoLayoutManager = new LinearLayoutManager(getActivity());
+
+        autosRecyclerView.setLayoutManager(autoLayoutManager);
+        inzittendenRecyclerView.setLayoutManager(inzittendeLayoutManager);
+
+        // specify an adapter (see also next example)
+        autosAdapter = new AutosAdapter(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                assert response.errorBody() != null;
+                try {
+                    String x = response.errorBody().string();
+                    refresh();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                refresh();
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                refresh();
+            }
+        });
+        inzittendenAdapter = new InzittendenAdapter();
+        autosRecyclerView.setAdapter(autosAdapter);
+        inzittendenRecyclerView.setAdapter(inzittendenAdapter);
+        stapUitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final AutoApi autoApi = Japp.getApi(AutoApi.class);
+                autoApi.deleteFromCarByName(JappPreferences.getAccountKey(),JappPreferences.getAccountUsername()).enqueue(new Callback<DeletedInfo>() {
+                    @Override
+                    public void onResponse(Call<DeletedInfo> call, Response<DeletedInfo> response) {
+                        refresh();
+                    }
+
+                    @Override
+                    public void onFailure(Call<DeletedInfo> call, Throwable t) {
+                        refresh();
+                    }
+                });
+            }
+        });
+        refresh();
+        return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private List<AutoInzittendeInfo> findInzittendeInfo(Map<String, List<AutoInzittendeInfo>> autos){
+        for (List<AutoInzittendeInfo> auto : autos.values()){
+            for (AutoInzittendeInfo inzittende : auto){
+                if (inzittende.gebruikersNaam.equals(JappPreferences.getAccountUsername())){
+                    return auto;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void refresh() {
+        final AutoApi autoApi = Japp.getApi(AutoApi.class);
+        autoApi.getAllCars(JappPreferences.getAccountKey()).enqueue(this);
+    }
+
+    @Override
+    public void onResponse(Call<HashMap<String, List<AutoInzittendeInfo>>> call, Response<HashMap<String, List<AutoInzittendeInfo>>> response) {
+        HashMap<String, List<AutoInzittendeInfo>> autos = response.body();
+        if (autos == null){
+            autos = new HashMap<>();
+        }
+        List<AutoInzittendeInfo> auto = findInzittendeInfo(autos);
+        if (auto == null){
+            autosAdapter.setData(autos);
+            autosAdapter.notifyDataSetChanged();
+            autosRecyclerView.setVisibility(View.VISIBLE);
+            inzittendeLayout.setVisibility(View.GONE);
+        }else{
+            if(auto.get(0).autoEigenaar.equals(JappPreferences.getAccountUsername())){
+                stapUitButton.setText("Verwijder iedereen uit de auto");
+            }else{
+                stapUitButton.setText("Stap uit de auto");
+            }
+            inzittendenAdapter.setData(auto);
+            inzittendenAdapter.notifyDataSetChanged();
+            autosRecyclerView.setVisibility(View.GONE);
+            inzittendeLayout.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+    public void onFailure(Call<HashMap<String, List<AutoInzittendeInfo>>> call, Throwable t) {
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

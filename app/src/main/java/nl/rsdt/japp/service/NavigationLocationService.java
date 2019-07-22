@@ -55,7 +55,7 @@ public class NavigationLocationService extends Service {
 
             @Override
             public void onNotInCar() {
-                String mesg = "Japp: Fout: Zet jezelf eerst in een auto via telegram.";
+                String mesg = "Japp: Fout: Zet jezelf eerst in een auto via menu->auto.";
                 showToast(mesg, Toast.LENGTH_SHORT);
             }
         });

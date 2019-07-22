@@ -16,6 +16,7 @@ import nl.rsdt.japp.application.fragments.AboutFragment;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.application.fragments.JappPreferenceFragment;
+import nl.rsdt.japp.application.fragments.TmpCarFragment;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
 
@@ -35,6 +36,8 @@ public class FragmentNavigationManager {
 
     public static final String FRAGMENT_ABOUT = "FRAGMENT_ABOUT";
 
+    public static final String FRAGMENT_CAR = "FRAGMENT_CAR";
+
     private static final String BUNDLE_KEY_FRAGMENT = "BUNDLE_KEY_FRAGMENT";
 
     private ArrayList<String> backstack = new ArrayList<>();
@@ -51,6 +54,8 @@ public class FragmentNavigationManager {
 
     private JappMapFragment mapFragment;
 
+    private TmpCarFragment carFragment;
+
     private JappPreferenceFragment preferenceFragment;
 
     private AboutFragment aboutFragment;
@@ -59,6 +64,8 @@ public class FragmentNavigationManager {
         switch(tag) {
             case FRAGMENT_HOME:
                 return homeFragment;
+            case FRAGMENT_CAR:
+                return carFragment;
             case FRAGMENT_MAP:
                 return mapFragment;
             case FRAGMENT_SETTINGS:
@@ -115,6 +122,9 @@ public class FragmentNavigationManager {
             case FRAGMENT_MAP:
                 ft.show(mapFragment);
                 break;
+            case FRAGMENT_CAR:
+                ft.show(carFragment);
+                break;
             case FRAGMENT_SETTINGS:
                 ft.show(preferenceFragment);
                 break;
@@ -130,6 +140,9 @@ public class FragmentNavigationManager {
                 break;
             case FRAGMENT_MAP:
                 ft.hide(mapFragment);
+                break;
+            case FRAGMENT_CAR:
+                ft.hide(carFragment);
                 break;
             case FRAGMENT_SETTINGS:
                 ft.hide(preferenceFragment);
@@ -176,6 +189,9 @@ public class FragmentNavigationManager {
                 case FRAGMENT_MAP:
                     actionbar.setTitle("Kaart");
                     break;
+                case FRAGMENT_CAR:
+                    actionbar.setTitle("Auto");
+                    break;
                 case FRAGMENT_SETTINGS:
                     actionbar.setTitle("Instellingen");
                     break;
@@ -195,6 +211,9 @@ public class FragmentNavigationManager {
                 break;
             case FRAGMENT_MAP:
                 nView.getMenu().findItem(R.id.nav_map).setChecked(true);
+                break;
+            case FRAGMENT_CAR:
+                nView.getMenu().findItem(R.id.nav_car).setChecked(true);
                 break;
             case FRAGMENT_SETTINGS:
                 nView.getMenu().findItem(R.id.nav_settings).setChecked(true);
@@ -218,6 +237,13 @@ public class FragmentNavigationManager {
         }
         ft.hide(homeFragment);
 
+        carFragment = (TmpCarFragment) manager.findFragmentByTag(TmpCarFragment.TAG);
+        if(carFragment == null)
+        {
+            carFragment = new TmpCarFragment();
+            ft.add(R.id.container, carFragment, TmpCarFragment.TAG);
+        }
+        ft.hide(carFragment);
 
         mapFragment = (JappMapFragment) manager.findFragmentByTag(JappMapFragment.TAG);
         if(mapFragment == null)
@@ -265,7 +291,10 @@ public class FragmentNavigationManager {
         {
             mapFragment = null;
         }
-
+        if(carFragment != null)
+        {
+            carFragment = null;
+        }
         if(preferenceFragment != null)
         {
             preferenceFragment = null;

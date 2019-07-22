@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_action_map"
             android:title="Kaart" />
         <item
+            android:id="@+id/nav_car"
+            android:icon="@drawable/hunter_0"
+            android:title="Auto" />
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_action_settings"
             android:title="Instellingen" />
