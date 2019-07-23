@@ -4,14 +4,14 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
-
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "nl.rsdt.japp"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 49
         versionName "v4.0"
-        multiDexEnabled true
+        ////multiDexEnabled true
 
     }
     compileOptions {
@@ -59,7 +59,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    implementation 'androidx.multidex:multidex:2.0.1'
+    //implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'

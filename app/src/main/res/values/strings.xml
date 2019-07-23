@@ -16,4 +16,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="password_forgotten"><a href="https://stackoverflow.com/questions/9852184/android-textview-hyperlink?rq=1">Wachtwoord vergeten?</a></string>
+    <string name="fout_zet_eerst_in_auto">Japp: Fout: Zet jezelf eerst in een auto via menu->auto</string>
+    <string name="open_japp">Klik om Japp te openen</string>
+    <string name="japp_does_not_send_location">Japp verzendt je locatie niet!</string>
+    <string name="japp_sends_location">Japp verzendt je locatie</string>
+    <string name="turn_on_location_sharing">Zet locatie delen aan in de app</string>
+    <string name="location_sent">Location was sent!</string>
+    <string name="click_to_change_location_setting">Klik om je locatie instelling te activeren</string>
 </resources>

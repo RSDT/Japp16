@@ -11,6 +11,7 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 import android.widget.Toast;
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 
@@ -54,7 +55,7 @@ public class NavigationLocationService extends Service {
 
             @Override
             public void onNotInCar() {
-                String mesg = "Japp: Fout: Zet jezelf eerst in een auto via menu->auto.";
+                String mesg = getString(R.string.fout_zet_eerst_in_auto);
                 showToast(mesg, Toast.LENGTH_SHORT);
             }
         });

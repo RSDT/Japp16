@@ -1,11 +1,12 @@
 package nl.rsdt.japp.application;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import androidx.multidex.MultiDexApplication;
+//import androidx.multidex.MultiDexApplication;
 
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.firebase.FirebaseApp;
@@ -30,7 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * @since 8-7-2016
  * Description...
  */
-public final class Japp extends MultiDexApplication {
+public final class Japp extends Application {
 
     private static Japp instance;
     private static Location lastLocation = null;
