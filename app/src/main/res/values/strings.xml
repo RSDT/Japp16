@@ -4,8 +4,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
-
     <string name="sighting_input_dialog_hint">Voeg hier eventuele informatie toe</string>
 
     <string name="pinning_input_dialog_title_hint">titel</string>
@@ -17,8 +15,5 @@
     <string name="splash_activity_socket_timed_out">Er is een fout opgetreden tijdens het verbinden met area348.nl, je kunt de app offline gebruiken maar sommige functies zoals Hunter/Spotten en updates zullen niet beschikbaar zijn.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="password_forgotten"><a href="https://stackoverflow.com/questions/9852184/android-textview-hyperlink?rq=1">Wachtwoord vergeten?</a></string>
-    <string name="googlemaps_navigeren">GoogleMaps navigeren</string>
-    <string name="navigate_to_confirm">Wil je naar deze locatie navigeren?</string>
 </resources>
