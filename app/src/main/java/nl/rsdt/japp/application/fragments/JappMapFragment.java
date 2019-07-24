@@ -740,7 +740,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                             try{
                                                 switch(JappPreferences.navigationApp()){
                                                     case GoogleMaps:
-                                                        String uristr = getString(R.string.google_uri, navigateTo.latitude,navigateTo.longitude);
+                                                        String uristr = getString(R.string.google_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
                                                         Uri gmmIntentUri = Uri.parse(uristr);
                                                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                                         mapIntent.setPackage("com.google.android.apps.maps");
@@ -762,7 +762,9 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                             } catch (ActivityNotFoundException e){
                                                 System.out.println(e.toString());
                                                 View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                                Snackbar.make(snackbarView, "De App: " + JappPreferences.navigationApp().toString() +" is niet geinstaleerd.", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                Snackbar.make(snackbarView,
+                                                        getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString()),
+                                                        Snackbar.LENGTH_LONG).show();
                                             }
                                         }else{
                                             int id = JappPreferences.getAccountId();
@@ -781,7 +783,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                         }
                                                         if (response.code() == 404){
                                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                                            Snackbar.make(snackbarView, "Fout: plaats jezelf eerst in een auto via telegram.", Snackbar.LENGTH_LONG).show();
+                                                            Snackbar.make(snackbarView, getString(R.string.fout_not_in_car), Snackbar.LENGTH_LONG).show();
                                                         }
                                                     }
 
@@ -852,13 +854,13 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
                                             switch (response.code()) {
                                                 case 200:
-                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                    Snackbar.make(snackbarView, R.string.sent_succesfull, Snackbar.LENGTH_LONG).show();
                                                     break;
                                                 case 404:
-                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                    Snackbar.make(snackbarView, getString(R.string.wrong_data), Snackbar.LENGTH_LONG).show();
                                                     break;
                                                 default:
-                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show(); //// TODO: 08/08/17 magic string
+                                                    Snackbar.make(snackbarView, getString(R.string.problem_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show();
                                                     break;
                                             }
                                         }
@@ -866,7 +868,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                         @Override
                                         public void onFailure(Call<Void> call, Throwable t) {
                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();//// TODO: 08/08/17 magic string
+                                            Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()) , Snackbar.LENGTH_LONG).show();//// TODO: 08/08/17 magic string
                                         }
                                     });
 

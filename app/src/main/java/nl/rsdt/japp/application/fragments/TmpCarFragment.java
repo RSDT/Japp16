@@ -149,9 +149,9 @@ public class TmpCarFragment extends Fragment implements Callback<HashMap<String,
             inzittendeLayout.setVisibility(View.GONE);
         }else{
             if(auto.get(0).autoEigenaar.equals(JappPreferences.getAccountUsername())){
-                stapUitButton.setText("Verwijder iedereen uit de auto");
+                stapUitButton.setText(R.string.remove_from_car);
             }else{
-                stapUitButton.setText("Stap uit de auto");
+                stapUitButton.setText(R.string.get_out_of_car);
             }
             inzittendenAdapter.setData(auto);
             inzittendenAdapter.notifyDataSetChanged();

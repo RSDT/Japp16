@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.annotations.SerializedName;
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.LoginActivity;
@@ -52,16 +53,16 @@ public class Authentication implements Callback<Authentication.KeyObject> {
 
             if(callback != null)
             {
-                callback.onAuthenticationCompleted(new AuthenticationResult(key, 200, "Succesvol ingelogd!"));
+                callback.onAuthenticationCompleted(new AuthenticationResult(key, 200, Japp.getAppResources().getString(R.string.login_succes)));
             }
         } else {
             String message;
             switch (response.code()) {
                 case 404:
-                    message = "Verkeerde gegevens";
+                    message = Japp.getAppResources().getString(R.string.wrong_data);
                     break;
                 default:
-                    message = "Er is een fout opgetreden tijdens het inloggen";
+                    message = Japp.getAppResources().getString(R.string.error_on_login);
                     break;
             }
             if(callback != null)
@@ -74,7 +75,7 @@ public class Authentication implements Callback<Authentication.KeyObject> {
     @Override
     public void onFailure(Call<KeyObject> call, Throwable t) {
         if(callback != null) {
-            callback.onAuthenticationCompleted(new AuthenticationResult("", 0, "Er is een fout opgetreden tijdens het inloggen"));
+            callback.onAuthenticationCompleted(new AuthenticationResult("", 0, Japp.getAppResources().getString(R.string.error_on_login)));
         }
     }
 

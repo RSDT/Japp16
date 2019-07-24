@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 
@@ -27,11 +28,11 @@ public class NavigationLocationService extends Service {
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
                 if (JappPreferences.isNavigationPhone()) {
                     try {
-                        String mesg = "Japp: locatie ontvangen, navigeren naar: " +location.lat+ ", " +location.lon;
+                        String mesg = getString(R.string.location_received, location.createdBy, location.lat, location.lon);
                         showToast(mesg, Toast.LENGTH_SHORT);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
-                                String uristr = "google.navigation:q=" + Double.toString(location.lat) + "," + Double.toString(location.lon);
+                                String uristr = getString(R.string.google_uri, Double.toString(location.lat),Double.toString(location.lon));
                                 Uri gmmIntentUri = Uri.parse(uristr);
                                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                 mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -39,15 +40,27 @@ public class NavigationLocationService extends Service {
                                 startActivity(mapIntent);
                                 break;
                             case Waze:
-                                String uri = "waze://?ll=" + Double.toString(location.lat) + "," + Double.toString(location.lon) + "&navigate=yes";
+                                String uri = getString(R.string.waze_uri, Double.toString(location.lat),Double.toString(location.lon));
                                 Intent wazeIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                                 wazeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(wazeIntent);
                                 break;
+                            case OSMAnd:
+                                String osmUri = getString(R.string.osmand_uri, Double.toString(location.lat),Double.toString(location.lon));
+                                Intent osmIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(osmUri));
+                                osmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(osmIntent);
+                                break;
+                            case Geo:
+                                String geoUri = getString(R.string.geo_uri, Double.toString(location.lat),Double.toString(location.lon));
+                                Intent geoIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+                                geoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(geoIntent);
+                                break;
                         }
                     } catch (ActivityNotFoundException e) {
                         System.out.println(e.toString());
-                        String mesg = "Japp: De App: " + JappPreferences.navigationApp().toString() + " is niet geinstaleerd.";
+                        String mesg = getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString());
                         showToast(mesg, Toast.LENGTH_SHORT);
                     }
                 }
@@ -55,7 +68,7 @@ public class NavigationLocationService extends Service {
 
             @Override
             public void onNotInCar() {
-                String mesg = "Japp: Fout: Zet jezelf eerst in een auto via menu->auto.";
+                String mesg = getString(R.string.fout_not_in_car);
                 showToast(mesg, Toast.LENGTH_SHORT);
             }
         });

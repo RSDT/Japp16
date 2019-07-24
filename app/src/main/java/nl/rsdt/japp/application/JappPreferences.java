@@ -61,6 +61,8 @@ public class JappPreferences {
 
     public static final String FOLLOW_AOA = "pref_follow_aoa";
 
+    public static final String PREF_CAT_MAP = "pref_cat_map";
+
     public static final String LOCATION_UPDATE_INTERVAL = "pref_advanced_location_update_interval";
 
     public static final String HUNTER_UPDATE_INTERVAL = "pref_advanced_hunter_update_interval";

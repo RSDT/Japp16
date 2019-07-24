@@ -66,7 +66,8 @@ public final class Japp extends MultiDexApplication {
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
                 .client(client.build())
                 .build();
-        return (T)retrofit.create(api);
+
+        return (T) retrofit.create(api);
     }
 
     public static Resources getAppResources() { return instance.getApplicationContext().getResources(); }
@@ -100,8 +101,5 @@ public final class Japp extends MultiDexApplication {
         Deelgebied.initialize(this.getResources());
 
         AppData.initialize(this.getFilesDir());
-        File dir = this.getFilesDir();
-        String file = dir.getAbsolutePath();
-        dir.exists();
     }
 }

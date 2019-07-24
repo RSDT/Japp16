@@ -184,19 +184,19 @@ public class FragmentNavigationManager {
             switch (currentFragmentTag)
             {
                 case FRAGMENT_HOME:
-                    actionbar.setTitle("Thuis");
+                    actionbar.setTitle(R.string.home);
                     break;
                 case FRAGMENT_MAP:
-                    actionbar.setTitle("Kaart");
+                    actionbar.setTitle(R.string.map);
                     break;
                 case FRAGMENT_CAR:
-                    actionbar.setTitle("Auto");
+                    actionbar.setTitle(R.string.car);
                     break;
                 case FRAGMENT_SETTINGS:
-                    actionbar.setTitle("Instellingen");
+                    actionbar.setTitle(R.string.settings);
                     break;
                 case FRAGMENT_ABOUT:
-                    actionbar.setTitle("Over Japp");
+                    actionbar.setTitle(R.string.about);
                     break;
             }
         }

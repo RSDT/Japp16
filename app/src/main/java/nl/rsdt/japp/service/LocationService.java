@@ -85,7 +85,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                     notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                             Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     PendingIntent pendingIntent = PendingIntent.getActivity(LocationService.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    showLocationNotification("Japp verzend je locatie niet!", "Klik om je GPS aan te zetten", Color.rgb(244, 66, 66), pendingIntent);
+                    showLocationNotification(getString(R.string.japp_not_sending_location), getString(R.string.torn_on_gps), Color.rgb(244, 66, 66), pendingIntent);
                 }
             }
         }
@@ -108,7 +108,7 @@ public class LocationService extends LocationProviderService implements SharedPr
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
                 if (JappPreferences.isNavigationPhone()) {
                     try {
-                        String mesg = "Japp: locatie ontvangen van "+ location.createdBy +", navigeren naar: " +location.lat+ ", " +location.lon;
+                        String mesg = getString(R.string.location_received, location.createdBy, location.lat, location.lon);
                         showToast(mesg, Toast.LENGTH_LONG);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
@@ -140,7 +140,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                         }
                     } catch (ActivityNotFoundException e) {
                         System.out.println(e.toString());
-                        String mesg = "Japp: De App: " + JappPreferences.navigationApp().toString() + " is niet geinstaleerd.";
+                        String mesg = getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString());
                         showToast(mesg, Toast.LENGTH_SHORT);
                     }
                 }
@@ -148,7 +148,7 @@ public class LocationService extends LocationProviderService implements SharedPr
 
             @Override
             public void onNotInCar() {
-                String mesg = "Japp: Fout: Zet jezelf eerst in een auto via telegram.";
+                String mesg = getString(R.string.fout_not_in_car);
                 showToast(mesg, Toast.LENGTH_LONG);
             }
         });
@@ -166,7 +166,7 @@ public class LocationService extends LocationProviderService implements SharedPr
         });
     }
     public void showLocationNotification(String title, int color) {
-        showLocationNotification(title, "Klik om Japp te openen", color);
+        showLocationNotification(title, getString(R.string.open_japp), color);
     }
     public void showLocationNotification(String title, String description, int color) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -210,10 +210,10 @@ public class LocationService extends LocationProviderService implements SharedPr
             String title;
             int color;
             if(shouldSend) {
-                title = "Japp verzendt je locatie";
+                title = getString(R.string.japp_sends_location);
                 color = Color.rgb(113, 244, 66);
             } else {
-                title = "Japp verzendt je locatie niet!";
+                title = getString(R.string.japp_not_sending_location);
                 color = Color.rgb(244, 66, 66);
             }
             showLocationNotification(title, color);
@@ -233,9 +233,9 @@ public class LocationService extends LocationProviderService implements SharedPr
             case LocationSettingsStatusCodes.SUCCESS:
                 wasSending = JappPreferences.isUpdatingLocationToServer();
                 if (!wasSending) {
-                    showLocationNotification("Japp verzendt je locatie niet!", Color.rgb(244, 66, 66));
+                    showLocationNotification(getString(R.string.japp_sends_location), Color.rgb(244, 66, 66));
                 } else {
-                    showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
+                    showLocationNotification(getString(R.string.japp_not_sending_location), Color.rgb(113, 244, 66));
                 }
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -252,9 +252,9 @@ public class LocationService extends LocationProviderService implements SharedPr
                 startLocationUpdates();
                 boolean wasSending = JappPreferences.isUpdatingLocationToServer();
                 if (!wasSending) {
-                    showLocationNotification("Japp verzendt je locatie niet!", "Zet locatie delen aan in de app", Color.rgb(244, 66, 66));
+                    showLocationNotification(getString(R.string.japp_not_sending_location), getString(R.string.turn_on_location_in_app), Color.rgb(244, 66, 66));
                 } else {
-                    showLocationNotification("Japp verzendt je locatie", Color.rgb(113, 244, 66));
+                    showLocationNotification(getString(R.string.japp_sends_location), Color.rgb(113, 244, 66));
                 }
                 break;
             case Activity.RESULT_CANCELED:
@@ -264,7 +264,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                         Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                showLocationNotification("Japp verzend je locatie niet!", "Klik om je locatie instelling te activeren", Color.rgb(244, 66, 66), intent);
+                showLocationNotification(getString(R.string.japp_not_sending_location), getString(R.string.click_to_activate_location_setting), Color.rgb(244, 66, 66), intent);
                 break;
         }
     }
@@ -277,7 +277,7 @@ public class LocationService extends LocationProviderService implements SharedPr
         api.post(builder).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.i(TAG, "Location was sent!");
+                Log.i(TAG, getString(R.string.location_sent));
             }
 
             @Override
@@ -297,10 +297,10 @@ public class LocationService extends LocationProviderService implements SharedPr
                 String title;
                 int color;
                 if(shouldSend) {
-                    title = "Japp verzendt je locatie";
+                    title = getString(R.string.japp_sends_location);
                     color = Color.rgb(113, 244, 66);
                 } else {
-                    title = "Japp verzendt je locatie niet!";
+                    title = getString(R.string.japp_not_sending_location);
                     color = Color.rgb(244, 66, 66);
                 }
                 showLocationNotification(title, color);

@@ -41,7 +41,7 @@ public class InzittendenAdapter extends RecyclerView.Adapter<InzittendenAdapter.
             if (inzittendeInfo !=  null){
                 text = inzittendeInfo.gebruikersNaam + " " + inzittendeInfo.rol;
             }  else{
-                text = "onbekend";
+                text = Japp.getAppResources().getString(R.string.unkown);
             }
             v.setText(text);
         }

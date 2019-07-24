@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.auth.Authentication;
@@ -38,7 +40,8 @@ public class LoginActivity extends Activity {
         passwordLost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.forget_password_url)));
+                int year = Calendar.getInstance().get(Calendar.YEAR);
+                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.forget_password_url,year)));
                 startActivity(browser);
             }
         });

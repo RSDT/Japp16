@@ -22,7 +22,6 @@ import nl.rsdt.japp.jotial.net.apis.AutoApi;
 import retrofit2.Callback;
 
 public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder> {
-    private static final String CREATECAR = "Nieuwe auto aanmaken/ik ben een bestuurder";
     private final Callback<Void> callback;
     private Map<String, List<AutoInzittendeInfo>> data;
     private String[] eigenaars = new String[0];
@@ -77,7 +76,7 @@ public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder
             Button tv = (Button) view;
             tv.setText(tv.getText()+"clicked");
             AutoApi autoApi = Japp.getApi(AutoApi.class);
-            if (tv.getText().toString().contains(CREATECAR)){
+            if (tv.getText().toString().contains( Japp.getAppResources().getString(R.string.create_car))){
                 AutoPostBody body = AutoPostBody.getDefault();
                 body.setAutoEigenaar(JappPreferences.getAccountUsername());
                 autoApi.post(body).enqueue(callback);
@@ -104,7 +103,7 @@ public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         if (position == 0){
-            holder.setEigenaar(CREATECAR);
+            holder.setEigenaar( Japp.getAppResources().getString(R.string.create_car));
             holder.setInzittendeInfos(new ArrayList<AutoInzittendeInfo>());
             return;
         }

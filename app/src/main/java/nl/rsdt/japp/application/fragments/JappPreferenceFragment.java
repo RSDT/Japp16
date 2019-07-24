@@ -38,7 +38,7 @@ public class JappPreferenceFragment extends PreferenceFragment {
         super.onViewCreated(view, savedInstanceState);
         setupIconChange();
         PreferenceScreen screen = getPreferenceScreen();
-        PreferenceCategory map = (PreferenceCategory) screen.findPreference("pref_cat_map");
+        PreferenceCategory map = (PreferenceCategory) screen.findPreference(JappPreferences.PREF_CAT_MAP);
         ListPreference type = new ListPreference(this.getActivity());
         if(JappPreferences.useOSM()) {
             type.setKey("pref_map_osm_source");

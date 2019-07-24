@@ -28,7 +28,7 @@
     <string name="kaart">Kaart</string>
     <string name="waarnemen"><![CDATA[Waarnemen & melden]]></string>
     <string name="auto_updates">Automatische Updates</string>
-    <string name="forget_password_url">http://jotihunt2018.area348.nl/user_forget_password.php</string>
+    <string name="forget_password_url">http://jotihunt%1$d.area348.nl/user_forget_password.php</string>
     <string name="fill_all_fields">Vul alsjeblieft alle velden in!</string>
     <string name="updating_type">Updating %1$s</string>
     <string name="update_available">Update beschikbaar voor %1$s</string>
@@ -55,4 +55,26 @@
     <string name="waze_uri"><![CDATA[waze://?ll=%1$s,%2$s&navigate=yes]]></string>
     <string name="osmand_uri"><![CDATA[osmand.api://navigate?dest_lat=%1$s&dest_lon=%2$s]]></string>
     <string name="geo_uri">geo://%1$s,%2$s</string>
+    <string name="navigation_app_not_installed">Japp: De app  %1$s iss niet geïnstaleerd</string>
+    <string name="location_received">Japp: locatie ontvangen van %1$s navigeren naar %2$f %3$f</string>
+    <string name="fout_not_in_car"><![CDATA[Fout: plaats jezelf eerst in een auto via menu->car.]]></string>
+    <string name="japp_not_sending_location">Japp verzend je locatie niet!</string>
+    <string name="torn_on_gps">Klik om je GPS aan te zetten</string>
+    <string name="open_japp">Klik om Japp te openen</string>
+    <string name="japp_sends_location">Japp verzendt je locatie</string>
+    <string name="location_sent">Location was sent!</string>
+    <string name="turn_on_location_in_app">Zet locatie delen aan in de app</string>
+    <string name="click_to_activate_location_setting">Klik om je locatie instelling te activeren</string>
+    <string name="problem_sending">Probleem bij verzenden:  %1$s</string>
+    <string name="remove_from_car">Verwijder iedereen uit de auto</string>
+    <string name="get_out_of_car">Stap uit de auto</string>
+    <string name="home">Thuis</string>
+    <string name="map">Kaart</string>
+    <string name="car">Auto</string>
+    <string name="settings">Instellingen</string>
+    <string name="about">Over Japp</string>
+    <string name="create_car">Nieuwe auto aanmaken/ik ben een bestuurder</string>
+    <string name="unkown">onbekend</string>
+    <string name="login_succes">Succesvol ingelogd!</string>
+    <string name="error_on_login">Er is een fout opgetreden tijdens het inloggen</string>
 </resources>
