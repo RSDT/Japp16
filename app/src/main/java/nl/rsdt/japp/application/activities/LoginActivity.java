@@ -38,7 +38,7 @@ public class LoginActivity extends Activity {
         passwordLost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse("http://jotihunt2018.area348.nl/user_forget_password.php"));
+                Intent browser= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.forget_password_url)));
                 startActivity(browser);
             }
         });
@@ -90,7 +90,7 @@ public class LoginActivity extends Activity {
                             .create();
                     authentication.executeAsync();
                 } else {
-                    Snackbar.make(findViewById(R.id.login_layout), "Vul alsjeblieft alle velden in!", Snackbar.LENGTH_LONG)
+                    Snackbar.make(findViewById(R.id.login_layout), getString(R.string.fill_all_fields), Snackbar.LENGTH_LONG)
                             .setActionTextColor(Color.BLUE)
                             .show();
                 }

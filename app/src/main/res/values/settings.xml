@@ -196,10 +196,14 @@
     <string-array name="pref_navigation_app">
         <item>Google Maps</item>
         <item>Waze</item>
+        <item>OsmAnd</item>
+        <item>Geo</item>
     </string-array>
     <string-array name="pref_navigation_app_data">
         <item>Google Maps</item>
         <item>Waze</item>
+        <item>OsmAnd</item>
+        <item>Geo</item>
     </string-array>
 
     <string name="pref_navigation_follow_title">Volgen met noorden boven</string>

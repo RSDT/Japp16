@@ -16,9 +16,43 @@
 
     <string name="splash_activity_socket_timed_out">Er is een fout opgetreden tijdens het verbinden met area348.nl, je kunt de app offline gebruiken maar sommige functies zoals Hunter/Spotten en updates zullen niet beschikbaar zijn.</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="password_forgotten"><a href="https://stackoverflow.com/questions/9852184/android-textview-hyperlink?rq=1">Wachtwoord vergeten?</a></string>
     <string name="googlemaps_navigeren">GoogleMaps navigeren</string>
     <string name="navigate_to_confirm">Wil je naar deze locatie navigeren?</string>
+    <string name="welkom_sub">Welkom bij de Jotihunt app voor de RP</string>
+    <string name="kaart_desc">Bekijk de vossen, scouting-groepen, foto-opdrachten en de andere hunters op de kaart</string>
+    <string name="waarnemen_desc">Spot of hunt een vos via de app</string>
+    <string name="auto_updates_desc">Wanneer de app actief is wordt alles automatisch bijgewerkt! Verander voorkeuren in de Instellingen onder updates</string>
+    <string name="welkom">Welkom</string>
+    <string name="kaart">Kaart</string>
+    <string name="waarnemen"><![CDATA[Waarnemen & melden]]></string>
+    <string name="auto_updates">Automatische Updates</string>
+    <string name="forget_password_url">http://jotihunt2018.area348.nl/user_forget_password.php</string>
+    <string name="fill_all_fields">Vul alsjeblieft alle velden in!</string>
+    <string name="updating_type">Updating %1$s</string>
+    <string name="update_available">Update beschikbaar voor %1$s</string>
+    <string name="update">Update!</string>
+    <string name="continue_to_app">Doorgaan naar de app</string>
+    <string name="location_permission">Locatie permissie</string>
+    <string name="location_permision_title">De app heeft de locatie permissie nodig om goed te kunnen functioneren</string>
+    <string name="oke">Oke</string>
+    <string name="err_verification">Fout tijdens vertificatie</string>
+    <string name="try_again">Opnieuw proberen</string>
+    <string name="jotihunt_base_url">http://jotihunt.net</string>
+    <string name="vos_update_title">Vos Status Update</string>
+    <string name="vos_update_body">De status van sommige vossen is veranderd!</string>
+    <string name="team_status_update">%1$s Status Update</string>
+    <string name="connot_hunt_team">Team %1$s mag niet meer gehunt worden!</string>
+    <string name="orange_message">Team %1$s zal binnen 30 minuten niet meer gehunt worden</string>
+    <string name="groen_message">Team %1$s mag gehunt worden!</string>
+    <string name="sent_succesfull">Succesvol verzonden</string>
+    <string name="wrong_data">Verkeerde gegevens</string>
+    <string name="problem_with_sending">Probleem bij verzenden: %1$s</string>
+    <string name="follow_me">Volg mij</string>
+    <string name="stop_following">Stop volgen</string>
+    <string name="google_uri">google.navigation:q=%1$s,%2$s</string>
+    <string name="waze_uri"><![CDATA[waze://?ll=%1$s,%2$s&navigate=yes]]></string>
+    <string name="osmand_uri"><![CDATA[osmand.api://navigate?dest_lat=%1$s&dest_lon=%2$s]]></string>
+    <string name="geo_uri">geo://%1$s,%2$s</string>
 </resources>

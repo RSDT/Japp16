@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
 
     public void refresh() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://jotihunt.net")
+                .baseUrl(getString(R.string.jotihunt_base_url))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         VosApi api = retrofit.create(VosApi.class);
@@ -142,8 +142,8 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity());
-        builder.setContentTitle("Vos Status Update")
-                .setContentText("De status van sommige vossen is veranderd!")
+        builder.setContentTitle(getString(R.string.vos_update_title))
+                .setContentText(getString(R.string.vos_update_body))
                 .setSmallIcon(R.drawable.fox3)
                 .setStyle(style)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -159,18 +159,18 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity());
         switch (status.getStatus()){
             case RED:
-                builder.setContentTitle(status.getTeam() + " Status Update")
-                        .setContentText("Team " + status.getTeam() + " mag niet meer gehunt worden!")
+                builder.setContentTitle(getString(R.string.team_status_update, status.getTeam()))
+                        .setContentText(getString(R.string.connot_hunt_team, status.getTeam()))
                         .setColor(Color.rgb(244, 66, 66));
                 break;
             case ORANGE:
-                builder.setContentTitle(status.getTeam() + " status update")
-                        .setContentText("Team " + status.getTeam() + " zal binnen 30 minuten niet meer gehunt worden")
+                builder.setContentTitle(getString(R.string.team_status_update, status.getTeam()))
+                        .setContentText(getString(R.string.orange_message, status.getTeam()))
                         .setColor(Color.rgb(214, 118, 8));
                 break;
             case GREEN:
-                builder.setContentTitle(status.getTeam() + " status update")
-                        .setContentText("Team " + status.getTeam() + " mag gehunt worden!")
+                builder.setContentTitle(getString(R.string.team_status_update, status.getTeam()))
+                        .setContentText(getString(R.string.groen_message, status.getTeam()))
                         .setColor(Color.rgb(113, 244, 66));
                 break;
         }

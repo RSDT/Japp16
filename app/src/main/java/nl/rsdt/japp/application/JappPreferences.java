@@ -374,13 +374,19 @@ public class JappPreferences {
         ChartBundle_WAC
     }
     public enum NavigationApp{
-        GoogleMaps, Waze;
+        GoogleMaps, Waze, OSMAnd, Geo;
         public static NavigationApp fromString(String appName){
             if (appName.equals("Waze")){
                 return Waze;
             }
             else if (appName.equals("Google Maps")){
                 return GoogleMaps;
+            }
+            else if (appName.equals("OsmAnd")){
+                return OSMAnd;
+            }
+            else if (appName.equals("Geo")){
+                return OSMAnd;
             }
             else{
                 return GoogleMaps; //default google maps

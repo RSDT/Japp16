@@ -112,7 +112,7 @@ public class LocationService extends LocationProviderService implements SharedPr
                         showToast(mesg, Toast.LENGTH_LONG);
                         switch (JappPreferences.navigationApp()) {
                             case GoogleMaps:
-                                String uristr = "google.navigation:q=" + Double.toString(location.lat) + "," + Double.toString(location.lon);
+                                String uristr = getString(R.string.google_uri, Double.toString(location.lat),Double.toString(location.lon));
                                 Uri gmmIntentUri = Uri.parse(uristr);
                                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                 mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -120,10 +120,22 @@ public class LocationService extends LocationProviderService implements SharedPr
                                 startActivity(mapIntent);
                                 break;
                             case Waze:
-                                String uri = "waze://?ll=" + Double.toString(location.lat) + "," + Double.toString(location.lon) + "&navigate=yes";
+                                String uri = getString(R.string.waze_uri, Double.toString(location.lat),Double.toString(location.lon));
                                 Intent wazeIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                                 wazeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(wazeIntent);
+                                break;
+                            case OSMAnd:
+                                String osmUri = getString(R.string.osmand_uri, Double.toString(location.lat),Double.toString(location.lon));
+                                Intent osmIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(osmUri));
+                                osmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(osmIntent);
+                                break;
+                            case Geo:
+                                String geoUri = getString(R.string.geo_uri, Double.toString(location.lat),Double.toString(location.lon));
+                                Intent geoIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+                                geoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(geoIntent);
                                 break;
                         }
                     } catch (ActivityNotFoundException e) {

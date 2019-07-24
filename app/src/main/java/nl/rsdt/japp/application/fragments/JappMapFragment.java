@@ -588,13 +588,13 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
                                             switch (response.code()) {
                                                 case 200:
-                                                    Snackbar.make(snackbarView, "Succesvol verzonden", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, getString(R.string.sent_succesfull), Snackbar.LENGTH_LONG).show();
                                                     break;
                                                 case 404:
-                                                    Snackbar.make(snackbarView, "Verkeerde gegevens", Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, R.string.wrong_data, Snackbar.LENGTH_LONG).show();
                                                     break;
                                                 default:
-                                                    Snackbar.make(snackbarView, "Probleem bij verzenden: " + response.code(), Snackbar.LENGTH_LONG).show();
+                                                    Snackbar.make(snackbarView, getString(R.string.problem_with_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show();
                                                     break;
                                             }
                                         }
@@ -602,7 +602,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                         @Override
                                         public void onFailure(Call<Void> call, Throwable t) {
                                             View snackbarView = JappMapFragment.this.getActivity().findViewById(R.id.container);
-                                            Snackbar.make(snackbarView, "Probleem bij verzenden: "  + t.toString() , Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(snackbarView, getString(R.string.problem_with_sending,  t.toString()) , Snackbar.LENGTH_LONG).show();
                                         }
                                     });
 
@@ -642,13 +642,13 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                  * */
                 if (session != null) {
                     // followButton.setColorNormal(Color.parseColor("#DA4336"));
-                    followButton.setLabelText("Volg mij");
+                    followButton.setLabelText(getString(R.string.follow_me));
                     session.end();
                     session = null;
                 } else {
                     menu.close(true);
                     //followButton.setColorNormal(Color.parseColor("#5cd65c"));
-                    followButton.setLabelText("Stop volgen");
+                    followButton.setLabelText(JappMapFragment.this.getString(R.string.stop_following));
                     session = movementManager.newSession(jotiMap.getPreviousCameraPosition(), JappPreferences.getFollowZoom(), JappPreferences.getFollowAngleOfAttack());
                 }
             }
@@ -740,15 +740,23 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                             try{
                                                 switch(JappPreferences.navigationApp()){
                                                     case GoogleMaps:
-                                                        String uristr = "google.navigation:q=" + Double.toString(navigateTo.latitude) + "," + Double.toString(navigateTo.longitude);
+                                                        String uristr = getString(R.string.google_uri, navigateTo.latitude,navigateTo.longitude);
                                                         Uri gmmIntentUri = Uri.parse(uristr);
                                                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                                         mapIntent.setPackage("com.google.android.apps.maps");
                                                         startActivity(mapIntent);
                                                         break;
                                                     case Waze:
-                                                        String uri = "waze://?ll="+Double.toString(navigateTo.latitude) +","+Double.toString(navigateTo.longitude) +"&navigate=yes";
+                                                        String uri = getString(R.string.waze_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
                                                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+                                                        break;
+                                                    case OSMAnd:
+                                                        String osmuri = getString(R.string.osmand_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
+                                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(osmuri)));
+                                                        break;
+                                                    case Geo:
+                                                        String geouri = getString(R.string.geo_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
+                                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(geouri)));
                                                         break;
                                                 }
                                             } catch (ActivityNotFoundException e){

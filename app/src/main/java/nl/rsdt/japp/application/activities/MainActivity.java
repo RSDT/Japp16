@@ -223,11 +223,11 @@ public class MainActivity extends AppCompatActivity
      * */
     public void onUpdateMessageReceived(final UpdateInfo info) {
         if(JappPreferences.isAutoUpdateEnabled()) {
-            Snackbar.make(findViewById(R.id.container), "Updating " + info.type, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(R.id.container), getString(R.string.updating_type, info.type), Snackbar.LENGTH_LONG).show();
             mapManager.onUpdateMessageReceived(info);
         } else {
-            Snackbar.make(findViewById(R.id.container), "Update beschikbaar voor " + info.type, Snackbar.LENGTH_LONG)
-                    .setAction("Update!", new View.OnClickListener() {
+            Snackbar.make(findViewById(R.id.container), getString(R.string.update_available, info.type), Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.update), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             mapManager.onUpdateMessageReceived(info);

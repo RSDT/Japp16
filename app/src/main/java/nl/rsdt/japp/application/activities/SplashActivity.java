@@ -88,7 +88,7 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
                         .setTitle(extras.getString("title"))
                         .setMessage(extras.getString("body"))
                         .setIcon(NoticeInfo.parseDrawable(extras.getString("icon")))
-                        .setPositiveButton("Doorgaan naar de app", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.continue_to_app), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 start();
@@ -134,9 +134,9 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
             }
             else {
                 AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle("Locatie permissie")
-                        .setMessage("De app heeft de locatie permissie nodig om goed te kunnen functioneren")
-                        .setPositiveButton("Oke", new DialogInterface.OnClickListener() {
+                        .setTitle(getString(R.string.location_permission))
+                        .setMessage(getString(R.string.location_permision_title))
+                        .setPositiveButton(getString(R.string.oke), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 permission_check = LocationPermissionsChecker.check(SplashActivity.this);
@@ -194,9 +194,9 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
                     determineAndStartNewActivity();
                 } else if (t instanceof SocketTimeoutException) {
                     new AlertDialog.Builder(SplashActivity.this)
-                            .setTitle("Fout tijdens vertificatie")
+                            .setTitle(getString(R.string.err_verification))
                             .setMessage(R.string.splash_activity_socket_timed_out)
-                            .setPositiveButton("Doorgaan naar de app", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(R.string.continue_to_app, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     determineAndStartNewActivity();
@@ -206,9 +206,9 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
                             .show();
                 } else {
                     new AlertDialog.Builder(SplashActivity.this)
-                            .setTitle("Fout tijdens vertificatie")
+                            .setTitle(getString(R.string.err_verification))
                             .setMessage(t.toString())
-                            .setPositiveButton("Opnieuw proberen", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(getString(R.string.try_again), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     validate();
