@@ -24,7 +24,7 @@ import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
-import nl.rsdt.japp.application.fragments.TmpCarFragment;
+import nl.rsdt.japp.application.fragments.CarFragment;
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager;
 import nl.rsdt.japp.application.navigation.NavigationManager;
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence;
@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity
                 if(fragment != null) {
                     fragment.refresh();
                 }
-                TmpCarFragment carfragment = (TmpCarFragment) navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_CAR);
+                CarFragment carfragment = (CarFragment) navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_CAR);
                 if(carfragment != null) {
                     carfragment.refresh();
                 }

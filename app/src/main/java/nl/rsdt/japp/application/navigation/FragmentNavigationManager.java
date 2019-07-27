@@ -16,9 +16,8 @@ import nl.rsdt.japp.application.fragments.AboutFragment;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.application.fragments.JappPreferenceFragment;
-import nl.rsdt.japp.application.fragments.TmpCarFragment;
+import nl.rsdt.japp.application.fragments.CarFragment;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -54,7 +53,7 @@ public class FragmentNavigationManager {
 
     private JappMapFragment mapFragment;
 
-    private TmpCarFragment carFragment;
+    private CarFragment carFragment;
 
     private JappPreferenceFragment preferenceFragment;
 
@@ -237,11 +236,11 @@ public class FragmentNavigationManager {
         }
         ft.hide(homeFragment);
 
-        carFragment = (TmpCarFragment) manager.findFragmentByTag(TmpCarFragment.TAG);
+        carFragment = (CarFragment) manager.findFragmentByTag(CarFragment.TAG);
         if(carFragment == null)
         {
-            carFragment = new TmpCarFragment();
-            ft.add(R.id.container, carFragment, TmpCarFragment.TAG);
+            carFragment = new CarFragment();
+            ft.add(R.id.container, carFragment, CarFragment.TAG);
         }
         ft.hide(carFragment);
 

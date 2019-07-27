@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="nl.rsdt.japp.application.fragments.TmpCarFragment">
+    tools:context="nl.rsdt.japp.application.fragments.CarFragment">
 
     <LinearLayout
         android:id="@+id/inzittenden_linear_view"

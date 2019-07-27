@@ -28,7 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class TmpCarFragment extends Fragment implements Callback<HashMap<String, List<AutoInzittendeInfo>>> {
+public class CarFragment extends Fragment implements Callback<HashMap<String, List<AutoInzittendeInfo>>> {
     public static final String TAG = "CarFragment";
     private RecyclerView autosRecyclerView;
     private RecyclerView inzittendenRecyclerView;
@@ -38,7 +38,7 @@ public class TmpCarFragment extends Fragment implements Callback<HashMap<String,
     private Button stapUitButton;
 
 
-    public TmpCarFragment() {
+    public CarFragment() {
         // Required empty public constructor
     }
 
@@ -78,16 +78,7 @@ public class TmpCarFragment extends Fragment implements Callback<HashMap<String,
         autosAdapter = new AutosAdapter(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                assert response.errorBody() != null;
-                try {
-                    String x = response.errorBody().string();
-                    refresh();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 refresh();
-
-
             }
 
             @Override
