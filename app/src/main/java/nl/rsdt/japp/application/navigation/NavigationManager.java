@@ -2,7 +2,7 @@ package nl.rsdt.japp.application.navigation;
 
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.NavigationView;
+import com.google.android.material.navigation.NavigationView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;

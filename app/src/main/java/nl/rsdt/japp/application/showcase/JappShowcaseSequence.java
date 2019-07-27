@@ -1,6 +1,6 @@
 package nl.rsdt.japp.application.showcase;
 
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 

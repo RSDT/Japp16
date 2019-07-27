@@ -2,7 +2,7 @@ package nl.rsdt.japp.jotial.data.structures.area348;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;

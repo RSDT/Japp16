@@ -4,8 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v7.app.ActionBar;
+import com.google.android.material.navigation.NavigationView;
+import androidx.appcompat.app.ActionBar;
 
 
 import java.util.ArrayList;

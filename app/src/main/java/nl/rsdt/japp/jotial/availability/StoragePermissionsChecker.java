@@ -4,21 +4,21 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 
 /**
  * Created by mattijn on 10/08/17.
  */
 
 public class StoragePermissionsChecker {
-    public static final int PERMISSIONS_REQUEST_REQUIRED = 100;
+    private static final int PERMISSIONS_REQUEST_REQUIRED = 100;
 
-    public static final int PERMISSIONS_REQUEST_NOT_REQUIRED = 101;
+    private static final int PERMISSIONS_REQUEST_NOT_REQUIRED = 101;
 
     /**
      * Defines the permission request code for the LOCATION.
      * */
-    public static final int PERMISSION_GROUP_STORAGE = 102;
+    private static final int PERMISSION_GROUP_STORAGE = 102;
 
     public static int check(Activity activity) {
         if(PermissionsUtil.shouldAskForPermission()) {

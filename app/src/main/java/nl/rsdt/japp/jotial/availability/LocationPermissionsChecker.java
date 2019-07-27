@@ -3,9 +3,7 @@ package nl.rsdt.japp.jotial.availability;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-
-import nl.rsdt.japp.application.Japp;
+import androidx.core.app.ActivityCompat;
 
 /**
  * @author Dingenis Sieger Sinke

@@ -1,7 +1,7 @@
 package nl.rsdt.japp.jotial.maps.clustering;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
