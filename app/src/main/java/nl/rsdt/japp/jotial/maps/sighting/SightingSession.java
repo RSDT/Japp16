@@ -122,8 +122,8 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
         View view = inflater.inflate(R.layout.sighting_input_dialog, null);
         dialog = new AlertDialog.Builder(context)
                 .setCancelable(false)
-                .setPositiveButton("Bevestigen", this)
-                .setNegativeButton("Annuleren", this)
+                .setPositiveButton(R.string.confirm, this)
+                .setNegativeButton(R.string.cancel, this)
                 .setView(view)
                 .create();
     }
@@ -232,8 +232,8 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     public void onFinish() {
         if(dialog != null) {
             dialog.show();
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText(context.getString(R.string.confirm_type, type));
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText(context.getString(R.string.deelgebied_name, deelgebied.getName()));
         }
         jotiMap.snapshot(SightingSession.this);
     }
@@ -242,8 +242,8 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     public void onCancel() {
         if(dialog != null) {
             dialog.show();
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText("Bevestig de " + type);
-            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText("Deelgebied: " + deelgebied.getName());
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_title)).setText(context.getString(R.string.confirm_type, type));
+            ((TextView)dialog.findViewById(R.id.sighting_dialog_team_label)).setText(context.getString(R.string.deelgebied_name, deelgebied.getName()));
         }
         jotiMap.snapshot(SightingSession.this);
     }

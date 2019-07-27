@@ -54,6 +54,7 @@
     <string name="google_uri">google.navigation:q=%1$s,%2$s</string>
     <string name="waze_uri"><![CDATA[waze://?ll=%1$s,%2$s&navigate=yes]]></string>
     <string name="osmand_uri"><![CDATA[osmand.api://navigate?dest_lat=%1$s&dest_lon=%2$s]]></string>
+    <string name="osmandwalk_uri" ><![CDATA[osmand.api://navigate?dest_lat=%1$s&dest_lon=%2$s&profile="walking"]]></string>
     <string name="geo_uri">geo://%1$s,%2$s</string>
     <string name="navigation_app_not_installed">Japp: De app  %1$s iss niet geïnstaleerd</string>
     <string name="location_received">Japp: locatie ontvangen van %1$s navigeren naar %2$f %3$f</string>
@@ -77,4 +78,22 @@
     <string name="unkown">onbekend</string>
     <string name="login_succes">Succesvol ingelogd!</string>
     <string name="error_on_login">Er is een fout opgetreden tijdens het inloggen</string>
+    <string name="Open_nav_in_other_app">Open navigatie in Google maps</string>
+    <string name="swipe_or_cancle">Markeer een positie op de kaart. Swipe dit weg om te annuleren</string>
+    <string name="select_valid_location">Selecteer een geldige locatie!</string>
+    <string name="done">Klaar!</string>
+    <string name="confirm_mark">Bevestig de markering</string>
+    <string name="confirm">Bevestigen</string>
+    <string name="cancel">Annuleren</string>
+    <string name="no">Nee</string>
+    <string name="remove_mark">Verwijderen van Mark</string>
+    <string name="confirm_removal_mark">Weet je zeker dat je deze Mark wilt verwijderen?</string>
+    <string name="navigate_self">Zelf navigeren</string>
+    <string name="navigate_other">Op de Navigatie Navigeren</string>
+    <string name="keep_pressed_to_remove">Houd dit lang ingedrukt om te verwijderen</string>
+    <string name="navigate_to_here">Hier naar zal je genavigeerd worden!</string>
+    <string name="navigation_phone_navigates_here">Dit is waar de navigatie telefoon naartoe naar navigeerd</string>
+    <string name="confirm_type">Bevestig de %1$s</string>
+    <string name="deelgebied_name">Deelgebied: %1$s</string>
+
 </resources>

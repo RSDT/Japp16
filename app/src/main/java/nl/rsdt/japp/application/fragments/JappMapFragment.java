@@ -754,6 +754,10 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                                         String osmuri = getString(R.string.osmand_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
                                                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(osmuri)));
                                                         break;
+                                                    case OSMAndWalk:
+                                                        String osmuriwalk = getString(R.string.osmandwalk_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
+                                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(osmuriwalk)));
+                                                        break;
                                                     case Geo:
                                                         String geouri = getString(R.string.geo_uri, Double.toString(navigateTo.latitude),Double.toString(navigateTo.longitude));
                                                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(geouri)));

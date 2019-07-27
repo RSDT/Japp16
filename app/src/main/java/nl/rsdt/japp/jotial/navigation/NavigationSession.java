@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.navigation;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -62,8 +63,8 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
 
     }
     private void initialize() {
-        snackbar = Snackbar.make(targetView, "Markeer een positie op de kaart om naar toe te navigeren. Swipe dit weg om te annuleren", Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("Klaar!", this);
+        snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.done, this);
         snackbar.setCallback(this);
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()
@@ -106,9 +107,9 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
                 snackbar.dismiss();
                 snackbar = null;
             }
-            snackbar = Snackbar.make(targetView, "Selecteer een geldige locatie!", Snackbar.LENGTH_INDEFINITE);
+            snackbar = Snackbar.make(targetView, R.string.select_valid_location, Snackbar.LENGTH_INDEFINITE);
             snackbar.setCallback(this);
-            snackbar.setAction("Klaar!", this);
+            snackbar.setAction(R.string.done, this);
             snackbar.show();
         }
     }
@@ -118,7 +119,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     public void onFinish() {
         if (dialog != null) {
             dialog.show();
-            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText("Open navigatie in Google maps ");
+            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText(R.string.Open_nav_in_other_app);
         }
     }
 
@@ -126,7 +127,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     public void onCancel() {
         if (dialog != null) {
             dialog.show();
-            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText("Open navigatie in google maps");
+            ((TextView) dialog.findViewById(R.id.navigation_dialog_title)).setText(R.string.Open_nav_in_other_app);
         }
     }
 
@@ -169,7 +170,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
                 }
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
-                snackbar.setText("Markeer een positie op de kaart. Swipe dit weg om te annuleren");
+                snackbar.setText(R.string.swipe_or_cancle);
                 snackbar.show();
                 break;
         }
@@ -252,11 +253,11 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
         public NavigationSession.Builder setDialogContext(Context context) {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(R.layout.navigation_input_dialog, null);
-            buffer.dialog = new android.app.AlertDialog.Builder(context)
+            buffer.dialog = new AlertDialog.Builder(context)
                     .setCancelable(false)
-                    .setPositiveButton("Zelf navigeren", buffer)
-                    .setNeutralButton("Op de Navigatie Navigeren", buffer)
-                    .setNegativeButton("Annuleren", buffer)
+                    .setPositiveButton(R.string.navigate_self, buffer)
+                    .setNeutralButton(R.string.navigate_other, buffer)
+                    .setNegativeButton(R.string.cancel, buffer)
                     .setView(view)
                     .create();
             return this;

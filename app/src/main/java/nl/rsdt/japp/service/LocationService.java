@@ -131,6 +131,12 @@ public class LocationService extends LocationProviderService implements SharedPr
                                 osmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(osmIntent);
                                 break;
+                            case OSMAndWalk:
+                                String osmuriwalk = getString(R.string.osmandwalk_uri, Double.toString(location.lat),Double.toString(location.lon));
+                                Intent osmWalkIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(osmuriwalk));
+                                osmWalkIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(osmWalkIntent);
+                                break;
                             case Geo:
                                 String geoUri = getString(R.string.geo_uri, Double.toString(location.lat),Double.toString(location.lon));
                                 Intent geoIntent =new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));

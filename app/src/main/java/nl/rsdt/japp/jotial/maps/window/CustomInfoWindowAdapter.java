@@ -128,19 +128,19 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
                     text.append("\n");
                     text.append(properties.get("description"));
                     text.append("\n");
-                    text.append("Houd dit lang ingedrukt om te verwijderen");
+                    text.append(R.string.keep_pressed_to_remove);
                     text.append("\n");
 
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, Integer.parseInt(properties.get("icon"))));
                     break;
                 case MarkerIdentifier.TYPE_NAVIGATE:
-                    text.append("Hier naar zal je genavigeerd worden!");
+                    text.append(R.string.navigate_to_here);
                     text.append("\n");
 
                     indicator.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.binoculars));
                     break;
                 case MarkerIdentifier.TYPE_NAVIGATE_CAR:
-                    text.append("Dit is waar de navigatie telefoon naartoe naar navigeerd");
+                    text.append(R.string.navigation_phone_navigates_here);
                     text.append("\n");
                     text.append("geplaatst door: ");
                     text.append(properties.get("addedBy"));

@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
+import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.Recreatable;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier;
@@ -170,8 +171,8 @@ public class PinningManager implements Recreatable, GoogleMap.OnInfoWindowLongCl
             switch (identifier.getType()) {
                 case MarkerIdentifier.TYPE_PIN:
                     new AlertDialog.Builder(context)
-                            .setTitle("Verwijderen van Mark")
-                            .setMessage("Weet je zeker dat je deze Mark wilt verwijderen?")
+                            .setTitle(R.string.remove_mark)
+                            .setMessage(R.string.confirm_removal_mark)
                             .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -183,7 +184,7 @@ public class PinningManager implements Recreatable, GoogleMap.OnInfoWindowLongCl
                                     save(true);
                                 }
                             })
-                            .setNegativeButton("Nee", null)
+                            .setNegativeButton(R.string.no, null)
                             .create()
                             .show();
                     break;

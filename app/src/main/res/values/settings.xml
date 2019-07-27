@@ -196,13 +196,15 @@
     <string-array name="pref_navigation_app">
         <item>Google Maps</item>
         <item>Waze</item>
-        <item>OsmAnd</item>
+        <item>OsmAnd Lopen</item>
+
         <item>Geo</item>
     </string-array>
     <string-array name="pref_navigation_app_data">
         <item>Google Maps</item>
         <item>Waze</item>
         <item>OsmAnd</item>
+        <item>OsmAndWalk</item>
         <item>Geo</item>
     </string-array>
 

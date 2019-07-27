@@ -58,8 +58,8 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
 
 
     private void initialize() {
-        snackbar = Snackbar.make(targetView, "Markeer een positie op de kaart. Swipe dit weg om te annuleren", Snackbar.LENGTH_INDEFINITE);;
-        snackbar.setAction("Klaar!", this);
+        snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE);;
+        snackbar.setAction(R.string.done, this);
         snackbar.setCallback(this);
 
         marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
@@ -97,9 +97,9 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
                 snackbar.dismiss();
                 snackbar = null;
             }
-            snackbar = Snackbar.make(targetView, "Selecteer een geldige locatie!", Snackbar.LENGTH_INDEFINITE);
+            snackbar = Snackbar.make(targetView, R.string.select_valid_location, Snackbar.LENGTH_INDEFINITE);
             snackbar.setCallback(this);
-            snackbar.setAction("Klaar!", this);
+            snackbar.setAction(R.string.done, this);
             snackbar.show();
         }
     }
@@ -109,7 +109,7 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
     public void onFinish() {
         if(dialog != null) {
             dialog.show();
-            ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText("Bevestig de markering");
+            ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText(R.string.confirm_mark);
         }
     }
 
@@ -117,7 +117,7 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
     public void onCancel() {
         if(dialog != null) {
             dialog.show();
-            ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText("Bevestig de markering");
+            ((TextView)dialog.findViewById(R.id.pinning_dialog_title)).setText(R.string.confirm_mark);
         }
     }
 
@@ -147,7 +147,7 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
                 }
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
-                snackbar.setText("Markeer een positie op de kaart. Swipe dit weg om te annuleren");
+                snackbar.setText(R.string.swipe_or_cancle);
                 snackbar.show();
                 break;
         }
@@ -215,8 +215,8 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
             View view = inflater.inflate(R.layout.pinning_input_dialog, null);
             buffer.dialog = new AlertDialog.Builder(context)
                     .setCancelable(false)
-                    .setPositiveButton("Bevestigen", buffer)
-                    .setNegativeButton("Annuleren", buffer)
+                    .setPositiveButton(R.string.confirm, buffer)
+                    .setNegativeButton(R.string.cancel, buffer)
                     .setView(view)
                     .create();
             return this;
