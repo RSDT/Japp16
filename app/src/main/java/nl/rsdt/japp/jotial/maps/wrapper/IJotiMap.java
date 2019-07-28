@@ -14,53 +14,51 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 
-;
-
 /**
  * Created by mattijn on 07/08/17.
  */
 
 public interface IJotiMap {
 
-    public void delete();
+    void delete();
 
-    public void setInfoWindowAdapter(CustomInfoWindowAdapter infoWindowAdapter);
+    void setInfoWindowAdapter(CustomInfoWindowAdapter infoWindowAdapter);
 
-    public void setGMapType(int mapType);
+    void setGMapType(int mapType);
 
-    public boolean setMapStyle(MapStyleOptions mapStyleOptions);
+    boolean setMapStyle(MapStyleOptions mapStyleOptions);
 
-    public IUiSettings getUiSettings();
+    IUiSettings getUiSettings();
 
-    public void animateCamera(LatLng latLng, int zoom) ;
+    void animateCamera(LatLng latLng, int zoom);
 
-    public IMarker addMarker(Pair<MarkerOptions, Bitmap> markerOptions) ;
+    IMarker addMarker(Pair<MarkerOptions, Bitmap> markerOptions);
 
-    public IPolyline addPolyline(PolylineOptions polylineOptions) ;
+    IPolyline addPolyline(PolylineOptions polylineOptions);
 
-    public IPolygon addPolygon(PolygonOptions polygonOptions) ;
+    IPolygon addPolygon(PolygonOptions polygonOptions);
 
-    public ICircle addCircle(CircleOptions circleOptions) ;
+    ICircle addCircle(CircleOptions circleOptions);
 
-    public void setOnMapClickListener(final OnMapClickListener onMapClickListener) ;
+    void setOnMapClickListener(final OnMapClickListener onMapClickListener);
 
-    public ICameraPosition getPreviousCameraPosition() ;
+    ICameraPosition getPreviousCameraPosition();
 
-    public void snapshot(final IJotiMap.SnapshotReadyCallback snapshotReadyCallback) ;
+    void snapshot(final IJotiMap.SnapshotReadyCallback snapshotReadyCallback);
 
-    public void animateCamera(LatLng latLng,int zoom, final IJotiMap.CancelableCallback cancelableCallback) ;
+    void animateCamera(LatLng latLng, int zoom, final IJotiMap.CancelableCallback cancelableCallback);
 
-    public void setOnCameraMoveStartedListener(final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener) ;
+    void setOnCameraMoveStartedListener(final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener);
 
-    public void cameraToLocation(boolean b, Location location, float zoom, float aoa, float bearing) ;
+    void cameraToLocation(boolean b, Location location, float zoom, float aoa, float bearing);
 
-    public void clear() ;
+    void clear();
 
-    public void setOnInfoWindowLongClickListener(GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener) ;
+    void setOnInfoWindowLongClickListener(GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener);
 
-    public void setMarkerOnClickListener(IJotiMap.OnMarkerClickListener listener) ;
+    void setMarkerOnClickListener(IJotiMap.OnMarkerClickListener listener);
 
-    public void getMapAsync(IJotiMap.OnMapReadyCallback callback) ;
+    void getMapAsync(IJotiMap.OnMapReadyCallback callback);
 
     void setPreviousCameraPosition(double latitude, double longitude);
 
@@ -68,24 +66,27 @@ public interface IJotiMap {
 
     void setPreviousRotation(float rotation);
 
-    public interface OnMapReadyCallback{
-        public void onMapReady(IJotiMap map) ;
-    }
-    public interface OnMarkerClickListener {
-        public boolean OnClick(IMarker m);
+    interface OnMapReadyCallback {
+        void onMapReady(IJotiMap map);
     }
 
-    public interface OnMapClickListener{
+    interface OnMarkerClickListener {
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+        boolean OnClick(IMarker m);
+    }
+
+    interface OnMapClickListener {
 
         boolean onMapClick(LatLng latLng);
     }
 
-    public interface CancelableCallback {
+    interface CancelableCallback {
         void onFinish();
 
         void onCancel();
     }
-    public interface SnapshotReadyCallback {
+
+    interface SnapshotReadyCallback {
         void onSnapshotReady(Bitmap var1);
     }
 }

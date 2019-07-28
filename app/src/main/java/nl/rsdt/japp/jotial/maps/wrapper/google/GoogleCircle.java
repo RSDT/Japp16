@@ -1,15 +1,5 @@
 package nl.rsdt.japp.jotial.maps.wrapper.google;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Polygon;
-
-import java.util.ArrayList;
-
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
 
 /**

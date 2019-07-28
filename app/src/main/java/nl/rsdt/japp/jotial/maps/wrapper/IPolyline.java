@@ -1,12 +1,7 @@
 package nl.rsdt.japp.jotial.maps.wrapper;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,11 +10,11 @@ import java.util.List;
 
 public interface IPolyline {
 
-    public void remove();
+    void remove();
 
-    public List<LatLng> getPoints();
+    List<LatLng> getPoints();
 
-    public void setPoints(List<LatLng> points) ;
+    void setPoints(List<LatLng> points);
 
     void setVisible(boolean visible);
 }

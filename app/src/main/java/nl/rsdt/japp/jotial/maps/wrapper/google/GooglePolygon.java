@@ -1,14 +1,5 @@
 package nl.rsdt.japp.jotial.maps.wrapper.google;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolygonOptions;
-
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
 import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
 
 /**

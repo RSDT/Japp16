@@ -9,7 +9,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.osmdroid.bonuspack.routing.GoogleRoadManager;
-import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
@@ -29,16 +28,25 @@ public class Navigator {
     private final IJotiMap map;
     private Handler onFinishedHandler;
     private IPolyline oldPolyline;
+
     public Navigator(final IJotiMap map){
         this.map = map;
-        onFinishedHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg){
-                if (msg.obj instanceof Polyline){
-                    setPolyline((Polyline) msg.obj);
-                }
+        onFinishedHandler = new NavHandler(this);
+    }
+
+    static class NavHandler extends Handler {
+        private final Navigator navigator;
+
+        NavHandler(Navigator navigator) {
+            this.navigator = navigator;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.obj instanceof Polyline) {
+                navigator.setPolyline((Polyline) msg.obj);
             }
-        };
+        }
     }
 
     public void setEndLocation(LatLng end){

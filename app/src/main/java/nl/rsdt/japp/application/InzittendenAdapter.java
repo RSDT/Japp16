@@ -1,10 +1,11 @@
 package nl.rsdt.japp.application;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +61,7 @@ public class InzittendenAdapter extends RecyclerView.Adapter<InzittendenAdapter.
         // create a new view
         final TextView v = (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.auto_inzittenden_list_layout, parent, false);
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
+        return new MyViewHolder(v);
     }
 
     @Override

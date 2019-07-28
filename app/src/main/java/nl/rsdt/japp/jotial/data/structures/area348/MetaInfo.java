@@ -1,7 +1,6 @@
 package nl.rsdt.japp.jotial.data.structures.area348;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * @author Dingenis Sieger Sinke

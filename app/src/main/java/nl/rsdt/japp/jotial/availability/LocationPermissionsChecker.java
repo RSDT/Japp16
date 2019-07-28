@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.availability;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+
 import androidx.core.app.ActivityCompat;
 
 /**
@@ -41,23 +42,14 @@ public final class LocationPermissionsChecker {
      * @param grantResults The permissions granted.
      * @return The value indicating if the permission is grantend.
      */
-    public static boolean hasPermissionOfPermissionRequestResult(int requestCode, String permissions[], int[] grantResults)
-    {
-        switch (requestCode)
-        {
-            case PERMISSION_GROUP_LOCATION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+    public static boolean hasPermissionOfPermissionRequestResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSION_GROUP_LOCATION) {
+            return grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         }
         return false;
     }
 
-    public static boolean permissionRequestResultContainsLocation(String permissions[]) {
+    public static boolean permissionRequestResultContainsLocation(String[] permissions) {
         for(String permission : permissions) {
             if(permission.equals(Manifest.permission.ACCESS_FINE_LOCATION) || permission.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 return true;

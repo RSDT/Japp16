@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.BundleIdentifiable;
 import nl.rsdt.japp.jotial.Identifiable;
@@ -230,7 +228,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
         for(int i = 0; i < polygons.size(); i++) {
             polygons.get(i).setVisible(visiblity);
         }
-        ArrayList<ICircle> circles = new ArrayList(this.circles.keySet());
+        ArrayList<ICircle> circles = new ArrayList<>(this.circles.keySet());
         for(int i = 0; i < circles.size(); i++) {
             circles.get(i).setVisible(visiblity);
         }
@@ -251,7 +249,7 @@ public abstract class MapItemController<I, O extends AbstractTransducer.Result> 
             polygons.get(i).remove();
         }
         polygons.clear();
-        ArrayList<ICircle> circles = new ArrayList(this.circles.keySet());
+        ArrayList<ICircle> circles = new ArrayList<>(this.circles.keySet());
         for(int i = 0; i < circles.size(); i++) {
             circles.get(i).remove();
         }

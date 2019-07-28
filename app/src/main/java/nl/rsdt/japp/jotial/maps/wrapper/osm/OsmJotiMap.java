@@ -1,7 +1,6 @@
 package nl.rsdt.japp.jotial.maps.wrapper.osm;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Pair;
 
@@ -24,8 +23,6 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.rsdt.japp.R;
-import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter;
 import nl.rsdt.japp.jotial.maps.wrapper.ICameraPosition;
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle;
@@ -47,12 +44,6 @@ public class OsmJotiMap implements IJotiMap{
     private static Map<MapView,OsmJotiMap> osm_instances = new HashMap<>();
 
     private MapEventsOverlay eventsOverlay;
-
-    private GeoPoint previousCameraPosition;
-
-    private int previousZoom;
-
-    private float previousRoation;
 
 
     private OsmJotiMap(MapView map){
@@ -83,17 +74,17 @@ public class OsmJotiMap implements IJotiMap{
 
     @Override
     public void setPreviousCameraPosition(double latitude, double longitude) {
-        previousCameraPosition = new GeoPoint(latitude, longitude);
+        GeoPoint previousCameraPosition = new GeoPoint(latitude, longitude);
     }
 
     @Override
     public void setPreviousZoom(int previousZoom) {
-        this.previousZoom = previousZoom;
+        //TODO
     }
 
     @Override
     public void setPreviousRotation(float rotation) {
-        this.previousRoation = rotation;
+        //TODO
     }
 
     public void delete() {

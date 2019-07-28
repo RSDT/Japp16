@@ -193,15 +193,13 @@ public abstract class VosController extends StandardMapItemController<VosInfo, V
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         super.onSharedPreferenceChanged(sharedPreferences, key);
-        switch (key) {
-            case JappPreferences.AUTO_ENLARGMENT:
+        if (JappPreferences.AUTO_ENLARGMENT.equals(key)) {
+            handler.removeCallbacks(runnable);
+            if (sharedPreferences.getBoolean(key, true)) {
+                handler.post(runnable);
+            } else {
                 handler.removeCallbacks(runnable);
-                if(sharedPreferences.getBoolean(key, true)) {
-                    handler.post(runnable);
-                } else {
-                    handler.removeCallbacks(runnable);
-                }
-                break;
+            }
         }
     }
 

@@ -17,7 +17,7 @@
             android:src="@drawable/about_micky"
             android:scaleType="fitStart"
             android:adjustViewBounds="true"
-            />
+            android:contentDescription="@string/micky" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:src="@drawable/about_mattijn"
             android:scaleType="fitStart"
             android:adjustViewBounds="true"
-            />
+            android:contentDescription="@string/mattijn" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             android:src="@drawable/about_bram"
             android:scaleType="fitStart"
             android:adjustViewBounds="true"
-            />
+            android:contentDescription="@string/bram" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +75,8 @@
             android:layout_height="wrap_content"
             android:src="@drawable/about_bram"
             android:scaleType="fitStart"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/beta_testers" />
 
         <TextView
             android:layout_width="wrap_content"

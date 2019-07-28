@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_vertical"
             android:textColor="@android:color/white"
-            android:text="Alpha"
+            android:text="@string/alpha"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_vertical"
             android:textColor="@android:color/white"
-            android:text="Bravo"
+            android:text="@string/bravo"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_vertical"
             android:textColor="@android:color/white"
-            android:text="Charlie"
+            android:text="@string/charlie"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_vertical"
             android:textColor="@android:color/white"
-            android:text="Delta"
+            android:text="@string/delta"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_vertical"
             android:textColor="@android:color/white"
-            android:text="Echo"
+            android:text="@string/echo"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_vertical"
             android:textColor="@android:color/white"
-            android:text="Foxtrot"
+            android:text="@string/foxtrot"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 

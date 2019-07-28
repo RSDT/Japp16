@@ -1,8 +1,9 @@
 package nl.rsdt.japp.jotial.maps.clustering;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -115,22 +116,19 @@ public class ScoutingGroepController implements Recreatable, IntentCreatable, Ma
 
     @Override
     public void onResponse(Call<ArrayList<ScoutingGroepInfo>> call, Response<ArrayList<ScoutingGroepInfo>> response) {
-        switch (response.code()) {
-            case 200:
-                if(clusterManager != null) {
-                    if(clusterManager.getItems().isEmpty()) {
-                        clusterManager.addItems(response.body());
-                    } else {
-                        clusterManager.clearItems();
-                        clusterManager.addItems(response.body());
-                    }
-
+        if (response.code() == 200) {
+            if (clusterManager != null) {
+                if (clusterManager.getItems().isEmpty()) {
+                    clusterManager.addItems(response.body());
                 } else {
-                    buffer = response.body();
+                    clusterManager.clearItems();
+                    clusterManager.addItems(response.body());
                 }
-                AppData.saveObjectAsJsonInBackground(response.body(), STORAGE_ID);
-                break;
 
+            } else {
+                buffer = response.body();
+            }
+            AppData.saveObjectAsJsonInBackground(response.body(), STORAGE_ID);
         }
     }
 

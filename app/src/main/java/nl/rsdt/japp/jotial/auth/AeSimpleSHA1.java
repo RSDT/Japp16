@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
  * @since 15-1-2016
  * Tool for SHA1.
  */
+@SuppressWarnings("CharsetObjectCanBeUsed")
 public class AeSimpleSHA1 {
     private static String convertToHex(byte[] data) {
         StringBuilder buf = new StringBuilder();

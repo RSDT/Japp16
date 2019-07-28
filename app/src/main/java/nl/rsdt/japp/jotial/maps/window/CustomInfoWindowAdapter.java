@@ -1,15 +1,16 @@
 package nl.rsdt.japp.jotial.maps.window;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import androidx.core.content.ContextCompat;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -44,13 +45,13 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter, Goo
     @Override
     public View getInfoWindow(Marker marker) {
         Context context = inflater.getContext();
-        View view = inflater.inflate(R.layout.custom_info_window, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.custom_info_window, null);
 
-        LinearLayout layout = (LinearLayout) view.findViewById(R.id.custom_info_window_text_fields);
+        LinearLayout layout = view.findViewById(R.id.custom_info_window_text_fields);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) layout.getLayoutParams();
         params.rightMargin = 10;
 
-        ImageView indicator = (ImageView) view.findViewById(R.id.custom_info_window_indicator_image);
+        ImageView indicator = view.findViewById(R.id.custom_info_window_indicator_image);
 
         boolean create = false;
         boolean end = false;

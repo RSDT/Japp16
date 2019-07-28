@@ -22,10 +22,7 @@ import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker;
 import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.MapStorage;
-import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
-import nl.rsdt.japp.jotial.maps.management.MapItemController;
-import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask;
 import nl.rsdt.japp.jotial.net.apis.AuthApi;
 import nl.rsdt.japp.service.cloud.data.NoticeInfo;
 import retrofit2.Call;
@@ -50,33 +47,42 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /**
+        /*
          * Checks if the Fresh-Start feature is enabled if so the data of the app is cleared.
          * */
         if(JappPreferences.isFreshStart()) {
-            /**
+            /*
              * Clear preferences.
              * */
             JappPreferences.clear();
 
-            /**
+            /*
              * Clear all the data files
              * */
             AppData.clear();
 
-            try {
-                /**
-                 * Resets Instance ID and revokes all tokens.
-                 * */
-                FirebaseInstanceId.getInstance().deleteInstanceId();
-            } catch (IOException e) {
-                Log.e(TAG, e.toString(), e);
-            }
 
-            /**
-             * Get a new token.
-             * */
-            FirebaseInstanceId.getInstance().getToken();
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*
+                         * Resets Instance ID and revokes all tokens.
+                         * */
+                        FirebaseInstanceId.getInstance().deleteInstanceId();
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString(), e);
+                    }
+                    /*
+                     * Get a new token.
+                     * */
+                    FirebaseInstanceId.getInstance().getToken();
+                }
+            });
+            thread.run();
+
+
+
 
 
         }
@@ -111,7 +117,7 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
     }
 
     private void start() {
-        /**
+        /*
          * Check if we have the permissions we need.
          * */
         MapStorage storage = MapStorage.getInstance();
@@ -125,8 +131,7 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
     }
 
 
-
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if(LocationPermissionsChecker.permissionRequestResultContainsLocation(permissions)) {
             if(LocationPermissionsChecker.hasPermissionOfPermissionRequestResult(requestCode, permissions, grantResults)) {
                 if(GooglePlayServicesChecker.check(this) != GooglePlayServicesChecker.FAILURE) {

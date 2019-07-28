@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
 import androidx.multidex.MultiDexApplication;
 
 import com.google.android.gms.maps.MapsInitializer;
@@ -12,9 +13,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.GsonBuilder;
 
-
 import nl.rsdt.japp.jotial.io.AppData;
-import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.net.API;
 import nl.rsdt.japp.service.cloud.messaging.MessageManager;
 import okhttp3.Interceptor;
@@ -53,7 +52,7 @@ public final class Japp extends MultiDexApplication {
 
     public static void setInterceptor(Interceptor value) { instance.interceptor = value; }
 
-    public static <T> T getApi(Class api) {
+    public static <T> T getApi(Class<T> api) {
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         if(instance.interceptor != null) {
             client.addInterceptor(instance.interceptor);
@@ -64,8 +63,7 @@ public final class Japp extends MultiDexApplication {
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
                 .client(client.build())
                 .build();
-
-        return (T) retrofit.create(api);
+        return retrofit.create(api);
     }
 
     public static Resources getAppResources() { return instance.getApplicationContext().getResources(); }

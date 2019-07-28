@@ -16,7 +16,7 @@
             android:id="@+id/stap_uit_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stap uit" />
+            android:text="@string/stap_uit" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/inzittenden_recycler_view"

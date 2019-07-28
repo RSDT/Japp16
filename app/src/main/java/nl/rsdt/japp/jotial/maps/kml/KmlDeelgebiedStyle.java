@@ -1,7 +1,5 @@
 package nl.rsdt.japp.jotial.maps.kml;
 
-import android.graphics.Color;
-
 public class KmlDeelgebiedStyle extends KmlStyleBase {
 
     private final int lineColor;

@@ -25,7 +25,6 @@
     <string name="waarnemen_desc">Spot of hunt een vos via de app</string>
     <string name="auto_updates_desc">Wanneer de app actief is wordt alles automatisch bijgewerkt! Verander voorkeuren in de Instellingen onder updates</string>
     <string name="welkom">Welkom</string>
-    <string name="kaart">Kaart</string>
     <string name="waarnemen"><![CDATA[Waarnemen & melden]]></string>
     <string name="auto_updates">Automatische Updates</string>
     <string name="forget_password_url">http://jotihunt%1$d.area348.nl/user_forget_password.php</string>
@@ -95,5 +94,34 @@
     <string name="navigation_phone_navigates_here">Dit is waar de navigatie telefoon naartoe naar navigeerd</string>
     <string name="confirm_type">Bevestig de %1$s</string>
     <string name="deelgebied_name">Deelgebied: %1$s</string>
+    <string name="rp_jotihunt_logo">RP Jotihunt logo</string>
+    <string name="vos_locatie">vos locatie</string>
+    <string name="micky">micky</string>
+    <string name="mattijn">mattijn</string>
+    <string name="bram">bram</string>
+    <string name="beta_testers">beta testers</string>
+    <string name="nav_plaatje">nav plaatje</string>
+    <string name="navigation_snapshot">navigation snapshot</string>
+    <string name="sighting_snapshot">sighting snapshot</string>
+    <string name="gebruikersnaam">gebruikersnaam</string>
+    <string name="wachtwoord">wachtwoord</string>
+    <string name="login">login</string>
+    <string name="thuis">Thuis</string>
+    <string name="kaart">Kaart</string>
+    <string name="auto">Auto</string>
+    <string name="instellingen">Instellingen</string>
+    <string name="about_japp">Over Japp</string>
+    <string name="tools">Tools</string>
+    <string name="uitloggen">Uitloggen</string>
+    <string name="alpha">Alpha</string>
+    <string name="bravo">Bravo</string>
+    <string name="charlie">Charlie</string>
+    <string name="delta">Delta</string>
+    <string name="echo">Echo</string>
+    <string name="foxtrot">Foxtrot</string>
+    <string name="stap_uit">Stap uit</string>
+    <string name="unknown">Unknown</string>
+    <string name="gast">gast</string>
+    <string name="refresh">Refresh</string>
 
 </resources>

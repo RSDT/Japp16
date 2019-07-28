@@ -15,12 +15,11 @@ import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager;
 
 public class NavigationLocationService extends Service {
-    private final NavigationLocationManager locationManager;
     Binder binder = new NavigationLocationBinder();
 
 
     public NavigationLocationService() {
-        locationManager = new NavigationLocationManager();
+        NavigationLocationManager locationManager = new NavigationLocationManager();
         locationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
             @Override
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {

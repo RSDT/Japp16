@@ -1,10 +1,5 @@
 package nl.rsdt.japp.jotial.maps;
 
-import android.graphics.Bitmap;
-import android.util.Pair;
-
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,14 +7,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.firebase.Location;
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
-import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
-import nl.rsdt.japp.jotial.maps.wrapper.IMarker;
 import nl.rsdt.japp.jotial.net.apis.AutoApi;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,12 +22,11 @@ import retrofit2.Response;
 
 public class NavigationLocationManager implements ChildEventListener, ValueEventListener {
     public static final String FDB_NAME = "autos";
-    private DatabaseReference reference;
     private OnNewLocation callback;
     private Location oldLoc;
 
     public NavigationLocationManager() {
-        reference = FirebaseDatabase.getInstance().getReference().child(FDB_NAME);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(FDB_NAME);
         reference.addValueEventListener(this);
     }
     private void update(final DataSnapshot snapshot, final String child){

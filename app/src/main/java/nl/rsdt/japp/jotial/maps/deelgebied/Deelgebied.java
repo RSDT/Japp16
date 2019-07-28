@@ -461,6 +461,6 @@ public final class Deelgebied {
         }
     }
     public interface OnInitialized {
-        public void onInitialized(Deelgebied deelgebied);
+        void onInitialized(Deelgebied deelgebied);
     }
 }

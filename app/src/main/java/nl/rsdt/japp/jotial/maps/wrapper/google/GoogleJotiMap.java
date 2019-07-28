@@ -30,8 +30,6 @@ import nl.rsdt.japp.jotial.maps.wrapper.IPolygon;
 import nl.rsdt.japp.jotial.maps.wrapper.IPolyline;
 import nl.rsdt.japp.jotial.maps.wrapper.IUiSettings;
 
-;
-
 /**
  * Created by mattijn on 07/08/17.
  */

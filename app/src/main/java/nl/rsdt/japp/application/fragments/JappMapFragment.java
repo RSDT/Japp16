@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
@@ -144,7 +144,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
             view = createGoogleMap(savedInstanceState, v);
         }
 
-        FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu);
+        FloatingActionMenu menu = view.findViewById(R.id.fab_menu);
         menu.bringToFront();
 
         return view;
@@ -546,7 +546,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     }
 
     public FloatingActionButton setupSpotButton(View v) {
-        FloatingActionButton spotButton = (FloatingActionButton)v.findViewById(R.id.fab_spot);
+        FloatingActionButton spotButton = v.findViewById(R.id.fab_spot);
         spotButton.setOnClickListener(new View.OnClickListener() {
 
             SightingSession session;
@@ -555,7 +555,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
             public void onClick(View view) {
                  /*--- Hide the menu ---*/
                 View v = getView();
-                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = v.findViewById(R.id.fab_menu);
                 menu.hideMenu(true);
 
                 /*--- Build a SightingSession and start it ---*/
@@ -569,7 +569,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                             public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
 
                                 /*--- Show the menu ---*/
-                                FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                FloatingActionMenu menu = getView().findViewById(R.id.fab_menu);
                                 menu.showMenu(true);
 
                                 if(chosen != null)
@@ -623,7 +623,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     }
 
     public FloatingActionButton setupFollowButton(View v) {
-        FloatingActionButton followButton = (FloatingActionButton) v.findViewById(R.id.fab_follow);
+        FloatingActionButton followButton = v.findViewById(R.id.fab_follow);
         followButton.setOnClickListener(new View.OnClickListener() {
 
             MovementManager.FollowSession session;
@@ -632,10 +632,10 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
             public void onClick(View view) {
                 View v = getView();
 
-                FloatingActionButton followButton = (FloatingActionButton) v.findViewById(R.id.fab_follow);
+                FloatingActionButton followButton = v.findViewById(R.id.fab_follow);
 
                 /*--- Hide the menu ---*/
-                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = v.findViewById(R.id.fab_menu);
 
                 /**
                  * TODO: use color to identify follow state?
@@ -657,7 +657,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
         return followButton;
     }
     private FloatingActionButton setupPinButton(View v) {
-        FloatingActionButton pinButton = (FloatingActionButton)v.findViewById(R.id.fab_mark);
+        FloatingActionButton pinButton = v.findViewById(R.id.fab_mark);
         pinButton.setOnClickListener(new View.OnClickListener() {
 
             PinningSession session;
@@ -666,7 +666,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
             public void onClick(View view) {
                 View v = getView();
 
-                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = v.findViewById(R.id.fab_menu);
 
                 if(session != null) {
                     /*--- Show the menu ---*/
@@ -686,7 +686,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                                         pinningManager.add(pin);
                                     }
 
-                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                    FloatingActionMenu menu = getView().findViewById(R.id.fab_menu);
                                     menu.showMenu(true);
 
                                     session.end();
@@ -705,7 +705,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     }
 
     private FloatingActionButton setupNavigationButton(View v) {
-        FloatingActionButton navigationButton = (FloatingActionButton)v.findViewById(R.id.fab_nav);
+        FloatingActionButton navigationButton = v.findViewById(R.id.fab_nav);
         navigationButton.setOnClickListener(new View.OnClickListener() {
 
             NavigationSession session;
@@ -714,7 +714,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
             public void onClick(View view) {
                 View v = getView();
 
-                FloatingActionMenu menu = (FloatingActionMenu) v.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = v.findViewById(R.id.fab_menu);
 
                 if(session != null) {
                     /*--- Show the menu ---*/
@@ -730,7 +730,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                             .setCallback(new NavigationSession.OnNavigationCompletedCallback() {
                                 @Override
                                 public void onNavigationCompleted(final LatLng navigateTo, boolean toNavigationPhone) {
-                                    FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                    FloatingActionMenu menu = getView().findViewById(R.id.fab_menu);
                                     menu.showMenu(true);
 
                                     session.end();
@@ -814,7 +814,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
     }
 
     private FloatingActionButton setupHuntButton(View v){
-        FloatingActionButton huntButton = (FloatingActionButton)v.findViewById(R.id.fab_hunt);
+        FloatingActionButton huntButton = v.findViewById(R.id.fab_hunt);
         huntButton.setOnClickListener(new View.OnClickListener() {
 
             SightingSession session;
@@ -824,7 +824,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
                 /*--- Hide the menu ---*/
                 View v = getView();
-                FloatingActionMenu menu = (FloatingActionMenu)v.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = v.findViewById(R.id.fab_menu);
                 menu.hideMenu(true);
 
 
@@ -839,7 +839,7 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
                             public void onSightingCompleted(LatLng chosen, Deelgebied deelgebied, String optionalInfo) {
 
                                 /*--- Show the menu ---*/
-                                FloatingActionMenu menu = (FloatingActionMenu)getView().findViewById(R.id.fab_menu);
+                                FloatingActionMenu menu = getView().findViewById(R.id.fab_menu);
                                 menu.showMenu(true);
 
                                 if(chosen != null)

@@ -7,14 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 

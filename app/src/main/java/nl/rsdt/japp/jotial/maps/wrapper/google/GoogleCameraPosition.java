@@ -1,7 +1,5 @@
 package nl.rsdt.japp.jotial.maps.wrapper.google;
 
-import org.osmdroid.views.MapView;
-
 import nl.rsdt.japp.jotial.maps.wrapper.ICameraPosition;
 
 /**

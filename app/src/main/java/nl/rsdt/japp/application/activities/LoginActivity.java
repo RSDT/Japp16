@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
 
@@ -36,7 +37,7 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
 
-        TextView passwordLost = (TextView)findViewById(R.id.password_forgotten);
+        TextView passwordLost = findViewById(R.id.password_forgotten);
         passwordLost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,7 +47,7 @@ public class LoginActivity extends Activity {
             }
         });
 
-        Button button = (Button)findViewById(R.id.login);
+        Button button = findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

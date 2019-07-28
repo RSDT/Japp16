@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import androidx.core.app.ActivityCompat;
 
 /**
@@ -41,16 +42,8 @@ public class StoragePermissionsChecker {
      */
     public static boolean hasPermissionOfPermissionRequestResult(int requestCode, int[] grantResults)
     {
-        switch (requestCode)
-        {
-            case PERMISSION_GROUP_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+        if (requestCode == PERMISSION_GROUP_STORAGE) {
+            return grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         }
         return false;
     }

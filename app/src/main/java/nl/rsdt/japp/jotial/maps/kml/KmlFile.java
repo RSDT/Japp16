@@ -2,8 +2,6 @@ package nl.rsdt.japp.jotial.maps.kml;
 
 import java.util.List;
 
-import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
-
 public class KmlFile {
     private final KmlScoutingGroep organisatie;
     private final List<KmlScoutingGroep> groepen;

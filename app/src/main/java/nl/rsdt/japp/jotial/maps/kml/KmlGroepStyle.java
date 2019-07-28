@@ -1,8 +1,6 @@
 package nl.rsdt.japp.jotial.maps.kml;
 
 
-import android.graphics.Color;
-
 public class KmlGroepStyle extends KmlStyleBase {
     private final int iconColor;
     private final double iconScale;

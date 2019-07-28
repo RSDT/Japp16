@@ -1,10 +1,10 @@
 package nl.rsdt.japp.jotial.navigation;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import nl.rsdt.japp.R;
@@ -65,7 +66,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     private void initialize() {
         snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.done, this);
-        snackbar.setCallback(this);
+        snackbar.addCallback(this);
 
         MarkerIdentifier identifier = new MarkerIdentifier.Builder()
                 .setType(MarkerIdentifier.TYPE_NAVIGATE)
@@ -108,7 +109,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
                 snackbar = null;
             }
             snackbar = Snackbar.make(targetView, R.string.select_valid_location, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setCallback(this);
+            snackbar.addCallback(this);
             snackbar.setAction(R.string.done, this);
             snackbar.show();
         }
@@ -135,12 +136,10 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
     public void onDismissed(Snackbar snackbar, int event) {
         super.onDismissed(snackbar, event);
 
-        switch (event) {
-            case Snackbar.Callback.DISMISS_EVENT_SWIPE:
-                if (callback != null) {
-                    callback.onNavigationCompleted(null, false);
-                }
-                break;
+        if (event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
+            if (callback != null) {
+                callback.onNavigationCompleted(null, false);
+            }
         }
     }
 
@@ -252,7 +251,7 @@ public class NavigationSession extends Snackbar.Callback implements IJotiMap.OnM
          */
         public NavigationSession.Builder setDialogContext(Context context) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.navigation_input_dialog, null);
+            @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.navigation_input_dialog, null);
             buffer.dialog = new AlertDialog.Builder(context)
                     .setCancelable(false)
                     .setPositiveButton(R.string.navigate_self, buffer)

@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.maps;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -198,7 +199,7 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
         return (T)controllers.get(id);
     }
 
-    @SuppressWarnings("unchecked")
+
     @Nullable
     /**
      * Gets the MapItemController associated with the given id.
@@ -206,7 +207,7 @@ public class MapManager implements Searchable, MessageManager.UpdateMessageListe
      * @param id The id of the MapItemController, for example VosAlphaController.CONTROLLER_ID .
      * @return The MapItemController associated with the id, returns null if none.
      * */
-    public <T extends VosController> T getVosControllerByDeelgebied(String deelgebied) {
+    private <T extends VosController> T getVosControllerByDeelgebied(String deelgebied) {
         switch (deelgebied) {
             case "alpha":
                 return get(AlphaVosController.CONTROLLER_ID);

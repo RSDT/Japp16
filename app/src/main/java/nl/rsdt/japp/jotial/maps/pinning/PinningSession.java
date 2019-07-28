@@ -1,10 +1,10 @@
 package nl.rsdt.japp.jotial.maps.pinning;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
@@ -58,9 +60,9 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
 
 
     private void initialize() {
-        snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE);;
+        snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.done, this);
-        snackbar.setCallback(this);
+        snackbar.addCallback(this);
 
         marker = jotiMap.addMarker(new Pair<MarkerOptions, Bitmap>(new MarkerOptions()
                 .visible(false)
@@ -98,7 +100,7 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
                 snackbar = null;
             }
             snackbar = Snackbar.make(targetView, R.string.select_valid_location, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setCallback(this);
+            snackbar.addCallback(this);
             snackbar.setAction(R.string.done, this);
             snackbar.show();
         }
@@ -125,12 +127,19 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
     public void onDismissed(Snackbar snackbar, int event) {
         super.onDismissed(snackbar, event);
 
-        switch (event)
-        {
-            case Snackbar.Callback.DISMISS_EVENT_SWIPE:
-                if(callback != null) {
+        switch (event) {
+            case BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_SWIPE:
+                if (callback != null) {
                     callback.onPinningCompleted(null);
                 }
+                break;
+            case BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_ACTION:
+                break;
+            case BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_CONSECUTIVE:
+                break;
+            case BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_MANUAL:
+                break;
+            case BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_TIMEOUT:
                 break;
         }
     }
@@ -212,7 +221,7 @@ public class PinningSession extends Snackbar.Callback implements IJotiMap.OnMapC
          * */
         public Builder setDialogContext(Context context) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.pinning_input_dialog, null);
+            @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.pinning_input_dialog, null);
             buffer.dialog = new AlertDialog.Builder(context)
                     .setCancelable(false)
                     .setPositiveButton(R.string.confirm, buffer)

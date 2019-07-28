@@ -2,7 +2,6 @@ package nl.rsdt.japp.service.cloud.messaging;
 
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

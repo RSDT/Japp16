@@ -1,12 +1,7 @@
 package nl.rsdt.japp.jotial.data.bodies;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
 
 import nl.rsdt.japp.application.JappPreferences;
 

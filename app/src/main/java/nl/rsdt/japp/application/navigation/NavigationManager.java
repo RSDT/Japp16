@@ -2,10 +2,11 @@ package nl.rsdt.japp.application.navigation;
 
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import com.google.android.material.navigation.NavigationView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class NavigationManager extends FragmentNavigationManager implements Shar
     @Override
     public void initialize(MainActivity activity) {
         super.initialize(activity);
-        navigationView = (NavigationView) activity.findViewById(R.id.nav_view);
+        navigationView = activity.findViewById(R.id.nav_view);
         setUsernameText(JappPreferences.getAccountUsername());
         setRankText(JappPreferences.getAccountRank());
 

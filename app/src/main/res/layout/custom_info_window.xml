@@ -3,7 +3,8 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
-    android:background="@drawable/custom_info_window_background">
+    android:background="@drawable/custom_info_window_background"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:id="@+id/custom_info_window_indicator_container"
@@ -19,7 +20,8 @@
             android:src="@drawable/vos_zwart_1"
             android:scaleType="fitStart"
             android:adjustViewBounds="true"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:contentDescription="@string/vos_locatie" />
 
     </LinearLayout>
 

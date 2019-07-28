@@ -1,12 +1,12 @@
 package nl.rsdt.japp.jotial.maps.sighting;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import nl.rsdt.japp.R;
@@ -119,7 +121,7 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
                 .position(new LatLng(0,0)), bm));
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.sighting_input_dialog, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.sighting_input_dialog, null);
         dialog = new AlertDialog.Builder(context)
                 .setCancelable(false)
                 .setPositiveButton(R.string.confirm, this)
@@ -131,14 +133,11 @@ public class SightingSession extends Snackbar.Callback implements View.OnClickLi
     @Override
     public void onDismissed(Snackbar snackbar, int event) {
         super.onDismissed(snackbar, event);
-        switch (event)
-        {
-            case Snackbar.Callback.DISMISS_EVENT_SWIPE:
-                if(callback != null) {
-                    callback.onSightingCompleted(null, null, null);
-                }
-                destroy();
-                break;
+        if (event == BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_SWIPE) {
+            if (callback != null) {
+                callback.onSightingCompleted(null, null, null);
+            }
+            destroy();
         }
     }
 

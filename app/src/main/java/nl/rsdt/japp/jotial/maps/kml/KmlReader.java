@@ -3,7 +3,6 @@ package nl.rsdt.japp.jotial.maps.kml;
 
 import android.util.Xml;
 
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -20,8 +19,6 @@ import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static java.lang.System.in;
 
 
 /**

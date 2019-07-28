@@ -4,19 +4,20 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import com.google.android.material.navigation.NavigationView;
+
 import androidx.appcompat.app.ActionBar;
 
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.activities.MainActivity;
 import nl.rsdt.japp.application.fragments.AboutFragment;
+import nl.rsdt.japp.application.fragments.CarFragment;
 import nl.rsdt.japp.application.fragments.HomeFragment;
 import nl.rsdt.japp.application.fragments.JappMapFragment;
 import nl.rsdt.japp.application.fragments.JappPreferenceFragment;
-import nl.rsdt.japp.application.fragments.CarFragment;
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap;
 
 /**
@@ -81,7 +82,7 @@ public class FragmentNavigationManager {
 
     public void initialize(MainActivity mainActivity)
     {
-        this.nView = (NavigationView) mainActivity.findViewById(R.id.nav_view);
+        this.nView = mainActivity.findViewById(R.id.nav_view);
         this.actionbar = mainActivity.getSupportActionBar();
         this.manager = mainActivity.getFragmentManager();
         setupFragments();

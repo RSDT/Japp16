@@ -1,8 +1,9 @@
 package nl.rsdt.japp.application.showcase;
 
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -44,7 +45,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
             @Override
             public ViewTarget getTarget() {
                 try {
-                    Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
+                    Toolbar toolbar = activity.findViewById(R.id.toolbar);
                     Field field = Toolbar.class.getDeclaredField("mNavButtonView");
                     field.setAccessible(true);
                     View navigationView = (View) field.get(toolbar);
@@ -88,7 +89,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionMenu menu = (FloatingActionMenu)activity.findViewById(R.id.fab_menu);
+                FloatingActionMenu menu = activity.findViewById(R.id.fab_menu);
                 menu.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
                     @Override
                     public void onMenuToggle(boolean opened) {
@@ -105,7 +106,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
                 return new SimpleShowcaseEventListener() {
                     @Override
                     public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-                        FloatingActionMenu menu = ((FloatingActionMenu) activity.findViewById(R.id.fab_menu));
+                        FloatingActionMenu menu = activity.findViewById(R.id.fab_menu);
                         menu.open(true);
                         continueToNext();
                         menu.setOnMenuToggleListener(null);
@@ -128,7 +129,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton follow = (FloatingActionButton)activity.findViewById(R.id.fab_follow);
+                FloatingActionButton follow = activity.findViewById(R.id.fab_follow);
                 return new ViewTarget(follow);
             }
         });
@@ -146,7 +147,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton mark = (FloatingActionButton)activity.findViewById(R.id.fab_mark);
+                FloatingActionButton mark = activity.findViewById(R.id.fab_mark);
                 return new ViewTarget(mark);
             }
         });
@@ -164,7 +165,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton spot = (FloatingActionButton)activity.findViewById(R.id.fab_spot);
+                FloatingActionButton spot = activity.findViewById(R.id.fab_spot);
                 return new ViewTarget(spot);
             }
         });
@@ -182,7 +183,7 @@ public class JappShowcaseSequence extends ShowcaseSequence<MainActivity> {
 
             @Override
             public ViewTarget getTarget() {
-                FloatingActionButton hunt = (FloatingActionButton)activity.findViewById(R.id.fab_hunt);
+                FloatingActionButton hunt = activity.findViewById(R.id.fab_hunt);
                 return new ViewTarget(hunt);
             }
         });

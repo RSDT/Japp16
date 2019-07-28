@@ -4,9 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 
 /**
@@ -149,7 +150,7 @@ public class AppData {
         try
         {
             File file = new File(fDir, filename);
-            return new BitmapDrawable(BitmapFactory.decodeStream(new FileInputStream(file)));
+            return new BitmapDrawable(Japp.getAppResources(), BitmapFactory.decodeStream(new FileInputStream(file)));
         }
         catch (Exception e)
         {

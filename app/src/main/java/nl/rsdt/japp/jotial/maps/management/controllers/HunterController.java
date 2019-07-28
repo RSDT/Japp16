@@ -304,7 +304,8 @@ public class HunterController extends MapItemController<HashMap<String, ArrayLis
 
             protected HashMap<String, ArrayList<HunterInfo>> data = new HashMap<>();
 
-            private Result() {};
+            private Result() {
+            }
 
             protected Result(Parcel in) {
                 super(in);

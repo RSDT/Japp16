@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -168,26 +169,24 @@ public class PinningManager implements Recreatable, GoogleMap.OnInfoWindowLongCl
     public void onInfoWindowLongClick(final Marker marker) {
         MarkerIdentifier identifier = new Gson().fromJson(marker.getTitle(), MarkerIdentifier.class);
         if(identifier != null) {
-            switch (identifier.getType()) {
-                case MarkerIdentifier.TYPE_PIN:
-                    new AlertDialog.Builder(context)
-                            .setTitle(R.string.remove_mark)
-                            .setMessage(R.string.confirm_removal_mark)
-                            .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Pin assoicated = findAssocaited(marker);
-                                    if(assoicated != null) {
-                                        pins.remove(assoicated);
-                                    }
-                                    marker.remove();
-                                    save(true);
+            if (MarkerIdentifier.TYPE_PIN.equals(identifier.getType())) {
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.remove_mark)
+                        .setMessage(R.string.confirm_removal_mark)
+                        .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Pin assoicated = findAssocaited(marker);
+                                if (assoicated != null) {
+                                    pins.remove(assoicated);
                                 }
-                            })
-                            .setNegativeButton(R.string.no, null)
-                            .create()
-                            .show();
-                    break;
+                                marker.remove();
+                                save(true);
+                            }
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .create()
+                        .show();
             }
         }
     }

@@ -9,10 +9,9 @@ import nl.rsdt.japp.jotial.maps.wrapper.IUiSettings;
  */
 
 public class OsmUiSettings implements IUiSettings{
-    private final MapView osmMap;
 
     public OsmUiSettings(MapView osmMap) {
-        this.osmMap = osmMap;
+        //TODO
     }
 
     public void setAllGesturesEnabled(boolean allesturesEnabled) {

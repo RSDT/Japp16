@@ -4,18 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-
 import com.google.gson.annotations.SerializedName;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.application.activities.LoginActivity;
-import nl.rsdt.japp.jotial.data.structures.area348.UserInfo;
 import nl.rsdt.japp.jotial.net.apis.AuthApi;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -57,13 +54,10 @@ public class Authentication implements Callback<Authentication.KeyObject> {
             }
         } else {
             String message;
-            switch (response.code()) {
-                case 404:
-                    message = Japp.getAppResources().getString(R.string.wrong_data);
-                    break;
-                default:
-                    message = Japp.getAppResources().getString(R.string.error_on_login);
-                    break;
+            if (response.code() == 404) {
+                message = Japp.getAppResources().getString(R.string.wrong_data);
+            } else {
+                message = Japp.getAppResources().getString(R.string.error_on_login);
             }
             if(callback != null)
             {
@@ -139,6 +133,7 @@ public class Authentication implements Callback<Authentication.KeyObject> {
         @SerializedName("exists")
         private boolean exists;
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean exists() {
             return exists;
         }

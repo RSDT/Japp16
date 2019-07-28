@@ -1,7 +1,5 @@
 package nl.rsdt.japp.jotial.maps.kml;
 
-import android.location.Location;
-
 import java.util.List;
 
 public class KmlDeelgebied  {

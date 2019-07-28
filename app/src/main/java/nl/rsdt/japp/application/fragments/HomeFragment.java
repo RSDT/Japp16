@@ -6,13 +6,14 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.jotial.data.structures.area348.VosStatusInfo;
@@ -37,6 +38,8 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
     public static final String STORAGE_KEY = "VosStatusInfo";
 
     public static final String GROUP_KEY = "StatusUpdate";
+
+    public static final String VOSSTATUSCHANNEL = "vos_status";
 
     public static final int NOTIFICATION_ID = 275;
 
@@ -99,22 +102,22 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
                 LinearLayout layout = null;
                 switch (status.getTeam()) {
                     case "Alpha":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_alpha);
+                        layout = view.findViewById(R.id.fragment_home_alpha);
                         break;
                     case "Bravo":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_bravo);
+                        layout = view.findViewById(R.id.fragment_home_bravo);
                         break;
                     case "Charlie":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_charlie);
+                        layout = view.findViewById(R.id.fragment_home_charlie);
                         break;
                     case "Delta":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_delta);
+                        layout = view.findViewById(R.id.fragment_home_delta);
                         break;
                     case "Echo":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_echo);
+                        layout = view.findViewById(R.id.fragment_home_echo);
                         break;
                     case "Foxtrot":
-                        layout = (LinearLayout) view.findViewById(R.id.fragment_home_foxtrot);
+                        layout = view.findViewById(R.id.fragment_home_foxtrot);
                         break;
                 }
                 if(layout != null) {
@@ -140,7 +143,7 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
             style.addLine(status.getTeam() + " : " + status.getStatus());
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity(), VOSSTATUSCHANNEL);
         builder.setContentTitle(getString(R.string.vos_update_title))
                 .setContentText(getString(R.string.vos_update_body))
                 .setSmallIcon(R.drawable.fox3)
@@ -155,7 +158,7 @@ public class HomeFragment extends Fragment implements Callback<VosStatusInfo> {
 
     public void showNotification(VosStatusInfo.Status status) {
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getActivity(), VOSSTATUSCHANNEL);
         switch (status.getStatus()){
             case RED:
                 builder.setContentTitle(getString(R.string.team_status_update, status.getTeam()))

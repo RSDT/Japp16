@@ -13,18 +13,21 @@
         android:id="@+id/pinning_dialog_title_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/pinning_input_dialog_title_hint"/>
+        android:hint="@string/pinning_input_dialog_title_hint"
+        android:inputType="textShortMessage" />
 
     <EditText
         android:id="@+id/pinning_dialog_description_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/pinning_input_dialog_description_hint"/>
+        android:hint="@string/pinning_input_dialog_description_hint"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/pinning_dialog_image_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/pinning_input_dialog_icon_hint"/>
+        android:hint="@string/pinning_input_dialog_icon_hint"
+        android:inputType="number" />
 
 </LinearLayout>

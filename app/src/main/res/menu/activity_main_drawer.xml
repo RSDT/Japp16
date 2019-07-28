@@ -5,30 +5,30 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_black_48dp"
-            android:title="Thuis" />
+            android:title="@string/thuis" />
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_action_map"
-            android:title="Kaart" />
+            android:title="@string/kaart" />
         <item
             android:id="@+id/nav_car"
             android:icon="@drawable/hunter_0"
-            android:title="Auto" />
+            android:title="@string/auto" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_action_settings"
-            android:title="Instellingen" />
+            android:title="@string/instellingen" />
         <item
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_action_about"
-            android:title="Over Japp" />
+            android:title="@string/about_japp" />
     </group>
 
-    <item android:title="Tools">
+    <item android:title="@string/tools">
         <menu>
             <item
                 android:id="@+id/nav_log_out"
-                android:title="Uitloggen"
+                android:title="@string/uitloggen"
                 android:icon="@drawable/ic_exit_to_app_black_48dp"
                 android:checkable="false"/>
         </menu>

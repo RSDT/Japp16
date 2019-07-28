@@ -44,10 +44,6 @@
             android:defaultValue="@array/pref_map_controls_options_def"
             />
 
-        <SeekBarPreference>
-
-        </SeekBarPreference>
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_navigation">

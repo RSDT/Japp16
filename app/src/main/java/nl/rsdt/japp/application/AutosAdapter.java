@@ -1,11 +1,12 @@
 package nl.rsdt.japp.application;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,17 @@ public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder
         this.data = newData;
         setEigenaars();
     }
+
+    // Create new views (invoked by the layout manager)
+    @Override
+    public AutosAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
+                                                        int viewType) {
+        // create a new view
+        final Button v = (Button) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.auto_list_layout, parent, false);
+        return new MyViewHolder(v, callback);
+    }
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -57,7 +69,7 @@ public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder
         }
 
         public void refresh(){
-            String text = eigenaar+ ":" + String.valueOf(inzittendeInfos.size());
+            String text = eigenaar + ":" + inzittendeInfos.size();
             button.setText(text);
         }
         public void setEigenaar(String eigenaar) {
@@ -73,7 +85,7 @@ public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder
         @Override
         public void onClick(View view) {
             Button tv = (Button) view;
-            tv.setText(tv.getText()+"clicked");
+            tv.setText(tv.getText());
             AutoApi autoApi = Japp.getApi(AutoApi.class);
             if (tv.getText().toString().contains( Japp.getAppResources().getString(R.string.create_car))){
                 AutoPostBody body = AutoPostBody.getDefault();
@@ -85,18 +97,6 @@ public class AutosAdapter extends RecyclerView.Adapter<AutosAdapter.MyViewHolder
                 autoApi.post(body).enqueue(callback);
             }
         }
-    }
-
-
-    // Create new views (invoked by the layout manager)
-    @Override
-    public AutosAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
-        // create a new view
-        final Button v = (Button) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.auto_list_layout, parent, false);
-        MyViewHolder vh = new MyViewHolder(v, callback);
-        return vh;
     }
 
     @Override

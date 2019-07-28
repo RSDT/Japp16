@@ -20,11 +20,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
@@ -57,6 +57,7 @@ public class LocationService extends LocationProviderService implements SharedPr
     public static final String TAG = "LocationService";
 
     public static final String ACTION_REQUEST_LOCATION_SETTING = "ACTION_REQUEST_LOCATION_SETTING";
+    private static final String LOCATION_NOTIFICATION_CHANNEL = "notification_chan";
 
     private final LocationBinder binder = new LocationBinder();
 
@@ -65,8 +66,6 @@ public class LocationService extends LocationProviderService implements SharedPr
     private OnResolutionRequiredListener listener;
 
     Calendar lastUpdate = Calendar.getInstance();
-
-    private NavigationLocationManager locationManager;
 
     private BroadcastReceiver locationSettingReceiver = new BroadcastReceiver() {
         @Override
@@ -98,7 +97,7 @@ public class LocationService extends LocationProviderService implements SharedPr
 
         registerReceiver(locationSettingReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
 
-        locationManager = new NavigationLocationManager();
+        NavigationLocationManager locationManager = new NavigationLocationManager();
         locationManager.setCallback(new NavigationLocationManager.OnNewLocation() {
             @Override
             public void onNewLocation(nl.rsdt.japp.jotial.data.firebase.Location location) {
@@ -178,7 +177,7 @@ public class LocationService extends LocationProviderService implements SharedPr
     }
 
     public void showLocationNotification(String title, String description, int color, PendingIntent intent) {
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification notification = new NotificationCompat.Builder(this, LOCATION_NOTIFICATION_CHANNEL)
                 .setContentTitle(title)
                 .setContentText(description)
                 .setSmallIcon(R.drawable.ic_my_location_white_48dp)

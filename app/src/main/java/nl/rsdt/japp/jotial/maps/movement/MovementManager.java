@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Pair;
 import android.view.View;
 
@@ -17,6 +15,7 @@ import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -260,12 +259,10 @@ public class MovementManager implements ServiceManager.OnBindCallback<LocationSe
             jotiMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
                 @Override
                 public void onCameraMoveStarted(int i) {
-                    switch (i) {
-                        case REASON_GESTURE:
-                            ICameraPosition position = jotiMap.getPreviousCameraPosition();
-                            setZoom(position.getZoom());
-                            setAngleOfAttack(position.getTilt());
-                            break;
+                    if (i == REASON_GESTURE) {
+                        ICameraPosition position = jotiMap.getPreviousCameraPosition();
+                        setZoom(position.getZoom());
+                        setAngleOfAttack(position.getTilt());
                     }
                 }
             });

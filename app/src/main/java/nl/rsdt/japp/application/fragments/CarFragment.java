@@ -2,23 +2,24 @@ package nl.rsdt.japp.application.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import nl.rsdt.japp.R;
+import nl.rsdt.japp.application.AutosAdapter;
 import nl.rsdt.japp.application.InzittendenAdapter;
 import nl.rsdt.japp.application.Japp;
 import nl.rsdt.japp.application.JappPreferences;
-import nl.rsdt.japp.application.AutosAdapter;
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo;
 import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo;
 import nl.rsdt.japp.jotial.net.apis.AutoApi;
@@ -30,7 +31,6 @@ import retrofit2.Response;
 public class CarFragment extends Fragment implements Callback<HashMap<String, List<AutoInzittendeInfo>>> {
     public static final String TAG = "CarFragment";
     private RecyclerView autosRecyclerView;
-    private RecyclerView inzittendenRecyclerView;
     private LinearLayout inzittendeLayout;
     private AutosAdapter autosAdapter;
     private InzittendenAdapter inzittendenAdapter;
@@ -57,10 +57,10 @@ public class CarFragment extends Fragment implements Callback<HashMap<String, Li
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_tmp_car, container, false);
         // Inflate the layout for this fragment
-        autosRecyclerView = (RecyclerView) v.findViewById(R.id.autos_recycler_view);
-        inzittendeLayout = (LinearLayout) v.findViewById(R.id.inzittenden_linear_view);
-        inzittendenRecyclerView = (RecyclerView) v.findViewById(R.id.inzittenden_recycler_view);
-        stapUitButton = (Button) v.findViewById(R.id.stap_uit_button);
+        autosRecyclerView = v.findViewById(R.id.autos_recycler_view);
+        inzittendeLayout = v.findViewById(R.id.inzittenden_linear_view);
+        RecyclerView inzittendenRecyclerView = v.findViewById(R.id.inzittenden_recycler_view);
+        stapUitButton = v.findViewById(R.id.stap_uit_button);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         autosRecyclerView.setHasFixedSize(true);
