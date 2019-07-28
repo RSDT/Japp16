@@ -96,8 +96,6 @@ public final class Japp extends MultiDexApplication {
 
         MapsInitializer.initialize(this);
 
-        Deelgebied.initialize(this.getResources());
-
         AppData.initialize(this.getFilesDir());
     }
 }

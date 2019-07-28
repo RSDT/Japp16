@@ -440,25 +440,30 @@ public class JappMapFragment extends Fragment implements IJotiMap.OnMapReadyCall
 
     public void setupDeelgebied(Deelgebied deelgebied) {
         if(!deelgebied.getCoordinates().isEmpty()) {
-            PolygonOptions options = new PolygonOptions().addAll(deelgebied.getCoordinates());
-            if(JappPreferences.getAreasColorEnabled()) {
-                int alphaPercent = JappPreferences.getAreasColorAlpha();
-                float alpha = ((float)(100 - alphaPercent))/100 * 255;
-                options.fillColor(deelgebied.alphaled(Math.round(alpha)));
-            } else {
-                options.fillColor(Color.TRANSPARENT);
-            }
-
-            options.strokeColor(deelgebied.getColor());
-            if(JappPreferences.getAreasEdgesEnabled()) {
-                options.strokeWidth(JappPreferences.getAreasEdgesWidth());
-            } else {
-                options.strokeWidth(0);
-            }
-            options.visible(true);
-
-            areas.put(deelgebied.getName(), jotiMap.addPolygon(options));
+            setUpDeelgebiedReal(deelgebied);
+        } else {
+            deelgebied.getDeelgebiedAsync(deelgebied1 -> setupDeelgebied(deelgebied1));
         }
+    }
+    private void setUpDeelgebiedReal(Deelgebied deelgebied){
+        PolygonOptions options = new PolygonOptions().addAll(deelgebied.getCoordinates());
+        if(JappPreferences.getAreasColorEnabled()) {
+            int alphaPercent = JappPreferences.getAreasColorAlpha();
+            float alpha = ((float)(100 - alphaPercent))/100 * 255;
+            options.fillColor(deelgebied.alphaled(Math.round(alpha)));
+        } else {
+            options.fillColor(Color.TRANSPARENT);
+        }
+
+        options.strokeColor(deelgebied.getColor());
+        if(JappPreferences.getAreasEdgesEnabled()) {
+            options.strokeWidth(JappPreferences.getAreasEdgesWidth());
+        } else {
+            options.strokeWidth(0);
+        }
+        options.visible(true);
+
+        areas.put(deelgebied.getName(), jotiMap.addPolygon(options));
     }
 
     @Override

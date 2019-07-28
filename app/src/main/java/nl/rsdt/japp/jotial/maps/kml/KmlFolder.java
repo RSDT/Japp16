@@ -33,7 +33,23 @@ public class KmlFolder {
     }
 
 
-    public enum Type {Organisatie, Groepen, Deelgebieden}
+    public enum Type {
+        Organisatie, Groepen, Deelgebieden, Unkown;
+
+        public static Type parse(String s){
+        switch (s.toLowerCase()){
+            case "organisatie":
+                return Organisatie;
+            case "groepen":
+                return Groepen;
+            case "deelgebieden":
+                return Deelgebieden;
+                default:
+                    return Unkown;
+        }
+
+        }
+    }
 
     public Type getType() {
         return type;

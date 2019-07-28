@@ -8,7 +8,7 @@ public class KmlLocation {
     public final double lon;
     public final double alt;
 
-    public KmlLocation(Double lat, Double lon, Double alt) {
+    public KmlLocation(Double lon, Double lat, Double alt) {
         this.lat = lat;
         this.lon = lon;
         this.alt = alt;
@@ -19,12 +19,13 @@ public class KmlLocation {
         for (String c : coordinates.split("\n")) {
             c = c.trim();
             String[] coordinate = c.split(",");
-            if (coordinate.length != 3) throw new RuntimeException("string is not an coordinate");
-            result.add(new KmlLocation(
-                    Double.valueOf(coordinate[0]),
-                    Double.valueOf(coordinate[1]),
-                    Double.valueOf(coordinate[2])
-            ));
+            if (coordinate.length == 3) {
+                result.add(new KmlLocation(
+                        Double.valueOf(coordinate[0]),
+                        Double.valueOf(coordinate[1]),
+                        Double.valueOf(coordinate[2])
+                ));
+            }
         }
         return result;
     }

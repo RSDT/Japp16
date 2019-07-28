@@ -15,10 +15,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
 
 import nl.rsdt.japp.R;
 import nl.rsdt.japp.application.JappPreferences;
 import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo;
+import nl.rsdt.japp.jotial.maps.kml.KmlDeelgebied;
+import nl.rsdt.japp.jotial.maps.kml.KmlFile;
+import nl.rsdt.japp.jotial.maps.kml.KmlLocation;
+import nl.rsdt.japp.jotial.maps.kml.KmlReader;
 
 /**
  * @author Dingenis Sieger Sinke
@@ -32,42 +40,47 @@ public final class Deelgebied {
     /**
      * Defines the Alpha Deelgebied.
      * */
-    public static final Deelgebied Alpha = new Deelgebied("alpha", JappPreferences.getColorName("a"));
+    private static final Deelgebied Alpha = new Deelgebied("alpha", JappPreferences.getColorName("a"));
 
     /**
      * Defines the Bravo Deelgebied.
      * */
-    public static final Deelgebied Bravo = new Deelgebied("bravo", JappPreferences.getColorName("b"));
+    private static final Deelgebied Bravo = new Deelgebied("bravo", JappPreferences.getColorName("b"));
 
     /**
      * Defines the Charlie Deelgebied.
      * */
-    public static final Deelgebied Charlie = new Deelgebied("charlie", JappPreferences.getColorName("c"));
+    private static final Deelgebied Charlie = new Deelgebied("charlie", JappPreferences.getColorName("c"));
 
     /**
      * Defines the Delta Deelgebied.
      * */
-    public static final Deelgebied Delta = new Deelgebied("delta", JappPreferences.getColorName("d"));
+    private static final Deelgebied Delta = new Deelgebied("delta", JappPreferences.getColorName("d"));
 
     /**
      * Defines the Echo Deelgebied.
      * */
-    public static final Deelgebied Echo = new Deelgebied("echo", JappPreferences.getColorName("e"));
+    private static final Deelgebied Echo = new Deelgebied("echo", JappPreferences.getColorName("e"));
 
     /**
      * Defines the Foxtrot Deelgebied.
      * */
-    public static final Deelgebied Foxtrot = new Deelgebied("foxtrot", JappPreferences.getColorName("f"));
+
+    private static final Deelgebied Foxtrot = new Deelgebied("foxtrot", JappPreferences.getColorName("f"));
 
     /**
      * Defines the Xray Deelgebied.
      * */
     public static final Deelgebied Xray = new Deelgebied("xray", JappPreferences.getColorName("x"));
+    private static final String TAG = "Deelgebied";
 
     /**
      * Gets a array of all the Deelgebieden.
      * */
-    public static Deelgebied[] all() { return new Deelgebied[] { Alpha, Bravo, Charlie, Delta, Echo, Foxtrot, Xray }; }
+    public static Deelgebied[] all() {
+        return new Deelgebied[] { Alpha, Bravo, Charlie, Delta, Echo, Foxtrot, Xray };
+    }
+    public static volatile boolean deelgebiedenInitialized = false;
 
     /**
      * The name of this Deelgebied.
@@ -131,12 +144,22 @@ public final class Deelgebied {
      * The list of coordinates that is the area of the Deelgebied.
      * */
     private ArrayList<LatLng> coordinates = new ArrayList<>();
-
+    private static Map<String,LinkedList<OnInitialized>> onInitializedList = new HashMap<>();
     /**
      * Gets the list of coordinates that is the area of the Deelgebied.
      * */
     public ArrayList<LatLng> getCoordinates() {
-        return coordinates;
+        return this.coordinates;
+    }
+
+    public void getDeelgebiedAsync(OnInitialized onInitialized){
+        if (deelgebiedenInitialized){
+            onInitialized.onInitialized(this);
+        }
+        else{
+            if (!onInitializedList.containsKey(this.name)) onInitializedList.put(this.name, new LinkedList<>());
+            onInitializedList.get(this.name).add(onInitialized);
+        }
     }
 
     /**
@@ -198,7 +221,7 @@ public final class Deelgebied {
      * */
     public boolean containsLocation(LatLng location)
     {
-        return PolyUtil.containsLocation(location, coordinates, false);
+        return PolyUtil.containsLocation(location, getCoordinates(), false);
     }
 
     /**
@@ -209,66 +232,133 @@ public final class Deelgebied {
      * */
     public boolean containsLocation(Location location)
     {
-        return PolyUtil.containsLocation(new LatLng(location.getLatitude(), location.getLongitude()), coordinates, false);
+        return PolyUtil.containsLocation(new LatLng(location.getLatitude(), location.getLongitude()), getCoordinates(), false);
     }
 
 
     /**
      * Initializes the Deelgebieden, loading their coordinates from the Resources.
      * */
-    public static void initialize(Resources resources)
+    public static synchronized void initialize(Resources resources)
     {
-        Deelgebied[] gebieden = all();
-        Deelgebied current;
-        for(int g = 0; g < gebieden.length; g++)
-        {
-            current = gebieden[g];
+        KmlReader.parseFromMeta(new KmlReader.Callback() {
+            @Override
+            public void onException(Throwable e) {
+                Log.e(Deelgebied.TAG,e.toString());
+                Deelgebied[] gebieden = all();
+                Deelgebied current;
+                for(int g = 0; g < gebieden.length; g++) {
+                    current = gebieden[g];
 
-            InputStream stream;
-            switch (current.name)
-            {
-                case "alpha":
-                    stream = resources.openRawResource(R.raw.alpha);
-                    break;
-                case "bravo":
-                    stream = resources.openRawResource(R.raw.bravo);
-                    break;
-                case "charlie":
-                    stream = resources.openRawResource(R.raw.charlie);
-                    break;
-                case "delta":
-                    stream = resources.openRawResource(R.raw.delta);
-                    break;
-                case "echo":
-                    stream = resources.openRawResource(R.raw.echo);
-                    break;
-                case "foxtrot":
-                    stream = resources.openRawResource(R.raw.foxtrot);
-                    break;
-                default:
-                    stream = null;
-                    Log.i("Deelgebied", "No polygon data was found for " + current.name);
-                    break;
-            }
-
-            if(stream != null) {
-                BufferedReader r = new BufferedReader(new InputStreamReader(stream));
-                StringBuilder total = new StringBuilder();
-                String line;
-                try {
-                    while ((line = r.readLine()) != null) {
-                        total.append(line).append('\n');
+                    InputStream stream;
+                    switch (current.name) {
+                        case "alpha":
+                            stream = resources.openRawResource(R.raw.alpha);
+                            break;
+                        case "bravo":
+                            stream = resources.openRawResource(R.raw.bravo);
+                            break;
+                        case "charlie":
+                            stream = resources.openRawResource(R.raw.charlie);
+                            break;
+                        case "delta":
+                            stream = resources.openRawResource(R.raw.delta);
+                            break;
+                        case "echo":
+                            stream = resources.openRawResource(R.raw.echo);
+                            break;
+                        //case "foxtrot":
+                            //stream = resources.openRawResource(R.raw.foxtrot);
+                            //break;
+                        default:
+                            stream = null;
+                            Log.i("Deelgebied", "No polygon data was found for " + current.name);
+                            break;
                     }
-                } catch (IOException e)
-                {
-                    Log.e("Deelgebied", "Error occurred while reading stream", e);
+
+                    if (stream != null) {
+                        BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+                        StringBuilder total = new StringBuilder();
+                        String line;
+                        try {
+                            while ((line = r.readLine()) != null) {
+                                total.append(line).append('\n');
+                            }
+                        } catch (IOException err) {
+                            Log.e("Deelgebied", "Error occurred while reading stream", err);
+                        }
+
+                        String data = total.toString();
+
+                        current.coordinates = new Gson().fromJson(data, new TypeToken<ArrayList<LatLng>>() {
+                        }.getType());
+                    }
                 }
-
-                String data = total.toString();
-
-                current.coordinates = new Gson().fromJson(data, new TypeToken<ArrayList<LatLng>>() { }.getType());
+                deelgebiedenInitialized = true;
+                for (Map.Entry<String, LinkedList<OnInitialized>> entry: onInitializedList.entrySet()){
+                    for (OnInitialized oi : entry.getValue()){
+                        oi.onInitialized(Objects.requireNonNull(Deelgebied.parse(entry.getKey())));
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onSucces(KmlFile kml) {
+                Deelgebied[] gebieden = all();
+                Deelgebied current;
+                for(int g = 0; g < gebieden.length; g++) {
+                    current = gebieden[g];
+
+                    KmlDeelgebied kmldg;
+                    switch (current.name) {
+                        case "alpha":
+                            kmldg = kml.getAlpha();
+                            break;
+                        case "bravo":
+                            kmldg = kml.getBravo();
+                            break;
+                        case "charlie":
+                            kmldg = kml.getCharlie();
+                            break;
+                        case "delta":
+                            kmldg = kml.getDelta();
+                            break;
+                        case "echo":
+                            kmldg = kml.getEcho();
+                            break;
+                        case "foxtrot":
+                            kmldg = kml.getFoxtrot();
+                            break;
+                        default:
+                            kmldg = null;
+                            break;
+                    }
+
+                    if (kmldg != null) {
+
+                        ArrayList<LatLng> tmp = new ArrayList<>(kmldg.getBoundry().size());
+                        for (int i = 0; i < kmldg.getBoundry().size(); i++) {
+                            KmlLocation kmldgLoc = kmldg.getBoundry().get(i);
+                            LatLng tmploc = new LatLng(kmldgLoc.lat, kmldgLoc.lon);
+                            while (tmp.size()-1 < i){
+                                tmp.add(null);
+                            }
+                            tmp.set(i, tmploc);
+                        }
+                        current.coordinates = tmp;
+                    } else {
+                        Log.i("Deelgebied", "No polygon data was found for " + current.name);
+                    }
+                }
+                deelgebiedenInitialized = true;
+                for (Map.Entry<String, LinkedList<OnInitialized>> entry: onInitializedList.entrySet()){
+                    for (OnInitialized oi : entry.getValue()){
+                        oi.onInitialized(Objects.requireNonNull(Deelgebied.parse(entry.getKey())));
+                    }
+                }
+            }
+        });
+        waitUntilInitzialized();
     }
 
     /**
@@ -279,6 +369,7 @@ public final class Deelgebied {
      */
     public static Deelgebied resolveOnLocation(LatLng location)
     {
+        waitUntilInitzialized();
         Deelgebied[] data = all();
         Deelgebied current;
 
@@ -301,6 +392,7 @@ public final class Deelgebied {
      */
     public static Deelgebied resolveOnLocation(Location location)
     {
+        waitUntilInitzialized();
         Deelgebied[] data = all();
         Deelgebied current;
 
@@ -314,8 +406,18 @@ public final class Deelgebied {
         }
         return null;
     }
-
+    public static synchronized void waitUntilInitzialized(){
+        /*
+        while (!deelgebiedenInitialized){
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }*/
+    }
     public static Deelgebied parse(String name) {
+        waitUntilInitzialized();
         switch (name.toLowerCase()){
             case "alpha":
             case "Alpha":
@@ -358,6 +460,7 @@ public final class Deelgebied {
                 return null;
         }
     }
-
-
+    public interface OnInitialized {
+        public void onInitialized(Deelgebied deelgebied);
+    }
 }

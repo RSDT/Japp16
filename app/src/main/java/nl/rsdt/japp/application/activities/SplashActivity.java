@@ -23,6 +23,7 @@ import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker;
 import nl.rsdt.japp.jotial.io.AppData;
 import nl.rsdt.japp.jotial.maps.MapStorage;
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController;
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied;
 import nl.rsdt.japp.jotial.maps.management.MapItemController;
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask;
 import nl.rsdt.japp.jotial.net.apis.AuthApi;
@@ -79,7 +80,6 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
 
 
         }
-
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if(extras != null) {
@@ -114,10 +114,11 @@ public class SplashActivity extends Activity implements MapStorage.OnMapDataLoad
         /**
          * Check if we have the permissions we need.
          * */
+        MapStorage storage = MapStorage.getInstance();
         permission_check = LocationPermissionsChecker.check(this);
         StoragePermissionsChecker.check(this);
+        Deelgebied.initialize(this.getResources());
 
-        MapStorage storage = MapStorage.getInstance();
         storage.add(this);
         storage.load();
 

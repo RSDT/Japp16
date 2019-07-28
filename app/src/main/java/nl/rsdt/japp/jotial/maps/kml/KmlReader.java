@@ -11,14 +11,76 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import nl.rsdt.japp.application.Japp;
+import nl.rsdt.japp.application.JappPreferences;
+import nl.rsdt.japp.jotial.data.structures.area348.MetaInfo;
+import nl.rsdt.japp.jotial.net.apis.MetaApi;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static java.lang.System.in;
 
 
 /**
  * Created by Mattijn on 11/10/2015.
  */
-public class KmlReader {
-    public KmlFile parse(InputStream file) throws XmlPullParserException, IOException {
+public class KmlReader implements Callback<MetaInfo> {
+
+    public static void parseFromMeta(KmlReader.Callback callback) {
+        final MetaApi metaApi = Japp.getApi(MetaApi.class);
+        metaApi.getMetaInfo(JappPreferences.getAccountKey()).enqueue(new retrofit2.Callback<MetaInfo>() {
+            @Override
+            public void onResponse(Call<MetaInfo> call, Response<MetaInfo> response) {
+                assert response.body() != null;
+                if (response.isSuccessful()) {
+                    Request req = new Request.Builder().url(response.body().KML_URL).build();
+                    OkHttpClient client = new OkHttpClient.Builder()
+                            .build();
+                    client.newCall(req).enqueue(new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(okhttp3.Call call, IOException e) {
+                            callback.onException(e);
+                        }
+
+                        @Override
+                        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                try {
+                                    assert response.body() != null;
+                                    KmlFile file = parse(response.body().byteStream());
+                                    callback.onSucces(file);
+                                } catch (XmlPullParserException e) {
+                                    e.printStackTrace();
+                                    callback.onException(e);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    callback.onException(e);
+                                }
+                            } else {
+                                callback.onException(new Exception(response.body().string()));
+                            }
+                        }
+                    });
+                } else{
+                    try {
+                        callback.onException(new Exception(response.errorBody().string()));
+                    } catch (IOException e) {
+                        callback.onException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MetaInfo> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public static KmlFile parse(InputStream in) throws XmlPullParserException, IOException {
         KmlFile kmlFile ;
         try {
             XmlPullParser parser = Xml.newPullParser();
@@ -32,10 +94,10 @@ public class KmlReader {
         return kmlFile;
     }
 
-    private KmlFile readKml(XmlPullParser parser)  throws XmlPullParserException, IOException  {
+    private static KmlFile readKml(XmlPullParser parser)  throws XmlPullParserException, IOException  {
         KmlDocument document = new KmlDocument();
         String ns = null;
-        parser.require(XmlPullParser.START_TAG, ns, "feed");
+        parser.require(XmlPullParser.START_TAG, ns, "kml");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -49,7 +111,7 @@ public class KmlReader {
         return document.toKmlFile();
     }
 
-    private KmlDocument readDocument(XmlPullParser parser) throws XmlPullParserException, IOException{
+    private static KmlDocument readDocument(XmlPullParser parser) throws XmlPullParserException, IOException{
         KmlDocument document = new KmlDocument();
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -68,7 +130,7 @@ public class KmlReader {
         }
         return document;
     }
-    private KmlFolder readFolder(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static KmlFolder readFolder(XmlPullParser parser) throws IOException, XmlPullParserException {
         KmlFolder folder = new KmlFolder();
 
         while (parser.next() != XmlPullParser.END_TAG){
@@ -77,16 +139,16 @@ public class KmlReader {
             }
             String tagName = parser.getName();
             if (tagName.equals("name")) {
-                folder.setType(KmlFolder.Type.valueOf(getTextAndGoToCloseTag(parser)));
+                folder.setType(KmlFolder.Type.parse(getTextAndGoToCloseTag(parser)));
             }
-            if (tagName.equals("PlaceMark")) {
+            if (tagName.equals("Placemark")) {
                 folder.addPlacemark(readPlaceMark(parser));
             }
         }
 
         return folder;
     }
-    private KmlStyle readStyle(XmlPullParser parser) throws IOException, XmlPullParserException{
+    private static KmlStyle readStyle(XmlPullParser parser) throws IOException, XmlPullParserException{
         KmlStyle kmlStyle = new KmlStyle();
         kmlStyle.setId(parser.getAttributeValue(0));
         while (parser.next() != XmlPullParser.END_TAG){
@@ -110,7 +172,7 @@ public class KmlReader {
 
         return kmlStyle;
     }
-    private void readIconStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
+    private static void readIconStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -128,14 +190,14 @@ public class KmlReader {
                     if (parser.getEventType() != XmlPullParser.START_TAG) {
                         continue;
                     }
-                    if (tagName.equals("href")){
+                    if (parser.getName().equals("href")){
                         kmlStyle.setIconUrl(getTextAndGoToCloseTag(parser));
                     }
                 }
             }
         }
     }
-    private void readBalloonStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
+    private static void readBalloonStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -149,7 +211,7 @@ public class KmlReader {
             }
         }
     }
-    private void readLineStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
+    private static void readLineStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -164,7 +226,7 @@ public class KmlReader {
             }
         }
     }
-    private void readPolyStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
+    private static void readPolyStyle(XmlPullParser parser, KmlStyle kmlStyle) throws IOException, XmlPullParserException {
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -184,7 +246,7 @@ public class KmlReader {
         }
     }
 
-    private KmlPlaceMark readPlaceMark(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static KmlPlaceMark readPlaceMark(XmlPullParser parser) throws IOException, XmlPullParserException {
         KmlPlaceMark placeMark = new KmlPlaceMark();
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -207,7 +269,7 @@ public class KmlReader {
         return placeMark;
     }
 
-    private List<KmlLocation> readPolygon(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static List<KmlLocation> readPolygon(XmlPullParser parser) throws IOException, XmlPullParserException {
         String coordinates = "";
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -237,7 +299,7 @@ public class KmlReader {
         return KmlLocation.readCoordinates(coordinates);
     }
 
-    private List<KmlLocation> readPoint(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static List<KmlLocation> readPoint(XmlPullParser parser) throws IOException, XmlPullParserException {
         String coordinates = "";
         while (parser.next() != XmlPullParser.END_TAG){
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -251,7 +313,7 @@ public class KmlReader {
         return KmlLocation.readCoordinates(coordinates);
     }
 
-    private String getTextAndGoToCloseTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private static String getTextAndGoToCloseTag(XmlPullParser parser) throws IOException, XmlPullParserException {
         String text = "";
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() == XmlPullParser.TEXT) {
@@ -261,4 +323,18 @@ public class KmlReader {
         return text;
     }
 
+    @Override
+    public void onResponse(Call<MetaInfo> call, Response<MetaInfo> response) {
+        assert response.body() != null;
+
+    }
+
+    @Override
+    public void onFailure(Call<MetaInfo> call, Throwable t) {
+
+    }
+    public interface Callback{
+        void onException(Throwable e);
+        void onSucces(KmlFile kml);
+    }
 }

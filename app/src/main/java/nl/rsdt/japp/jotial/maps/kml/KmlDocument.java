@@ -8,8 +8,8 @@ class KmlDocument {
 
 
     private String name;
-    private List<KmlFolder> folders;
-    private List<KmlStyle> styles;
+    private List<KmlFolder> folders = new LinkedList<>();
+    private List<KmlStyle> styles = new LinkedList<>();
 
     public void setName(String name) {
         this.name = name;
