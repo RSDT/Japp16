@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.pinning
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Parcel
 import android.os.Parcelable
@@ -22,9 +23,9 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
  */
 class Pin {
 
-    var marker: IMarker
+    var marker: IMarker? = null
 
-    var data: Data
+    var data: Data? = null
 
     class Data : Parcelable {
 
@@ -63,19 +64,16 @@ class Pin {
             return 0
         }
 
-        companion object {
-
-            val CREATOR: Parcelable.Creator<Data> = object : Parcelable.Creator<Data> {
+        companion object CREATOR: Parcelable.Creator<Data>  {
                 override fun createFromParcel(`in`: Parcel): Data {
                     return Data(`in`)
                 }
 
-                override fun newArray(size: Int): Array<Data> {
+                override fun newArray(size: Int): Array<Data?> {
                     return arrayOfNulls(size)
                 }
             }
         }
-    }
 
     companion object {
 
@@ -89,7 +87,7 @@ class Pin {
                     .add("icon", data.icon.toString())
                     .create()
 
-            buffer.marker = jotiMap.addMarker(Pair<MarkerOptions, Bitmap>(MarkerOptions()
+            buffer.marker = jotiMap.addMarker(Pair<MarkerOptions, Bitmap?>(MarkerOptions()
                     .title(Gson().toJson(identifier))
                     .position(data.position!!), BitmapFactory.decodeResource(Japp.instance!!.resources, data.icon)))
             buffer.data = data

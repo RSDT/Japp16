@@ -21,12 +21,12 @@ import nl.rsdt.japp.application.activities.MainActivity
 class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainActivity>() {
 
     init {
-        setActivity(mainActivity)
+        activity = mainActivity
         populate()
     }
 
     protected fun populate() {
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
             override val title: String
                 get() = "Navigatie Menu"
 
@@ -50,7 +50,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
                 }
         })
 
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
             override val title: String
                 get() = "Refresh Knop"
 
@@ -61,7 +61,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
                 get() = ViewTarget(R.id.refresh, activity!!)
         })
 
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
 
             override val title: String
                 get() = "Actie Menu"
@@ -92,7 +92,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
 
         })
 
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
             override val title: String
                 get() = "Volg Mij Knop"
 
@@ -106,7 +106,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
                 }
         })
 
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
             override val title: String
                 get() = "Mark Knop"
 
@@ -120,7 +120,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
                 }
         })
 
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
             override val title: String
                 get() = "Spot Knop"
 
@@ -134,7 +134,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
                 }
         })
 
-        members!!.add(object : ShowcaseSequence.ShowcaseSequenceItem() {
+        members!!.add(object : ShowcaseSequence<MainActivity>.ShowcaseSequenceItem() {
             override val title: String
                 get() = "Hunt Knop"
 

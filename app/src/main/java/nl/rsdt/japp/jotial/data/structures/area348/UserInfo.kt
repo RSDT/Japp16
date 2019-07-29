@@ -159,7 +159,7 @@ protected constructor(`in`: Parcel) : Parcelable {
                 return UserInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<UserInfo> {
+            override fun newArray(size: Int): Array<UserInfo?> {
                 return arrayOfNulls(size)
             }
         }

@@ -1,6 +1,6 @@
 package nl.rsdt.japp.jotial.maps.kml
 
-class KmlFile internal constructor(val name: String, val organisatie: KmlScoutingGroep, val groepen: List<KmlScoutingGroep>, val styles: List<KmlStyleBase>, deelgebieden: List<KmlDeelgebied>) {
+class KmlFile internal constructor(val name: String, val organisatie: KmlScoutingGroep?, val groepen: List<KmlScoutingGroep>, val styles: List<KmlStyleBase>, deelgebieden: List<KmlDeelgebied>) {
     val alpha: KmlDeelgebied?
     val bravo: KmlDeelgebied?
     val charlie: KmlDeelgebied?

@@ -19,25 +19,25 @@ import java.util.*
 interface AutoApi {
 
     @GET("/auto/{key}/info/{id}")
-    fun getInfoById(@Path("key") key: String, @Path("id") id: Int): Call<AutoInzittendeInfo>
+    fun getInfoById(@Path("key") key: String?, @Path("id") id: Int): Call<AutoInzittendeInfo>
 
     @GET("/auto/{key}/onecar/{id}")
-    fun getCarById(@Path("key") key: String, @Path("id") id: Int): Call<ArrayList<AutoInzittendeInfo>>
+    fun getCarById(@Path("key") key: String?, @Path("id") id: Int): Call<ArrayList<AutoInzittendeInfo>>
 
     @GET("/auto/{key}/onecar/{name}")
-    fun getCarByName(@Path("key") key: String, @Path("name") naam: String): Call<ArrayList<AutoInzittendeInfo>>
+    fun getCarByName(@Path("key") key: String?, @Path("name") naam: String): Call<ArrayList<AutoInzittendeInfo>>
 
     @GET("/auto/{key}/distinct/all")
-    fun getAllCars(@Path("key") key: String): Call<HashMap<String, List<AutoInzittendeInfo>>>
+    fun getAllCars(@Path("key") key: String?): Call<HashMap<String, List<AutoInzittendeInfo>>>
 
     @GET("/auto/{key}/distinct")
-    fun getAllCarOwners(@Path("key") key: String): Call<List<AutoEigenaarInfo>>
+    fun getAllCarOwners(@Path("key") key: String?): Call<List<AutoEigenaarInfo>>
 
     @GET("/auto/{key}/removefromcarbyid/{id}")
-    fun deleteFromCarById(@Path("key") key: String, @Path("id") id: Int): Call<DeletedInfo>
+    fun deleteFromCarById(@Path("key") key: String?, @Path("id") id: Int): Call<DeletedInfo>
 
     @GET("/auto/{key}/removefromcarbygebruikersnaam/{name}")
-    fun deleteFromCarByName(@Path("key") key: String, @Path("name") name: String): Call<DeletedInfo>
+    fun deleteFromCarByName(@Path("key") key: String?, @Path("name") name: String?): Call<DeletedInfo>
 
     @POST("/auto")
     fun post(@Body body: AutoPostBody): Call<Void>

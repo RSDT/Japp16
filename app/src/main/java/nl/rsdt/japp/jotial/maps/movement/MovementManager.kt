@@ -59,7 +59,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
     private var snackBarView: View? = null
 
-    private var list: ArrayList<LatLng>? = null
+    private var list: MutableList<LatLng>? = null
 
     private var listener: LocationService.OnResolutionRequiredListener? = null
 
@@ -71,7 +71,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         this.snackBarView = snackBarView
     }
 
-    fun newSession(before: ICameraPosition, zoom: Float, aoa: Float): FollowSession {
+    fun newSession(before: ICameraPosition, zoom: Float, aoa: Float): FollowSession? {
         if (activeSession != null) {
             activeSession!!.end()
             activeSession = null
@@ -91,9 +91,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
 
-    fun onSaveInstanceState(saveInstanceState: Bundle) {
+    fun onSaveInstanceState(saveInstanceState: Bundle?) {
         if (tail != null) {
-            saveInstanceState.putParcelableArrayList(BUNDLE_KEY, ArrayList(tail!!.points))
+            saveInstanceState?.putParcelableArrayList(BUNDLE_KEY, ArrayList(tail!!.points))
         }
     }
 
@@ -177,10 +177,10 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         service = binder.instance
         service!!.setListener(listener)
         service!!.add(this)
-        service!!.setRequest(LocationRequest()
+        service!!.request = LocationRequest()
                 .setInterval(700)
                 .setFastestInterval(100)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY))
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
     }
 
     fun postResolutionResultToService(code: Int) {
@@ -215,16 +215,18 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         .width(3f)
                         .color(Color.BLUE))
 
-        if (list != null && !list!!.isEmpty()) {
-            tail!!.points = list
-            val last: Int
-            if (list!!.size > 1) {
-                last = list!!.size - 1
-            } else {
-                last = 0
+        list?.also { list ->
+            if (!list.isEmpty()) {
+                tail!!.points = list
+                val last: Int
+                last = if (list.size > 1) {
+                    list.size - 1
+                } else {
+                    0
+                }
+                marker!!.position = list[last]
+                marker!!.isVisible = true
             }
-            marker!!.position = list!![last]
-            marker!!.isVisible = true
         }
     }
 
@@ -244,13 +246,16 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             jotiMap!!.uiSettings.setAllGesturesEnabled(true)
             jotiMap!!.uiSettings.setCompassEnabled(true)
 
-            jotiMap!!.setOnCameraMoveStartedListener { i ->
-                if (i == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                    val position = jotiMap!!.previousCameraPosition
-                    setZoom(position.zoom)
-                    setAngleOfAttack(position.tilt)
+            jotiMap!!.setOnCameraMoveStartedListener(object : GoogleMap.OnCameraMoveStartedListener {
+                override fun onCameraMoveStarted(i: Int) {
+                    if (i == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                        val position = jotiMap!!.previousCameraPosition
+                        setZoom(position.zoom)
+                        setAngleOfAttack(position.tilt)
+                    }
                 }
-            }
+
+            })
 
         }
 
@@ -303,16 +308,16 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
     fun onResume() {
         if (service != null) {
-            service!!.setRequest(LocationRequest()
+            service!!.request = LocationRequest()
                     .setInterval(700)
                     .setFastestInterval(100)
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY))
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         }
     }
 
     fun onPause() {
         if (service != null) {
-            service!!.setRequest(service!!.standard)
+            service!!.request = service!!.standard
         }
     }
 

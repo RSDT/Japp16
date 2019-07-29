@@ -34,34 +34,52 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
 
     protected var jotiMap: IJotiMap? = null
 
-    override var markers: ArrayList<IMarker>? = ArrayList()
+    override var markers: ArrayList<IMarker> = ArrayList()
         protected set
 
-    override var polylines: ArrayList<IPolyline>? = ArrayList()
+    override var polylines: ArrayList<IPolyline> = ArrayList()
         protected set
 
-    override var polygons: ArrayList<IPolygon>? = ArrayList()
+    override var polygons: ArrayList<IPolygon> = ArrayList()
         protected set
 
-    var circles: MutableMap<ICircle, Int> = HashMap()
+    var circlesController: MutableMap<ICircle, Int> = HashMap()
+
+    override val circles: ArrayList<ICircle>
+        get() {
+            return ArrayList(circlesController.keys)
+        }
 
     protected var buffer: O? = null
 
-    protected var visiblity = true
+    var visiblity = true
+        set(value) {
+            field= value
 
-    override fun getCircles(): ArrayList<ICircle> {
-        return ArrayList(circles.keys)
-    }
+            for (i in markers.indices) {
+                markers[i].isVisible = visiblity
+            }
 
-    override fun onIntentCreate(bundle: Bundle?) {
-        if (bundle != null) {
-            val result = bundle.getParcelable<O>(bundleId)
-            if (result != null) {
-                if (jotiMap != null) {
-                    processResult(result)
-                } else {
-                    buffer = result
-                }
+            for (i in polylines.indices) {
+                polylines[i].setVisible(visiblity)
+            }
+
+            for (i in polygons.indices) {
+                polygons[i].setVisible(visiblity)
+            }
+            val circles = ArrayList(this.circlesController.keys)
+            for (i in circles.indices) {
+                circles[i].setVisible(visiblity)
+            }
+        }
+
+    override fun onIntentCreate(bundle: Bundle) {
+        val result = bundle.getParcelable<O>(bundleId)
+        if (result != null) {
+            if (jotiMap != null) {
+                processResult(result)
+            } else {
+                buffer = result
             }
         }
     }
@@ -71,9 +89,9 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
         this.jotiMap = jotiMap
         if (buffer != null) {
             if (!markers!!.isEmpty() || !polylines!!.isEmpty() || !polygons!!.isEmpty()) {
-                merge(buffer)
+                merge(buffer!!)
             } else {
-                processResult(buffer)
+                processResult(buffer!!)
             }
             buffer = null
         }
@@ -82,7 +100,7 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
 
     override fun onUpdateInvoked() {
         val call = update(MapItemUpdatable.MODE_ALL)
-        call.enqueue(this)
+        call?.enqueue(this)
     }
 
     override fun onUpdateMessage(info: UpdateInfo) {
@@ -96,7 +114,12 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
     }
 
     override fun onResponse(call: Call<I>, response: Response<I>) {
-        transducer.enqueue(response.body(), this)
+        val body = response.body()
+            if (body != null){
+                transducer.enqueue(body, this)
+            }else{
+                Log.println(Log.ERROR, TAG,response.message())
+            }
     }
 
     override fun onFailure(call: Call<I>, t: Throwable) {
@@ -144,30 +167,10 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
         for (c in circles!!.indices) {
             val circle = jotiMap!!.addCircle(circles[c])
             circle.setVisible(visiblity)
-            this.circles[circle] = circle.fillColor
+            this.circlesController[circle] = circle.fillColor
             if (!JappPreferences.fillCircles()) {
                 circle.fillColor = Color.TRANSPARENT
             }
-        }
-    }
-
-    fun setVisiblity(visiblity: Boolean) {
-        this.visiblity = visiblity
-
-        for (i in markers!!.indices) {
-            markers!![i].isVisible = visiblity
-        }
-
-        for (i in polylines!!.indices) {
-            polylines!![i].setVisible(visiblity)
-        }
-
-        for (i in polygons!!.indices) {
-            polygons!![i].setVisible(visiblity)
-        }
-        val circles = ArrayList(this.circles.keys)
-        for (i in circles.indices) {
-            circles[i].setVisible(visiblity)
         }
     }
 
@@ -186,7 +189,7 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
             polygons!![i].remove()
         }
         polygons!!.clear()
-        val circles = ArrayList(this.circles.keys)
+        val circles = ArrayList(this.circlesController.keys)
         for (i in circles.indices) {
             circles[i].remove()
         }
@@ -208,20 +211,11 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
 
 
     override fun onDestroy() {
-        if (markers != null) {
-            markers!!.clear()
-            markers = null
-        }
+            markers.clear()
 
-        if (polylines != null) {
-            polylines!!.clear()
-            polylines = null
-        }
-
-        if (polygons != null) {
-            polygons!!.clear()
-            polygons = null
-        }
+            polylines.clear()
+            polygons.clear()
+            polygons
 
         buffer = null
 
@@ -232,11 +226,11 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (key == JappPreferences.FILL_CIRCLES) {
             if (JappPreferences.fillCircles()) {
-                for ((key1, value) in circles) {
+                for ((key1, value) in circlesController) {
                     key1.fillColor = value
                 }
             } else {
-                for ((key1) in circles) {
+                for ((key1) in circlesController) {
                     key1.fillColor = Color.TRANSPARENT
                 }
             }

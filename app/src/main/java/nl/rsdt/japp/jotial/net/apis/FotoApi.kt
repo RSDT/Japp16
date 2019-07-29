@@ -15,9 +15,9 @@ import java.util.*
 interface FotoApi {
 
     @GET("/foto/{key}/{id}")
-    fun getById(@Path("key") key: String, @Path("id") id: Int): Call<FotoOpdrachtInfo>
+    fun getById(@Path("key") key: String?, @Path("id") id: Int): Call<FotoOpdrachtInfo>
 
     @GET("/foto/{key}/all")
-    fun getAll(@Path("key") key: String): Call<ArrayList<FotoOpdrachtInfo>>
+    fun getAll(@Path("key") key: String?): Call<ArrayList<FotoOpdrachtInfo>>
 
 }

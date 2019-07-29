@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.ClusterManager
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo
+import java.util.ArrayList
 
 /**
  * @author Dingenis Sieger Sinke
@@ -11,11 +12,8 @@ import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo
  * @since 29-8-2016
  * Description...
  */
-class ScoutingGroepClusterManager
-/**
- * Initializes a new instance of ScoutingGroepClusterManager.
- */
-(protected var context: Context, protected var map: GoogleMap) : ClusterManager<ScoutingGroepInfo>(context, map), ClusterManagerInterface {
+class ScoutingGroepClusterManager (protected var context: Context, protected var map: GoogleMap) : ClusterManager<ScoutingGroepInfo>(context, map), ClusterManagerInterface {
+
 
     /**
      * The algorithm used for the clustering.
@@ -46,6 +44,9 @@ class ScoutingGroepClusterManager
         setRenderer(renderer)
     }
 
+    override fun addItems(buffer: ArrayList<ScoutingGroepInfo>) {
+        algorithm.items.addAll(buffer)
+    }
 
 }
 

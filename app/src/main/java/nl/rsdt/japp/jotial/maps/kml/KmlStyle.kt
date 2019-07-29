@@ -3,12 +3,12 @@ package nl.rsdt.japp.jotial.maps.kml
 import android.graphics.Color
 
 class KmlStyle {
-    private var id: String? = null
+    private var id: String = "unkown"
     private var iconColor: Int = 0
     private var iconScale: Double? = null
-    private var iconUrl: String? = null
+    private var iconUrl: String = "unkown"
     private var balloonBgColor: Int = 0
-    private var balloonText: String? = null
+    private var balloonText: String = ""
     private var lineColor: Int = 0
     private var lineWidth: Double = 0.toDouble()
     private var polyLineColor: Int = 0

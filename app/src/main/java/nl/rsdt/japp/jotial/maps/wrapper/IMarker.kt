@@ -26,7 +26,7 @@ interface IMarker {
 
     fun setIcon(drawableHunt: Int)
 
-    fun setIcon(bitmap: Bitmap)
+    fun setIcon(bitmap: Bitmap?)
 
     fun setRotation(rotation: Float)
 

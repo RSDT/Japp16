@@ -59,17 +59,15 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
         return 0
     }
 
-    companion object {
+    companion object CREATOR: Parcelable.Creator<HunterInfo>{
 
-        val CREATOR: Parcelable.Creator<HunterInfo> = object : Parcelable.Creator<HunterInfo> {
             override fun createFromParcel(`in`: Parcel): HunterInfo {
                 return HunterInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<HunterInfo> {
+            override fun newArray(size: Int): Array<HunterInfo?> {
                 return arrayOfNulls(size)
             }
-        }
 
 
         fun getAssociatedDrawable(icon: Int): Int {
@@ -136,7 +134,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
          * @param json The JSON where the 2D array of HunterInfo should be deserialized from.
          * @return A 2D array of HunterInfo.
          */
-        fun formJsonArray2D(json: String): Array<Array<HunterInfo>>? {
+        fun formJsonArray2D(json: String): Array<Array<HunterInfo>?> {
             try {
                 val jsonReader = JsonReader(java.io.StringReader(json))
                 jsonReader.isLenient = true
@@ -153,7 +151,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 Log.e("HunterInfo", e.message, e)
             }
 
-            return null
+            return emptyArray()
         }
     }
 }

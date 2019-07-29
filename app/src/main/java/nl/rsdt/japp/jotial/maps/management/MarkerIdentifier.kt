@@ -13,7 +13,7 @@ class MarkerIdentifier {
     var type: String? = null
         private set
 
-    val properties = HashMap<String, String>()
+    val properties = HashMap<String, String?>()
 
     class Builder {
         internal var identifier = MarkerIdentifier()
@@ -23,7 +23,7 @@ class MarkerIdentifier {
             return this
         }
 
-        fun add(key: String, value: String): Builder {
+        fun add(key: String, value: String?): Builder {
             identifier.properties[key] = value
             return this
         }

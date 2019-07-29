@@ -26,11 +26,13 @@ class OsmScoutingGroepClusterManager(jotiMap: OsmJotiMap) : ClusterManagerInterf
     }
 
     override fun addItems(buffer: ArrayList<ScoutingGroepInfo>) {
-        for (info in buffer) {
-            infos.add(info)
-            markers.add(info)
+        if (buffer != null) {
+            for (info in buffer) {
+                infos.add(info)
+                markers.add(info)
+            }
+            markers.showMarkers()
         }
-        markers.showMarkers()
     }
 
     override fun cluster() {

@@ -15,6 +15,6 @@ import java.util.*
 interface ScoutingGroepApi {
 
     @GET("/sc/{key}/all")
-    fun getAll(@Path("key") key: String): Call<ArrayList<ScoutingGroepInfo>>
+    fun getAll(@Path("key") key: String?): Call<ArrayList<ScoutingGroepInfo>>
 
 }

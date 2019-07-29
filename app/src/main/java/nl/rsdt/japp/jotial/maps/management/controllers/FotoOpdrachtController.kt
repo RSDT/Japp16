@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Parcel
+import android.os.Parcelable
 import android.util.Pair
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
@@ -14,11 +15,13 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo
 import nl.rsdt.japp.jotial.data.structures.area348.FotoOpdrachtInfo
 import nl.rsdt.japp.jotial.io.AppData
+import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.FotoApi
+import org.apache.commons.lang3.mutable.Mutable
 import retrofit2.Call
 import java.util.*
 
@@ -58,25 +61,25 @@ class FotoOpdrachtController : StandardMapItemController<FotoOpdrachtInfo, FotoO
             info = items!![i]
             if (info != null) {
 
-                var current: String
+                var current: String?
                 val items = arrayOf(info.info, info.extra)
                 for (x in items.indices) {
                     current = items[x]
-                    if (current.toLowerCase(Locale.ROOT).startsWith(query)) results.add(info)
+                    if (current?.toLowerCase(Locale.ROOT)?.startsWith(query)==true) results.add(info)
                 }
             }
         }
         return null
     }
 
-    override fun provide(): List<String> {
+    override fun provide(): MutableList<String> {
         val results = ArrayList<String>()
         var info: FotoOpdrachtInfo?
         for (i in items!!.indices) {
             info = items!![i]
             if (info != null) {
-                results.add(info.info)
-                results.add(info.extra)
+                results.add(info.info?: "null")
+                results.add(info.extra?: "null")
             }
         }
         return results
@@ -92,10 +95,10 @@ class FotoOpdrachtController : StandardMapItemController<FotoOpdrachtInfo, FotoO
         }
 
         override fun transduceToBundle(bundle: Bundle) {
-            bundle.putParcelable(BUNDLE_ID, generate(load()))
+            load()?.let { bundle.putParcelable(BUNDLE_ID, generate(it)) }
         }
 
-        override fun generate(items: ArrayList<FotoOpdrachtInfo>?): Result {
+        override fun generate(items: ArrayList<FotoOpdrachtInfo>): Result {
             if (items == null || items.isEmpty()) return Result()
 
             val result = Result()
@@ -163,17 +166,16 @@ class FotoOpdrachtController : StandardMapItemController<FotoOpdrachtInfo, FotoO
                 dest.writeTypedList(items)
             }
 
-            companion object {
+            companion object CREATOR: Parcelable.Creator<Result> {
 
-                val CREATOR: Parcelable.Creator<Result> = object : Parcelable.Creator<Result> {
                     override fun createFromParcel(`in`: Parcel): Result {
                         return Result(`in`)
                     }
 
-                    override fun newArray(size: Int): Array<Result> {
+                    override fun newArray(size: Int): Array<Result?> {
                         return arrayOfNulls(size)
                     }
-                }
+
             }
         }
 

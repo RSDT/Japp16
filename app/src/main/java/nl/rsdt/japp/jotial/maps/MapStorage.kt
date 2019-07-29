@@ -44,7 +44,7 @@ class MapStorage : AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
 
     override fun onTransduceCompleted(bundle: Bundle) {
         data = bundle
-        ScoutingGroepController.loadAndPutToBundle(data)
+        ScoutingGroepController.loadAndPutToBundle(bundle)
         for (callback in callbacks) {
             callback.onMapDataLoaded()
         }

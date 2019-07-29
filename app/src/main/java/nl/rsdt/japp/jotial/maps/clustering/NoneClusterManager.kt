@@ -12,15 +12,18 @@ class NoneClusterManager : ClusterManagerInterface {
 
     override val items: Collection<ScoutingGroepInfo>
         get() = object : Collection<ScoutingGroepInfo> {
-            override fun size(): Int {
-                return 0
+            override fun containsAll(elements: Collection<ScoutingGroepInfo>): Boolean {
+                return false
             }
+
+            override val size: Int
+                get() = 0
 
             override fun isEmpty(): Boolean {
                 return true
             }
 
-            override operator fun contains(o: Any): Boolean {
+            override fun contains(o: ScoutingGroepInfo): Boolean {
                 return false
             }
 
@@ -30,46 +33,10 @@ class NoneClusterManager : ClusterManagerInterface {
                         return false
                     }
 
-                    override fun next(): ScoutingGroepInfo? {
-                        return null
+                    override fun next(): ScoutingGroepInfo {
+                        return null!!
                     }
                 }
-            }
-
-            override fun toArray(): Array<Any> {
-                return arrayOfNulls(0)
-            }
-
-            override fun <T> toArray(a: Array<T>): Array<T> {
-                return a
-            }
-
-            override fun add(scoutingGroepInfo: ScoutingGroepInfo): Boolean {
-                return false
-            }
-
-            override fun remove(o: Any): Boolean {
-                return false
-            }
-
-            override fun containsAll(c: Collection<*>): Boolean {
-                return false
-            }
-
-            override fun addAll(c: Collection<ScoutingGroepInfo>): Boolean {
-                return false
-            }
-
-            override fun removeAll(c: Collection<*>): Boolean {
-                return false
-            }
-
-            override fun retainAll(c: Collection<*>): Boolean {
-                return false
-            }
-
-            override fun clear() {
-
             }
         }
 

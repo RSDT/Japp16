@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import android.util.Pair
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.gson.Gson
@@ -59,7 +61,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
         handler!!.postDelayed(runnable, JappPreferences.hunterUpdateIntervalInMs.toLong())
     }
 
-    override fun onIntentCreate(bundle: Bundle?) {
+    override fun onIntentCreate(bundle: Bundle) {
         super.onIntentCreate(bundle)
         if (bundle != null) {
             val result = bundle.getParcelable<HunterTransducer.Result>(BUNDLE_ID)
@@ -82,9 +84,9 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
                             data!![key] = list
                         }
                     }
-                    val result = transducer.generate(data)
+                    val result = data?.let { transducer.generate(it) }
                     if (jotiMap != null) {
-                        processResult(result)
+                        result?.let { processResult(it) }
                     } else {
                         buffer = result
                     }
@@ -93,13 +95,13 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
         }
     }
 
-    override fun onSaveInstanceState(saveInstanceState: Bundle) {
+    override fun onSaveInstanceState(saveInstanceState: Bundle?) {
         val keys = ArrayList<String>()
         for ((key, value) in data!!) {
-            saveInstanceState.putParcelableArrayList(key, value)
+            saveInstanceState?.putParcelableArrayList(key, value)
             keys.add(key)
         }
-        saveInstanceState.putStringArrayList(BUNDLE_COUNT, keys)
+        saveInstanceState?.putStringArrayList(BUNDLE_COUNT, keys)
     }
 
     override fun searchFor(query: String): IMarker? {
@@ -114,7 +116,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
     }
 
 
-    override fun provide(): List<String> {
+    override fun provide(): MutableList<String> {
         return ArrayList(data!!.keys)
     }
 
@@ -126,7 +128,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
 
         val api = Japp.getApi(HunterApi::class.java)
         val getAll = JappPreferences.getAllHunters
-        return if (getAll) {
+        return if (getAll||name == null) {
             api.getAll(JappPreferences.accountKey)
         } else {
             api.getAllExcept(JappPreferences.accountKey, name)
@@ -174,10 +176,10 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
         }
 
         override fun transduceToBundle(bundle: Bundle) {
-            bundle.putParcelable(BUNDLE_ID, generate(load()))
+            load()?.also { bundle.putParcelable(BUNDLE_ID, generate(it)) }
         }
 
-        override fun generate(data: HashMap<String, ArrayList<HunterInfo>>?): Result {
+        override fun generate(data: HashMap<String, ArrayList<HunterInfo>>): Result {
             if (data == null || data.isEmpty()) return Result()
 
             val result = Result()
@@ -194,13 +196,13 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
             for ((_, value) in data) {
                 currentData = value
 
-                Collections.sort(currentData) { info1, info2 ->
+                currentData.sortWith(Comparator { info1, info2 ->
                     var firstDate: Date? = null
                     var secondDate: Date? = null
                     try {
                         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
-                        firstDate = format.parse(info1.datetime)
-                        secondDate = format.parse(info2.datetime)
+                        firstDate = format.parse(info1?.datetime)
+                        secondDate = format.parse(info2?.datetime)
                     } catch (e: ParseException) {
                         Log.e(MapItemController.TAG, e.toString(), e)
                     }
@@ -208,7 +210,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
                     if (firstDate != null && secondDate != null) {
                         firstDate.compareTo(secondDate)
                     } else 0
-                }
+                })
 
                 /**
                  * Setup the polyline for the Hunter.
@@ -233,9 +235,9 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
 
                 val identifier = MarkerIdentifier.Builder()
                         .setType(MarkerIdentifier.TYPE_HUNTER)
-                        .add("icon", lastestInfo.associatedDrawable.toString())
-                        .add("hunter", lastestInfo.hunter)
-                        .add("time", lastestInfo.datetime)
+                        .add("icon", lastestInfo?.associatedDrawable.toString())
+                        .add("hunter", lastestInfo?.hunter)
+                        .add("time", lastestInfo?.datetime)
                         .create()
 
                 /**
@@ -243,7 +245,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
                  */
                 val mOptions = MarkerOptions()
                 mOptions.title(Gson().toJson(identifier))
-                mOptions.position(lastestInfo.latLng)
+                mOptions.position(lastestInfo?.latLng?: LatLng(0.0,0.0))
 
                 val options = BitmapFactory.Options()
                 options.inSampleSize = 2
@@ -261,7 +263,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
 
             var data = HashMap<String, ArrayList<HunterInfo>>()
 
-            private constructor()
+            constructor()
 
             protected constructor(`in`: Parcel) : super(`in`) {
                 val keys = `in`.createStringArray()
@@ -294,18 +296,16 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
                 return 0
             }
 
-            companion object {
-
-                val CREATOR: Parcelable.Creator<Result> = object : Parcelable.Creator<Result> {
+            companion object CREATOR: Parcelable.Creator<Result>{
                     override fun createFromParcel(`in`: Parcel): Result {
                         return Result(`in`)
                     }
 
-                    override fun newArray(size: Int): Array<Result> {
+                    override fun newArray(size: Int): Array<Result?> {
                         return arrayOfNulls(size)
                     }
                 }
-            }
+
 
         }
 

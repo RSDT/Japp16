@@ -27,7 +27,7 @@ import java.util.*
  * @since 29-8-2016
  * Description...
  */
-class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<*>, Callback<ArrayList<ScoutingGroepInfo>> {
+class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<ArrayList<ScoutingGroepInfo>>, Callback<ArrayList<ScoutingGroepInfo>> {
 
     var clusterManager: ClusterManagerInterface? = null
         protected set
@@ -35,60 +35,52 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<*
 
     internal var buffer: ArrayList<ScoutingGroepInfo>? = ArrayList()
 
-    override fun onIntentCreate(bundle: Bundle?) {
-        if (bundle != null) {
-            if (bundle.containsKey(BUNDLE_ID)) {
-                buffer = bundle.getParcelableArrayList(BUNDLE_ID)
-                if (clusterManager != null) {
-                    clusterManager!!.addItems(buffer)
-                    clusterManager!!.cluster()
-                    buffer = null
-                }
+    override fun onIntentCreate(bundle: Bundle) {
+        if (bundle.containsKey(BUNDLE_ID)) {
+            val localBuffer: ArrayList<ScoutingGroepInfo> = bundle.getParcelableArrayList(BUNDLE_ID)
+            buffer = localBuffer
+            if (clusterManager != null) {
+                clusterManager!!.addItems(localBuffer)
+                clusterManager!!.cluster()
+                buffer = null
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BUNDLE_ID)) {
-                val items = savedInstanceState.getParcelableArrayList<ScoutingGroepInfo>(BUNDLE_ID)
-                if (items != null && !items.isEmpty()) {
-                    if (clusterManager != null) {
-                        clusterManager!!.addItems(items)
-                        clusterManager!!.cluster()
-                    } else {
-                        buffer = items
-                    }
+        if (savedInstanceState?.containsKey(BUNDLE_ID) ==true) {
+            val items = savedInstanceState.getParcelableArrayList<ScoutingGroepInfo>(BUNDLE_ID)
+            if (items != null && !items.isEmpty()) {
+                if (clusterManager != null) {
+                    clusterManager!!.addItems(items)
+                    clusterManager!!.cluster()
+                } else {
+                    buffer = items
                 }
             }
         }
     }
 
     override fun onSaveInstanceState(saveInstanceState: Bundle?) {
-        if (saveInstanceState != null) {
-            if (clusterManager != null) {
-                val items = clusterManager!!.items
-                if (items != null) {
-                    if (items is ArrayList<*>) {
-                        saveInstanceState.putParcelableArrayList(BUNDLE_ID, items as ArrayList<ScoutingGroepInfo>)
-                    } else {
-                        saveInstanceState.putParcelableArrayList(BUNDLE_ID, ArrayList(items))
-                    }
-                }
+        if (clusterManager != null) {
+            val items = clusterManager!!.items
+            if (items is ArrayList<*>) {
+                saveInstanceState?.putParcelableArrayList(BUNDLE_ID, items as ArrayList<ScoutingGroepInfo?>)
+            } else {
+                saveInstanceState?.putParcelableArrayList(BUNDLE_ID, ArrayList(items))
             }
         }
     }
 
     fun onMapReady(jotiMap: IJotiMap) {
-        if (jotiMap is GoogleJotiMap) {
-            clusterManager = ScoutingGroepClusterManager(Japp.instance, jotiMap.googleMap)
-        } else if (jotiMap is OsmJotiMap) {
-            clusterManager = OsmScoutingGroepClusterManager(jotiMap)
-        } else {
-            clusterManager = NoneClusterManager()
+        when (jotiMap) {
+            is GoogleJotiMap -> clusterManager = ScoutingGroepClusterManager(Japp.instance!!, jotiMap?.googleMap!!)
+            is OsmJotiMap -> clusterManager = OsmScoutingGroepClusterManager(jotiMap)
+            else -> clusterManager = NoneClusterManager()
         }
-        if (buffer != null) {
-            clusterManager!!.addItems(buffer)
+        val lBuffer = buffer
+        if (lBuffer != null) {
+            clusterManager!!.addItems(lBuffer)
             clusterManager!!.cluster()
             buffer = null
         }
@@ -98,10 +90,10 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<*
         if (response.code() == 200) {
             if (clusterManager != null) {
                 if (clusterManager!!.items.isEmpty()) {
-                    clusterManager!!.addItems(response.body())
+                    response.body()?.also { clusterManager!!.addItems(it) }
                 } else {
                     clusterManager!!.clearItems()
-                    clusterManager!!.addItems(response.body())
+                    response.body()?.also { clusterManager!!.addItems(it) }
                 }
 
             } else {

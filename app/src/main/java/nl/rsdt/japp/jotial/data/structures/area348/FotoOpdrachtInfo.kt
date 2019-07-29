@@ -60,17 +60,16 @@ class FotoOpdrachtInfo protected constructor(`in`: Parcel) : BaseInfo(`in`), Par
         return 0
     }
 
-    companion object {
+    companion object CREATOR: Parcelable.Creator<FotoOpdrachtInfo>{
 
-        val CREATOR: Parcelable.Creator<FotoOpdrachtInfo> = object : Parcelable.Creator<FotoOpdrachtInfo> {
             override fun createFromParcel(`in`: Parcel): FotoOpdrachtInfo {
                 return FotoOpdrachtInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<FotoOpdrachtInfo> {
+            override fun newArray(size: Int): Array<FotoOpdrachtInfo?> {
                 return arrayOfNulls(size)
             }
-        }
+
 
         /**
          * Deserializes a FotoOpdrachtInfo from the JSON.

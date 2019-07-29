@@ -61,7 +61,7 @@ class Japp : MultiDexApplication() {
             return instance!!.interceptor
         }
 
-        fun setInterceptor(value: Interceptor) {
+        fun setInterceptor(value: Interceptor?) {
             instance!!.interceptor = value
         }
 

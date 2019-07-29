@@ -289,17 +289,17 @@ object JappPreferences {
         return visiblePreferences.getBoolean(ONLY_TODAY, false)
     }
 
-    fun getColorName(team: String): String? {
+    fun getColorName(team: String?): String? {
         return visiblePreferences.getString(COLOR_NAME + team, "Zwart")
     }
 
-    fun setColorName(team: String, color: String) {
+    fun setColorName(team: String, color: String?) {
         visiblePreferences.edit().putString(COLOR_NAME + team, color).apply()
     }
 
-    fun setColorHex(team: String, hex: String) {
+    fun setColorHex(team: String, hex: String?) {
         var hex = hex
-        if (!hex.startsWith("#")) {
+        if (hex?.startsWith("#") == true) {
             hex = "#$hex"
         }
         visiblePreferences.edit().putString(COLOR_HEX + team, hex).apply()

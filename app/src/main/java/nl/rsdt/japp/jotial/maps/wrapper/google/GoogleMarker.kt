@@ -75,7 +75,7 @@ class GoogleMarker(private val googleMarker: com.google.android.gms.maps.model.M
         this.setIcon(BitmapFactory.decodeResource(Japp.appResources, drawableHunt))
     }
 
-    override fun setIcon(bitmap: Bitmap) {
+    override fun setIcon(bitmap: Bitmap?) {
         this.googleMarker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
     }
 
@@ -86,7 +86,7 @@ class GoogleMarker(private val googleMarker: com.google.android.gms.maps.model.M
     companion object {
         private var allOnClickLister: IJotiMap.OnMarkerClickListener? = null
 
-        fun setAllOnClickLister(onClickListener: IJotiMap.OnMarkerClickListener) {
+        fun setAllOnClickLister(onClickListener: IJotiMap.OnMarkerClickListener?) {
             allOnClickLister = onClickListener
         }
     }

@@ -14,6 +14,6 @@ import retrofit2.http.Path
 interface UserApi {
 
     @GET("/gebruiker/{key}/info")
-    fun getUserInfo(@Path("key") key: String): Call<UserInfo>
+    fun getUserInfo(@Path("key") key: String?): Call<UserInfo>
 
 }

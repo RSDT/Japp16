@@ -45,7 +45,6 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable, ClusterItem {
         adres = `in`.readString()
         team = `in`.readString()
     }
-
     /**
      * Cluster item implementation.
      */
@@ -72,7 +71,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable, ClusterItem {
                 return ScoutingGroepInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<ScoutingGroepInfo> {
+            override fun newArray(size: Int): Array<ScoutingGroepInfo?> {
                 return arrayOfNulls(size)
             }
         }

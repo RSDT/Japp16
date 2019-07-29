@@ -19,7 +19,7 @@ import org.osmdroid.views.MapView
  * Created by mattijn on 08/08/17.
  */
 
-class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap>, private val osmMap: MapView) : IMarker {
+class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osmMap: MapView) : IMarker {
     val osmMarker: org.osmdroid.views.overlay.Marker
     private var onClickListener: IMarker.OnClickListener? = null
 
@@ -145,11 +145,9 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap>, private val osmM
     }
 
     override fun setIcon(bitmap: Bitmap?) {
-        if (bitmap != null) {
-            val d = BitmapDrawable(Japp.appResources, bitmap)
-            this.osmMarker.setIcon(d)
-            osmMap.invalidate()
-        }
+        val d = BitmapDrawable(Japp.appResources, bitmap)
+        this.osmMarker.setIcon(d)
+        osmMap.invalidate()
     }
 
     override fun setRotation(rotation: Float) {
@@ -160,7 +158,7 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap>, private val osmM
     companion object {
         private var allOnClickLister: IJotiMap.OnMarkerClickListener? = null
 
-        fun setAllOnClickLister(onClickListener: IJotiMap.OnMarkerClickListener) {
+        fun setAllOnClickLister(onClickListener: IJotiMap.OnMarkerClickListener?) {
             allOnClickLister = onClickListener
         }
     }

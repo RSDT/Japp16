@@ -44,15 +44,14 @@ protected constructor(`in`: Parcel) : Parcelable {
         dest.writeString(rol)
     }
 
-    companion object {
-        val CREATOR: Parcelable.Creator<AutoInzittendeInfo> = object : Parcelable.Creator<AutoInzittendeInfo> {
-            override fun createFromParcel(`in`: Parcel): AutoInzittendeInfo {
-                return AutoInzittendeInfo(`in`)
-            }
-
-            override fun newArray(size: Int): Array<AutoInzittendeInfo> {
-                return arrayOfNulls(size)
-            }
+    companion object CREATOR : Parcelable.Creator<AutoInzittendeInfo>{
+        override fun createFromParcel(`in`: Parcel): AutoInzittendeInfo {
+            return AutoInzittendeInfo(`in`)
         }
+
+        override fun newArray(size: Int): Array<AutoInzittendeInfo?> {
+            return arrayOfNulls(size)
+        }
+
     }
 }

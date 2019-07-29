@@ -10,11 +10,11 @@ class Location {
     var createdOn: Long? = null
     var lat: Double = 0.toDouble()
     var lon: Double = 0.toDouble()
-    var createdBy: String
+    var createdBy: String? =null
 
 
     constructor()  // speciaal voor firebase
-    constructor(navigateTo: LatLng, createdBy: String) {
+    constructor(navigateTo: LatLng, createdBy: String?) {
         this.lat = navigateTo.latitude
         this.lon = navigateTo.longitude
         this.createdBy = createdBy

@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -34,6 +35,7 @@ import nl.rsdt.japp.jotial.maps.NavigationLocationManager
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.movement.MovementManager
+import nl.rsdt.japp.jotial.maps.pinning.Pin
 import nl.rsdt.japp.jotial.maps.pinning.PinningManager
 import nl.rsdt.japp.jotial.maps.pinning.PinningSession
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon
@@ -88,7 +90,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View? {
 
         pinningManager.intialize(activity)
         pinningManager.onCreate(savedInstanceState)
@@ -101,7 +103,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         return createMap(savedInstanceState, v)
     }
 
-    private fun createMap(savedInstanceState: Bundle, v: View): View {
+    private fun createMap(savedInstanceState: Bundle?, v: View): View {
         val useOSM = JappPreferences.useOSM()
 
         val view: View
@@ -187,13 +189,13 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         } else {
             googleMapView!!.onCreate(null)
         }
-        movementManager!!.setSnackBarView(googleMapView)
+        movementManager!!.setSnackBarView(googleMapView!!)
         setupHuntButton(v)
         setupSpotButton(v)
         setupPinButton(v)
         setupFollowButton(v)
         setupNavigationButton(v)
-        jotiMap = GoogleJotiMap.getJotiMapInstance(googleMapView)
+        jotiMap = GoogleJotiMap.getJotiMapInstance(googleMapView!!)
         if (savedInstanceState != null) {
             val osmbundle = savedInstanceState.getBundle(OSM_BUNDLE)
             if (osmbundle != null) {
@@ -206,15 +208,15 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
     }
 
 
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+    override fun onSaveInstanceState(savedInstanceState: Bundle?) {
         movementManager!!.onSaveInstanceState(savedInstanceState)
         pinningManager.onSaveInstanceState(savedInstanceState)
-        savedInstanceState.putBoolean(BUNDLE_OSM_ACTIVE, osmActive)
+        savedInstanceState?.putBoolean(BUNDLE_OSM_ACTIVE, osmActive)
         if (!osmActive) {
             val mapBundle = Bundle()
             googleMapView!!.onSaveInstanceState(mapBundle)
 
-            savedInstanceState.putBundle(BUNDLE_MAP, mapBundle)
+            savedInstanceState?.putBundle(BUNDLE_MAP, mapBundle)
         } else if (jotiMap is OsmJotiMap) {
             val osmMap = (jotiMap as OsmJotiMap).osmMap
             val osmMapBundle = Bundle()
@@ -222,7 +224,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
             osmMapBundle.putDouble(OSM_LAT, osmMap.mapCenter.latitude)
             osmMapBundle.putDouble(OSM_LNG, osmMap.mapCenter.longitude)
             osmMapBundle.putFloat(OSM_OR, osmMap.mapOrientation)
-            savedInstanceState.putBundle(OSM_BUNDLE, osmMapBundle)
+            savedInstanceState?.putBundle(OSM_BUNDLE, osmMapBundle)
         }
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState)
@@ -255,18 +257,21 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         } else {
             Configuration.getInstance().load(activity, PreferenceManager.getDefaultSharedPreferences(activity))
         }
-        movementManager!!.setListener { status ->
-            try {
-                // Show the dialog by calling startResolutionForResult(),
-                // and check the result in onActivityResult().
-                status.startResolutionForResult(
-                        activity,
-                        REQUEST_CHECK_SETTINGS)
-            } catch (e: IntentSender.SendIntentException) {
-                // Ignore the error.
+        movementManager!!.setListener(object:LocationService.OnResolutionRequiredListener{
+            override fun onResolutionRequired(status: Status) {
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    status.startResolutionForResult(
+                            activity,
+                            REQUEST_CHECK_SETTINGS)
+                } catch (e: IntentSender.SendIntentException) {
+                    // Ignore the error.
+                }
             }
-        }
-        serviceManager.add(movementManager)
+
+        })
+        serviceManager.add(movementManager!!)
         movementManager!!.onResume()
         if (!serviceManager.isBound) {
             serviceManager.bind(this.activity)
@@ -288,7 +293,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         }
         if (movementManager != null) {
             movementManager!!.onDestroy()
-            serviceManager.remove(movementManager)
+            serviceManager.remove(movementManager!!)
             movementManager = null
         }
 
@@ -362,7 +367,12 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         if (!deelgebied!!.coordinates.isEmpty()) {
             setUpDeelgebiedReal(deelgebied)
         } else {
-            deelgebied.getDeelgebiedAsync { deelgebied1 -> setupDeelgebied(deelgebied1) }
+            deelgebied.getDeelgebiedAsync(object : Deelgebied.OnInitialized{
+                override fun onInitialized(deelgebied: Deelgebied) {
+                    setupDeelgebied(deelgebied)
+                }
+
+            })
         }
     }
 
@@ -393,28 +403,29 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
             JappPreferences.USE_OSM -> {
             }
             JappPreferences.AREAS -> {
-                if (jotiMap == null) break
-                val enabled = JappPreferences.areasEnabled
-                for (area in enabled!!) {
-                    if (!areas.containsKey(area)) {
-                        setupDeelgebied(Deelgebied.parse(area))
+                if (jotiMap != null) {
+                    val enabled = JappPreferences.areasEnabled
+                    for (area in enabled!!) {
+                        if (!areas.containsKey(area)) {
+                            setupDeelgebied(Deelgebied.parse(area))
+                        }
                     }
-                }
 
-                val toBeRemoved = ArrayList<String>()
-                for (area in areas.keys) {
-                    if (!enabled.contains(area)) {
-                        val poly = areas[area]
-                        poly!!.remove()
-                        toBeRemoved.add(area)
+                    val toBeRemoved = ArrayList<String>()
+                    for (area in areas.keys) {
+                        if (!enabled.contains(area)) {
+                            val poly = areas[area]
+                            poly!!.remove()
+                            toBeRemoved.add(area)
+                        }
                     }
-                }
 
-                for (area in toBeRemoved) {
-                    areas.remove(area)
-                }
-                if (jotiMap is OsmJotiMap) {
-                    (jotiMap as OsmJotiMap).osmMap.invalidate()
+                    for (area in toBeRemoved) {
+                        areas.remove(area)
+                    }
+                    if (jotiMap is OsmJotiMap) {
+                        (jotiMap as OsmJotiMap).osmMap.invalidate()
+                    }
                 }
             }
             JappPreferences.AREAS_EDGES -> {
@@ -482,49 +493,54 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                         .setGoogleMap(jotiMap)
                         .setTargetView(this@JappMapFragment.activity.findViewById(R.id.container))
                         .setDialogContext(this@JappMapFragment.activity)
-                        .setOnSightingCompletedCallback { chosen, deelgebied, optionalInfo ->
-                            /*--- Show the menu ---*/
-                            val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
-                            menu.showMenu(true)
+                        .setOnSightingCompletedCallback(object:SightingSession.OnSightingCompletedCallback{
+                            override fun onSightingCompleted(chosen: LatLng?, deelgebied: Deelgebied?, optionalInfo: String?) {
+                                /*--- Show the menu ---*/
+                                val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
+                                menu.showMenu(true)
 
-                            if (chosen != null) {
-                                /*--- Construct a JSON string with the data ---*/
-                                val builder = VosPostBody.default
-                                builder.setIcon(SightingIcon.SPOT)
-                                builder.setLatLng(chosen)
-                                builder.setTeam(deelgebied.name.substring(0, 1))
-                                builder.setInfo(optionalInfo)
+                                if (chosen != null) {
+                                    /*--- Construct a JSON string with the data ---*/
+                                    val builder = VosPostBody.default
+                                    builder.setIcon(SightingIcon.SPOT)
+                                    builder.setLatLng(chosen)
+                                    builder.setTeam(deelgebied?.name?.substring(0, 1)?:"x")
+                                    builder.setInfo(optionalInfo)
 
-                                val api = Japp.getApi(VosApi::class.java)
-                                api.post(builder).enqueue(object : Callback<Void> {
-                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                                        val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                        when (response.code()) {
-                                            200 -> Snackbar.make(snackbarView, getString(R.string.sent_succesfull), Snackbar.LENGTH_LONG).show()
-                                            404 -> Snackbar.make(snackbarView, R.string.wrong_data, Snackbar.LENGTH_LONG).show()
-                                            else -> Snackbar.make(snackbarView, getString(R.string.problem_with_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show()
+                                    val api = Japp.getApi(VosApi::class.java)
+                                    api.post(builder).enqueue(object : Callback<Void> {
+                                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                            val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
+                                            when (response.code()) {
+                                                200 -> Snackbar.make(snackbarView, getString(R.string.sent_succesfull), Snackbar.LENGTH_LONG).show()
+                                                404 -> Snackbar.make(snackbarView, R.string.wrong_data, Snackbar.LENGTH_LONG).show()
+                                                else -> Snackbar.make(snackbarView, getString(R.string.problem_with_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show()
+                                            }
                                         }
-                                    }
 
-                                    override fun onFailure(call: Call<Void>, t: Throwable) {
-                                        val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                        Snackbar.make(snackbarView, getString(R.string.problem_with_sending, t.toString()), Snackbar.LENGTH_LONG).show()
-                                    }
-                                })
+                                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                                            val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
+                                            Snackbar.make(snackbarView, getString(R.string.problem_with_sending, t.toString()), Snackbar.LENGTH_LONG).show()
+                                        }
+                                    })
 
-                                /**
-                                 * TODO: send details?
-                                 * Log the spot in firebase.
-                                 */
+                                    /**
+                                     * TODO: send details?
+                                     * Log the spot in firebase.
+                                     */
 
-                                /**
-                                 * TODO: send details?
-                                 * Log the spot in firebase.
-                                 */
-                                Japp.getAnalytics()!!.logEvent("EVENT_SPOT", Bundle())
+                                    /**
+                                     * TODO: send details?
+                                     * Log the spot in firebase.
+                                     */
+                                    Japp.getAnalytics()!!.logEvent("EVENT_SPOT", Bundle())
+                                }
+                                session = null
                             }
-                            session = null
-                        }
+
+                        })
+
+
                         .create()
                 session!!.start()
             }
@@ -588,17 +604,19 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
                     session = PinningSession.Builder()
                             .setJotiMap(jotiMap)
-                            .setCallback { pin ->
-                                if (pin != null) {
-                                    pinningManager.add(pin)
+                            .setCallback(object : PinningSession.OnPinningCompletedCallback{
+                                override fun onPinningCompleted(pin: Pin?) {
+                                    if (pin != null) {
+                                        pinningManager.add(pin)
+                                    }
+
+                                    val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
+                                    menu.showMenu(true)
+
+                                    session!!.end()
+                                    session = null
                                 }
-
-                                val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
-                                menu.showMenu(true)
-
-                                session!!.end()
-                                session = null
-                            }
+                            })
                             .setTargetView(this@JappMapFragment.activity.findViewById(R.id.container))
                             .setDialogContext(this@JappMapFragment.activity)
                             .create()
@@ -632,83 +650,83 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
                     session = NavigationSession.Builder()
                             .setJotiMap(jotiMap)
-                            .setCallback { navigateTo, toNavigationPhone ->
-                                val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
-                                menu.showMenu(true)
+                            .setCallback(object : NavigationSession.OnNavigationCompletedCallback {
+                                override fun onNavigationCompleted(navigateTo: LatLng?, toNavigationPhone: Boolean) {
+                                    val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
+                                    menu.showMenu(true)
 
-                                session!!.end()
-                                session = null
-                                if (navigateTo != null) {
-                                    if (!toNavigationPhone) {
-                                        try {
-                                            when (JappPreferences.navigationApp()) {
-                                                JappPreferences.NavigationApp.GoogleMaps -> {
-                                                    val uristr = getString(R.string.google_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
-                                                    val gmmIntentUri = Uri.parse(uristr)
-                                                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                                    mapIntent.setPackage("com.google.android.apps.maps")
-                                                    startActivity(mapIntent)
+                                    session!!.end()
+                                    session = null
+                                    if (navigateTo != null) {
+                                        if (!toNavigationPhone) {
+                                            try {
+                                                when (JappPreferences.navigationApp()) {
+                                                    JappPreferences.NavigationApp.GoogleMaps -> {
+                                                        val uristr = getString(R.string.google_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
+                                                        val gmmIntentUri = Uri.parse(uristr)
+                                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                                                        mapIntent.setPackage("com.google.android.apps.maps")
+                                                        startActivity(mapIntent)
+                                                    }
+                                                    JappPreferences.NavigationApp.Waze -> {
+                                                        val uri = getString(R.string.waze_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
+                                                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
+                                                    }
+                                                    JappPreferences.NavigationApp.OSMAnd -> {
+                                                        val osmuri = getString(R.string.osmand_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
+                                                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(osmuri)))
+                                                    }
+                                                    JappPreferences.NavigationApp.OSMAndWalk -> {
+                                                        val osmuriwalk = getString(R.string.osmandwalk_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
+                                                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(osmuriwalk)))
+                                                    }
+                                                    JappPreferences.NavigationApp.Geo -> {
+                                                        val geouri = getString(R.string.geo_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
+                                                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(geouri)))
+                                                    }
                                                 }
-                                                JappPreferences.NavigationApp.Waze -> {
-                                                    val uri = getString(R.string.waze_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
-                                                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
-                                                }
-                                                JappPreferences.NavigationApp.OSMAnd -> {
-                                                    val osmuri = getString(R.string.osmand_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
-                                                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(osmuri)))
-                                                }
-                                                JappPreferences.NavigationApp.OSMAndWalk -> {
-                                                    val osmuriwalk = getString(R.string.osmandwalk_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
-                                                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(osmuriwalk)))
-                                                }
-                                                JappPreferences.NavigationApp.Geo -> {
-                                                    val geouri = getString(R.string.geo_uri, java.lang.Double.toString(navigateTo.latitude), java.lang.Double.toString(navigateTo.longitude))
-                                                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(geouri)))
-                                                }
+                                            } catch (e: ActivityNotFoundException) {
+                                                println(e.toString())
+                                                val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
+                                                Snackbar.make(snackbarView,
+                                                        getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString()),
+                                                        Snackbar.LENGTH_LONG).show()
                                             }
-                                        } catch (e: ActivityNotFoundException) {
-                                            println(e.toString())
-                                            val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                            Snackbar.make(snackbarView,
-                                                    getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString()),
-                                                    Snackbar.LENGTH_LONG).show()
-                                        }
 
-                                    } else {
-                                        val id = JappPreferences.accountId
-                                        if (id >= 0) {
-                                            val autoApi = Japp.getApi(AutoApi::class.java)
-                                            autoApi.getInfoById(JappPreferences.accountKey, id).enqueue(object : Callback<AutoInzittendeInfo> {
-                                                override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
-                                                    if (response.code() == 200) {
-                                                        val autoInfo = response.body()
-                                                        if (autoInfo != null) {
-                                                            val database = FirebaseDatabase.getInstance()
-                                                            val ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar)
-                                                            ref.setValue(Location(navigateTo, JappPreferences.accountUsername))
+                                        } else {
+                                            val id = JappPreferences.accountId
+                                            if (id >= 0) {
+                                                val autoApi = Japp.getApi(AutoApi::class.java)
+                                                autoApi.getInfoById(JappPreferences.accountKey, id).enqueue(object : Callback<AutoInzittendeInfo> {
+                                                    override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
+                                                        if (response.code() == 200) {
+                                                            val autoInfo = response.body()
+                                                            if (autoInfo != null) {
+                                                                val database = FirebaseDatabase.getInstance()
+                                                                val ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar)
+                                                                ref.setValue(Location(navigateTo, JappPreferences.accountUsername))
+                                                            }
+                                                        }
+                                                        if (response.code() == 404) {
+                                                            val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
+                                                            Snackbar.make(snackbarView, getString(R.string.fout_not_in_car), Snackbar.LENGTH_LONG).show()
                                                         }
                                                     }
-                                                    if (response.code() == 404) {
-                                                        val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                                        Snackbar.make(snackbarView, getString(R.string.fout_not_in_car), Snackbar.LENGTH_LONG).show()
+
+                                                    override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
+
                                                     }
-                                                }
-
-                                                override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-
-                                                }
-                                            })
+                                                })
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            .setTargetView(this@JappMapFragment.activity.findViewById(R.id.container))
-                            .setDialogContext(this@JappMapFragment.activity)
-                            .create()
-                    session!!.start()
+                            }).create()
+                    session?.start()
                 }
 
             }
+
         })
         return navigationButton
     }
@@ -717,10 +735,10 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         val huntButton = v.findViewById<FloatingActionButton>(R.id.fab_hunt)
         huntButton.setOnClickListener(object : View.OnClickListener {
 
-            var session: SightingSession
+
 
             override fun onClick(view: View) {
-
+                val session: SightingSession
                 /*--- Hide the menu ---*/
                 val v = getView()
                 val menu = v!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
@@ -733,48 +751,50 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                         .setGoogleMap(jotiMap)
                         .setTargetView(this@JappMapFragment.activity.findViewById(R.id.container))
                         .setDialogContext(this@JappMapFragment.activity)
-                        .setOnSightingCompletedCallback { chosen, deelgebied, optionalInfo ->
-                            /*--- Show the menu ---*/
-                            val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
-                            menu.showMenu(true)
+                        .setOnSightingCompletedCallback(object: SightingSession.OnSightingCompletedCallback{
+                            override fun onSightingCompleted(chosen: LatLng?, deelgebied: Deelgebied?, optionalInfo: String?) {
+                                    /*--- Show the menu ---*/
+                                    val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
+                                    menu.showMenu(true)
 
-                            if (chosen != null) {
-                                /*--- Construct a JSON string with the data ---*/
-                                val builder = VosPostBody.default
-                                builder.setIcon(SightingIcon.HUNT)
-                                builder.setLatLng(chosen)
-                                builder.setTeam(deelgebied.name.substring(0, 1))
-                                builder.setInfo(optionalInfo)
+                                    if (chosen != null) {
+                                        /*--- Construct a JSON string with the data ---*/
+                                        val builder = VosPostBody.default
+                                        builder.setIcon(SightingIcon.HUNT)
+                                        builder.setLatLng(chosen)
+                                        builder.setTeam(deelgebied?.name?.substring(0, 1)?:"x")
+                                        builder.setInfo(optionalInfo)
 
-                                val api = Japp.getApi(VosApi::class.java)
-                                api.post(builder).enqueue(object : Callback<Void> {
-                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                                        val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                        when (response.code()) {
-                                            200 -> Snackbar.make(snackbarView, R.string.sent_succesfull, Snackbar.LENGTH_LONG).show()
-                                            404 -> Snackbar.make(snackbarView, getString(R.string.wrong_data), Snackbar.LENGTH_LONG).show()
-                                            else -> Snackbar.make(snackbarView, getString(R.string.problem_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show()
-                                        }
-                                    }
+                                        val api = Japp.getApi(VosApi::class.java)
+                                        api.post(builder).enqueue(object : Callback<Void> {
+                                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                                val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
+                                                when (response.code()) {
+                                                    200 -> Snackbar.make(snackbarView, R.string.sent_succesfull, Snackbar.LENGTH_LONG).show()
+                                                    404 -> Snackbar.make(snackbarView, getString(R.string.wrong_data), Snackbar.LENGTH_LONG).show()
+                                                    else -> Snackbar.make(snackbarView, getString(R.string.problem_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show()
+                                                }
+                                            }
 
-                                    override fun onFailure(call: Call<Void>, t: Throwable) {
-                                        val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                        Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()), Snackbar.LENGTH_LONG).show()//// TODO: 08/08/17 magic string
-                                    }
-                                })
+                                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                                val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
+                                                Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()), Snackbar.LENGTH_LONG).show()//// TODO: 08/08/17 magic string
+                                            }
+                                        })
 
-                                /**
-                                 * TODO: send details?
-                                 * Log the hunt in firebase.
-                                 */
+                                        /**
+                                         * TODO: send details?
+                                         * Log the hunt in firebase.
+                                         */
 
-                                /**
-                                 * TODO: send details?
-                                 * Log the hunt in firebase.
-                                 */
-                                Japp.getAnalytics()!!.logEvent("EVENT_HUNT", Bundle()) //// TODO: 08/08/17 magic string
+                                        /**
+                                         * TODO: send details?
+                                         * Log the hunt in firebase.
+                                         */
+                                        Japp.getAnalytics()!!.logEvent("EVENT_HUNT", Bundle()) //// TODO: 08/08/17 magic string
+                                         }
                             }
-                        }
+                        })
                         .create()
                 session.start()
             }

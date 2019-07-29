@@ -24,7 +24,7 @@ class ApiUrlBuilder : UrlBuilder {
     /**
      * The value indicating if the API-key should be appended after the keyword.
      */
-    private val appendKey = true
+    private val appendKey: Boolean
 
     /**
      * Initializes a new instance of ApiUrlBuilder.
@@ -32,6 +32,7 @@ class ApiUrlBuilder : UrlBuilder {
     constructor() {
         root = API.API_V2_ROOT
         url += root
+        this.appendKey = true
     }
 
     /**

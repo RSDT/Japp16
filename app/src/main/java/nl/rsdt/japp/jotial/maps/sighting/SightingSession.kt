@@ -193,7 +193,7 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
         if (deelgebied == null) {
             deelgebied = Deelgebied.Xray
         }
-        jotiMap!!.animateCamera(lastLatLng, 12, this)
+        jotiMap!!.animateCamera(lastLatLng?:LatLng(0.0, 0.0), 12, this)
     }
 
     override fun onFinish() {
@@ -271,7 +271,7 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
         /**
          * Sets the GoogleMap of the SightingSession.
          */
-        fun setGoogleMap(jotiMap: IJotiMap): Builder {
+        fun setGoogleMap(jotiMap: IJotiMap?): Builder {
             buffer.jotiMap = jotiMap
             return this
         }

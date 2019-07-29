@@ -13,10 +13,12 @@ import nl.rsdt.japp.jotial.auth.Authentication
 import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker
 import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker
 import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker
+import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.MapStorage
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.AuthApi
+import nl.rsdt.japp.jotial.net.apis.MetaApi
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import retrofit2.Call
 import retrofit2.Callback
@@ -72,6 +74,30 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
 
 
         }
+        val metaApi = Japp.getApi(MetaApi::class.java)
+        metaApi.getMetaColor(JappPreferences.accountKey).enqueue(object : Callback<MetaColorInfo> {
+            override fun onResponse(call: Call<MetaColorInfo>, response: retrofit2.Response<MetaColorInfo>) {
+                val colorInfo = response.body()
+                JappPreferences.setColorHex("a", colorInfo?.ColorCode?.a)
+                JappPreferences.setColorHex("b", colorInfo?.ColorCode?.b)
+                JappPreferences.setColorHex("c", colorInfo?.ColorCode?.c)
+                JappPreferences.setColorHex("d", colorInfo?.ColorCode?.d)
+                JappPreferences.setColorHex("e", colorInfo?.ColorCode?.e)
+                JappPreferences.setColorHex("f", colorInfo?.ColorCode?.f)
+                JappPreferences.setColorHex("x", colorInfo?.ColorCode?.x)
+                JappPreferences.setColorName("a", colorInfo?.ColorName?.a)
+                JappPreferences.setColorName("b", colorInfo?.ColorName?.b)
+                JappPreferences.setColorName("c", colorInfo?.ColorName?.c)
+                JappPreferences.setColorName("d", colorInfo?.ColorName?.d)
+                JappPreferences.setColorName("e", colorInfo?.ColorName?.e)
+                JappPreferences.setColorName("f", colorInfo?.ColorName?.f)
+                JappPreferences.setColorName("x", colorInfo?.ColorName?.x)
+            }
+
+            override fun onFailure(call: Call<MetaColorInfo>, t: Throwable) {
+                Log.e(MainActivity.TAG, t.toString())
+            }
+        })
         val intent = intent
         val extras = intent.extras
         if (extras != null) {
@@ -191,7 +217,7 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
 
 
         val key = JappPreferences.accountKey
-        if (key.isEmpty()) {
+        if (key?.isEmpty() != false) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()

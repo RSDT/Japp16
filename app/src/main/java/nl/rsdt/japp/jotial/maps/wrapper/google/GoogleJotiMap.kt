@@ -20,8 +20,11 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
 
     var googleMap: GoogleMap? = null
         private set
-
-    private var previousCameraPosition: LatLng? = null
+    override val previousCameraPosition:ICameraPosition
+        get() {
+            return GoogleCameraPosition(googleMap!!.cameraPosition)
+        }
+    private var previousCameraPositionLatLng: LatLng? = null
 
     private var previousZoom: Int = 0
 
@@ -31,11 +34,15 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         get() = GoogleUiSettings(googleMap!!.uiSettings)
 
     override fun delete() {
-        google_instances.remove(this.googleMap)
+        for (entry in google_instances){
+            if (entry.value == this){
+                google_instances.remove(entry.key)
+            }
+        }
     }
 
     override fun setPreviousCameraPosition(latitude: Double, longitude: Double) {
-        previousCameraPosition = LatLng(latitude, longitude)
+        previousCameraPositionLatLng = LatLng(latitude, longitude)
     }
 
     override fun setPreviousZoom(zoom: Int) {
@@ -62,7 +69,7 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         googleMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom.toFloat()))
     }
 
-    override fun addMarker(markerOptions: Pair<MarkerOptions, Bitmap>): IMarker {
+    override fun addMarker(markerOptions: Pair<MarkerOptions, Bitmap?>): IMarker {
         if (markerOptions.second != null) {
             markerOptions.first.icon(BitmapDescriptorFactory.fromBitmap(markerOptions.second))
         } else {
@@ -91,10 +98,6 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         } else {
             googleMap!!.setOnMapClickListener { latLng -> onMapClickListener.onMapClick(latLng) }
         }
-    }
-
-    override fun getPreviousCameraPosition(): ICameraPosition {
-        return GoogleCameraPosition(googleMap!!.cameraPosition)
     }
 
     override fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback?) {
@@ -139,14 +142,10 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
     }
 
     override fun setOnInfoWindowLongClickListener(onInfoWindowLongClickListener: GoogleMap.OnInfoWindowLongClickListener?) {
-        if (onInfoWindowLongClickListener == null) {
-            googleMap!!.setOnInfoWindowLongClickListener(null)
-        } else {
-            googleMap!!.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener)
-        }
+        googleMap!!.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener)
     }
 
-    override fun setMarkerOnClickListener(listener: IJotiMap.OnMarkerClickListener) {
+    override fun setMarkerOnClickListener(listener: IJotiMap.OnMarkerClickListener?) {
         GoogleMarker.setAllOnClickLister(listener)
     }
 
@@ -154,8 +153,8 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         val t = this
         view.getMapAsync { map ->
             googleMap = map
-            if (previousCameraPosition != null) {
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(previousCameraPosition!!, previousZoom.toFloat(), previousRotation, 0f)))
+            if (previousCameraPositionLatLng != null) {
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(previousCameraPositionLatLng!!, previousZoom.toFloat(), previousRotation, 0f)))
             }
             callback.onMapReady(t)
         }

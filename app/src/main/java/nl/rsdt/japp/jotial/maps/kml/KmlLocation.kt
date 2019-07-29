@@ -8,8 +8,8 @@ class KmlLocation(val lon: Double?, val lat: Double?, val alt: Double?) {
         fun readCoordinates(coordinates: String): List<KmlLocation> {
             val result = ArrayList<KmlLocation>()
             for (c in coordinates.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-                c = c.trim { it <= ' ' }
-                val coordinate = c.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val c2 = c.trim { it <= ' ' }
+                val coordinate = c2.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 if (coordinate.size == 3) {
                     result.add(KmlLocation(
                             java.lang.Double.valueOf(coordinate[0]),

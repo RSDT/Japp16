@@ -37,7 +37,7 @@ class FcmPostBody(@field:SerializedName("SLEUTEL")
         return this
     }
 
-    fun setToken(token: String): FcmPostBody {
+    fun setToken(token: String?): FcmPostBody {
         this.token = token
         return this
     }

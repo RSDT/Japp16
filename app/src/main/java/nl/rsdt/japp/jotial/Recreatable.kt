@@ -13,11 +13,11 @@ interface Recreatable {
     /**
      * Gets invoked on the Activity's onCreate().
      */
-    fun onCreate(savedInstanceState: Bundle)
+    fun onCreate(savedInstanceState: Bundle?)
 
     /**
      * Gets invoked when the state should be saved.
      */
-    fun onSaveInstanceState(saveInstanceState: Bundle)
+    fun onSaveInstanceState(saveInstanceState: Bundle?)
 
 }

@@ -50,26 +50,29 @@ class LoginActivity : Activity() {
                 val authentication = Authentication.Builder()
                         .setUsername((findViewById<View>(R.id.username) as EditText).text.toString())
                         .setPassword((findViewById<View>(R.id.password) as EditText).text.toString())
-                        .setCallback { result ->
-                            if (result.isSucceeded) {
-                                UserInfo.collect()
+                        .setCallback (object : Authentication.OnAuthenticationCompletedCallback{
+                            override fun onAuthenticationCompleted(result: Authentication.AuthenticationResult) {
+                                if (result.isSucceeded) {
+                                    UserInfo.collect()
 
-                                if (JappPreferences.isFirstRun) {
-                                    val intent = Intent(this@LoginActivity, IntroActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+                                    if (JappPreferences.isFirstRun) {
+                                        val intent = Intent(this@LoginActivity, IntroActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    } else {
+                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+
                                 } else {
-                                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+                                    Snackbar.make(findViewById(R.id.login_layout), result.message, Snackbar.LENGTH_LONG)
+                                            .setActionTextColor(Color.BLUE)
+                                            .show()
                                 }
-
-                            } else {
-                                Snackbar.make(findViewById(R.id.login_layout), result.message, Snackbar.LENGTH_LONG)
-                                        .setActionTextColor(Color.BLUE)
-                                        .show()
                             }
-                        }
+
+                        })
                         .create()
                 authentication.executeAsync()
             } else {

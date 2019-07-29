@@ -19,6 +19,6 @@ interface AuthApi {
     fun login(@Body body: Authentication.LoginBody): Call<Authentication.KeyObject>
 
     @GET("/gebruiker/{key}/sleutelExists")
-    fun validateKey(@Path("key") key: String): Call<Authentication.ValidateObject>
+    fun validateKey(@Path("key") key: String?): Call<Authentication.ValidateObject>
 
 }

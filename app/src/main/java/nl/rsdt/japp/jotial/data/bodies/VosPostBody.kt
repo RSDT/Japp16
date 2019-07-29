@@ -55,7 +55,7 @@ class VosPostBody {
         return this
     }
 
-    fun setInfo(info: String): VosPostBody {
+    fun setInfo(info: String?): VosPostBody {
         this.info = info
         return this
     }

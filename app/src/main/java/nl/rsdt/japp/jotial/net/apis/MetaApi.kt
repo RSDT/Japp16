@@ -15,8 +15,8 @@ import retrofit2.http.Path
 interface MetaApi {
 
     @GET("/meta/{key}")
-    fun getMetaInfo(@Path("key") key: String): Call<MetaInfo>
+    fun getMetaInfo(@Path("key") key: String?): Call<MetaInfo>
 
     @GET("/meta/{key}/color")
-    fun getMetaColor(@Path("key") key: String): Call<MetaColorInfo>
+    fun getMetaColor(@Path("key") key: String?): Call<MetaColorInfo>
 }

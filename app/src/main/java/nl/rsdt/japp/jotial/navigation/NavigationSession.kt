@@ -205,7 +205,7 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
         /**
          * Sets the GoogleMap of the SightingSession.
          */
-        fun setJotiMap(jotiMap: IJotiMap): NavigationSession.Builder {
+        fun setJotiMap(jotiMap: IJotiMap?): NavigationSession.Builder {
             buffer.jotiMap = jotiMap
             buffer.navigator = Navigator(jotiMap)
             return this

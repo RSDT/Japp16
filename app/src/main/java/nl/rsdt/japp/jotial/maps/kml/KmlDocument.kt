@@ -6,7 +6,7 @@ import java.util.*
 internal class KmlDocument {
 
 
-    private var name: String? = null
+    private var name: String = ""
     private val folders = LinkedList<KmlFolder>()
     private val styles = LinkedList<KmlStyle>()
 

@@ -12,26 +12,14 @@ import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
  */
 class AsyncTransduceTask<I, O : AbstractTransducer.Result> : AsyncTask<Int, Int, O>() {
 
-    protected var transducer: AbstractTransducer<I, O>
+    var transducer: AbstractTransducer<I, O>? = null
 
-    protected var data: I
+    var data: I? = null
 
-    protected var callback: OnTransduceCompletedCallback<O>? = null
+    var callback: OnTransduceCompletedCallback<O>? = null
 
-    fun setTransducer(transducer: AbstractTransducer<I, O>) {
-        this.transducer = transducer
-    }
-
-    fun setData(data: I) {
-        this.data = data
-    }
-
-    fun setCallback(callback: OnTransduceCompletedCallback<O>) {
-        this.callback = callback
-    }
-
-    protected override fun doInBackground(vararg integers: Int): O {
-        return transducer.generate(data)
+    protected override fun doInBackground(vararg integers: Int?): O? {
+        return data?.let { transducer?.generate(it) }
     }
 
     override fun onPostExecute(output: O?) {

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import android.util.Pair
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -18,6 +19,8 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo
 import nl.rsdt.japp.jotial.data.structures.area348.VosInfo
 import nl.rsdt.japp.jotial.io.AppData
+import nl.rsdt.japp.jotial.maps.management.MapItemController
+import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
@@ -120,9 +123,7 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
             }
         }
         when (mode) {
-            MapItemUpdatable.MODE_ALL ->
-
-                return call
+            MapItemUpdatable.MODE_ALL -> return call
             MapItemUpdatable.MODE_LATEST -> return call
         }
         return null
@@ -135,11 +136,11 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
             info = items!![i]
             if (info != null) {
 
-                var current: String
+                var current: String?
                 val items = arrayOf(info.note, info.extra)
                 for (x in items.indices) {
                     current = items[x]
-                    if (current.toLowerCase(Locale.ROOT).startsWith(query)) results.add(info)
+                    if (current?.toLowerCase(Locale.ROOT)?.startsWith(query) == true) results.add(info)
                 }
             }
         }
@@ -151,14 +152,14 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
         handler!!.post(runnable)
     }
 
-    override fun provide(): List<String> {
+    override fun provide(): MutableList<String> {
         val entries = ArrayList<String>()
         var info: VosInfo?
         for (i in items!!.indices) {
             info = items!![i]
             if (info != null) {
-                entries.add(info.note)
-                entries.add(info.extra)
+                entries.add(info.note  ?: "null")
+                entries.add(info.extra ?: "null")
             }
         }
         return entries
@@ -199,12 +200,12 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
         }
 
         override fun transduceToBundle(bundle: Bundle) {
-            bundle.putParcelable(bundleId, generate(load()))
+            load()?.also { bundle.putParcelable(bundleId, generate(it)) }
         }
 
-        override fun generate(data: ArrayList<VosInfo>?): Result {
-            if (data == null || data.isEmpty()) return Result()
-            Collections.sort(data) { info1, info2 ->
+        override fun generate(data: ArrayList<VosInfo>): Result {
+            if (data.isEmpty()) return Result()
+            data.sortWith(Comparator { info1, info2 ->
                 var firstDate: Date? = null
                 var secondDate: Date? = null
                 try {
@@ -218,7 +219,7 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
                 if (firstDate != null && secondDate != null) {
                     firstDate.compareTo(secondDate)
                 } else 0
-            }
+            })
 
             val result = Result()
             result.bundleId = bundleId
@@ -261,7 +262,7 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
                         current.icon = SightingIcon.LAST_LOCATION
                     }
 
-                    val diff = VosUtils.calculateTimeDifferenceInHoursFromNow(VosUtils.parseDate(current.datetime)).toDouble()
+                    val diff = VosUtils.parseDate((current.datetime))?.let{ VosUtils.calculateTimeDifferenceInHoursFromNow(it).toDouble()}?:0.0
 
                     /**
                      * If the VosInfo is younger or equal than 2 hours: show a circle indicating where the vos team could have walked
@@ -271,7 +272,7 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
                         cOptions.center(current.latLng)
                         cOptions.fillColor(current.getAssociatedColor(80))
                         cOptions.strokeWidth(0f)
-                        cOptions.radius(VosUtils.calculateRadius(current.datetime, JappPreferences.walkSpeed).toDouble())
+                        cOptions.radius(current.datetime?.let{VosUtils.calculateRadius(it, JappPreferences.walkSpeed).toDouble()}?:0.0)
                         result.add(cOptions)
                     }
                 }
@@ -314,17 +315,14 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
                 dest.writeTypedList(items)
             }
 
-            companion object {
-
-                val CREATOR: Parcelable.Creator<Result> = object : Parcelable.Creator<Result> {
+            companion object CREATOR: Parcelable.Creator<Result> {
                     override fun createFromParcel(`in`: Parcel): Result {
                         return Result(`in`)
                     }
 
-                    override fun newArray(size: Int): Array<Result> {
+                    override fun newArray(size: Int): Array<Result?> {
                         return arrayOfNulls(size)
                     }
-                }
             }
         }
 
@@ -333,7 +331,7 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
     private inner class UpdateCircleRunnable : Runnable {
 
         override fun run() {
-            val circles = ArrayList(this@VosController.circles.keys)
+            val circles = ArrayList(this@VosController.circlesController.keys)
             if (!circles.isEmpty()) {
                 val circle = circles[0]
 
@@ -343,17 +341,17 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
                 /**
                  * Parse the date.
                  */
-                val date = VosUtils.parseDate(info.datetime)
+                val date = VosUtils.parseDate(info.datetime?: "1970-01-01 00:00:00:")
 
                 /**
                  * Calculate the difference in time between the vos date and now.
                  */
-                val diff = VosUtils.calculateTimeDifferenceInHoursFromNow(date).toDouble()
+                val diff = date?.let{ VosUtils.calculateTimeDifferenceInHoursFromNow(it).toDouble()}?:0.0
 
                 /**
                  * If the VosInfo is younger or equal than 2 hours: show a circle indicating where the vos team could have walked
                  */
-                if (diff > 0 && diff <= 2) {
+                if (diff > 0.0 && diff <= 2.0) {
                     circle.setRadius(VosUtils.calculateRadius(date!!, JappPreferences.walkSpeed))
                     if (JappPreferences.isAutoEnlargementEnabled) {
                         handler!!.postDelayed(this, JappPreferences.autoEnlargementIntervalInMs.toLong())

@@ -33,7 +33,7 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
     protected var lastStatusInfo: VosStatusInfo? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
@@ -42,7 +42,7 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
         super.onViewCreated(view, savedInstanceState)
         lastStatusInfo = AppData.getObject<VosStatusInfo>(STORAGE_KEY, VosStatusInfo::class.java)
         if (lastStatusInfo != null) {
-            updateView(lastStatusInfo)
+            updateView(lastStatusInfo as VosStatusInfo)
         }
         refresh()
     }

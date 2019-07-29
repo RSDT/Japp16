@@ -17,11 +17,11 @@ object AeSimpleSHA1 {
     private fun convertToHex(data: ByteArray): String {
         val buf = StringBuilder()
         for (b in data) {
-            var halfbyte = b.ushr(4) and 0x0F
+            var halfbyte = (b.toInt() ushr 4) and 0x0F
             var two_halfs = 0
             do {
                 buf.append(if (0 <= halfbyte && halfbyte <= 9) ('0'.toInt() + halfbyte).toChar() else ('a'.toInt() + (halfbyte - 10)).toChar())
-                halfbyte = b and 0x0F
+                halfbyte = b.toInt() and 0x0F
             } while (two_halfs++ < 1)
         }
         return buf.toString()
@@ -35,14 +35,14 @@ object AeSimpleSHA1 {
         return convertToHex(sha1hash)
     }
 
-    fun trySHA1(text: String): String? {
+    fun trySHA1(text: String): String {
         try {
             return SHA1(text)
         } catch (e: Exception) {
             Log.e("AeSImpleSHA1", e.localizedMessage, e)
         }
 
-        return null
+        return "error-in-trySHA1"
     }
 
 }

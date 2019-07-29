@@ -22,7 +22,7 @@ import java.util.*
  */
 class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
 
-    protected var context: Context
+    protected lateinit var context: Context
 
     protected var jotiMap: IJotiMap? = null
 
@@ -35,11 +35,10 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val pins: ArrayList<Pin.Data>?
-        if (savedInstanceState != null) {
-            pins = savedInstanceState.getParcelableArrayList<Data>(BUNDLE_KEY)
+        val pins: ArrayList<Pin.Data>? = if (savedInstanceState != null) {
+            savedInstanceState.getParcelableArrayList<Pin.Data>(BUNDLE_KEY)
         } else {
-            pins = AppData.getObject<ArrayList<Data>>(STORAGE_ID, object : TypeToken<ArrayList<Pin.Data>>() {
+            AppData.getObject<ArrayList<Pin.Data>>(STORAGE_ID, object : TypeToken<ArrayList<Pin.Data>>() {
 
             }.type)
         }
@@ -53,18 +52,18 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
         }
     }
 
-    override fun onSaveInstanceState(state: Bundle) {
+    override fun onSaveInstanceState(state: Bundle?) {
         val list = ArrayList<Pin.Data>()
         var current: Pin?
         for (i in pins!!.indices) {
             current = pins!![i]
-
-            if (current != null) {
-                list.add(current.data)
+            val data = current.data
+            if (data != null) {
+                list.add(data)
             }
 
         }
-        state.putParcelableArrayList(BUNDLE_KEY, list)
+        state?.putParcelableArrayList(BUNDLE_KEY, list)
     }
 
     fun add(pin: Pin) {
@@ -80,9 +79,9 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
     fun findAssocaited(marker: Marker): Pin? {
         var current: Pin?
         for (i in pins!!.indices) {
-            current = pins!![i]
+            current = pins?.get(i)
             if (current != null) {
-                if (current.marker.id == marker.id) {
+                if (current.marker?.id == marker.id) {
                     return current
                 }
             }
@@ -93,10 +92,10 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
     fun onMapReady(jotiMap: IJotiMap) {
         this.jotiMap = jotiMap
         jotiMap.setOnInfoWindowLongClickListener(this)
-
-        if (buffer != null) {
-            process(buffer)
-            buffer!!.clear()
+        val localBuffer = buffer
+        if (localBuffer != null) {
+            process(localBuffer)
+            localBuffer.clear()
             buffer = null
         }
     }
@@ -122,9 +121,9 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
         var current: Pin?
         for (i in pins!!.indices) {
             current = pins!![i]
-
-            if (current != null) {
-                list.add(current.data)
+            val data = current.data
+            if (data != null) {
+                list.add(data)
             }
         }
         if (background) {

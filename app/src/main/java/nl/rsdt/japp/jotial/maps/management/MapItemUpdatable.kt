@@ -11,7 +11,7 @@ import retrofit2.Call
  */
 interface MapItemUpdatable<I> {
 
-    fun update(mode: String): Call<I>
+    fun update(mode: String): Call<I>?
 
     fun onUpdateInvoked()
 

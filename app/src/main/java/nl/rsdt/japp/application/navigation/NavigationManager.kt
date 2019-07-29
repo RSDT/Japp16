@@ -3,6 +3,7 @@ package nl.rsdt.japp.application.navigation
 import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.navigation.NavigationView
@@ -13,6 +14,7 @@ import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.API
 import nl.rsdt.japp.jotial.net.DownloadDrawableTask
 import java.net.URL
+import java.util.ArrayList
 
 /**
  * @author Dingenis Sieger Sinke
@@ -25,13 +27,13 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
     private var navigationView: NavigationView? = null
 
     val usernameView: TextView
-        get() = navigationView!!.getHeaderView(0).findViewById<View>(R.id.nav_name)
+        get() = navigationView!!.getHeaderView(0).findViewById(R.id.nav_name)
 
     val rankView: TextView
-        get() = navigationView!!.getHeaderView(0).findViewById<View>(R.id.nav_rank)
+        get() = navigationView!!.getHeaderView(0).findViewById(R.id.nav_rank)
 
     val avatarView: ImageView
-        get() = navigationView!!.getHeaderView(0).findViewById<View>(R.id.nav_avatar)
+        get() = navigationView!!.getHeaderView(0).findViewById(R.id.nav_avatar)
 
     fun setUsernameText(text: String?) {
         usernameView.text = text
@@ -78,10 +80,12 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
         val filename = JappPreferences.accountAvatarName
         if (!filename!!.isEmpty()) {
             try {
-                val task = DownloadDrawableTask(DownloadDrawableTask.OnDowloadDrawablesCompletedCallback { drawables ->
-                    if (!drawables.isEmpty()) {
-                        setAvatarDrawable(drawables[0])
-                        AppData.saveDrawableInBackground(drawables[0], ACCOUNT_AVATAR_STORAGE)
+                val task = DownloadDrawableTask(object : DownloadDrawableTask.OnDowloadDrawablesCompletedCallback {
+                    override fun onDownloadDrawablesCompleted(drawables: ArrayList<Drawable>) {
+                        if (!drawables.isEmpty()) {
+                            setAvatarDrawable(drawables[0])
+                            AppData.saveDrawableInBackground(drawables[0], ACCOUNT_AVATAR_STORAGE)
+                        }
                     }
                 })
                 task.execute(URL(API.SITE_2016_ROOT + "/img/avatar/" + filename))

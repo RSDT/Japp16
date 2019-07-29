@@ -21,7 +21,7 @@ import retrofit2.Response
  */
 class JappFirebaseMessagingService : FirebaseMessagingService() {
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage?) {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         Japp.updateManager.onMessage(remoteMessage)
     }

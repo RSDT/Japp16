@@ -18,15 +18,13 @@ class DeletedInfo protected constructor(`in`: Parcel) : Parcelable {
 
     }
 
-    companion object {
-        val CREATOR: Parcelable.Creator<DeletedInfo> = object : Parcelable.Creator<DeletedInfo> {
+    companion object CREATOR: Parcelable.Creator<DeletedInfo>{
             override fun createFromParcel(`in`: Parcel): DeletedInfo {
                 return DeletedInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<DeletedInfo> {
+            override fun newArray(size: Int): Array<DeletedInfo?> {
                 return arrayOfNulls(size)
             }
-        }
     }
 }

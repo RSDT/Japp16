@@ -27,7 +27,7 @@ interface IJotiMap {
 
     fun animateCamera(latLng: LatLng, zoom: Int)
 
-    fun addMarker(markerOptions: Pair<MarkerOptions, Bitmap>): IMarker
+    fun addMarker(markerOptions: Pair<MarkerOptions, Bitmap?>): IMarker
 
     fun addPolyline(polylineOptions: PolylineOptions): IPolyline
 
@@ -35,21 +35,21 @@ interface IJotiMap {
 
     fun addCircle(circleOptions: CircleOptions): ICircle
 
-    fun setOnMapClickListener(onMapClickListener: OnMapClickListener)
+    fun setOnMapClickListener(onMapClickListener: OnMapClickListener?)
 
-    fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback)
+    fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback?)
 
-    fun animateCamera(latLng: LatLng, zoom: Int, cancelableCallback: IJotiMap.CancelableCallback)
+    fun animateCamera(latLng: LatLng, zoom: Int, cancelableCallback: IJotiMap.CancelableCallback?)
 
-    fun setOnCameraMoveStartedListener(onCameraMoveStartedListener: GoogleMap.OnCameraMoveStartedListener)
+    fun setOnCameraMoveStartedListener(onCameraMoveStartedListener: GoogleMap.OnCameraMoveStartedListener?)
 
     fun cameraToLocation(b: Boolean, location: Location, zoom: Float, aoa: Float, bearing: Float)
 
     fun clear()
 
-    fun setOnInfoWindowLongClickListener(onInfoWindowLongClickListener: GoogleMap.OnInfoWindowLongClickListener)
+    fun setOnInfoWindowLongClickListener(onInfoWindowLongClickListener: GoogleMap.OnInfoWindowLongClickListener?)
 
-    fun setMarkerOnClickListener(listener: IJotiMap.OnMarkerClickListener)
+    fun setMarkerOnClickListener(listener: IJotiMap.OnMarkerClickListener?)
 
     fun getMapAsync(callback: IJotiMap.OnMapReadyCallback)
 

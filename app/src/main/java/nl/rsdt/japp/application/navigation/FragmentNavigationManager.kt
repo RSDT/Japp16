@@ -61,9 +61,9 @@ open class FragmentNavigationManager {
         setupFragments()
     }
 
-    fun onSaveInstanceState(saveInstanceState: Bundle) {
+    fun onSaveInstanceState(saveInstanceState: Bundle?) {
         if (!currentFragmentTag.isEmpty()) {
-            saveInstanceState.putString(BUNDLE_KEY_FRAGMENT, currentFragmentTag)
+            saveInstanceState?.putString(BUNDLE_KEY_FRAGMENT, currentFragmentTag)
         }
     }
 
@@ -152,21 +152,21 @@ open class FragmentNavigationManager {
     private fun setupFragments() {
         val ft = manager!!.beginTransaction()
 
-        homeFragment = manager!!.findFragmentByTag(HomeFragment.TAG) as HomeFragment
+        homeFragment = manager?.findFragmentByTag(HomeFragment.TAG) as HomeFragment?
         if (homeFragment == null) {
             homeFragment = HomeFragment()
             ft.add(R.id.container, homeFragment, HomeFragment.TAG)
         }
         ft.hide(homeFragment)
 
-        carFragment = manager!!.findFragmentByTag(CarFragment.TAG) as CarFragment
+        carFragment = manager?.findFragmentByTag(CarFragment.TAG) as CarFragment?
         if (carFragment == null) {
             carFragment = CarFragment()
             ft.add(R.id.container, carFragment, CarFragment.TAG)
         }
         ft.hide(carFragment)
 
-        mapFragment = manager!!.findFragmentByTag(JappMapFragment.TAG) as JappMapFragment
+        mapFragment = manager?.findFragmentByTag(JappMapFragment.TAG) as JappMapFragment?
         if (mapFragment == null) {
             mapFragment = JappMapFragment()
             ft.add(R.id.container, mapFragment, JappMapFragment.TAG)
@@ -176,14 +176,14 @@ open class FragmentNavigationManager {
         updateToolbarTitle()
         updateCheckedState()
 
-        preferenceFragment = manager!!.findFragmentByTag(JappPreferenceFragment.TAG) as JappPreferenceFragment
+        preferenceFragment = manager?.findFragmentByTag(JappPreferenceFragment.TAG) as JappPreferenceFragment?
         if (preferenceFragment == null) {
             preferenceFragment = JappPreferenceFragment()
             ft.add(R.id.container, preferenceFragment, JappPreferenceFragment.TAG)
         }
         ft.hide(preferenceFragment)
 
-        aboutFragment = manager!!.findFragmentByTag(AboutFragment.TAG) as AboutFragment
+        aboutFragment = manager?.findFragmentByTag(AboutFragment.TAG) as AboutFragment?
         if (aboutFragment == null) {
             aboutFragment = AboutFragment()
             ft.add(R.id.container, aboutFragment, AboutFragment.TAG)

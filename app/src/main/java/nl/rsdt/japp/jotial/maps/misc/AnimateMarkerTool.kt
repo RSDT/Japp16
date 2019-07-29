@@ -17,8 +17,8 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 
 
 object AnimateMarkerTool {
-    fun animateMarkerToGB(marker: IMarker, finalPosition: LatLng, latLngInterpolator: LatLngInterpolator, duration: Long) {
-        val startPosition = marker.position
+    fun animateMarkerToGB(marker: IMarker?, finalPosition: LatLng, latLngInterpolator: LatLngInterpolator, duration: Long) {
+        val startPosition = marker?.position?: LatLng(0.0, 0.0)
         val handler = Handler()
         val start = SystemClock.uptimeMillis()
         val interpolator = AccelerateDecelerateInterpolator()
@@ -35,7 +35,7 @@ object AnimateMarkerTool {
                 t = elapsed / durationInMs
                 v = interpolator.getInterpolation(t)
 
-                marker.position = latLngInterpolator.interpolate(v, startPosition, finalPosition)
+                marker?.position = latLngInterpolator.interpolate(v, startPosition, finalPosition)
 
                 // Repeat till progress is complete.
                 if (t < 1) {
@@ -56,13 +56,13 @@ object AnimateMarkerTool {
             val newPosition = latLngInterpolator.interpolate(v, startPosition, finalPosition)
             marker.position = newPosition
         }
-        valueAnimator.setFloatValues(0, 1) // Ignored.
+        valueAnimator.setFloatValues(0f, 1f) // Ignored.
         valueAnimator.duration = duration
         valueAnimator.start()
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    fun animateMarkerToICS(marker: IMarker, finalPosition: LatLng, latLngInterpolator: LatLngInterpolator, duration: Long) {
+    fun animateMarkerToICS(marker: IMarker?, finalPosition: LatLng, latLngInterpolator: LatLngInterpolator, duration: Long) {
         val typeEvaluator = TypeEvaluator<LatLng> { fraction, startValue, endValue -> latLngInterpolator.interpolate(fraction, startValue, endValue) }
         val property = Property.of(IMarker::class.java, LatLng::class.java, "position")
         val animator = ObjectAnimator.ofObject(marker, property, typeEvaluator, finalPosition)

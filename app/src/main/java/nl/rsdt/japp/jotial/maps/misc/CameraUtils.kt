@@ -18,13 +18,12 @@ object CameraUtils {
     /**
      * Moves the camera to given location.
      */
-    fun cameraToLocation(animate: Boolean, googleMap: GoogleMap, location: Location?, zoom: Float, aoa: Float, bearing: Float) {
+    fun cameraToLocation(animate: Boolean, googleMap: GoogleMap?, location: Location?, zoom: Float, aoa: Float, bearing: Float) {
         if (location != null) {
             if (animate) {
-
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(LatLng(location.latitude, location.longitude), zoom, aoa, bearing)))
+                googleMap?.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(LatLng(location.latitude, location.longitude), zoom, aoa, bearing)))
             } else {
-                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(LatLng(location.latitude, location.longitude), zoom, aoa, bearing)))
+                googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(LatLng(location.latitude, location.longitude), zoom, aoa, bearing)))
             }
         }
     }

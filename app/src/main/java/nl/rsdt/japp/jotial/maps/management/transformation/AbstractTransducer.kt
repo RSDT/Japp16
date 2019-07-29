@@ -24,7 +24,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
 
     var isSaveEnabled = true
 
-    abstract fun load(): I
+    abstract fun load(): I?
 
     abstract fun generate(data: I): O
 
@@ -32,9 +32,9 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
 
     fun enqueue(data: I, callback: AsyncTransduceTask.OnTransduceCompletedCallback<O>) {
         val task = AsyncTransduceTask<I, O>()
-        task.setTransducer(this)
-        task.setData(data)
-        task.setCallback(callback)
+        task.transducer = this
+        task.data = data
+        task.callback = callback
         task.execute()
     }
 
@@ -49,12 +49,12 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
         /**
          * Sets the id of the result.
          */
-        override var bundleId: String? = null
+        override var bundleId: String = ""
 
         /**
          * The Marker list.
          */
-        var markers: ArrayList<Pair<MarkerOptions, Bitmap>>
+        var markers: ArrayList<Pair<MarkerOptions, Bitmap?>>
             protected set
 
         /**
@@ -73,7 +73,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
          * The Circle list.
          */
         /**
-         * Gets the circles.
+         * Gets the circlesController.
          */
         var circles: ArrayList<CircleOptions>? = null
             protected set
@@ -81,7 +81,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
         /**
          * Adds a MarkerOptions object to the markers list.
          */
-        fun add(options: Pair<MarkerOptions, Bitmap>) {
+        fun add(options: Pair<MarkerOptions, Bitmap?>) {
             markers.add(options)
         }
 
@@ -123,7 +123,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
             markers = ArrayList()
             val optionsList = `in`.createTypedArrayList(MarkerOptions.CREATOR)
             val bitmapList = `in`.createTypedArrayList(Bitmap.CREATOR)
-            val markers = ArrayList<Pair<MarkerOptions, Bitmap>>()
+            val markers = ArrayList<Pair<MarkerOptions, Bitmap?>>()
 
             polylines = `in`.createTypedArrayList(PolylineOptions.CREATOR)
             polygons = `in`.createTypedArrayList(PolygonOptions.CREATOR)
@@ -140,7 +140,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
         override fun writeToParcel(dest: Parcel, i: Int) {
             dest.writeString(bundleId)
             val optionsList = ArrayList<MarkerOptions>()
-            val bitmapList = ArrayList<Bitmap>()
+            val bitmapList = ArrayList<Bitmap?>()
             for (p in markers) {
                 optionsList.add(p.first)
                 bitmapList.add(p.second)
@@ -175,12 +175,12 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
 
             val CREATOR: Parcelable.Creator<StandardResult<*>> = object : Parcelable.Creator<StandardResult<*>> {
                 override fun createFromParcel(`in`: Parcel): StandardResult<*> {
-                    return object : StandardResult() {
+                    return object : StandardResult<Parcelable>() {
 
                     }
                 }
 
-                override fun newArray(size: Int): Array<StandardResult<*>> {
+                override fun newArray(size: Int): Array<StandardResult<*>?> {
                     return arrayOfNulls(size)
                 }
             }

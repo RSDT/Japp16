@@ -82,7 +82,7 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
         osmMap.controller.zoomTo(zoom)//// TODO: 07/08/17 controleren of de zoomlevels van googlemaps en osm enigzins overeenkomen.
     }
 
-    override fun addMarker(markerOptions: Pair<MarkerOptions, Bitmap>): IMarker {
+    override fun addMarker(markerOptions: Pair<MarkerOptions, Bitmap?>): IMarker {
         return OsmMarker(markerOptions, osmMap)
     }
 
@@ -112,17 +112,17 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
         osmMap.overlays.add(0, eventsOverlay)
     }
 
-    override fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback) {
+    override fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback?) {
         this.osmMap.isDrawingCacheEnabled = true
         this.osmMap.buildDrawingCache()
         val bm = this.osmMap.drawingCache
-        snapshotReadyCallback.onSnapshotReady(bm)
+        snapshotReadyCallback?.onSnapshotReady(bm)
     }
 
-    override fun animateCamera(latLng: LatLng, zoom: Int, cancelableCallback: IJotiMap.CancelableCallback) {
+    override fun animateCamera(latLng: LatLng, zoom: Int, cancelableCallback: IJotiMap.CancelableCallback?) {
         osmMap.controller.setCenter(GeoPoint(latLng.latitude, latLng.longitude))
         osmMap.controller.setZoom(zoom)
-        cancelableCallback.onFinish()
+        cancelableCallback?.onFinish()
     }
 
     override fun setOnCameraMoveStartedListener(onCameraMoveStartedListener: GoogleMap.OnCameraMoveStartedListener?) {
@@ -151,11 +151,11 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
         osmMap.overlays.clear()
     }
 
-    override fun setOnInfoWindowLongClickListener(onInfoWindowLongClickListener: GoogleMap.OnInfoWindowLongClickListener) {
+    override fun setOnInfoWindowLongClickListener(onInfoWindowLongClickListener: GoogleMap.OnInfoWindowLongClickListener?) {
         //// TODO: 30/08/17
     }
 
-    override fun setMarkerOnClickListener(listener: IJotiMap.OnMarkerClickListener) {
+    override fun setMarkerOnClickListener(listener: IJotiMap.OnMarkerClickListener?) {
         OsmMarker.setAllOnClickLister(listener)
     }
 

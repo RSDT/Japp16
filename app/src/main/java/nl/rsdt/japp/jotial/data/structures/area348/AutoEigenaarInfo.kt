@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.data.structures.area348
 
+import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
 
@@ -19,12 +20,13 @@ class AutoEigenaarInfo protected constructor(`in`: Parcel) : Parcelable {
     }
 
     companion object {
+        @SuppressLint("ParcelCreator")
         val CREATOR: Parcelable.Creator<AutoEigenaarInfo> = object : Parcelable.Creator<AutoEigenaarInfo> {
             override fun createFromParcel(`in`: Parcel): AutoEigenaarInfo {
                 return AutoEigenaarInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<AutoEigenaarInfo> {
+            override fun newArray(size: Int): Array<AutoEigenaarInfo?> {
                 return arrayOfNulls(size)
             }
         }

@@ -79,9 +79,9 @@ class MessageManager {
          *
          * @param info The information about the update.
          */
-        fun onUpdateMessageReceived(info: UpdateInfo)
+        fun onUpdateMessageReceived(info: UpdateInfo?)
 
-        fun onNoticeMessageReceived(info: NoticeInfo)
+        fun onNoticeMessageReceived(info: NoticeInfo?)
     }
 
 }

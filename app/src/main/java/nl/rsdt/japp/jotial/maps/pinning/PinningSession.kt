@@ -180,7 +180,7 @@ class PinningSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, DialogI
         /**
          * Sets the GoogleMap of the SightingSession.
          */
-        fun setJotiMap(jotiMap: IJotiMap): Builder {
+        fun setJotiMap(jotiMap: IJotiMap?): Builder {
             buffer.jotiMap = jotiMap
             return this
         }

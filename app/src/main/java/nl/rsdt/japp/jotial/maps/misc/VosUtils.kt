@@ -48,7 +48,8 @@ object VosUtils {
         return calculateRadius(old.time, speed)
     }
 
-    fun parseDate(value: String): Date? {
+    fun parseDate(value: String?): Date? {
+        if (value == null) return null
         var date: Date? = null
         try {
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)

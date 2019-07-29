@@ -40,7 +40,7 @@ import java.util.*
  * @since 8-7-2016
  * Description...
  */
-class LocationService : LocationProviderService<*>(), SharedPreferences.OnSharedPreferenceChangeListener {
+class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val binder = LocationBinder()
 
@@ -74,7 +74,7 @@ class LocationService : LocationProviderService<*>(), SharedPreferences.OnShared
                 .setFastestInterval(JappPreferences.locationUpdateIntervalInMs.toLong())
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
-    fun setListener(listener: OnResolutionRequiredListener) {
+    fun setListener(listener: OnResolutionRequiredListener?) {
         this.listener = listener
     }
 

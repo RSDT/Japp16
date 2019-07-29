@@ -15,32 +15,28 @@ abstract class StandardMapItemController<I : Parcelable, O : AbstractTransducer.
 
     protected var items: ArrayList<I>? = ArrayList()
 
-    override fun onIntentCreate(bundle: Bundle?) {
+    override fun onIntentCreate(bundle: Bundle) {
         super.onIntentCreate(bundle)
-        if (bundle != null) {
-            val result = bundle.getParcelable<O>(bundleId)
-            if (result != null) {
-                this.items = result.items
-            }
+        val result = bundle.getParcelable<O>(bundleId)
+        if (result != null) {
+            this.items = result.items
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(bundleId)) {
-                this.items = savedInstanceState.getParcelableArrayList(bundleId)
-                val result = transducer.generate(items)
-                if (jotiMap != null) {
-                    processResult(result)
-                } else {
-                    buffer = result
-                }
+        if (savedInstanceState?.containsKey(bundleId)== true) {
+            this.items = savedInstanceState.getParcelableArrayList(bundleId)
+            val result = transducer.generate(items!!)
+            if (jotiMap != null) {
+                processResult(result)
+            } else {
+                buffer = result
             }
         }
     }
 
-    override fun onSaveInstanceState(saveInstanceState: Bundle) {
-        saveInstanceState.putParcelableArrayList(bundleId, items)
+    override fun onSaveInstanceState(saveInstanceState: Bundle?) {
+        saveInstanceState?.putParcelableArrayList(bundleId, items)
     }
 
     override fun merge(other: O) {

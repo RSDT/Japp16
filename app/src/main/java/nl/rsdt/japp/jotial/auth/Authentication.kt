@@ -21,9 +21,9 @@ class Authentication : Callback<Authentication.KeyObject> {
 
     private var callback: OnAuthenticationCompletedCallback? = null
 
-    private var username: String? = null
+    private var username: String = ""
 
-    private var password: String? = null
+    private var password: String = ""
 
     fun executeAsync() {
         val api = Japp.getApi(AuthApi::class.java)
@@ -33,7 +33,7 @@ class Authentication : Callback<Authentication.KeyObject> {
     override fun onResponse(call: Call<KeyObject>, response: retrofit2.Response<KeyObject>) {
         if (response.code() == 200) {
 
-            val key = response.body()!!.key
+            val key = response.body()?.key
 
             /**
              * Change the key in the release_preferences.
@@ -65,7 +65,7 @@ class Authentication : Callback<Authentication.KeyObject> {
     }
 
 
-    class AuthenticationResult private constructor(val key: String?, val code: Int, val message: String) {
+    class AuthenticationResult(val key: String?, val code: Int, val message: String) {
 
         val isSucceeded: Boolean
             get() = key != null && !key.isEmpty()
@@ -81,7 +81,7 @@ class Authentication : Callback<Authentication.KeyObject> {
 
     inner class KeyObject {
         @SerializedName("SLEUTEL")
-        private val key: String? = null
+        public val key: String = ""
     }
 
     inner class ValidateObject {

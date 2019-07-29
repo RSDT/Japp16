@@ -36,7 +36,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_tmp_car, container, false)
         // Inflate the layout for this fragment
         autosRecyclerView = v.findViewById(R.id.autos_recycler_view)

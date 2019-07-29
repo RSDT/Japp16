@@ -20,6 +20,6 @@ interface FcmApi {
     fun postToken(@Body body: FcmPostBody): Call<Void>
 
     @GET("/fcm/{key}/{user}/{token}")
-    fun validateUserToken(@Path("key") key: String, @Path("user") user: String, @Path("token") token: String): Call<FcmUserTokenValidationInfo>
+    fun validateUserToken(@Path("key") key: String?, @Path("user") user: String, @Path("token") token: String): Call<FcmUserTokenValidationInfo>
 
 }

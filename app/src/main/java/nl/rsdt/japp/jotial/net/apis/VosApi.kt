@@ -18,16 +18,16 @@ import java.util.*
 interface VosApi {
 
     @GET("/vos/{key}/{team}/last")
-    fun getLast(@Path("key") key: String, @Path("team") team: String): Call<VosInfo>
+    fun getLast(@Path("key") key: String?, @Path("team") team: String): Call<VosInfo>
 
     @GET("/vos/{key}/{team}/{id}")
-    fun getById(@Path("key") key: String, @Path("team") team: String, @Path("id") id: Int): Call<VosInfo>
+    fun getById(@Path("key") key: String?, @Path("team") team: String, @Path("id") id: Int): Call<VosInfo>
 
     @GET("/vos/{key}/{team}/all")
-    fun getAll(@Path("key") key: String, @Path("team") team: String): Call<ArrayList<VosInfo>>
+    fun getAll(@Path("key") key: String?, @Path("team") team: String): Call<ArrayList<VosInfo>>
 
     @GET("/vos/{key}/{team}/all/{time}")
-    fun getAllAfterTime(@Path("key") key: String, @Path("team") team: String, @Path("time") time: String): Call<ArrayList<VosInfo>>
+    fun getAllAfterTime(@Path("key") key: String?, @Path("team") team: String, @Path("time") time: String): Call<ArrayList<VosInfo>>
 
     @POST("/vos")
     fun post(@Body body: VosPostBody): Call<Void>

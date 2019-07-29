@@ -14,7 +14,7 @@ import java.util.*
 
 class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<AutosAdapter.MyViewHolder>() {
     private var data: Map<String, List<AutoInzittendeInfo>>? = null
-    private var eigenaars = arrayOfNulls<String>(0)
+    private var eigenaars:Array<String> = emptyArray()
 
     init {
         data = HashMap()
@@ -22,9 +22,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
 
     private fun setEigenaars() {
         val eigenaarsSet = data!!.keys
-
-        eigenaars = arrayOfNulls(eigenaarsSet.size)
-        eigenaarsSet.toTypedArray()
+        eigenaars = eigenaarsSet.toTypedArray()
         Arrays.sort(eigenaars)
     }
 
@@ -92,7 +90,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
             return
         }
         val i = position - 1
-        holder.setEigenaar(eigenaars[i])
+        holder.setEigenaar(eigenaars[i]?:"?")
         holder.setInzittendeInfos(data!![eigenaars[i]])
     }
 

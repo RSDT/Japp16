@@ -51,16 +51,13 @@ protected constructor(`in`: Parcel) : Parcelable {
         return 0
     }
 
-    companion object {
+    companion object CREATOR: Parcelable.Creator<BaseInfo>{
+        override fun createFromParcel(`in`: Parcel): BaseInfo {
+            return BaseInfo(`in`)
+        }
 
-        val CREATOR: Parcelable.Creator<BaseInfo> = object : Parcelable.Creator<BaseInfo> {
-            override fun createFromParcel(`in`: Parcel): BaseInfo {
-                return BaseInfo(`in`)
-            }
-
-            override fun newArray(size: Int): Array<BaseInfo> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<BaseInfo?> {
+            return arrayOfNulls(size)
         }
     }
 }

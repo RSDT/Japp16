@@ -112,7 +112,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 return VosInfo(`in`)
             }
 
-            override fun newArray(size: Int): Array<VosInfo> {
+            override fun newArray(size: Int): Array<VosInfo?> {
                 return arrayOfNulls(size)
             }
         }
@@ -160,7 +160,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
          * @return A int pointing to the associated drawable.
          */
         fun getAssociatedDrawable(info: VosInfo): Int {
-            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(info.team))
+            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(info.team)?:"Zwart")
             when (info.icon) {
                 SightingIcon.DEFAULT -> when (color) {
                     MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.vos_groen_2
@@ -227,7 +227,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
 
         @JvmOverloads
         fun getAssociatedColor(team: String?, alpha: Int = 255): Int {
-            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(team))
+            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(team)?:"Zwart")
             when (color) {
                 MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return Color.argb(alpha, 255, 0, 0)
                 MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return Color.argb(alpha, 0, 255, 0)

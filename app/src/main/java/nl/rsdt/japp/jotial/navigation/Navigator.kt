@@ -18,7 +18,7 @@ import java.util.*
  * Created by mattijn on 16/08/17.
  */
 
-class Navigator(private val map: IJotiMap) {
+class Navigator(private val map: IJotiMap?) {
     private val onFinishedHandler: Handler
     private var oldPolyline: IPolyline? = null
 
@@ -39,7 +39,7 @@ class Navigator(private val map: IJotiMap) {
         if (Japp.lastLocation != null && end != null) {
             val r = RouteCalculator(this)
             val start = Japp.lastLocation
-            val t = r.execute(LatLng(start!!.latitude, start.longitude), end)
+            r.execute(LatLng(start!!.latitude, start.longitude), end)
         }
     }
 
@@ -64,7 +64,7 @@ class Navigator(private val map: IJotiMap) {
         for (p in newPolyline.points) {
             options.add(LatLng(p.latitude, p.longitude))
         }
-        oldPolyline = map.addPolyline(options)
+        oldPolyline = map?.addPolyline(options)
     }
 
     fun onFinished(newPolyline: Polyline) {

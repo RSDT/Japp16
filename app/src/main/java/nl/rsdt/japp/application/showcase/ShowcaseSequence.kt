@@ -25,15 +25,7 @@ open class ShowcaseSequence<A : Activity> {
 
     protected var activity: A? = null
 
-    protected var callback: OnSequenceCompletedCallback<A>? = null
-
-    fun setActivity(activity: A) {
-        this.activity = activity
-    }
-
-    fun setCallback(callback: OnSequenceCompletedCallback<A>) {
-        this.callback = callback
-    }
+    var callback: OnSequenceCompletedCallback<A>? = null
 
     fun start() {
         continueToNext()
@@ -108,9 +100,9 @@ open class ShowcaseSequence<A : Activity> {
 
         abstract val contentText: String
 
-        abstract val target: ViewTarget
+        abstract val target: ViewTarget?
 
-        val eventListener: OnShowcaseEventListener
+        open val eventListener: OnShowcaseEventListener
             get() = object : SimpleShowcaseEventListener() {
                 override fun onShowcaseViewDidHide(showcaseView: ShowcaseView?) {
                     continueToNext()

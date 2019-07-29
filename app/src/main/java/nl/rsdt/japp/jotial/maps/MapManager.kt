@@ -169,30 +169,30 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
     }
 
 
-    override
+
             /**
              * Gets invoked when a UpdateMessage is received.
              */
-    fun onUpdateMessageReceived(info: UpdateInfo?) {
+    override fun onUpdateMessageReceived(info: UpdateInfo?) {
         if (info == null || info.type == null || info.action == null) return
         var updatable: MapItemUpdatable<*>? = null
         when (info.type) {
-            "hunter" -> updatable = get<MapItemController>(HunterController.CONTROLLER_ID)
-            "foto" -> updatable = get<MapItemController>(FotoOpdrachtController.CONTROLLER_ID)
-            "vos_a" -> updatable = get<MapItemController>(AlphaVosController.CONTROLLER_ID)
-            "vos_b" -> updatable = get<MapItemController>(BravoVosController.CONTROLLER_ID)
-            "vos_c" -> updatable = get<MapItemController>(CharlieVosController.CONTROLLER_ID)
-            "vos_d" -> updatable = get<MapItemController>(DeltaVosController.CONTROLLER_ID)
-            "vos_e" -> updatable = get<MapItemController>(EchoVosController.CONTROLLER_ID)
-            "vos_f" -> updatable = get<MapItemController>(FoxtrotVosController.CONTROLLER_ID)
-            "vos_x" -> updatable = get<MapItemController>(XrayVosController.CONTROLLER_ID)
+            "hunter" -> updatable = get(HunterController.CONTROLLER_ID)
+            "foto" -> updatable = get(FotoOpdrachtController.CONTROLLER_ID)
+            "vos_a" -> updatable = get(AlphaVosController.CONTROLLER_ID)
+            "vos_b" -> updatable = get(BravoVosController.CONTROLLER_ID)
+            "vos_c" -> updatable = get(CharlieVosController.CONTROLLER_ID)
+            "vos_d" -> updatable = get(DeltaVosController.CONTROLLER_ID)
+            "vos_e" -> updatable = get(EchoVosController.CONTROLLER_ID)
+            "vos_f" -> updatable = get(FoxtrotVosController.CONTROLLER_ID)
+            "vos_x" -> updatable = get(XrayVosController.CONTROLLER_ID)
             "sc" -> updatable = sgController
         }
 
         updatable?.onUpdateMessage(info)
     }
 
-    override fun onNoticeMessageReceived(info: NoticeInfo) {
+    override fun onNoticeMessageReceived(info: NoticeInfo?) {
 
     }
 
@@ -202,14 +202,14 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
 
                 for (controller in controllers!!.values) {
                     if (controller is VosController) {
-                        controller.setVisiblity(false)
+                        controller.visiblity = false
                     }
                 }
 
                 val enabled = JappPreferences.areasEnabled
                 for (area in enabled!!) {
                     val controller = getVosControllerByDeelgebied<VosController>(area)
-                    controller?.setVisiblity(true)
+                    controller?.visiblity = true
                 }
 
 
@@ -303,14 +303,14 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
 
         for (controller in controllers!!.values) {
             if (controller is VosController) {
-                controller.setVisiblity(false)
+                controller.visiblity = false
             }
         }
 
         val enabled = JappPreferences.areasEnabled
         for (area in enabled!!) {
             val controller = getVosControllerByDeelgebied<VosController>(area)
-            controller?.setVisiblity(true)
+            controller?.visiblity = true
         }
 
 
@@ -339,21 +339,14 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
             sgController = null
         }
 
-        if (controllers != null) {
-            val iterator = controllers!!.entries.iterator()
-            var entry: Entry<*, *>
-            var controller: MapItemController<*, *>?
-            while (iterator.hasNext()) {
-                entry = iterator.next() as Entry<*, *>
-                controller = entry.value
+        controllers?.let { controllers ->
+            for (entry in controllers) {
+                val controller = entry.value
 
                 controller.onDestroy()
-
-                iterator.remove()
             }
-
-            controllers = null
         }
+            controllers = null
 
     }
 
@@ -362,12 +355,10 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
     }
 
 
-    override fun provide(): List<String> {
+    override fun provide(): MutableList<String> {
         val entries = ArrayList<String>()
         for ((_, controller) in controllers!!) {
-            if (controller != null) {
-                entries.addAll(controller.provide())
-            }
+            entries.addAll(controller.provide())
         }
         return entries
     }

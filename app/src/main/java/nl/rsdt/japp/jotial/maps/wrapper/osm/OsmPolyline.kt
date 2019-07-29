@@ -14,7 +14,7 @@ import java.util.*
 class OsmPolyline(polylineOptions: PolylineOptions, private val osmMap: MapView) : IPolyline {
     private val osmPolyline: org.osmdroid.views.overlay.Polyline
 
-    override var points: List<LatLng>
+    override var points: MutableList<LatLng>
         get() {
             val r = ArrayList<LatLng>()
             for (p in osmPolyline.points) {

@@ -12,9 +12,9 @@ import java.util.*
  */
 class LoginPostDataBuilder {
 
-    private var user: String? = null
+    private var user: String = ""
 
-    private var password: String? = null
+    private var password: String = ""
 
     fun setUsername(username: String): LoginPostDataBuilder {
         this.user = username

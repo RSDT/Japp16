@@ -18,16 +18,16 @@ import java.util.*
 interface HunterApi {
 
     @GET("/hunter/{key}/all")
-    fun getAll(@Path("key") key: String): Call<HashMap<String, ArrayList<HunterInfo>>>
+    fun getAll(@Path("key") key: String?): Call<HashMap<String, ArrayList<HunterInfo>>>
 
     @GET("/hunter/{key}/all/{time}")
-    fun getAllAfterTime(@Path("key") key: String, @Path("time") time: String): Call<HashMap<String, ArrayList<HunterInfo>>>
+    fun getAllAfterTime(@Path("key") key: String?, @Path("time") time: String): Call<HashMap<String, ArrayList<HunterInfo>>>
 
     @GET("/hunter/{key}/all/last")
-    fun getAllLast(@Path("key") key: String): Call<HashMap<String, ArrayList<HunterInfo>>>
+    fun getAllLast(@Path("key") key: String?): Call<HashMap<String, ArrayList<HunterInfo>>>
 
     @GET("/hunter/{key}/andere/{user}")
-    fun getAllExcept(@Path("key") key: String, @Path("user") user: String): Call<HashMap<String, ArrayList<HunterInfo>>>
+    fun getAllExcept(@Path("key") key: String?, @Path("user") user: String): Call<HashMap<String, ArrayList<HunterInfo>>>
 
     @POST("/hunter")
     fun post(@Body body: HunterPostBody): Call<Void>

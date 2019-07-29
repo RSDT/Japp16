@@ -22,11 +22,17 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     protected var client: GoogleApiClient? = null
 
-    protected var request: LocationRequest? = LocationRequest()
+    var request: LocationRequest? = LocationRequest()
+        set(value) {
+            field = value
+            if (isRequesting && client!!.isConnected) {
+                restartLocationUpdates()
+            }
+        }
 
     protected var listeners = ArrayList<LocationListener>()
 
-    var lastLocation: Location
+    var lastLocation: Location? = null
         protected set
 
     protected var isRequesting = false
@@ -130,13 +136,6 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     fun remove(listener: LocationListener) {
         this.listeners.remove(listener)
-    }
-
-    fun setRequest(request: LocationRequest) {
-        this@LocationProviderService.request = request
-        if (isRequesting && client!!.isConnected) {
-            restartLocationUpdates()
-        }
     }
 
     companion object {

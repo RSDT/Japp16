@@ -121,8 +121,8 @@ private constructor(
                 this.color = Color.argb(255, 255, 162, 0)
             }
             MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> {
-                this.drawableHunt = R.drawable.vos_oranje_4
-                this.drawableSpot = R.drawable.vos_oranje_3
+                this.drawableHunt = R.drawable.vos_blauw_4
+                this.drawableSpot = R.drawable.vos_blauw_3
                 this.color = Color.argb(255, 0, 0, 255)
             }
             MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend, MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> {
@@ -131,8 +131,8 @@ private constructor(
                 this.color = Color.argb(255, 0, 0, 0)
             }
             MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> {
-                this.drawableHunt = R.drawable.vos_groen_4
-                this.drawableSpot = R.drawable.vos_groen_3
+                this.drawableHunt = R.drawable.vos_turquoise_4
+                this.drawableSpot = R.drawable.vos_turquoise_3
                 this.color = Color.argb(255, 0, 255, 255)
             }
             else -> {
@@ -173,38 +173,38 @@ private constructor(
         /**
          * Defines the Alpha Deelgebied.
          */
-        private val Alpha = Deelgebied("alpha", JappPreferences.getColorName("a"))
+        private val Alpha = Deelgebied("alpha", JappPreferences.getColorName("a")?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen.toString())
 
         /**
          * Defines the Bravo Deelgebied.
          */
-        private val Bravo = Deelgebied("bravo", JappPreferences.getColorName("b"))
+        private val Bravo = Deelgebied("bravo", JappPreferences.getColorName("b")?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje.toString())
 
         /**
          * Defines the Charlie Deelgebied.
          */
-        private val Charlie = Deelgebied("charlie", JappPreferences.getColorName("c"))
+        private val Charlie = Deelgebied("charlie", JappPreferences.getColorName("c")?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood.toString())
 
         /**
          * Defines the Delta Deelgebied.
          */
-        private val Delta = Deelgebied("delta", JappPreferences.getColorName("d"))
+        private val Delta = Deelgebied("delta", JappPreferences.getColorName("d")?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise.toString())
 
         /**
          * Defines the Echo Deelgebied.
          */
-        private val Echo = Deelgebied("echo", JappPreferences.getColorName("e"))
+        private val Echo = Deelgebied("echo", JappPreferences.getColorName("e")?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw.toString())
 
         /**
          * Defines the Foxtrot Deelgebied.
          */
 
-        private val Foxtrot = Deelgebied("foxtrot", JappPreferences.getColorName("f"))
+        private val Foxtrot = Deelgebied("foxtrot", JappPreferences.getColorName("f") ?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars.toString())
 
         /**
          * Defines the Xray Deelgebied.
          */
-        val Xray = Deelgebied("xray", JappPreferences.getColorName("x"))
+        val Xray = Deelgebied("xray", JappPreferences.getColorName("x")?: MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart.toString())
         private val TAG = "Deelgebied"
 
         /**
@@ -251,10 +251,11 @@ private constructor(
                         if (stream != null) {
                             val r = BufferedReader(InputStreamReader(stream))
                             val total = StringBuilder()
-                            var line: String
+                            var line: String? = r.readLine()
                             try {
-                                while ((line = r.readLine()) != null) {
+                                while (line  != null) {
                                     total.append(line).append('\n')
+                                    line = r.readLine()
                                 }
                             } catch (err: IOException) {
                                 Log.e("Deelgebied", "Error occurred while reading stream", err)
@@ -297,9 +298,9 @@ private constructor(
                             val tmp = ArrayList<LatLng>(kmldg.boundry.size)
                             for (i in 0 until kmldg.boundry.size) {
                                 val kmldgLoc = kmldg.boundry[i]
-                                val tmploc = LatLng(kmldgLoc.lat, kmldgLoc.lon)
+                                val tmploc = LatLng(kmldgLoc.lat?:0.0, kmldgLoc.lon?:0.0)
                                 while (tmp.size - 1 < i) {
-                                    tmp.add(null)
+                                    tmp.add(LatLng(0.0,0.0))
                                 }
                                 tmp[i] = tmploc
                             }
@@ -311,7 +312,7 @@ private constructor(
                     deelgebiedenInitialized = true
                     for ((key, value) in onInitializedList) {
                         for (oi in value) {
-                            oi.onInitialized(Objects.requireNonNull<Deelgebied>(Deelgebied.parse(key)))
+                            parse(key)?.also { oi.onInitialized(it) }
                         }
                     }
                 }

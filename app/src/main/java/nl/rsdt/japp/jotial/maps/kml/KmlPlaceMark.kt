@@ -1,9 +1,9 @@
 package nl.rsdt.japp.jotial.maps.kml
 
 class KmlPlaceMark {
-    var name: String? = null
-    private var styleUrl: String? = null
-    private var coordinates: List<KmlLocation>? = null
+    var name: String = ""
+    private var styleUrl: String = ""
+    private var coordinates: List<KmlLocation> = ArrayList()
 
     fun setStyleUrl(styleUrl: String) {
         this.styleUrl = styleUrl
@@ -14,8 +14,8 @@ class KmlPlaceMark {
     }
 
     fun toKmlScoutingGroep(): KmlScoutingGroep {
-        if (coordinates!!.size != 1) throw AssertionError()
-        return KmlScoutingGroep(name, coordinates!![0], styleUrl)
+        if (coordinates.size != 1) throw AssertionError()
+        return KmlScoutingGroep(name, coordinates[0], styleUrl)
     }
 
     fun toKmlDeelgebied(): KmlDeelgebied {

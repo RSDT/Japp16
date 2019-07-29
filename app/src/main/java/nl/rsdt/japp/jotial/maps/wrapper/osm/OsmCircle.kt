@@ -43,7 +43,7 @@ class OsmCircle(circleOptions: CircleOptions, private val osmMap: MapView) : ICi
         val nrOfPoints = 360
         val circlePoints = ArrayList<GeoPoint>()
         for (f in 0 until nrOfPoints) {
-            circlePoints.add(GeoPoint(centre.latitude, centre.longitude).destinationPoint(radius.toDouble(), f))
+            circlePoints.add(GeoPoint(centre.latitude, centre.longitude).destinationPoint(radius.toDouble(), f.toFloat()))
         }
         osmCircle.points = circlePoints
     }

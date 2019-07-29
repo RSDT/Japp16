@@ -1,5 +1,9 @@
 package nl.rsdt.japp.jotial.maps.management.controllers
 
+import android.os.Bundle
+import nl.rsdt.japp.jotial.maps.wrapper.ICircle
+import java.util.ArrayList
+
 /**
  * @author Dingenis Sieger Sinke
  * @version 1.0
@@ -13,7 +17,8 @@ package nl.rsdt.japp.jotial.maps.management.controllers
  * @since 31-7-2016
  * Description...
  */
-class BravoVosController : VosController() {
+class BravoVosController() : VosController() {
+
 
     override val team: String
         get() = "b"

@@ -11,8 +11,8 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
  */
 interface Searchable {
 
-    fun provide(): List<String>
+    fun provide(): MutableList<String>
 
-    fun searchFor(query: String): IMarker
+    fun searchFor(query: String): IMarker?
 
 }

@@ -59,7 +59,7 @@ object AppData {
      * @param object The object that should be saved.
      * @param filename The name of the file where the object should be saved on.
      */
-    fun saveObjectAsJsonInBackground(`object`: Any, filename: String) {
+    fun saveObjectAsJsonInBackground(`object`: Any?, filename: String) {
         Thread(SaveTask(`object`, filename)).start()
     }
 
@@ -161,7 +161,7 @@ object AppData {
             /**
              * The object that is going to be saved.
              */
-            private val `object`: Any,
+            private val `object`: Any?,
             /**
              * The name of the file where the object is going to be saved.
              */
