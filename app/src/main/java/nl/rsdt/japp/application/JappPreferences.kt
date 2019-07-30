@@ -96,11 +96,11 @@ object JappPreferences {
 
     val IS_NAVIGATION_PHONE = "pref_navigation_phone"
 
-    private val HUNTER_ALL = "pref_developer_hunter_all"
+    val HUNTER_ALL = "pref_developer_hunter_all"
 
-    private val LOAD_OLD_DATA = "pref_developer_load_old_data"
+    val LOAD_OLD_DATA = "pref_developer_load_old_data"
 
-    private val OSM_MAP_TYPE = "pref_map_osm_source"
+    val OSM_MAP_TYPE = "pref_map_osm_source"
 
     val FILL_CIRCLES = "pref_advanced_circles_color"
     private val ONLY_TODAY = "pref_advanced_only_today"

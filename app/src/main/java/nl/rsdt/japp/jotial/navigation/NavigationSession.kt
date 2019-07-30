@@ -22,7 +22,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
  * Created by mattijn on 16/08/17.
  */
 
-class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, IJotiMap.CancelableCallback, IJotiMap.OnMarkerClickListener {
+class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJotiMap.OnMapClickListener, DialogInterface.OnClickListener, View.OnClickListener, IJotiMap.CancelableCallback, IJotiMap.OnMarkerClickListener {
 
     /**
      * The GoogleMap used to create markers.
@@ -42,7 +42,6 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
     /**
      * The view where the Snackbar is going to be made on.
      */
-    private var targetView: View? = null
 
     /**
      * The Snackbar that informs the user.
@@ -56,7 +55,7 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
     private var navigator: Navigator? = null
     private var lastmoved: Long = 0
     private fun initialize() {
-        snackbar = Snackbar.make(targetView!!, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE)
+        snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE)
         snackbar!!.setAction(R.string.done, this)
         snackbar!!.addCallback(this)
 
@@ -98,7 +97,7 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
                 snackbar!!.dismiss()
                 snackbar = null
             }
-            snackbar = Snackbar.make(targetView!!, R.string.select_valid_location, Snackbar.LENGTH_INDEFINITE)
+            snackbar = Snackbar.make(targetView, R.string.select_valid_location, Snackbar.LENGTH_INDEFINITE)
             snackbar!!.addCallback(this)
             snackbar!!.setAction(R.string.done, this)
             snackbar!!.show()
@@ -200,14 +199,21 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
 
     class Builder {
 
-        internal var buffer = NavigationSession()
+        private lateinit var navigator: Navigator
+        private var jotiMap: IJotiMap? = null
+        private var callback: OnNavigationCompletedCallback? = null
+
+        private lateinit var dialogContext: Context
+        private var dialog: AlertDialog.Builder? = null
+        private var targetView: View? = null
+
 
         /**
          * Sets the GoogleMap of the SightingSession.
          */
         fun setJotiMap(jotiMap: IJotiMap?): NavigationSession.Builder {
-            buffer.jotiMap = jotiMap
-            buffer.navigator = Navigator(jotiMap)
+            this.jotiMap = jotiMap
+            this.navigator = Navigator(jotiMap)
             return this
         }
 
@@ -215,7 +221,7 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
          * Sets the callback of the SightingSession.
          */
         fun setCallback(callback: NavigationSession.OnNavigationCompletedCallback): NavigationSession.Builder {
-            buffer.callback = callback
+            this.callback = callback
             return this
         }
 
@@ -223,7 +229,7 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
          * Sets the TargetView of the SightingSession.
          */
         fun setTargetView(view: View): NavigationSession.Builder {
-            buffer.targetView = view
+            this.targetView = view
             return this
         }
 
@@ -231,15 +237,13 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
          * Sets the Context for the Dialog of the SightingSession.
          */
         fun setDialogContext(context: Context): NavigationSession.Builder {
+            dialogContext = context
             val inflater = LayoutInflater.from(context)
             @SuppressLint("InflateParams") val view = inflater.inflate(R.layout.navigation_input_dialog, null)
-            buffer.dialog = AlertDialog.Builder(context)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.navigate_self, buffer)
-                    .setNeutralButton(R.string.navigate_other, buffer)
-                    .setNegativeButton(R.string.cancel, buffer)
+            dialog = AlertDialog.Builder(context)
                     .setView(view)
-                    .create()
+
+
             return this
         }
 
@@ -247,6 +251,15 @@ class NavigationSession : Snackbar.Callback(), IJotiMap.OnMapClickListener, Dial
          * Creates the NavigationSession.
          */
         fun create(): NavigationSession {
+            val buffer = NavigationSession(targetView!!)
+            buffer.callback = callback
+            buffer.navigator = this.navigator
+            buffer.jotiMap = jotiMap
+            buffer.dialog = dialog?.setCancelable(false)
+                    ?.setPositiveButton(R.string.navigate_self, buffer)
+                    ?.setNeutralButton(R.string.navigate_other, buffer)
+                    ?.setNegativeButton(R.string.cancel, buffer)
+                    ?.create()
             buffer.initialize()
             return buffer
         }

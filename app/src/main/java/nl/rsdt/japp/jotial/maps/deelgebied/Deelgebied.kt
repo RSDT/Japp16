@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.deelgebied
 
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.Color
 import android.location.Location
@@ -40,7 +41,18 @@ private constructor(
         /**
          * Gets the name of the Deelgebied.
          */
-        val name: String, colorName: String) {
+        val name: String, colorName: String) : SharedPreferences.OnSharedPreferenceChangeListener {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        val team = this.name.toLowerCase()[0].toString()
+        when (key){
+            JappPreferences.AREAS_COLOR + team ->{
+                changeColor(JappPreferences.getColorName(team)?:"Zwart")
+                for (onColorChangListener in onColorChangeListeners ){
+                    onColorChangListener.onColorChange(this)
+                }
+            }
+        }
+    }
 
     /**
      * The hunt drawable associated with this Deelgebied.
@@ -77,6 +89,14 @@ private constructor(
      */
     var coordinates = ArrayList<LatLng>()
         private set
+    private val onColorChangeListeners = LinkedList<OnColorChangeListener>()
+    fun addListener(onColorChangeListener: OnColorChangeListener) {
+        onColorChangeListeners.add(onColorChangeListener)
+    }
+
+    fun removeListener(onColorChangeListener: OnColorChangeListener) {
+        onColorChangeListeners.remove(onColorChangeListener)
+    }
 
     /**
      * Gets the color of the Deelgebied, with a given alpha.
@@ -98,6 +118,10 @@ private constructor(
     }
 
     init {
+        changeColor(colorName)
+    }
+
+    fun changeColor(colorName: String){
         when (MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(colorName)) {
 
             MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> {
@@ -141,9 +165,7 @@ private constructor(
                 this.color = Color.argb(255, 0, 0, 0)
             }
         }
-
     }
-
     /**
      * Checks if the DeelgebiedData contains a location.
      *
@@ -385,5 +407,8 @@ private constructor(
                 else -> return null
             }
         }
+    }
+    interface OnColorChangeListener{
+        fun onColorChange(deelgebied: Deelgebied)
     }
 }

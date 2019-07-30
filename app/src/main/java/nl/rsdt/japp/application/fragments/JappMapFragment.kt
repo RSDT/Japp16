@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.navigation_input_dialog.*
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
@@ -63,7 +64,8 @@ import java.util.*
  * @since 8-7-2016
  * Description...
  */
-class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener {
+class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener,Deelgebied.OnColorChangeListener {
+
 
     private val serviceManager = ServiceManager<LocationService, LocationService.LocationBinder>(LocationService::class.java)
 
@@ -369,7 +371,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         } else {
             deelgebied.getDeelgebiedAsync(object : Deelgebied.OnInitialized{
                 override fun onInitialized(deelgebied: Deelgebied) {
-                    setupDeelgebied(deelgebied)
+                    setUpDeelgebiedReal(deelgebied)
                 }
 
             })
@@ -397,9 +399,39 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         areas[deelgebied.name] = jotiMap!!.addPolygon(options)
     }
 
+    override fun onColorChange(deelgebied: Deelgebied) {
+        setUpDeelgebiedReal(deelgebied)
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         var polygon: IPolygon
         when (key) {
+            JappPreferences.OSM_MAP_TYPE -> {
+                val lJotiMap = jotiMap
+                if(lJotiMap is OsmJotiMap) {
+                    val osmView = lJotiMap.osmMap
+                    when (JappPreferences.osmMapSource) {
+                        JappPreferences.OsmMapType.Mapnik -> osmView.setTileSource(TileSourceFactory.MAPNIK)
+                        JappPreferences.OsmMapType.OpenSeaMap -> osmView.setTileSource(TileSourceFactory.OPEN_SEAMAP)
+                        JappPreferences.OsmMapType.HikeBike -> osmView.setTileSource(TileSourceFactory.HIKEBIKEMAP)
+                        JappPreferences.OsmMapType.OpenTopo -> osmView.setTileSource(TileSourceFactory.OpenTopo)
+                        JappPreferences.OsmMapType.Fiets_NL -> osmView.setTileSource(TileSourceFactory.FIETS_OVERLAY_NL)
+                        JappPreferences.OsmMapType.Default -> osmView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+                        JappPreferences.OsmMapType.CloudMade_Normal -> osmView.setTileSource(TileSourceFactory.CLOUDMADESTANDARDTILES)
+                        JappPreferences.OsmMapType.CloudMade_Small -> osmView.setTileSource(TileSourceFactory.CLOUDMADESMALLTILES)
+                        JappPreferences.OsmMapType.ChartBundle_ENRH -> osmView.setTileSource(TileSourceFactory.ChartbundleENRH)
+                        JappPreferences.OsmMapType.ChartBundle_ENRL -> osmView.setTileSource(TileSourceFactory.ChartbundleENRH)
+                        JappPreferences.OsmMapType.ChartBundle_WAC -> osmView.setTileSource(TileSourceFactory.ChartbundleWAC)
+                        JappPreferences.OsmMapType.USGS_Sat -> osmView.setTileSource(TileSourceFactory.USGS_SAT)
+                        JappPreferences.OsmMapType.USGS_Topo -> osmView.setTileSource(TileSourceFactory.USGS_TOPO)
+                        JappPreferences.OsmMapType.Public_Transport -> osmView.setTileSource(TileSourceFactory.PUBLIC_TRANSPORT)
+                        JappPreferences.OsmMapType.Road_NL -> osmView.setTileSource(TileSourceFactory.ROADS_OVERLAY_NL)
+                        JappPreferences.OsmMapType.Base_NL -> osmView.setTileSource(TileSourceFactory.BASE_OVERLAY_NL)
+                        else -> osmView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+                    }
+                    osmView.invalidate()
+                }
+            }
             JappPreferences.USE_OSM -> {
             }
             JappPreferences.AREAS -> {
@@ -650,6 +682,8 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
                     session = NavigationSession.Builder()
                             .setJotiMap(jotiMap)
+                            .setDialogContext(v.context)
+                            .setTargetView(v)
                             .setCallback(object : NavigationSession.OnNavigationCompletedCallback {
                                 override fun onNavigationCompleted(navigateTo: LatLng?, toNavigationPhone: Boolean) {
                                     val menu = getView()!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
