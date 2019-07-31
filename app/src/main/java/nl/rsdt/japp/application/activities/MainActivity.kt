@@ -27,6 +27,7 @@ import nl.rsdt.japp.application.navigation.NavigationManager
 import nl.rsdt.japp.application.showcase.JappShowcaseSequence
 import nl.rsdt.japp.application.showcase.ShowcaseSequence
 import nl.rsdt.japp.jotial.auth.Authentication
+import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker
 import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter
@@ -56,12 +57,9 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        /**
-         * Subscribe to the updates topic.
-         */
-        FirebaseMessaging.getInstance().subscribeToTopic("updates")
-
+        StoragePermissionsChecker.check(this)
         /**
          * Set a interceptor so that requests that give a 401 will result in a login activity.
          */
@@ -89,43 +87,9 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
          * Register a on changed listener to the visible release_preferences.
          */
         JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
-        setContentView(R.layout.activity_main)
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        if (JappPreferences.shacoEnabled() && (JappPreferences.accountUsername == "David" || JappPreferences.accountUsername == "test")) {
-            val player = MediaPlayer.create(this, R.raw.shaco_tank_engine)
-            player.start()
-        }
-
-
-        /**
-         * Checks if this is the first run of the app.
-         */
-        if (JappPreferences.isFirstRun) {
-
-
-            /**
-             * Send the token to the server.
-             */
-            JappFirebaseMessagingService.sendToken()
-
-            /**
-             * Show the user around the app via a sequence.
-             */
-            val sequence = JappShowcaseSequence(this)
-            sequence.callback = object: ShowcaseSequence.OnSequenceCompletedCallback<MainActivity>{
-                override fun onSequenceCompleted(sequence: ShowcaseSequence<MainActivity>) {
-                    sequence.end()
-                }
-            }
-            sequence.start()
-
-            /**
-             * Set the the first run value to false.
-             */
-            JappPreferences.isFirstRun = false
-        }
 
         /**
          * Setup the MapManager.
@@ -222,11 +186,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
         return true
     }
 
-    override
-            /**
-             * TODO: don't use final here
-             */
-    fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.refresh) {
             mapManager.update()
             /**

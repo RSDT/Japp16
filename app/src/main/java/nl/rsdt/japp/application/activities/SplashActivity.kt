@@ -3,9 +3,11 @@ package nl.rsdt.japp.application.activities
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
@@ -71,9 +73,18 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
                 FirebaseInstanceId.getInstance().token
             })
             thread.run()
-
-
         }
+
+        /**
+         * Subscribe to the updates topic.
+         */
+        FirebaseMessaging.getInstance().subscribeToTopic("updates")
+
+        if (JappPreferences.shacoEnabled() && (JappPreferences.accountUsername == "David" || JappPreferences.accountUsername == "test")) {
+            val player = MediaPlayer.create(this, R.raw.shaco_tank_engine)
+            player.start()
+        }
+
         val metaApi = Japp.getApi(MetaApi::class.java)
         metaApi.getMetaColor(JappPreferences.accountKey).enqueue(object : Callback<MetaColorInfo> {
             override fun onResponse(call: Call<MetaColorInfo>, response: retrofit2.Response<MetaColorInfo>) {
@@ -95,7 +106,7 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
             }
 
             override fun onFailure(call: Call<MetaColorInfo>, t: Throwable) {
-                Log.e(MainActivity.TAG, t.toString())
+                Log.e(SplashActivity.TAG, t.toString())
             }
         })
         val intent = intent
@@ -119,12 +130,17 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
     }
 
     private fun start() {
+       /* while(
+                StoragePermissionsChecker.check(this) != StoragePermissionsChecker.PERMISSIONS_REQUEST_REQUIRED &&
+                LocationPermissionsChecker.check(this) != LocationPermissionsChecker.PERMISSIONS_REQUEST_REQUIRED){
+            Log.i(TAG,"permissions not acquired")
+        }*/
         /*
          * Check if we have the permissions we need.
          * */
         val storage = MapStorage.instance
         permission_check = LocationPermissionsChecker.check(this)
-        StoragePermissionsChecker.check(this)
+        //StoragePermissionsChecker.check(this)
         Deelgebied.initialize(this.resources)
 
         storage.add(this)
@@ -137,7 +153,7 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
         if (LocationPermissionsChecker.permissionRequestResultContainsLocation(permissions)) {
             if (LocationPermissionsChecker.hasPermissionOfPermissionRequestResult(requestCode, permissions, grantResults)) {
                 if (GooglePlayServicesChecker.check(this) != GooglePlayServicesChecker.FAILURE) {
-                    validate()
+                    determineAndStartNewActivity()
                 }
             } else {
                 val dialog = AlertDialog.Builder(this)
@@ -160,53 +176,11 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
 
     fun continueToNext() {
         if (permission_check != LocationPermissionsChecker.PERMISSIONS_REQUEST_REQUIRED) {
-            validate()
+            determineAndStartNewActivity()
         }
     }
 
-    fun validate() {
-        val api = Japp.getApi(AuthApi::class.java)
-        api.validateKey(JappPreferences.accountKey).enqueue(object : Callback<Authentication.ValidateObject> {
-            override fun onResponse(call: Call<Authentication.ValidateObject>, response: Response<Authentication.ValidateObject>) {
-                if (response.code() == 200) {
-                    val `object` = response.body()
-                    if (`object` != null) {
-                        if (!`object`.exists()) {
-                            Authentication.startLoginActivity(this@SplashActivity)
-                        } else {
-                            determineAndStartNewActivity()
-                        }
-                    }
-                } else {
-                    Authentication.startLoginActivity(this@SplashActivity)
-                }
-
-            }
-
-            override fun onFailure(call: Call<Authentication.ValidateObject>, t: Throwable) {
-                if (t is UnknownHostException) {
-                    determineAndStartNewActivity()
-                } else if (t is SocketTimeoutException) {
-                    AlertDialog.Builder(this@SplashActivity)
-                            .setTitle(getString(R.string.err_verification))
-                            .setMessage(R.string.splash_activity_socket_timed_out)
-                            .setPositiveButton(R.string.continue_to_app) { dialogInterface, i -> determineAndStartNewActivity() }
-                            .create()
-                            .show()
-                } else {
-                    AlertDialog.Builder(this@SplashActivity)
-                            .setTitle(getString(R.string.err_verification))
-                            .setMessage(t.toString())
-                            .setPositiveButton(getString(R.string.try_again)) { dialogInterface, i -> validate() }
-                            .create()
-                            .show()
-                }
-                Log.e(TAG, t.toString(), t)
-            }
-        })
-    }
-
-    fun determineAndStartNewActivity() {
+    private fun determineAndStartNewActivity() {
 
         if (false) {
             val intenti = Intent(this, IntroActivity::class.java)

@@ -196,8 +196,8 @@
     <string-array name="pref_navigation_app">
         <item>Google Maps</item>
         <item>Waze</item>
+        <item>OsmAnd</item>
         <item>OsmAnd Lopen</item>
-
         <item>Geo</item>
     </string-array>
     <string-array name="pref_navigation_app_data">
@@ -351,6 +351,22 @@
     <string name="pref_developer_account_key_sum">De API-key voor dit account</string>
 
     <string name="pref_cat_developer_debug">Debug</string>
+
+    <string name="pref_navigation_road_manager">RoadManager</string>
+    <string name="pref_navigation_road_manager_sum">navigatie ophalen via</string>
+    <string name="pref_navigation_road_manager_def">OSRM</string>
+    <string-array name="pref_navigation_road_manager">
+        <item>MapQuest</item>
+        <item>Google</item>
+        <item>OSRM</item>
+        <item>GraphHopper</item>
+    </string-array>
+    <string-array name="pref_navigation_road_manager_data">
+        <item>MapQuest</item>
+        <item>Google</item>
+        <item>OSRM</item>
+        <item>GraphHopper</item>
+    </string-array>
 
     <string name="pref_developer_debug_fresh_start_title">Verse Start</string>
     <string name="pref_developer_debug_fresh_start_sum">Verwijder alle gegevens bij de volgende keer opstarten</string>

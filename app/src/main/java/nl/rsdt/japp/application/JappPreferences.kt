@@ -103,9 +103,12 @@ object JappPreferences {
     val OSM_MAP_TYPE = "pref_map_osm_source"
 
     val FILL_CIRCLES = "pref_advanced_circles_color"
-    private val ONLY_TODAY = "pref_advanced_only_today"
-    private val COLOR_NAME = "pref_color_name_"
-    private val COLOR_HEX = "pref_color_hex_"
+
+    val ROAD_MANAGER = "pref_navigation_road_manager"
+
+    val ONLY_TODAY = "pref_advanced_only_today"
+    val COLOR_NAME = "pref_color_name_"
+    val COLOR_HEX = "pref_color_hex_"
 
 
     /**
@@ -252,6 +255,9 @@ object JappPreferences {
     val isNavigationPhone: Boolean
         get() = visiblePreferences.getBoolean(IS_NAVIGATION_PHONE, false)
 
+    val roadManager: RoadManager
+        get() = JappPreferences.RoadManager.valueOf(visiblePreferences.getString(ROAD_MANAGER, "Google")?: "Google")
+
     fun setFollowAoa(aoa: Float) {
         appPreferences.edit().putFloat(FOLLOW_AOA, aoa).apply()
     }
@@ -308,7 +314,12 @@ object JappPreferences {
     fun getColorHex(team: String): String? {
         return visiblePreferences.getString(COLOR_HEX + team, "#FFFFFF")
     }
-
+    enum class RoadManager{
+        MapQuest,
+        Google,
+        OSRM,
+        GraphHopper,
+    }
     enum class OsmMapType {
         Default,
         OpenTopo,

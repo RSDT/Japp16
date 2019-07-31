@@ -44,7 +44,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
     /**
      * The HashMap with the MapItemControllers.
      */
-    private var controllers: HashMap<String, MapItemController<*, *>>? = HashMap()
+    private var controllers: HashMap<String, MapItemController<*, *>> = HashMap()
 
     /**
      * The Controller for the ScoutingGroep map items.
@@ -56,21 +56,21 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      * Gets all the controllers.
      */
     val all: Collection<MapItemController<*, *>>
-        get() = controllers!!.values
+        get() = controllers.values
 
     /**
      * Initializes a new instance of MapManager.
      */
     init {
-        controllers!![AlphaVosController.CONTROLLER_ID] = AlphaVosController()
-        controllers!![BravoVosController.CONTROLLER_ID] = BravoVosController()
-        controllers!![CharlieVosController.CONTROLLER_ID] = CharlieVosController()
-        controllers!![DeltaVosController.CONTROLLER_ID] = DeltaVosController()
-        controllers!![EchoVosController.CONTROLLER_ID] = EchoVosController()
-        controllers!![FoxtrotVosController.CONTROLLER_ID] = FoxtrotVosController()
-        controllers!![XrayVosController.CONTROLLER_ID] = XrayVosController()
-        controllers!![HunterController.CONTROLLER_ID] = HunterController()
-        controllers!![FotoOpdrachtController.CONTROLLER_ID] = FotoOpdrachtController()
+        controllers[AlphaVosController.CONTROLLER_ID] = AlphaVosController()
+        controllers[BravoVosController.CONTROLLER_ID] = BravoVosController()
+        controllers[CharlieVosController.CONTROLLER_ID] = CharlieVosController()
+        controllers[DeltaVosController.CONTROLLER_ID] = DeltaVosController()
+        controllers[EchoVosController.CONTROLLER_ID] = EchoVosController()
+        controllers[FoxtrotVosController.CONTROLLER_ID] = FoxtrotVosController()
+        controllers[XrayVosController.CONTROLLER_ID] = XrayVosController()
+        controllers[HunterController.CONTROLLER_ID] = HunterController()
+        controllers[FotoOpdrachtController.CONTROLLER_ID] = FotoOpdrachtController()
 
         JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
     }
@@ -144,8 +144,8 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      * @param id The id of the MapItemController, for example VosAlphaController.CONTROLLER_ID .
      * @return The MapItemController associated with the id, returns null if none.
      */
-    operator fun <T : MapItemController<*, *>> get(id: String): T? {
-        return controllers!![id] as T?
+    operator fun <T : MapItemController<*, *>> get(id: String): T {
+        return controllers[id] as T
     }
 
 
@@ -249,7 +249,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      * Updates all the controllers, without any smart fetching logic.
      */
     fun update() {
-        for ((_, controller) in controllers!!) {
+        for ((_, controller) in controllers) {
             controller.onUpdateInvoked()
         }
         sgController!!.onUpdateInvoked()
@@ -296,12 +296,12 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         /**
          * Loop trough each controller and call the OnMapReadyCallback.
          */
-        for ((_, controller) in controllers!!) {
+        for ((_, controller) in controllers) {
             controller.onMapReady(jotiMap)
         }
         sgController!!.onMapReady(jotiMap)
 
-        for (controller in controllers!!.values) {
+        for (controller in controllers.values) {
             if (controller is VosController) {
                 controller.visiblity = false
             }
@@ -338,16 +338,10 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
             //sgController.onDestroy();
             sgController = null
         }
-
-        controllers?.let { controllers ->
-            for (entry in controllers) {
-                val controller = entry.value
-
-                controller.onDestroy()
-            }
+        for (entry in controllers) {
+            val controller = entry.value
+            controller.onDestroy()
         }
-            controllers = null
-
     }
 
     override fun searchFor(query: String): IMarker? {
@@ -357,7 +351,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
 
     override fun provide(): MutableList<String> {
         val entries = ArrayList<String>()
-        for ((_, controller) in controllers!!) {
+        for ((_, controller) in controllers) {
             entries.addAll(controller.provide())
         }
         return entries

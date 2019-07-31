@@ -1,15 +1,17 @@
 package nl.rsdt.japp.jotial.navigation
 
+import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Message
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
+import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
+import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IPolyline
-import org.osmdroid.bonuspack.routing.GoogleRoadManager
-import org.osmdroid.bonuspack.routing.RoadManager
+import org.osmdroid.bonuspack.routing.*
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Polyline
 import java.util.*
@@ -35,9 +37,9 @@ class Navigator(private val map: IJotiMap?) {
         }
     }
 
-    fun setEndLocation(end: LatLng?) {
+    fun setEndLocation(end: LatLng?, context: Context?) {
         if (Japp.lastLocation != null && end != null) {
-            val r = RouteCalculator(this)
+            val r = RouteCalculator(this, context)
             val start = Japp.lastLocation
             r.execute(LatLng(start!!.latitude, start.longitude), end)
         }
@@ -71,13 +73,20 @@ class Navigator(private val map: IJotiMap?) {
         onFinishedHandler.sendMessage(Message.obtain(onFinishedHandler, 0, newPolyline))
     }
 
-    internal class RouteCalculator(private val callback: Navigator) : AsyncTask<LatLng, Void, Polyline>() {
+    internal class RouteCalculator(private val callback: Navigator, private val context: Context?) : AsyncTask<LatLng, Void, Polyline>() {
         override fun doInBackground(vararg params: LatLng): Polyline {
-            val roadManager = GoogleRoadManager()
+            val roadManager: RoadManager = when (JappPreferences.roadManager){
+                JappPreferences.RoadManager.MapQuest -> MapQuestRoadManager(Japp.appResources.getString(R.string.map_quest_key))
+                JappPreferences.RoadManager.Google ->  GoogleRoadManager()
+                JappPreferences.RoadManager.OSRM -> OSRMRoadManager(context)
+                JappPreferences.RoadManager.GraphHopper -> GraphHopperRoadManager(Japp.appResources.getString(R.string.graphhopper_key),false)
+            }
+
             val waypoints = ArrayList<GeoPoint>()
             for (p in params) {
                 waypoints.add(GeoPoint(p.latitude, p.longitude))
             }
+
             val road = roadManager.getRoad(waypoints)
             val roadOverlay = RoadManager.buildRoadOverlay(road)
             callback.onFinished(roadOverlay)

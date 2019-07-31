@@ -26,7 +26,11 @@ object LocationPermissionsChecker {
     fun check(activity: Activity): Int {
         if (PermissionsUtil.shouldAskForPermission()) {
             if (PermissionsUtil.hasPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || PermissionsUtil.hasPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION), PERMISSION_GROUP_LOCATION)
+                ActivityCompat.requestPermissions(
+                        activity,
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION),
+                        PERMISSION_GROUP_LOCATION)
                 return PERMISSIONS_REQUEST_REQUIRED
             }
         }

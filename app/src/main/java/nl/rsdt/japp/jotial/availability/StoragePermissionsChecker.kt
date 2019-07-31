@@ -12,21 +12,23 @@ import androidx.core.app.ActivityCompat
  */
 
 object StoragePermissionsChecker {
-    private val PERMISSIONS_REQUEST_REQUIRED = 100
+    internal val PERMISSIONS_REQUEST_REQUIRED = 100
 
     private val PERMISSIONS_REQUEST_NOT_REQUIRED = 101
 
     /**
-     * Defines the permission request code for the LOCATION.
+     * Defines the permission request code for the STORAGE.
      */
     private val PERMISSION_GROUP_STORAGE = 102
 
     fun check(activity: Activity): Int {
         if (PermissionsUtil.shouldAskForPermission()) {
-            if (PermissionsUtil.hasPermission(activity, Manifest.permission_group.STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_GROUP_STORAGE)
-                }
+            if (PermissionsUtil.hasPermission(activity, Manifest.permission_group.STORAGE) != PackageManager.PERMISSION_GRANTED|| PermissionsUtil.hasPermission(activity, Manifest.permission_group.STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        activity,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        PERMISSION_GROUP_STORAGE)
                 return PERMISSIONS_REQUEST_REQUIRED
             }
         }

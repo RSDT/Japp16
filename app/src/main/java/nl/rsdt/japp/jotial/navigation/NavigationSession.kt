@@ -184,7 +184,7 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
 
     private fun moveMarker(latLng: LatLng, priority: Boolean) {
         if (priority || System.currentTimeMillis() - lastmoved > 800) {// // TODO: 01/10/17 magic number
-            navigator!!.setEndLocation(latLng)
+            navigator!!.setEndLocation(latLng, dialog?.context)
             if (!marker!!.isVisible) marker!!.isVisible = true
             marker!!.position = latLng
             this.lastmoved = System.currentTimeMillis()

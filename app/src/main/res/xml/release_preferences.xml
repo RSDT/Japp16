@@ -213,6 +213,8 @@
             android:title="@string/pref_developer_title"
             android:summary="@string/pref_developer_sum">
 
+
+
             <PreferenceCategory android:title="@string/pref_cat_developer_account">
                 <EditTextPreference
                     android:title="@string/pref_developer_account_key_title"
@@ -223,6 +225,13 @@
 
 
             <PreferenceCategory android:title="@string/pref_cat_developer_debug">
+                <ListPreference
+                    android:title="@string/pref_navigation_road_manager"
+                    android:key="pref_navigation_road_manager"
+                    android:summary="@string/pref_navigation_road_manager_sum"
+                    android:defaultValue="@string/pref_navigation_road_manager_def"
+                    android:entries="@array/pref_navigation_road_manager"
+                    android:entryValues="@array/pref_navigation_road_manager_data"/>
 
                 <SwitchPreference
                     android:title="@string/pref_developer_debug_fresh_start_title"

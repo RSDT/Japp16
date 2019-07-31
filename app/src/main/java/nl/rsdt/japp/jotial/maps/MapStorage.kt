@@ -18,10 +18,15 @@ class MapStorage : AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
     var data: Bundle? = Bundle()
         private set
 
-    private val callbacks = ArrayList<OnMapDataLoadedCallback>()
+    private val callbacks = mutableListOf<OnMapDataLoadedCallback>()
+    private var mapDataLoaded = false
 
     fun add(callback: OnMapDataLoadedCallback) {
-        callbacks.add(callback)
+        if (mapDataLoaded){
+            callback.onMapDataLoaded()
+        }else {
+            callbacks.add(callback)
+        }
     }
 
     fun remove(callback: OnMapDataLoadedCallback) {
@@ -45,6 +50,7 @@ class MapStorage : AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
     override fun onTransduceCompleted(bundle: Bundle) {
         data = bundle
         ScoutingGroepController.loadAndPutToBundle(bundle)
+        mapDataLoaded = true
         for (callback in callbacks) {
             callback.onMapDataLoaded()
         }
