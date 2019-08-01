@@ -13,7 +13,6 @@ import android.widget.EditText
 import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import nl.rsdt.japp.R
-import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.auth.Authentication
 import nl.rsdt.japp.jotial.data.structures.area348.UserInfo
 import java.util.*
@@ -54,16 +53,9 @@ class LoginActivity : Activity() {
                             override fun onAuthenticationCompleted(result: Authentication.AuthenticationResult) {
                                 if (result.isSucceeded) {
                                     UserInfo.collect()
-
-                                    if (JappPreferences.isFirstRun) {
-                                        val intent = Intent(this@LoginActivity, IntroActivity::class.java)
+                                        val intent = Intent(this@LoginActivity, SplashActivity::class.java)
                                         startActivity(intent)
                                         finish()
-                                    } else {
-                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
 
                                 } else {
                                     Snackbar.make(findViewById(R.id.login_layout), result.message, Snackbar.LENGTH_LONG)

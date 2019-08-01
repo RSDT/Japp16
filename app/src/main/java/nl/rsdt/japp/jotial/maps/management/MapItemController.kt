@@ -116,7 +116,7 @@ abstract class MapItemController<I, O : AbstractTransducer.Result> : MapItemDate
     override fun onResponse(call: Call<I>, response: Response<I>) {
         val body = response.body()
             if (body != null){
-                transducer.enqueue(body, this)
+                transducer?.enqueue(body, this)
             }else{
                 Log.println(Log.ERROR, TAG,response.message())
             }

@@ -1,5 +1,6 @@
 package nl.rsdt.japp.application.activities
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -11,23 +12,19 @@ import com.google.firebase.messaging.FirebaseMessaging
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
-import nl.rsdt.japp.jotial.auth.Authentication
-import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker
-import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker
-import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker
 import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.MapStorage
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
-import nl.rsdt.japp.jotial.net.apis.AuthApi
 import nl.rsdt.japp.jotial.net.apis.MetaApi
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.PermissionRequest
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Response
 import java.io.IOException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
+
 
 /**
  * @author Dingenis Sieger Sinke
@@ -35,9 +32,12 @@ import java.net.UnknownHostException
  * @since 8-7-2016
  * Description...
  */
-class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
+class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback, EasyPermissions.PermissionCallbacks {
 
-    internal var permission_check: Int = 0
+
+    private var started: Boolean = false
+    private var locationGranted = false
+    private var storageGranted = false
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +106,7 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
             }
 
             override fun onFailure(call: Call<MetaColorInfo>, t: Throwable) {
-                Log.e(SplashActivity.TAG, t.toString())
+                Log.e(TAG, t.toString())
             }
         })
         val intent = intent
@@ -117,55 +117,74 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
                         .setTitle(extras.getString("title"))
                         .setMessage(extras.getString("body"))
                         .setIcon(NoticeInfo.parseDrawable(extras.getString("icon")))
-                        .setPositiveButton(getString(R.string.continue_to_app)) { dialogInterface, i -> start() }
+                        .setPositiveButton(R.string.continue_to_app) { _,_-> start() }
                         .create()
                 dialog.setOnShowListener { dialog -> (dialog as AlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = false }
                 dialog.show()
             } else {
-                start()
+                requestPermissions()
             }
         } else {
-            start()
+            requestPermissions()
         }
     }
 
-    private fun start() {
-       /* while(
-                StoragePermissionsChecker.check(this) != StoragePermissionsChecker.PERMISSIONS_REQUEST_REQUIRED &&
-                LocationPermissionsChecker.check(this) != LocationPermissionsChecker.PERMISSIONS_REQUEST_REQUIRED){
-            Log.i(TAG,"permissions not acquired")
-        }*/
-        /*
-         * Check if we have the permissions we need.
-         * */
-        val storage = MapStorage.instance
-        permission_check = LocationPermissionsChecker.check(this)
-        //StoragePermissionsChecker.check(this)
-        Deelgebied.initialize(this.resources)
-
-        storage.add(this)
-        storage.load()
+    private fun requestPermissions() {
+        EasyPermissions.requestPermissions(
+                PermissionRequest.Builder(this, RC_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+                        .setRationale(R.string.location_rationale)
+                        .setPositiveButtonText(R.string.rationale_ask_ok)
+                        .setNegativeButtonText(R.string.rationale_ask_cancel)
+                        .build())
+        EasyPermissions.requestPermissions(
+                PermissionRequest.Builder(this, RC_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .setRationale(R.string.storage_rationale)
+                        .setPositiveButtonText(R.string.storage_ask_ok)
+                        .setNegativeButtonText(R.string.storage_ask_cancel)
+                        .build())
 
     }
+
+
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (LocationPermissionsChecker.permissionRequestResultContainsLocation(permissions)) {
-            if (LocationPermissionsChecker.hasPermissionOfPermissionRequestResult(requestCode, permissions, grantResults)) {
-                if (GooglePlayServicesChecker.check(this) != GooglePlayServicesChecker.FAILURE) {
-                    determineAndStartNewActivity()
-                }
-            } else {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.location_permission))
-                        .setMessage(getString(R.string.location_permision_title))
-                        .setPositiveButton(getString(R.string.oke)) { dialogInterface, i -> permission_check = LocationPermissionsChecker.check(this@SplashActivity) }
-                        .create()
-                dialog.setOnShowListener { dialog -> (dialog as AlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = false }
-                dialog.show()
-            }
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).build().show()
+        }
+        val dialog = AlertDialog.Builder(this).apply {
+            title = "Permission Denied!"
+            setMessage(R.string.location_storage_rationale)
+            setPositiveButton(R.string.oke) { _,_ -> finishAffinity()}
+        }.create()
+        dialog.show()
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        if (requestCode == RC_LOCATION){
+            locationGranted = true
+        }
+        if (requestCode == RC_STORAGE){
+            storageGranted = true
         }
 
+        if (!started && storageGranted && locationGranted){
+            started = true
+            start()
+        }
+
+
+    }
+    private fun start() {
+        val storage = MapStorage.instance
+        Deelgebied.initialize(this.resources)
+        storage.add(this)
+        storage.load()
     }
 
     override fun onMapDataLoaded() {
@@ -175,20 +194,10 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
     }
 
     fun continueToNext() {
-        if (permission_check != LocationPermissionsChecker.PERMISSIONS_REQUEST_REQUIRED) {
-            determineAndStartNewActivity()
-        }
+        determineAndStartNewActivity()
     }
 
     private fun determineAndStartNewActivity() {
-
-        if (false) {
-            val intenti = Intent(this, IntroActivity::class.java)
-            startActivity(intenti)
-            finish()
-            return
-        }
-
 
         val key = JappPreferences.accountKey
         if (key?.isEmpty() != false) {
@@ -197,12 +206,10 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
             finish()
         } else {
             if (JappPreferences.isFirstRun) {
-
                 val intent = Intent(this, IntroActivity::class.java)
                 startActivity(intent)
                 finish()
             } else {
-
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -215,6 +222,9 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback {
         val TAG = "SplashActivity"
 
         val LOAD_ID = "LOAD_RESULTS"
+        private const val RC_LOCATION: Int = 1
+        private const val RC_STORAGE: Int = 2
+        private const val RC_LOCATION_STORAGE = RC_STORAGE or RC_LOCATION
     }
 
 

@@ -3,9 +3,7 @@ package nl.rsdt.japp.application.activities
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -15,7 +13,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.messaging.FirebaseMessaging
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
@@ -24,24 +21,15 @@ import nl.rsdt.japp.application.fragments.HomeFragment
 import nl.rsdt.japp.application.fragments.JappMapFragment
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager
 import nl.rsdt.japp.application.navigation.NavigationManager
-import nl.rsdt.japp.application.showcase.JappShowcaseSequence
-import nl.rsdt.japp.application.showcase.ShowcaseSequence
 import nl.rsdt.japp.jotial.auth.Authentication
-import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker
-import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap
-import nl.rsdt.japp.jotial.net.apis.MetaApi
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
-import nl.rsdt.japp.service.cloud.messaging.JappFirebaseMessagingService
 import nl.rsdt.japp.service.cloud.messaging.MessageManager
-import retrofit2.Call
-import retrofit2.Callback
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
 
@@ -58,8 +46,6 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        StoragePermissionsChecker.check(this)
         /**
          * Set a interceptor so that requests that give a 401 will result in a login activity.
          */

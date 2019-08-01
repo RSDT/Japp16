@@ -12,11 +12,11 @@ import nl.rsdt.japp.jotial.maps.management.transformation.Transducable
  * @since 4-9-2016
  * Description...
  */
-class AsyncBundleTransduceTask(protected var callback: OnBundleTransduceCompletedCallback?) : AsyncTask<Transducable<*, *>, Int, Bundle>() {
+class AsyncBundleTransduceTask(protected var callback: OnBundleTransduceCompletedCallback?) : AsyncTask<Transducable<*, *>, Int, Bundle?>() {
 
     override fun doInBackground(vararg transducables: Transducable<*, *>): Bundle {
         val buffer = Bundle()
-        var transducer: AbstractTransducer<*, *>?
+        var transducer: AbstractTransducer<*, *>
         for (i in transducables.indices) {
             transducer = transducables[i].transducer
             if (transducer != null) {
@@ -28,11 +28,9 @@ class AsyncBundleTransduceTask(protected var callback: OnBundleTransduceComplete
         return buffer
     }
 
-    override fun onPostExecute(bundle: Bundle) {
+    override fun onPostExecute(bundle: Bundle?) {
         super.onPostExecute(bundle)
-        if (callback != null) {
-            callback!!.onTransduceCompleted(bundle)
-        }
+        callback?.onTransduceCompleted(bundle!!)
     }
 
     interface OnBundleTransduceCompletedCallback {

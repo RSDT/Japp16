@@ -90,7 +90,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
             return
         }
         val i = position - 1
-        holder.setEigenaar(eigenaars[i]?:"?")
+        holder.setEigenaar(eigenaars[i])
         holder.setInzittendeInfos(data!![eigenaars[i]])
     }
 

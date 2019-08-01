@@ -24,11 +24,9 @@ import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.navigation_input_dialog.*
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
-import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody
 import nl.rsdt.japp.jotial.data.firebase.Location
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
@@ -122,7 +120,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
     }
 
     private fun createOSMMap(savedInstanceState: Bundle?, v: View): View {
-        StoragePermissionsChecker.check(activity)
+
         osmActive = true
 
         val osmView = org.osmdroid.views.MapView(activity)

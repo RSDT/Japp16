@@ -10,16 +10,8 @@ import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.auth.Authentication
-import nl.rsdt.japp.jotial.availability.GooglePlayServicesChecker
-import nl.rsdt.japp.jotial.availability.LocationPermissionsChecker
-import nl.rsdt.japp.jotial.availability.StoragePermissionsChecker
-import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.io.AppData
-import nl.rsdt.japp.jotial.maps.MapStorage
-import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.AuthApi
-import nl.rsdt.japp.jotial.net.apis.MetaApi
-import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -102,14 +94,14 @@ class PreLoginSplashActivity : Activity() {
                     AlertDialog.Builder(this@PreLoginSplashActivity)
                             .setTitle(getString(R.string.err_verification))
                             .setMessage(R.string.splash_activity_socket_timed_out)
-                            .setPositiveButton(R.string.continue_to_app) { dialogInterface, i -> determineAndStartNewActivity() }
+                            .setPositiveButton(R.string.try_again) { _, _ -> determineAndStartNewActivity() }
                             .create()
                             .show()
                 } else {
                     AlertDialog.Builder(this@PreLoginSplashActivity)
                             .setTitle(getString(R.string.err_verification))
                             .setMessage(t.toString())
-                            .setPositiveButton(getString(R.string.try_again)) { dialogInterface, i -> validate() }
+                            .setPositiveButton(getString(R.string.try_again)) { _, _ -> validate() }
                             .create()
                             .show()
                 }
@@ -119,12 +111,6 @@ class PreLoginSplashActivity : Activity() {
     }
 
     fun determineAndStartNewActivity() {
-        if (false) {
-            val intenti = Intent(this, IntroActivity::class.java)
-            startActivity(intenti)
-            finish()
-            return
-        }
 
 
         val key = JappPreferences.accountKey
@@ -133,19 +119,14 @@ class PreLoginSplashActivity : Activity() {
             startActivity(intent)
             finish()
         } else {
-            if (JappPreferences.isFirstRun) {
-
-                val intent = Intent(this, IntroActivity::class.java)
-                startActivity(intent)
-                finish()
-            } else {
 
                 val intent = Intent(this, SplashActivity::class.java)
                 startActivity(intent)
                 finish()
-            }
         }
+
     }
+
 
     companion object {
 
