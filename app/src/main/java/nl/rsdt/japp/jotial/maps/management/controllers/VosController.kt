@@ -9,10 +9,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import android.util.Pair
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.application.Japp
@@ -30,7 +27,6 @@ import nl.rsdt.japp.jotial.maps.sighting.SightingIcon
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
-import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
 import nl.rsdt.japp.jotial.net.apis.VosApi
 import okhttp3.Request
 import retrofit2.Call
@@ -49,6 +45,8 @@ import java.util.*
  */
 abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosInfo, VosController.VosTransducer.Result>(jotiMap), SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private val circleHandlers: MutableList<CircleHandler> = mutableListOf()
+    private val circleActivated: MutableMap<LatLng, Boolean> = HashMap()
     private var handler: Handler = Handler()
 
     private var runnable: UpdateCircleRunnable = UpdateCircleRunnable()
@@ -153,7 +151,9 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
         super.processResult(result)
         handler.post(runnable)
         for (marker in markers){
-            marker.setOnClickListener(CircleHandler(jotiMap, marker, handler))
+            val circleHandler = CircleHandler(marker, handler, circleActivated[marker.position]?:false)
+            circleHandlers.add(circleHandler)
+            marker.setOnClickListener(circleHandler)
         }
     }
 
@@ -180,6 +180,14 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
         }
     }
 
+    override fun onUpdateInvoked() {
+        super.onUpdateInvoked()
+        for (handler in circleHandlers){
+            handler.destroy()
+        }
+        circleHandlers.clear()
+
+    }
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(runnable)
@@ -306,8 +314,8 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
             }
 
 
-            override fun writeToParcel(dest: Parcel, flags: Int) {
-                super.writeToParcel(dest, flags)
+            override fun writeToParcel(dest: Parcel, i: Int) {
+                super.writeToParcel(dest, i)
                 dest.writeTypedList(items)
             }
 
@@ -323,28 +331,40 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
         }
 
     }
-    private inner class CircleHandler(private val map: IJotiMap, private val marker:IMarker, private val handler: Handler): Runnable, IMarker.OnClickListener{
+
+    private inner class CircleHandler(private val marker:IMarker, private val handler: Handler, startOpen:Boolean): Runnable, IMarker.OnClickListener{
         private var circle: ICircle? = null
         private val circleOptions: CircleOptions
-        private var isOpen: Boolean = false
+        private var isOpen: Boolean = startOpen
+        val color = Color.GRAY
+        val red = Color.red(color)
+        val green = Color.green(color)
+        val blue = Color.blue(color)
+        val alpha = JappPreferences.areasColorAlpha
         init {
             circleOptions = CircleOptions().apply {
                 this.center(marker.position)
                 this.strokeColor(Color.BLACK)
-                this.fillColor(Color.GRAY)
+                this.fillColor(Color.argb(alpha,red,green,blue))
                 this.strokeWidth(2f)
                 this.radius(getCircleRadius().toDouble())
             }
         }
 
-        fun getCircleRadius(): Float {
-            val identifier = Gson().fromJson(marker.title, MarkerIdentifier::class.java)
-            val time  = identifier.properties["time"]
-            val date = VosUtils.parseDate(time?: "1970-01-01 00:00:00:")
-            val diff = date?.let{ VosUtils.calculateTimeDifferenceInHoursFromNow(it).toDouble()}?:0.0
-            return if (diff < 2) {
-                date?.let { VosUtils.calculateRadius(it, JappPreferences.walkSpeed) } ?: 0f
-            } else {
+        fun getCircleRadius(): Float{
+            return try {
+                val identifier = marker.identifier
+                val time = identifier?.properties?.get("time")
+                val date = VosUtils.parseDate(time ?: "1970-01-01 00:00:00")
+                val diff = date?.let { VosUtils.calculateTimeDifferenceInHoursFromNow(it).toDouble() }
+                        ?: 0.0
+                if (diff < 30||true) {
+                    date?.let { VosUtils.calculateRadius(it, JappPreferences.walkSpeed) } ?: 0f
+                } else {
+                    0f
+                }
+            } catch(e: Exception){
+                Log.e(TAG, e.toString())
                 0f
             }
         }
@@ -354,8 +374,8 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
             /**
              * Calculate the difference in time between the vos date and now.
              */
-
-            circle?.setRadius(getCircleRadius())
+            val radius = getCircleRadius()
+            circle?.setRadius(radius)
 
             if (isOpen){
                 handler.postDelayed(this, JappPreferences.autoEnlargementIntervalInMs.toLong())
@@ -367,15 +387,33 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
             if (isOpen) {
                 circle = jotiMap.addCircle(circleOptions)
                 circle?.setVisible(true)
+                circleActivated[marker.position] = true
                 handler.post(this)
             }else{
                 circle?.setRadius(0f)
                 circle?.setVisible(false)
                 circle?.remove()
                 circle = null
+                circleActivated[marker.position] = false
             }
             marker.showInfoWindow()
             return false
+        }
+
+        fun destroy() {
+            try {
+                marker.setOnClickListener(null)
+            }catch (e:java.lang.Exception){
+
+            }
+            isOpen = false
+            try {
+                handler.removeCallbacks(this)
+            }catch (e:java.lang.Exception){
+
+            }
+            circle?.remove()
+
         }
 
     }

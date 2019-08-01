@@ -111,10 +111,10 @@ open class FragmentNavigationManager {
     fun setupMap(callback: IJotiMap.OnMapReadyCallback) {
         if (mapFragment == null) {//// TODO: 09/08/17 dit is nooit anders krijg je een runtime exception bij de vorige if statement
             mapFragment = manager!!.findFragmentByTag(FRAGMENT_MAP) as JappMapFragment
-            mapFragment!!.getMapAsync(callback)
-        } else {
-            mapFragment!!.getMapAsync(callback)
         }
+
+        mapFragment!!.getMapAsync(callback)
+
     }
 
     fun onBackPressed() {

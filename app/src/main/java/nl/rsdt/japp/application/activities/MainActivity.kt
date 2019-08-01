@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        JappPreferences.isFirstRun = false
         /**
          * Set a interceptor so that requests that give a 401 will result in a login activity.
          */

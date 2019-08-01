@@ -2,11 +2,14 @@ package nl.rsdt.japp.jotial.maps.wrapper.google
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.Gson
 
 import nl.rsdt.japp.application.Japp
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 
@@ -15,6 +18,20 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
  */
 
 class GoogleMarker(private val googleMarker: com.google.android.gms.maps.model.Marker) : IMarker {
+    override val identifier: MarkerIdentifier?
+        get() {
+            return if (title.isNotBlank()){
+                try {
+                    Gson().fromJson(title, MarkerIdentifier::class.java)?:null
+                } catch (e: Exception) {
+                    Log.e("GoogleMarker", e.toString())
+                    null
+                }
+            }
+            else {
+                null
+            }
+        }
     private var onClickListener: IMarker.OnClickListener? = null
 
     override var title: String
@@ -52,7 +69,7 @@ class GoogleMarker(private val googleMarker: com.google.android.gms.maps.model.M
         this.googleMarker.remove()
     }
 
-    override fun setOnClickListener(onClickListener: IMarker.OnClickListener) {
+    override fun setOnClickListener(onClickListener: IMarker.OnClickListener?) {
         this.onClickListener = onClickListener
     }
 

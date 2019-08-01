@@ -16,14 +16,12 @@ import kotlin.collections.HashMap
  * Created by mattijn on 07/08/17.
  */
 
-class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, GoogleMap.OnMarkerClickListener {
-    override fun onMarkerClick(m: Marker?):Boolean {
+class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, GoogleMap.OnInfoWindowClickListener {
+    override fun onInfoWindowClick(m: Marker?) {
         val marker = markers[m]
-        return if ( m !=  null) {
-            marker?.onClick()?:false
-        }else {
-            false
-        }
+        if ( m !=  null) {
+            marker?.onClick()
+            }
     }
 
 
@@ -167,7 +165,7 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, G
         val t = this
         view.getMapAsync { map ->
             googleMap = map
-            map.setOnMarkerClickListener(this)
+            map.setOnInfoWindowClickListener(this)
             map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(previousCameraPositionLatLng, previousZoom.toFloat(), previousRotation, 0f)))
             callback.onMapReady(t)
         }

@@ -14,6 +14,7 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.UiThread
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.gms.common.api.Status
@@ -107,10 +108,10 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         val useOSM = JappPreferences.useOSM()
 
         val view: View
-        if (useOSM) {
-            view = createOSMMap(savedInstanceState, v)
+        view = if (useOSM) {
+            createOSMMap(savedInstanceState, v)
         } else {
-            view = createGoogleMap(savedInstanceState, v)
+            createGoogleMap(savedInstanceState, v)
         }
 
         val menu = view.findViewById<FloatingActionMenu>(R.id.fab_menu)

@@ -112,7 +112,7 @@ abstract class MapItemController<I, O : AbstractTransducer.Result>(protected val
     }
 
     override fun onTransduceCompleted(result: O) {
-        if (!markers.isEmpty() || polylines.isNotEmpty() || polygons.isNotEmpty()) {
+        if (markers.isNotEmpty() || polylines.isNotEmpty() || polygons.isNotEmpty()) {
             merge(result)
         } else {
             processResult(result)
@@ -123,37 +123,36 @@ abstract class MapItemController<I, O : AbstractTransducer.Result>(protected val
         val markers = result.markers
         var marker: IMarker
         for (m in markers.indices) {
-            marker = jotiMap!!.addMarker(markers[m])
+            marker = jotiMap.addMarker(markers[m])
             marker.isVisible = visiblity
             this.markers.add(marker)
         }
 
         val polylines = result.polylines
         var polyline: IPolyline
-        for (p in polylines!!.indices) {
-            polyline = jotiMap!!.addPolyline(polylines[p])
+        for (p in polylines.indices) {
+            polyline = jotiMap.addPolyline(polylines[p])
             polyline.setVisible(visiblity)
             this.polylines.add(polyline)
         }
 
         val polygons = result.polygons
         var polygon: IPolygon
-        for (g in polygons!!.indices) {
-            polygon = jotiMap!!.addPolygon(polygons[g])
+        for (g in polygons.indices) {
+            polygon = jotiMap.addPolygon(polygons[g])
             polygon.setVisible(visiblity)
             this.polygons.add(polygon)
         }
 
         val circles = result.circles ?: emptyList<CircleOptions>()
         for (c in circles.indices) {
-            jotiMap?.also {
-                val circle = it.addCircle(circles[c])
+
+                val circle = jotiMap.addCircle(circles[c])
                 circle.setVisible(visiblity)
                 this.circlesController[circle] = circle.fillColor
                 if (!JappPreferences.fillCircles()) {
                     circle.fillColor = Color.TRANSPARENT
                 }
-            }
         }
     }
 

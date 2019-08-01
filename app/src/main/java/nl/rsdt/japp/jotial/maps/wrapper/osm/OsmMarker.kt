@@ -21,6 +21,8 @@ import org.osmdroid.views.MapView
 
 class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osmMap: MapView) : IMarker {
     val osmMarker: org.osmdroid.views.overlay.Marker = org.osmdroid.views.overlay.Marker(osmMap)
+    override val identifier:MarkerIdentifier?
+
     private var onClickListener: IMarker.OnClickListener? = null
 
     override var title: String
@@ -53,11 +55,11 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osm
 
         if (markerOptions.title != null && markerOptions.title.isNotEmpty()) {
             val buff = StringBuilder()
-            var identifier: MarkerIdentifier? = null
-            try {
-                identifier = Gson().fromJson(markerOptions.title, MarkerIdentifier::class.java)
+            identifier  = try {
+                Gson().fromJson(markerOptions.title, MarkerIdentifier::class.java)?:null
             } catch (e: Exception) {
                 Log.e("OsmMarker", e.toString())
+                null
             }
 
             if (identifier != null) {
@@ -90,6 +92,8 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osm
             } else {
                 osmMarker.title = markerOptions.title
             }
+        }else{
+            identifier = null
         }
 
 
@@ -134,7 +138,7 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osm
         osmMap.invalidate()
     }
 
-    override fun setOnClickListener(onClickListener: IMarker.OnClickListener) {
+    override fun setOnClickListener(onClickListener: IMarker.OnClickListener?) {
         this.onClickListener = onClickListener
     }
 

@@ -42,10 +42,8 @@ class MapStorage : AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
     }
 
     fun clear() {
-        if (data != null) {
-            data!!.clear()
-            data = null
-        }
+        data?.clear()
+        data = null
     }
 
     override fun onTransduceCompleted(bundle: Bundle) {

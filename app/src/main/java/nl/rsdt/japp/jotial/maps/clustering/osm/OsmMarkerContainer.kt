@@ -62,12 +62,12 @@ class OsmMarkerContainer(private val map: OsmJotiMap) : SharedPreferences.OnShar
                             .fillColor(Color.argb(80, 200, 200, 200)))
                     visible = true
                 } else {
-                    if (visible) {
+                    visible = if (visible) {
                         circle!!.setRadius(0f)
-                        visible = false
+                        false
                     } else {
                         circle!!.setRadius(500f)
-                        visible = true
+                        true
                     }
                 }
                 m.showInfoWindow()

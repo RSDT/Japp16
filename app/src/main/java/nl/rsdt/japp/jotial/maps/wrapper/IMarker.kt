@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.maps.wrapper
 import android.graphics.Bitmap
 
 import com.google.android.gms.maps.model.LatLng
+import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 
 /**
  * Created by mattijn on 08/08/17.
@@ -22,7 +23,7 @@ interface IMarker {
 
     fun remove()
 
-    fun setOnClickListener(onClickListener: IMarker.OnClickListener)
+    fun setOnClickListener(onClickListener: IMarker.OnClickListener?)
 
     fun setIcon(drawableHunt: Int)
 
@@ -34,4 +35,6 @@ interface IMarker {
     interface OnClickListener {
         fun OnClick(m: IMarker): Boolean
     }
+
+    val identifier: MarkerIdentifier?
 }

@@ -79,10 +79,10 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         if (intent != null && intent.hasExtra(SplashActivity.LOAD_ID)) {
             val bundle = intent.getBundleExtra(SplashActivity.LOAD_ID)
             if (bundle != null) {
-                for ((_, controller) in controllers!!) {
+                for ((_, controller) in controllers) {
                     controller.onIntentCreate(bundle)
                 }
-                sgController!!.onIntentCreate(bundle)
+                sgController.onIntentCreate(bundle)
                 bundle.clear()
                 intent.removeExtra(SplashActivity.LOAD_ID)
             }
@@ -96,20 +96,20 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      */
     fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
-            for ((_, controller) in controllers!!) {
+            for ((_, controller) in controllers) {
                 controller.onCreate(savedInstanceState)
             }
-            sgController!!.onCreate(savedInstanceState)
+            sgController.onCreate(savedInstanceState)
 
             isRecreated = savedInstanceState.getBoolean(RECREATED_KEY)
         } else {
             val storage = MapStorage.instance
             val data = storage.data
             if (data != null) {
-                for ((_, controller) in controllers!!) {
+                for ((_, controller) in controllers) {
                     controller.onIntentCreate(data)
                 }
-                sgController!!.onIntentCreate(data)
+                sgController.onIntentCreate(data)
                 storage.clear()
             }
         }
@@ -122,10 +122,10 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      */
     fun onSaveInstanceState(saveInstanceState: Bundle?) {
         if (saveInstanceState != null) {
-            for ((_, controller) in controllers!!) {
+            for ((_, controller) in controllers) {
                 controller.onSaveInstanceState(saveInstanceState)
             }
-            sgController!!.onSaveInstanceState(saveInstanceState)
+            sgController.onSaveInstanceState(saveInstanceState)
 
             /**
              * Indicate the MapManager has already been created once.
@@ -196,7 +196,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         when (key) {
             JappPreferences.AREAS -> {
 
-                for (controller in controllers!!.values) {
+                for (controller in controllers.values) {
                     if (controller is VosController) {
                         controller.visiblity = false
                     }
@@ -210,8 +210,8 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
 
 
                 //TODO: make this nicer and less hacky
-                if (sgController!!.clusterManager is ScoutingGroepClusterManager) {
-                    val clusterManager = sgController!!.clusterManager as ScoutingGroepClusterManager?
+                if (sgController.clusterManager is ScoutingGroepClusterManager) {
+                    val clusterManager = sgController.clusterManager as ScoutingGroepClusterManager?
                     clusterManager!!.reRender()
                 }
             }
@@ -248,7 +248,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         for ((_, controller) in controllers) {
             controller.onUpdateInvoked()
         }
-        sgController!!.onUpdateInvoked()
+        sgController.onUpdateInvoked()
     }
 
     /**
@@ -297,7 +297,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
              */
             update()
         }
-        sgController!!.onMapReady(jotiMap)
+        sgController.onMapReady(jotiMap)
 
         for (controller in controllers.values) {
             if (controller is VosController) {
