@@ -2,6 +2,7 @@ package nl.rsdt.japp.jotial.maps.management.controllers
 
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcel
@@ -26,7 +27,10 @@ import nl.rsdt.japp.jotial.maps.management.StandardMapItemController
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
 import nl.rsdt.japp.jotial.maps.misc.VosUtils
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon
+import nl.rsdt.japp.jotial.maps.wrapper.ICircle
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
+import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
 import nl.rsdt.japp.jotial.net.apis.VosApi
 import okhttp3.Request
 import retrofit2.Call
@@ -43,11 +47,11 @@ import java.util.*
  * @since 31-7-2016
  * Description...
  */
-abstract class VosController : StandardMapItemController<VosInfo, VosController.VosTransducer.Result>(), SharedPreferences.OnSharedPreferenceChangeListener {
+abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosInfo, VosController.VosTransducer.Result>(jotiMap), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private var handler: Handler? = Handler()
+    private var handler: Handler = Handler()
 
-    private var runnable: UpdateCircleRunnable? = UpdateCircleRunnable()
+    private var runnable: UpdateCircleRunnable = UpdateCircleRunnable()
 
     abstract val team: String
 
@@ -132,16 +136,14 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
     override fun searchFor(query: String): IMarker? {
         val results = ArrayList<BaseInfo>()
         var info: VosInfo?
-        for (i in items!!.indices) {
-            info = items!![i]
-            if (info != null) {
+        for (i in items.indices) {
+            info = items[i]
 
-                var current: String?
-                val items = arrayOf(info.note, info.extra)
-                for (x in items.indices) {
-                    current = items[x]
-                    if (current?.toLowerCase(Locale.ROOT)?.startsWith(query) == true) results.add(info)
-                }
+            var current: String?
+            val items = arrayOf(info.note, info.extra)
+            for (x in items.indices) {
+                current = items[x]
+                if (current?.toLowerCase(Locale.ROOT)?.startsWith(query) == true) results.add(info)
             }
         }
         return null
@@ -149,18 +151,19 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
 
     override fun processResult(result: VosTransducer.Result) {
         super.processResult(result)
-        handler!!.post(runnable)
+        handler.post(runnable)
+        for (marker in markers){
+            marker.setOnClickListener(CircleHandler(jotiMap, marker, handler))
+        }
     }
 
     override fun provide(): MutableList<String> {
         val entries = ArrayList<String>()
         var info: VosInfo?
-        for (i in items!!.indices) {
-            info = items!![i]
-            if (info != null) {
-                entries.add(info.note  ?: "null")
-                entries.add(info.extra ?: "null")
-            }
+        for (i in items.indices) {
+            info = items[i]
+            entries.add(info.note  ?: "null")
+            entries.add(info.extra ?: "null")
         }
         return entries
     }
@@ -168,25 +171,18 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         super.onSharedPreferenceChanged(sharedPreferences, key)
         if (JappPreferences.AUTO_ENLARGMENT == key) {
-            handler!!.removeCallbacks(runnable)
-            if (sharedPreferences.getBoolean(key, true)) {
-                handler!!.post(runnable)
+            handler.removeCallbacks(runnable)
+            if (sharedPreferences.getBoolean(JappPreferences.AUTO_ENLARGMENT, true)) {
+                handler.post(runnable)
             } else {
-                handler!!.removeCallbacks(runnable)
+                handler.removeCallbacks(runnable)
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        if (handler != null) {
-            if (runnable != null) {
-                handler!!.removeCallbacks(runnable)
-            }
-            handler = null
-            runnable = null
-        }
+        handler.removeCallbacks(runnable)
 
         JappPreferences.visiblePreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
@@ -327,16 +323,71 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
         }
 
     }
+    private inner class CircleHandler(private val map: IJotiMap, private val marker:IMarker, private val handler: Handler): Runnable, IMarker.OnClickListener{
+        private var circle: ICircle? = null
+        private val circleOptions: CircleOptions
+        private var isOpen: Boolean = false
+        init {
+            circleOptions = CircleOptions().apply {
+                this.center(marker.position)
+                this.strokeColor(Color.BLACK)
+                this.fillColor(Color.GRAY)
+                this.strokeWidth(2f)
+                this.radius(getCircleRadius().toDouble())
+            }
+        }
 
+        fun getCircleRadius(): Float {
+            val identifier = Gson().fromJson(marker.title, MarkerIdentifier::class.java)
+            val time  = identifier.properties["time"]
+            val date = VosUtils.parseDate(time?: "1970-01-01 00:00:00:")
+            val diff = date?.let{ VosUtils.calculateTimeDifferenceInHoursFromNow(it).toDouble()}?:0.0
+            return if (diff < 2) {
+                date?.let { VosUtils.calculateRadius(it, JappPreferences.walkSpeed) } ?: 0f
+            } else {
+                0f
+            }
+        }
+        override fun run() {
+
+
+            /**
+             * Calculate the difference in time between the vos date and now.
+             */
+
+            circle?.setRadius(getCircleRadius())
+
+            if (isOpen){
+                handler.postDelayed(this, JappPreferences.autoEnlargementIntervalInMs.toLong())
+            }
+        }
+
+        override fun OnClick(m: IMarker): Boolean {
+            isOpen = !isOpen
+            if (isOpen) {
+                circle = jotiMap.addCircle(circleOptions)
+                circle?.setVisible(true)
+                handler.post(this)
+            }else{
+                circle?.setRadius(0f)
+                circle?.setVisible(false)
+                circle?.remove()
+                circle = null
+            }
+            marker.showInfoWindow()
+            return false
+        }
+
+    }
     private inner class UpdateCircleRunnable : Runnable {
 
         override fun run() {
             val circles = ArrayList(this@VosController.circlesController.keys)
-            if (!circles.isEmpty()) {
+            if (circles.isNotEmpty()) {
                 val circle = circles[0]
 
-                val last = items!!.size - 1
-                val info = items!![last]
+                val last = items.size - 1
+                val info = items[last]
 
                 /**
                  * Parse the date.
@@ -354,7 +405,7 @@ abstract class VosController : StandardMapItemController<VosInfo, VosController.
                 if (diff > 0.0 && diff <= 2.0) {
                     circle.setRadius(VosUtils.calculateRadius(date!!, JappPreferences.walkSpeed))
                     if (JappPreferences.isAutoEnlargementEnabled) {
-                        handler!!.postDelayed(this, JappPreferences.autoEnlargementIntervalInMs.toLong())
+                        handler.postDelayed(this, JappPreferences.autoEnlargementIntervalInMs.toLong())
                     }
                 } else {
                     circle.remove()

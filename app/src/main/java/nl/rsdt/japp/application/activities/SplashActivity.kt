@@ -14,6 +14,7 @@ import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.io.AppData
+import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.MapStorage
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.MetaApi
@@ -182,9 +183,10 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback, EasyPermi
     }
     private fun start() {
         val storage = MapStorage.instance
+        val mapManager = MapManager.instance
         Deelgebied.initialize(this.resources)
         storage.add(this)
-        storage.load()
+        storage.load(mapManager)
     }
 
     override fun onMapDataLoaded() {

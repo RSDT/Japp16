@@ -197,12 +197,11 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
     }
 
     override fun onFinish() {
-        if (dialog != null) {
-            dialog!!.show()
-            (dialog!!.findViewById<View>(R.id.sighting_dialog_title) as TextView).text = context!!.getString(R.string.confirm_type, type)
-            (dialog!!.findViewById<View>(R.id.sighting_dialog_team_label) as TextView).text = context!!.getString(R.string.deelgebied_name, deelgebied!!.name)
-        }
-        jotiMap!!.snapshot(this@SightingSession)
+
+            dialog?.show()
+            (dialog?.findViewById<View>(R.id.sighting_dialog_title) as TextView?)?.text = context!!.getString(R.string.confirm_type, type)
+            (dialog?.findViewById<View>(R.id.sighting_dialog_team_label) as TextView?)?.text = context!!.getString(R.string.deelgebied_name, deelgebied!!.name)
+        jotiMap?.snapshot(this@SightingSession)
     }
 
     override fun onCancel() {

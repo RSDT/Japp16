@@ -20,6 +20,7 @@ import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.management.MapItemController
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.HunterApi
 import retrofit2.Call
@@ -33,7 +34,7 @@ import java.util.*
  * @since 31-7-2016
  * Description...
  */
-class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>>, HunterController.HunterTransducer.Result>() {
+class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, ArrayList<HunterInfo>>, HunterController.HunterTransducer.Result>(jotiMap) {
 
     /**
      * Handler for updating the Hunters.
@@ -63,12 +64,8 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
 
     override fun onIntentCreate(bundle: Bundle) {
         super.onIntentCreate(bundle)
-        if (bundle != null) {
-            val result = bundle.getParcelable<HunterTransducer.Result>(BUNDLE_ID)
-            if (result != null) {
-                data = result.data
-            }
-        }
+        val result = bundle.getParcelable<HunterTransducer.Result>(BUNDLE_ID)
+        data = result?.data ?: data
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,11 +82,7 @@ class HunterController : MapItemController<HashMap<String, ArrayList<HunterInfo>
                         }
                     }
                     val result = data?.let { transducer.generate(it) }
-                    if (jotiMap != null) {
-                        result?.let { processResult(it) }
-                    } else {
-                        buffer = result
-                    }
+                    result?.let { processResult(it) }
                 }
             }
         }

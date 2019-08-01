@@ -4,6 +4,7 @@ import android.os.Bundle
 import nl.rsdt.japp.jotial.maps.clustering.ScoutingGroepController
 import nl.rsdt.japp.jotial.maps.management.MapItemController
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncBundleTransduceTask
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import java.util.*
 
 /**
@@ -33,11 +34,11 @@ class MapStorage : AsyncBundleTransduceTask.OnBundleTransduceCompletedCallback {
         callbacks.remove(callback)
     }
 
-    fun load() {
+    fun load(mapManager: MapManager) {
         /**
          * Load in the map data.
          */
-        AsyncBundleTransduceTask(this).execute(*MapItemController.all)
+        AsyncBundleTransduceTask(this).execute(*mapManager.controllers.values.toTypedArray())
     }
 
     fun clear() {

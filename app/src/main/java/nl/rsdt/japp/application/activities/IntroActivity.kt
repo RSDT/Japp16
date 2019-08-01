@@ -9,6 +9,7 @@ import com.github.paolorotolo.appintro.AppIntro
 import com.github.paolorotolo.appintro.AppIntroFragment
 
 import nl.rsdt.japp.R
+import nl.rsdt.japp.application.JappPreferences
 
 /**
  * @author Dingenis Sieger Sinke
@@ -55,7 +56,7 @@ class IntroActivity : AppIntro() {
 
     override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
-
+        JappPreferences.isFirstRun = false
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

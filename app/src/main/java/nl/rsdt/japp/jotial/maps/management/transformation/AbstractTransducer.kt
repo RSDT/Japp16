@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import nl.rsdt.japp.jotial.BundleIdentifiable
 import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncTransduceTask
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Dingenis Sieger Sinke
@@ -54,19 +55,19 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
         /**
          * The Marker list.
          */
-        var markers: ArrayList<Pair<MarkerOptions, Bitmap?>>
+        var markers: MutableList<Pair<MarkerOptions, Bitmap?>>
             protected set
 
         /**
          * The Polyline list.
          */
-        var polylines: ArrayList<PolylineOptions>? = null
+        var polylines: MutableList<PolylineOptions> = ArrayList()
             protected set
 
         /**
          * The Polygon list.
          */
-        var polygons: ArrayList<PolygonOptions>? = null
+        var polygons: MutableList<PolygonOptions> = ArrayList()
             protected set
 
         /**
@@ -75,7 +76,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
         /**
          * Gets the circlesController.
          */
-        var circles: ArrayList<CircleOptions>? = null
+        var circles: MutableList<CircleOptions> = ArrayList()
             protected set
 
         /**
@@ -89,21 +90,21 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
          * Adds a PolylineOptions object to the polyline list.
          */
         fun add(options: PolylineOptions) {
-            polylines!!.add(options)
+            polylines.add(options)
         }
 
         /**
          * Adds a PolygonOptions object to the polygon list.
          */
         fun add(options: PolygonOptions) {
-            polygons!!.add(options)
+            polygons.add(options)
         }
 
         /**
          * Adds a CircleOptions object to the polygon list.
          */
         fun add(options: CircleOptions) {
-            circles!!.add(options)
+            circles.add(options)
         }
 
         protected constructor() {
@@ -119,7 +120,7 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
          * @param in The parcel where the result was written to
          */
         protected constructor(`in`: Parcel) {
-            bundleId = `in`.readString()
+            bundleId = `in`.readString()?:"null"
             markers = ArrayList()
             val optionsList = `in`.createTypedArrayList(MarkerOptions.CREATOR)
             val bitmapList = `in`.createTypedArrayList(Bitmap.CREATOR)

@@ -10,13 +10,22 @@ import com.google.android.gms.maps.model.*
 import nl.rsdt.japp.jotial.maps.misc.CameraUtils
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter
 import nl.rsdt.japp.jotial.maps.wrapper.*
-import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Created by mattijn on 07/08/17.
  */
 
-class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
+class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, GoogleMap.OnMarkerClickListener {
+    override fun onMarkerClick(m: Marker?):Boolean {
+        val marker = markers[m]
+        return if ( m !=  null) {
+            marker?.onClick()?:false
+        }else {
+            false
+        }
+    }
+
 
     var googleMap: GoogleMap? = null
         private set
@@ -24,7 +33,8 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         get() {
             return GoogleCameraPosition(googleMap!!.cameraPosition)
         }
-    private var previousCameraPositionLatLng: LatLng? = null
+    private val markers: MutableMap<Marker, GoogleMarker> = HashMap()
+    private var previousCameraPositionLatLng: LatLng = LatLng(0.0,0.0)
 
     private var previousZoom: Int = 0
 
@@ -75,8 +85,10 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         } else {
             markerOptions.first.icon(BitmapDescriptorFactory.defaultMarker())
         }
-        return GoogleMarker(googleMap!!.addMarker(markerOptions.first))
-
+        val gMarker = googleMap!!.addMarker(markerOptions.first)
+        val marker = GoogleMarker(gMarker)
+        markers[gMarker] = marker
+        return marker
     }
 
     override fun addPolyline(polylineOptions: PolylineOptions): IPolyline {
@@ -96,7 +108,9 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         if (onMapClickListener == null) {
             googleMap!!.setOnMapClickListener(null)
         } else {
-            googleMap!!.setOnMapClickListener { latLng -> onMapClickListener.onMapClick(latLng) }
+            googleMap!!.setOnMapClickListener { latLng ->
+                onMapClickListener.onMapClick(latLng)
+            }
         }
     }
 
@@ -153,9 +167,8 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap {
         val t = this
         view.getMapAsync { map ->
             googleMap = map
-            if (previousCameraPositionLatLng != null) {
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(previousCameraPositionLatLng!!, previousZoom.toFloat(), previousRotation, 0f)))
-            }
+            map.setOnMarkerClickListener(this)
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(previousCameraPositionLatLng, previousZoom.toFloat(), previousRotation, 0f)))
             callback.onMapReady(t)
         }
     }

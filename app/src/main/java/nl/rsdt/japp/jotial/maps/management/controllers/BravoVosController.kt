@@ -2,6 +2,7 @@ package nl.rsdt.japp.jotial.maps.management.controllers
 
 import android.os.Bundle
 import nl.rsdt.japp.jotial.maps.wrapper.ICircle
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import java.util.ArrayList
 
 /**
@@ -17,7 +18,7 @@ import java.util.ArrayList
  * @since 31-7-2016
  * Description...
  */
-class BravoVosController() : VosController() {
+class BravoVosController(jotiMap: IJotiMap) : VosController(jotiMap) {
 
 
     override val team: String

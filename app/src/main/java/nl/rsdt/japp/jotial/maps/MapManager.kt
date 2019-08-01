@@ -20,6 +20,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
 import nl.rsdt.japp.service.cloud.messaging.MessageManager
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -30,6 +31,9 @@ import java.util.*
  */
 class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private constructor(){
+
+    }
     /**
      * The value that determines if the MapManager is already recreated once.
      */
@@ -44,12 +48,12 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
     /**
      * The HashMap with the MapItemControllers.
      */
-    private var controllers: HashMap<String, MapItemController<*, *>> = HashMap()
+    var controllers: HashMap<String, MapItemController<*, *>> = HashMap()
 
     /**
      * The Controller for the ScoutingGroep map items.
      */
-    private var sgController: ScoutingGroepController? = ScoutingGroepController()
+    private var sgController: ScoutingGroepController = ScoutingGroepController()
 
 
     /**
@@ -62,15 +66,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      * Initializes a new instance of MapManager.
      */
     init {
-        controllers[AlphaVosController.CONTROLLER_ID] = AlphaVosController()
-        controllers[BravoVosController.CONTROLLER_ID] = BravoVosController()
-        controllers[CharlieVosController.CONTROLLER_ID] = CharlieVosController()
-        controllers[DeltaVosController.CONTROLLER_ID] = DeltaVosController()
-        controllers[EchoVosController.CONTROLLER_ID] = EchoVosController()
-        controllers[FoxtrotVosController.CONTROLLER_ID] = FoxtrotVosController()
-        controllers[XrayVosController.CONTROLLER_ID] = XrayVosController()
-        controllers[HunterController.CONTROLLER_ID] = HunterController()
-        controllers[FotoOpdrachtController.CONTROLLER_ID] = FotoOpdrachtController()
+
 
         JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
     }
@@ -262,6 +258,15 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      */
     fun onMapReady(jotiMap: IJotiMap) {
         this.jotiMap = jotiMap
+        controllers[AlphaVosController.CONTROLLER_ID] = AlphaVosController(jotiMap)
+        controllers[BravoVosController.CONTROLLER_ID] = BravoVosController(jotiMap)
+        controllers[CharlieVosController.CONTROLLER_ID] = CharlieVosController(jotiMap)
+        controllers[DeltaVosController.CONTROLLER_ID] = DeltaVosController(jotiMap)
+        controllers[EchoVosController.CONTROLLER_ID] = EchoVosController(jotiMap)
+        controllers[FoxtrotVosController.CONTROLLER_ID] = FoxtrotVosController(jotiMap)
+        controllers[XrayVosController.CONTROLLER_ID] = XrayVosController(jotiMap)
+        controllers[HunterController.CONTROLLER_ID] = HunterController(jotiMap)
+        controllers[FotoOpdrachtController.CONTROLLER_ID] = FotoOpdrachtController(jotiMap)
 
         /**
          * Set the type and the style of the map.
@@ -291,13 +296,6 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
              * Update the controllers.
              */
             update()
-        }
-
-        /**
-         * Loop trough each controller and call the OnMapReadyCallback.
-         */
-        for ((_, controller) in controllers) {
-            controller.onMapReady(jotiMap)
         }
         sgController!!.onMapReady(jotiMap)
 
@@ -333,11 +331,6 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         if (jotiMap != null) {
             jotiMap = null
         }
-
-        if (sgController != null) {
-            //sgController.onDestroy();
-            sgController = null
-        }
         for (entry in controllers) {
             val controller = entry.value
             controller.onDestroy()
@@ -368,5 +361,8 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
          * Defines a key for storing the isRecreated value.
          */
         private val RECREATED_KEY = "RECREATED"
+
+        public val instance = MapManager()
+
     }
 }

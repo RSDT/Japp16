@@ -38,24 +38,9 @@ class GoogleMarker(private val googleMarker: com.google.android.gms.maps.model.M
     override val id: String
         get() = googleMarker.id
 
-    private fun onClick(): Boolean {
-        if (allOnClickLister != null) {
-            if (!allOnClickLister!!.OnClick(this)) {
-                if (this.onClickListener == null) {
-                    showInfoWindow()
-                    return false
-                } else {
-                    return this.onClickListener!!.OnClick(this)
-                }
-            }
-        } else {
-            if (this.onClickListener == null) {
-                showInfoWindow()
-                return false
-            } else {
-                return this.onClickListener!!.OnClick(this)
-            }
-        }
+    internal fun onClick(): Boolean {
+        allOnClickLister?.OnClick(this)
+        onClickListener?.OnClick(this)
         return false
     }
 

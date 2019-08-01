@@ -19,6 +19,7 @@ import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.FotoApi
 import org.apache.commons.lang3.mutable.Mutable
@@ -31,7 +32,7 @@ import java.util.*
  * @since 31-7-2016
  * Description...
  */
-class FotoOpdrachtController : StandardMapItemController<FotoOpdrachtInfo, FotoOpdrachtController.FotoOpdrachtTransducer.Result>() {
+class FotoOpdrachtController (iJotiMap: IJotiMap): StandardMapItemController<FotoOpdrachtInfo, FotoOpdrachtController.FotoOpdrachtTransducer.Result>(iJotiMap) {
 
     override val id: String
         get() = CONTROLLER_ID

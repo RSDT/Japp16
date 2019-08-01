@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
     /**
      * Manages the GoogleMap.
      */
-    private var mapManager: MapManager = MapManager()
+    private var mapManager: MapManager = MapManager.instance
 
     /**
      * Manages the navigation between the fragments.

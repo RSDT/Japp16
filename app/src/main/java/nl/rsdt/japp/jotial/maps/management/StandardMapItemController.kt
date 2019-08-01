@@ -3,6 +3,8 @@ package nl.rsdt.japp.jotial.maps.management
 import android.os.Bundle
 import android.os.Parcelable
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
+import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
 import java.util.*
 
 /**
@@ -11,9 +13,9 @@ import java.util.*
  * @since 4-9-2016
  * Description...
  */
-abstract class StandardMapItemController<I : Parcelable, O : AbstractTransducer.StandardResult<I>> : MapItemController<ArrayList<I>, O>() {
+abstract class StandardMapItemController<I : Parcelable, O : AbstractTransducer.StandardResult<I>>(jotiMap: IJotiMap) : MapItemController<ArrayList<I>, O>(jotiMap) {
 
-    protected var items: ArrayList<I>? = ArrayList()
+    protected var items: ArrayList<I> = ArrayList()
 
     override fun onIntentCreate(bundle: Bundle) {
         super.onIntentCreate(bundle)
@@ -26,12 +28,8 @@ abstract class StandardMapItemController<I : Parcelable, O : AbstractTransducer.
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState?.containsKey(bundleId)== true) {
             this.items = savedInstanceState.getParcelableArrayList(bundleId)
-            val result = transducer.generate(items!!)
-            if (jotiMap != null) {
-                processResult(result)
-            } else {
-                buffer = result
-            }
+            val result = transducer.generate(items)
+            processResult(result)
         }
     }
 
@@ -46,22 +44,15 @@ abstract class StandardMapItemController<I : Parcelable, O : AbstractTransducer.
 
     override fun processResult(result: O) {
         super.processResult(result)
-        this.items!!.addAll(result.items)
+        this.items.addAll(result.items)
     }
 
     override fun clear() {
         super.clear()
-        items!!.clear()
+        items.clear()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        if (items != null) {
-            /**
-             * Do not clear the list or the parcelable list inside the bundle will be empty as well
-             */
-            items = null
-        }
     }
 }

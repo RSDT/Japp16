@@ -16,12 +16,12 @@ import java.util.*
  */
 interface MapItemHolder {
 
-    val markers: ArrayList<IMarker>
+    val markers: List<IMarker>
 
-    val polylines: ArrayList<IPolyline>
+    val polylines: List<IPolyline>
 
-    val polygons: ArrayList<IPolygon>
+    val polygons: List<IPolygon>
 
-    val circles: ArrayList<ICircle>
+    val circles: List<ICircle>
 
 }

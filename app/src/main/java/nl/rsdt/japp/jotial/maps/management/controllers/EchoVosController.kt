@@ -1,5 +1,7 @@
 package nl.rsdt.japp.jotial.maps.management.controllers
 
+import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
+
 
 /**
  * @author Dingenis Sieger Sinke
@@ -7,7 +9,7 @@ package nl.rsdt.japp.jotial.maps.management.controllers
  * @since 31-7-2016
  * Description...
  */
-class EchoVosController : VosController() {
+class EchoVosController(jotiMap: IJotiMap) : VosController(jotiMap) {
 
     override val team: String
         get() = "e"

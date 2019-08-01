@@ -20,7 +20,7 @@ import org.osmdroid.views.MapView
  */
 
 class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osmMap: MapView) : IMarker {
-    val osmMarker: org.osmdroid.views.overlay.Marker
+    val osmMarker: org.osmdroid.views.overlay.Marker = org.osmdroid.views.overlay.Marker(osmMap)
     private var onClickListener: IMarker.OnClickListener? = null
 
     override var title: String
@@ -47,12 +47,11 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osm
         get() = "1"
 
     init {
-        osmMarker = org.osmdroid.views.overlay.Marker(osmMap)
         val markerOptions = markerOptionsPair.first
         this.setIcon(markerOptionsPair.second)
         this.position = markerOptions.position
 
-        if (markerOptions.title != null && !markerOptions.title.isEmpty()) {
+        if (markerOptions.title != null && markerOptions.title.isNotEmpty()) {
             val buff = StringBuilder()
             var identifier: MarkerIdentifier? = null
             try {
@@ -108,19 +107,19 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osm
     private fun onClick(): Boolean {
         if (allOnClickLister != null) {
             if (!allOnClickLister!!.OnClick(this)) {
-                if (this.onClickListener == null) {
+                return if (this.onClickListener == null) {
                     showInfoWindow()
-                    return false
+                    false
                 } else {
-                    return this.onClickListener!!.OnClick(this)
+                    this.onClickListener!!.OnClick(this)
                 }
             }
         } else {
-            if (this.onClickListener == null) {
+            return if (this.onClickListener == null) {
                 showInfoWindow()
-                return false
+                false
             } else {
-                return this.onClickListener!!.OnClick(this)
+                this.onClickListener!!.OnClick(this)
             }
         }
         return false
