@@ -46,7 +46,7 @@ import java.util.*
 abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosInfo, VosController.VosTransducer.Result>(jotiMap), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val circleHandlers: MutableList<CircleHandler> = mutableListOf()
-    private val circleActivated: MutableMap<LatLng, Boolean> = HashMap()
+
     private var handler: Handler = Handler()
 
     private var runnable: UpdateCircleRunnable = UpdateCircleRunnable()
@@ -151,7 +151,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
         super.processResult(result)
         handler.post(runnable)
         for (marker in markers){
-            val circleHandler = CircleHandler(marker, handler, circleActivated[marker.position]?:false)
+            val circleHandler = CircleHandler(marker)
             circleHandlers.add(circleHandler)
             marker.setOnClickListener(circleHandler)
         }
@@ -332,10 +332,10 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
 
     }
 
-    private inner class CircleHandler(private val marker:IMarker, private val handler: Handler, startOpen:Boolean): Runnable, IMarker.OnClickListener{
+    private inner class CircleHandler(private val marker:IMarker): Runnable, IMarker.OnClickListener{
         private var circle: ICircle? = null
         private val circleOptions: CircleOptions
-        private var isOpen: Boolean = startOpen
+        private var isOpen: Boolean = false
         val color = Color.GRAY
         val red = Color.red(color)
         val green = Color.green(color)
@@ -348,6 +348,9 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                 this.fillColor(Color.argb(alpha,red,green,blue))
                 this.strokeWidth(2f)
                 this.radius(getCircleRadius().toDouble())
+            }
+            if (isOpen){
+                handler.post(this)
             }
         }
 
@@ -387,14 +390,12 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
             if (isOpen) {
                 circle = jotiMap.addCircle(circleOptions)
                 circle?.setVisible(true)
-                circleActivated[marker.position] = true
                 handler.post(this)
             }else{
                 circle?.setRadius(0f)
                 circle?.setVisible(false)
                 circle?.remove()
                 circle = null
-                circleActivated[marker.position] = false
             }
             marker.showInfoWindow()
             return false

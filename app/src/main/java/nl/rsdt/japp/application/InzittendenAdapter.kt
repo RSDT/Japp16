@@ -11,11 +11,8 @@ import java.util.*
 
 class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>() {
 
-    private var data: List<AutoInzittendeInfo>? = null
+    private var data: List<AutoInzittendeInfo> = ArrayList()
 
-    init {
-        data = ArrayList()
-    }
 
     fun setData(newData: List<AutoInzittendeInfo>) {
         this.data = newData
@@ -29,13 +26,11 @@ class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>
         private var inzittendeInfo: AutoInzittendeInfo? = null
 
         fun refresh() {
-            val text: String
-            if (inzittendeInfo != null) {
-                text = inzittendeInfo!!.gebruikersNaam + " " + inzittendeInfo!!.rol
+            v.text = if (inzittendeInfo != null) {
+                """${inzittendeInfo?.gebruikersNaam} - ${inzittendeInfo?.rol}"""
             } else {
-                text = Japp.appResources.getString(R.string.unkown)
+                Japp.appResources.getString(R.string.unkown)
             }
-            v.text = text
         }
 
 
@@ -55,11 +50,11 @@ class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.setInzittendeInfo(data!![position])
+        holder.setInzittendeInfo(data[position])
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
-        return data!!.size
+        return data.size
     }
 }

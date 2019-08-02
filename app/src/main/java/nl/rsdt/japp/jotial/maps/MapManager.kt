@@ -140,8 +140,8 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
      * @param id The id of the MapItemController, for example VosAlphaController.CONTROLLER_ID .
      * @return The MapItemController associated with the id, returns null if none.
      */
-    operator fun <T : MapItemController<*, *>> get(id: String): T {
-        return controllers[id] as T
+    operator fun <T : MapItemController<*, *>> get(id: String): T? {
+        return controllers[id] as T?
     }
 
 

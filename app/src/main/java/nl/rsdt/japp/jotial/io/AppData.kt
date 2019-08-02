@@ -139,10 +139,12 @@ object AppData {
          * Clear data files.
          */
         val dir = fDir
-        if (dir!!.exists() && dir.isDirectory) {
-            val children = dir.list()
-            for (i in children.indices) {
-                File(dir, children[i]).delete()
+        if (dir != null){
+            if (dir.exists() && dir.isDirectory) {
+                val children = dir.list()
+                for (i in children.indices) {
+                    File(dir, children[i]).delete()
+                }
             }
         }
     }

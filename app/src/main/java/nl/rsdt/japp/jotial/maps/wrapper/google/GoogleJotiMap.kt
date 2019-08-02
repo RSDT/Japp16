@@ -104,9 +104,9 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, G
 
     override fun setOnMapClickListener(onMapClickListener: IJotiMap.OnMapClickListener?) {
         if (onMapClickListener == null) {
-            googleMap!!.setOnMapClickListener(null)
+            googleMap?.setOnMapClickListener(null)
         } else {
-            googleMap!!.setOnMapClickListener { latLng ->
+            googleMap?.setOnMapClickListener { latLng ->
                 onMapClickListener.onMapClick(latLng)
             }
         }
@@ -114,16 +114,16 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, G
 
     override fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback?) {
         if (snapshotReadyCallback != null) {
-            googleMap!!.snapshot { bitmap -> snapshotReadyCallback.onSnapshotReady(bitmap) }
+            googleMap?.snapshot { bitmap -> snapshotReadyCallback.onSnapshotReady(bitmap) }
         } else {
-            googleMap!!.snapshot(null)
+            googleMap?.snapshot(null)
         }
     }
 
     override fun animateCamera(latLng: LatLng, zoom: Int, cancelableCallback: IJotiMap.CancelableCallback?) {
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom.toFloat())
         if (cancelableCallback != null) {
-            googleMap!!.animateCamera(cameraUpdate, object : GoogleMap.CancelableCallback {
+            googleMap?.animateCamera(cameraUpdate, object : GoogleMap.CancelableCallback {
                 override fun onFinish() {
                     cancelableCallback.onFinish()
                 }

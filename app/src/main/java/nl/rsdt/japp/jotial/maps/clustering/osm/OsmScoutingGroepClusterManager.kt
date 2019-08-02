@@ -18,21 +18,16 @@ class OsmScoutingGroepClusterManager(jotiMap: OsmJotiMap) : ClusterManagerInterf
         get() = infos
 
     init {
-        if (jotiMap !is OsmJotiMap) {
-            throw RuntimeException("this class can only be usd with osm")
-        }
         infos = ArrayList()
         markers = OsmMarkerContainer(jotiMap)
     }
 
     override fun addItems(buffer: ArrayList<ScoutingGroepInfo>) {
-        if (buffer != null) {
-            for (info in buffer) {
-                infos.add(info)
-                markers.add(info)
-            }
-            markers.showMarkers()
+        for (info in buffer) {
+            infos.add(info)
+            markers.add(info)
         }
+        markers.showMarkers()
     }
 
     override fun cluster() {

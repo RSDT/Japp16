@@ -39,11 +39,11 @@ class LoginActivity : Activity() {
 
         val button = findViewById<Button>(R.id.login)
         button.setOnClickListener {
-            if (!(findViewById<View>(R.id.username) as EditText).text.toString().isEmpty() && !(findViewById<View>(R.id.password) as EditText).text.toString().isEmpty()) {
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            if (findViewById<EditText>(R.id.username).text.toString().isNotEmpty() && findViewById<EditText>(R.id.password).text.toString().isNotEmpty()) {
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
                 val focus = this@LoginActivity.currentFocus
                 if (focus != null) {
-                    imm.hideSoftInputFromWindow(focus.windowToken, 0)
+                    imm?.hideSoftInputFromWindow(focus.windowToken, 0)
                 }
 
                 val authentication = Authentication.Builder()

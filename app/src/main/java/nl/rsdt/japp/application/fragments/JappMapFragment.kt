@@ -233,8 +233,8 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
 
     fun getMapAsync(callback: IJotiMap.OnMapReadyCallback) {
-        jotiMap!!.getMapAsync(this)
         this.callback = callback
+        jotiMap!!.getMapAsync(this)
     }
 
     override fun onStart() {
@@ -314,14 +314,12 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         this.jotiMap = jotiMap
         jotiMap.clear()
 
-        movementManager!!.onMapReady(jotiMap)
+        movementManager?.onMapReady(jotiMap)
 
         setupDeelgebieden()
 
         pinningManager.onMapReady(jotiMap)
-        if (callback != null) {
-            callback!!.onMapReady(jotiMap)
-        }
+        callback?.onMapReady(jotiMap)
 
         val markerOptions = MarkerOptions()
                 .position(LatLng(0.0, 0.0))

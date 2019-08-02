@@ -32,7 +32,7 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
     /**
      * The Marker that indicates the location.
      */
-    private var marker: IMarker? = null
+    private lateinit var marker: IMarker
 
     /**
      * The callback that gets invoked when the navigation is completed.
@@ -51,13 +51,13 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
     /**
      * The MaterialDialog that asks for the users confirmation and for entering details.
      */
-    private var dialog: android.app.AlertDialog? = null
+    private lateinit var dialog: android.app.AlertDialog
     private var navigator: Navigator? = null
     private var lastmoved: Long = 0
     private fun initialize() {
         snackbar = Snackbar.make(targetView, R.string.swipe_or_cancle, Snackbar.LENGTH_INDEFINITE)
-        snackbar!!.setAction(R.string.done, this)
-        snackbar!!.addCallback(this)
+        snackbar?.setAction(R.string.done, this)
+        snackbar?.addCallback(this)
 
         val identifier = MarkerIdentifier.Builder()
                 .setType(MarkerIdentifier.TYPE_NAVIGATE)
@@ -150,33 +150,24 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
                 }
             }
             DialogInterface.BUTTON_NEGATIVE -> {
-                snackbar!!.setText(R.string.swipe_or_cancle)
-                snackbar!!.show()
+                snackbar?.setText(R.string.swipe_or_cancle)
+                snackbar?.show()
             }
         }
     }
 
     private fun onDestroy() {
 
-        if (marker != null) {
-            marker!!.remove()
-            marker = null
-        }
+        marker.remove()
 
         if (jotiMap != null) {
             jotiMap!!.setOnMapClickListener(null)
             jotiMap = null
         }
 
-        if (dialog != null) {
-            dialog!!.dismiss()
-            dialog = null
-        }
+        dialog.dismiss()
 
-        if (snackbar != null) {
-            snackbar!!.dismiss()
-            snackbar = null
-        }
+        snackbar?.dismiss()
 
 
         callback = null
@@ -184,9 +175,9 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
 
     private fun moveMarker(latLng: LatLng, priority: Boolean) {
         if (priority || System.currentTimeMillis() - lastmoved > 800) {// // TODO: 01/10/17 magic number
-            navigator!!.setEndLocation(latLng, dialog?.context)
-            if (!marker!!.isVisible) marker!!.isVisible = true
-            marker!!.position = latLng
+            navigator!!.setEndLocation(latLng, dialog.context)
+            if (!marker.isVisible) marker.isVisible = true
+            marker.position = latLng
             this.lastmoved = System.currentTimeMillis()
         }
     }
@@ -259,7 +250,7 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
                     ?.setPositiveButton(R.string.navigate_self, buffer)
                     ?.setNeutralButton(R.string.navigate_other, buffer)
                     ?.setNegativeButton(R.string.cancel, buffer)
-                    ?.create()
+                    ?.create()!!
             buffer.initialize()
             return buffer
         }

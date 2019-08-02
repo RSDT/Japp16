@@ -83,8 +83,8 @@ class Japp : MultiDexApplication() {
             get() = instance!!.applicationContext.resources
 
         fun hasInternetConnection(): Boolean {
-            val cm = instance!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val info = cm.activeNetworkInfo
+            val cm = instance?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            val info = cm?.activeNetworkInfo
             return info != null && info.isConnectedOrConnecting
         }
     }
