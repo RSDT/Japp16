@@ -137,13 +137,6 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback, EasyPermi
                         .setPositiveButtonText(R.string.rationale_ask_ok)
                         .setNegativeButtonText(R.string.rationale_ask_cancel)
                         .build())
-        EasyPermissions.requestPermissions(
-                PermissionRequest.Builder(this, RC_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .setRationale(R.string.storage_rationale)
-                        .setPositiveButtonText(R.string.storage_ask_ok)
-                        .setNegativeButtonText(R.string.storage_ask_cancel)
-                        .build())
-
     }
 
 
@@ -169,6 +162,12 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback, EasyPermi
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         if (requestCode == RC_LOCATION){
             locationGranted = true
+            EasyPermissions.requestPermissions(
+                    PermissionRequest.Builder(this, RC_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .setRationale(R.string.storage_rationale)
+                            .setPositiveButtonText(R.string.storage_ask_ok)
+                            .setNegativeButtonText(R.string.storage_ask_cancel)
+                            .build())
         }
         if (requestCode == RC_STORAGE){
             storageGranted = true
