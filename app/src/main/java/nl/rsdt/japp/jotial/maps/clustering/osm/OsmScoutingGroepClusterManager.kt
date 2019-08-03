@@ -14,8 +14,8 @@ class OsmScoutingGroepClusterManager(jotiMap: OsmJotiMap) : ClusterManagerInterf
     private val infos: MutableCollection<ScoutingGroepInfo>
     private val markers: OsmMarkerContainer
 
-    override val items: Collection<ScoutingGroepInfo>
-        get() = infos
+    override val items: List<ScoutingGroepInfo>
+        get() = infos.toList()
 
     init {
         infos = ArrayList()
@@ -23,10 +23,12 @@ class OsmScoutingGroepClusterManager(jotiMap: OsmJotiMap) : ClusterManagerInterf
     }
 
     override fun addItems(buffer: ArrayList<ScoutingGroepInfo>) {
+        val infosToAdd = mutableListOf<ScoutingGroepInfo>()
         for (info in buffer) {
-            infos.add(info)
+            infosToAdd.add(info)
             markers.add(info)
         }
+        infos.addAll(infosToAdd)
         markers.showMarkers()
     }
 
