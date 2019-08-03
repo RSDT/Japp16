@@ -20,6 +20,8 @@ import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
@@ -29,8 +31,12 @@ import nl.rsdt.japp.jotial.maps.wrapper.ICameraPosition
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.maps.wrapper.IPolyline
+import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 /**
@@ -81,10 +87,10 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            list = savedInstanceState.getParcelableArrayList(BUNDLE_KEY)
+        list = if (savedInstanceState != null) {
+            savedInstanceState.getParcelableArrayList(BUNDLE_KEY)
         } else {
-            list = AppData.getObject<ArrayList<LatLng>>(STORAGE_KEY, object : TypeToken<ArrayList<LatLng>>() {
+            AppData.getObject<ArrayList<LatLng>>(STORAGE_KEY, object : TypeToken<ArrayList<LatLng>>() {
 
             }.type)
         }
@@ -98,6 +104,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     override fun onLocationChanged(location: Location) {
+        val ldeelgebied = deelgebied
         if (marker != null) {
             if (lastLocation != null) {
                 bearing = lastLocation!!.bearingTo(location)
@@ -118,29 +125,58 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             points.add(LatLng(location.latitude, location.longitude))
             tail!!.points = points
         }
-        var refresh = false
-        if (deelgebied != null) {
-            if (!deelgebied!!.containsLocation(location)) {
-                refresh = true
+        val refresh = if (ldeelgebied != null) {
+            if (!ldeelgebied.containsLocation(location)) {
 
                 /**
                  * Unsubscribe from the current deelgebied messages
                  */
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(deelgebied!!.name)
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(ldeelgebied.name)
+                true
+            } else{
+               false
             }
         } else {
-            refresh = true
+            true
         }
 
+        if (JappPreferences.autoTaak) {
+            val autoApi = Japp.getApi(AutoApi::class.java)
+            autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo> {
+                override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
+                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
+                    val newTaak = """${deelgebied?.name} ${Japp.appResources.getString(R.string.automatisch)}"""
+                    if (deelgebied != null && newTaak.toLowerCase() != response.body()?.taak?.toLowerCase()) {
+                        val body: AutoUpdateTaakPostBody = AutoUpdateTaakPostBody.default
+                        body.setTaak(newTaak)
+                        autoApi.updateTaak(body).enqueue(object : Callback<Void> {
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                //TODO("not implemented")
+                            }
+
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful){
+                                    Snackbar.make(snackBarView!!, """taak upgedate: ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
+                                }
+                            }
+                        })
+                    }
+                }
+
+            })
+        }
         if (refresh) {
             deelgebied = Deelgebied.resolveOnLocation(location)
             if (deelgebied != null && snackBarView != null) {
-                Snackbar.make(snackBarView!!, "Welkom in deelgebied " + deelgebied!!.name, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(snackBarView!!, """Welkom in deelgebied ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
 
                 /**
                  * Subscribe to the new deelgebied messages.
                  */
-                FirebaseMessaging.getInstance().subscribeToTopic(deelgebied!!.name)
+                FirebaseMessaging.getInstance().subscribeToTopic(deelgebied?.name)
 
                 val color = deelgebied!!.color
                 var coordinates: List<LatLng>
@@ -174,25 +210,22 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     override fun onBind(binder: LocationService.LocationBinder) {
-        service = binder.instance
-        service!!.setListener(listener)
-        service!!.add(this)
-        service!!.request = LocationRequest()
+        val service = binder.instance
+        service.setListener(listener)
+        service.add(this)
+        service.request = LocationRequest()
                 .setInterval(700)
                 .setFastestInterval(100)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        this.service = service
     }
 
     fun postResolutionResultToService(code: Int) {
-        if (service != null) {
-            service!!.handleResolutionResult(code)
-        }
+        service?.handleResolutionResult(code)
     }
 
     fun requestLocationSettingRequest() {
-        if (service != null) {
-            service!!.checkLocationSettings()
-        }
+        service?.checkLocationSettings()
     }
 
     fun onMapReady(jotiMap: IJotiMap) {
@@ -272,9 +305,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
              * Animate the camera to the new position
              */
             if (JappPreferences.followNorth()) {
-                jotiMap!!.cameraToLocation(true, location, zoom, aoa, 0f)
+                jotiMap?.cameraToLocation(true, location, zoom, aoa, 0f)
             } else {
-                jotiMap!!.cameraToLocation(true, location, zoom, aoa, bearing)
+                jotiMap?.cameraToLocation(true, location, zoom, aoa, bearing)
             }
 
         }
@@ -307,18 +340,14 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onResume() {
-        if (service != null) {
-            service!!.request = LocationRequest()
+        service?.request = LocationRequest()
                     .setInterval(700)
                     .setFastestInterval(100)
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        }
     }
 
     fun onPause() {
-        if (service != null) {
-            service!!.request = service!!.standard
-        }
+        service?.apply { request = standard }
     }
 
     private fun save(background: Boolean) {
@@ -332,15 +361,11 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onDestroy() {
-
-        if (marker != null) {
-            marker!!.remove()
-            marker = null
-        }
+            marker?.remove()
 
         if (tail != null) {
             save(false)
-            tail!!.remove()
+            tail?.remove()
             tail = null
         }
 
@@ -349,7 +374,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         }
 
         if (marker != null) {
-            marker!!.remove()
+            marker?.remove()
             marker = null
         }
 
@@ -362,11 +387,11 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         }
 
         if (service != null) {
-            service!!.setListener(null)
-            service!!.remove(this)
+            service?.setListener(null)
+            service?.remove(this)
             service = null
         }
-
+        snackBarView = null
     }
 
     companion object {

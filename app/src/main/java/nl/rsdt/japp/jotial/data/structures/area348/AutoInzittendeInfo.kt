@@ -21,6 +21,7 @@ protected constructor(`in`: Parcel) : Parcelable {
     var gebruikersID: Int = 0
     var autoEigenaar: String? = null
     var rol: String? = null
+    var taak: String? = null
 
     init {
         id = `in`.readInt()
@@ -29,6 +30,7 @@ protected constructor(`in`: Parcel) : Parcelable {
         gebruikersID = `in`.readInt()
         autoEigenaar = `in`.readString()
         rol = `in`.readString()
+        taak = `in`.readString()
     }
 
     override fun describeContents(): Int {
@@ -42,6 +44,7 @@ protected constructor(`in`: Parcel) : Parcelable {
         dest.writeInt(gebruikersID)
         dest.writeString(autoEigenaar)
         dest.writeString(rol)
+        dest.writeString(taak)
     }
 
     companion object CREATOR : Parcelable.Creator<AutoInzittendeInfo>{

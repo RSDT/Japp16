@@ -132,6 +132,9 @@
     <string name="storage_ask_cancel">nee</string>
     <string name="location_storage_rationale">De app heeft toegang tot locatie nodig om te kunnen tracken. Dit kun je uit zetten onder instellingen. De app heeft toegang nodig tot locatie om de kaarten te kunnen opslaan.</string>
     <string name="close_app">Japp sluiten</string>
+    <string name="welke_rol">Welke rol heb je in de auto?</string>
+    <string name="welke_taak">in welk deelgebied rijd de auto?</string>
+    <string name="automatisch">Automatisch</string>
 
 
 </resources>

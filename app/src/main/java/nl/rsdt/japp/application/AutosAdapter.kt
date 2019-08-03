@@ -1,5 +1,7 @@
 package nl.rsdt.japp.application
 
+import android.app.AlertDialog
+import android.text.method.CharacterPickerDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import nl.rsdt.japp.R
 import nl.rsdt.japp.jotial.data.bodies.AutoPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
+
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import retrofit2.Callback
 import java.util.*
@@ -69,17 +73,39 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
 
         override fun onClick(view: View) {
             val tv = view as Button
-            tv.text = tv.text
-            val autoApi = Japp.getApi(AutoApi::class.java)
+            val body = AutoPostBody.default
             if (tv.text.toString().contains(Japp.appResources.getString(R.string.create_car))) {
-                val body = AutoPostBody.default
                 body.setAutoEigenaar(JappPreferences.accountUsername)
-                autoApi.post(body).enqueue(callback)
             } else {
-                val body = AutoPostBody.default
                 body.setAutoEigenaar(eigenaar)
-                autoApi.post(body).enqueue(callback)
             }
+            val itemsRol = listOf("Bestuurder", "Navigator", "Fietser", "Bijrijder").toTypedArray()
+            val rolDialog = AlertDialog.Builder(view.context)
+                    .setTitle(R.string.welke_rol)
+                    .setItems(itemsRol){ _ , whichRol ->
+                        val rol = itemsRol[whichRol]
+                        body.setRol(rol)
+                        val autoApi = Japp.getApi(AutoApi::class.java)
+                        autoApi.post(body).enqueue(callback)
+                    }
+                    .create()
+            val automatisch = Japp.appResources.getString(R.string.automatisch)
+            val itemsTaak = listOf(automatisch, "terug naar HB","A", "B", "C", "D", "E", "F", "X").toTypedArray()
+            val taakDialog = AlertDialog.Builder(view.context)
+                    .setTitle(R.string.welke_taak)
+                    .setItems(itemsTaak) { _, whichTaak ->
+                        var taak = itemsTaak[whichTaak]
+                        JappPreferences.autoTaak = (taak == automatisch)
+                        if (JappPreferences.autoTaak){
+                            Japp.lastLocation?.let{
+                                taak = """"${Deelgebied.resolveOnLocation(it)?.name} $automatisch"""
+                            }
+                        }
+                        body.setTaak(taak)
+                        rolDialog.show()
+                    }
+                    .create()
+            taakDialog.show()
         }
     }
 

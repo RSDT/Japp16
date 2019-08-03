@@ -1,5 +1,6 @@
 package nl.rsdt.japp.application
 
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -9,7 +10,8 @@ import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import java.util.*
 
 
-class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>() {
+class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>(){
+
 
     private var data: List<AutoInzittendeInfo> = ArrayList()
 
@@ -27,7 +29,7 @@ class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>
 
         fun refresh() {
             v.text = if (inzittendeInfo != null) {
-                """${inzittendeInfo?.gebruikersNaam} - ${inzittendeInfo?.rol}"""
+                """${inzittendeInfo?.gebruikersNaam} - rol:${inzittendeInfo?.rol} - taak:${inzittendeInfo?.taak}"""
             } else {
                 Japp.appResources.getString(R.string.unkown)
             }
@@ -57,4 +59,5 @@ class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>
     override fun getItemCount(): Int {
         return data.size
     }
+
 }

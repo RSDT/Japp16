@@ -56,7 +56,7 @@ class AutoPostBody {
                 builder.setGebruikersNaam(JappPreferences.accountUsername)
                 builder.setId(JappPreferences.accountId)
                 builder.setRol("rol")
-                builder.setTaak("taak")
+                builder.setTaak("onbekend")
                 builder.setAutoEigenaar(JappPreferences.accountUsername)
                 builder.setSleutel(JappPreferences.accountKey)
                 return builder

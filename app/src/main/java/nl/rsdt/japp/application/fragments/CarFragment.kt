@@ -1,6 +1,7 @@
 package nl.rsdt.japp.application.fragments
 
 import android.app.Fragment
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +10,13 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_login.*
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.AutosAdapter
 import nl.rsdt.japp.application.InzittendenAdapter
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo
 import nl.rsdt.japp.jotial.net.apis.AutoApi
@@ -27,7 +30,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
     private var autosRecyclerView: RecyclerView? = null
     private var inzittendeLayout: LinearLayout? = null
     private var autosAdapter: AutosAdapter? = null
-    private var inzittendenAdapter: InzittendenAdapter? = null
+    private var inzittendenAdapter: InzittendenAdapter = InzittendenAdapter()
     private var stapUitButton: Button? = null
 
     override fun onResume() {
@@ -97,37 +100,63 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
 
     fun refresh() {
         val autoApi = Japp.getApi(AutoApi::class.java)
-        autoApi.getAllCars(JappPreferences.accountKey).enqueue(this)
+        autoApi.getAllCars(JappPreferences.accountKey).enqueue(this@CarFragment)
+
     }
 
     override fun onResponse(call: Call<HashMap<String, List<AutoInzittendeInfo>>>, response: Response<HashMap<String, List<AutoInzittendeInfo>>>) {
-        var autos = response.body()
-        if (autos == null) {
-            autos = HashMap()
-        }
+        val autos = response.body()?: HashMap()
         val auto = findInzittendeInfo(autos)
         if (auto == null) {
-            autosAdapter!!.setData(autos)
-            autosAdapter!!.notifyDataSetChanged()
-            autosRecyclerView!!.visibility = View.VISIBLE
-            inzittendeLayout!!.visibility = View.GONE
+            autosAdapter?.setData(autos)
+            autosAdapter?.notifyDataSetChanged()
+            autosRecyclerView?.visibility = View.VISIBLE
+            inzittendeLayout?.visibility = View.GONE
         } else {
+
             if (auto[0].autoEigenaar == JappPreferences.accountUsername) {
-                stapUitButton!!.setText(R.string.remove_from_car)
+                stapUitButton?.setText(R.string.remove_from_car)
             } else {
                 stapUitButton!!.setText(R.string.get_out_of_car)
             }
-            inzittendenAdapter!!.setData(auto)
-            inzittendenAdapter!!.notifyDataSetChanged()
-            autosRecyclerView!!.visibility = View.GONE
-            inzittendeLayout!!.visibility = View.VISIBLE
+            val autoApi = Japp.getApi(AutoApi::class.java)
+            auto[0].autoEigenaar?.let{autoEigenaar ->
+                autoApi.getCarByName(JappPreferences.accountKey, autoEigenaar).enqueue(object : Callback<ArrayList<AutoInzittendeInfo>>{
+                    override fun onResponse(call: Call<ArrayList<AutoInzittendeInfo>>, response: Response<ArrayList<AutoInzittendeInfo>>) {
+                        val data = response.body()
+                        if (response.isSuccessful && data != null){
+                            inzittendenAdapter.setData(data)
+                            inzittendenAdapter.notifyDataSetChanged()
+                            autosRecyclerView?.visibility = View.GONE
+                            inzittendeLayout?.visibility = View.VISIBLE
+                        }else{
+                            inzittendenAdapter.setData(auto)
+                            inzittendenAdapter.notifyDataSetChanged()
+                            autosRecyclerView?.visibility = View.GONE
+                            inzittendeLayout?.visibility = View.VISIBLE
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ArrayList<AutoInzittendeInfo>>, t: Throwable) {
+                        inzittendenAdapter.setData(auto)
+                        inzittendenAdapter.notifyDataSetChanged()
+                        autosRecyclerView?.visibility = View.GONE
+                        inzittendeLayout?.visibility = View.VISIBLE
+                    }
+
+                })
+            }?:let{
+                inzittendenAdapter.setData(auto)
+                inzittendenAdapter.notifyDataSetChanged()
+                autosRecyclerView?.visibility = View.GONE
+                inzittendeLayout?.visibility = View.VISIBLE
+            }
         }
     }
 
     override fun onFailure(call: Call<HashMap<String, List<AutoInzittendeInfo>>>, t: Throwable) {
 
     }
-
     companion object {
         val TAG = "CarFragment"
     }

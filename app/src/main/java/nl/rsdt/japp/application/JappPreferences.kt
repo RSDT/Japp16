@@ -16,6 +16,8 @@ import java.util.*
  */
 object JappPreferences {
 
+    val AUTO_TAAK = "pref_auto_taak"
+
     val FIRST_RUN = "pref_first_run"
 
     val ACCOUNT_ID = "pref_account_id"
@@ -246,10 +248,18 @@ object JappPreferences {
         get() = visiblePreferences.getBoolean(HUNTER_ALL, false)
     val osmMapSource: OsmMapType
         get() {
-            val value = visiblePreferences.getString(OSM_MAP_TYPE, "Default")
+            val value = visiblePreferences.getString(OSM_MAP_TYPE, "Default")?:"Default"
             return if ("0" == value) {
                 OsmMapType.Default
             } else OsmMapType.valueOf(value)
+        }
+
+    var autoTaak: Boolean
+        get() {
+            return appPreferences.getBoolean(AUTO_TAAK, false)
+        }
+        set(value) {
+           appPreferences.edit().putBoolean(AUTO_TAAK, value).apply()
         }
 
     val isNavigationPhone: Boolean
