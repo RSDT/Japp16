@@ -16,6 +16,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 /**
  * @author Dingenis Sieger Sinke
@@ -48,7 +49,17 @@ class Japp : MultiDexApplication() {
 
         var instance: Japp? = null
             private set
-        var lastLocation: Location? = null
+        private var _lastLocation :Location? = null
+        private val _lastLocations : Stack<Location> = Stack()
+        var lastLocation: Location?
+            get() {
+                return if (_lastLocations.empty()) _lastLocation
+                else _lastLocations.pop()
+            }
+            set(value) {
+                _lastLocations.push(value)
+                _lastLocation = value
+            }
 
         fun getAnalytics(): FirebaseAnalytics? {
             return instance!!.analytics

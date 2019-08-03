@@ -103,7 +103,17 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         }
     }
 
-    override fun onLocationChanged(location: Location) {
+    override fun onLocationChanged(l: Location) {
+        var location = Japp.lastLocation?:l
+        var nextLocation = Japp.lastLocation?:l
+        do {
+            onNewLocation(location)
+            location = nextLocation
+            nextLocation = Japp.lastLocation?:l
+        } while(location != nextLocation)
+    }
+    
+    fun onNewLocation(location: Location){
         val ldeelgebied = deelgebied
         if (marker != null) {
             if (lastLocation != null) {
@@ -133,8 +143,8 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                  */
                 FirebaseMessaging.getInstance().unsubscribeFromTopic(ldeelgebied.name)
                 true
-            } else{
-               false
+            } else {
+                false
             }
         } else {
             true
@@ -193,7 +203,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                             }
 
                             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                                if (response.isSuccessful){
+                                if (response.isSuccessful) {
                                     Snackbar.make(snackBarView!!, """taak upgedate: ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
                                 }
                             }
@@ -209,7 +219,6 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
         lastLocation = location
     }
-
     override fun onBind(binder: LocationService.LocationBinder) {
         val service = binder.instance
         service.setListener(listener)
