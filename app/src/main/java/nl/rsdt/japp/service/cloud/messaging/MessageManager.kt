@@ -39,23 +39,20 @@ class MessageManager {
     fun onMessage(message: RemoteMessage) {
         if (message.data != null && !message.data.isEmpty()) {
             val data = message.data
-            val type = data["type"]
+            val type = data["type"]?: ""
             if (type == MessageType.NOTICE) {
                 if (listeners.size > 0) {
                     val info = NoticeInfo.parse(data)
-                    if (info != null) {
-                        var listener: UpdateMessageListener?
-                        for (i in listeners.indices) {
-                            listener = listeners[i]
-
-                            listener.onNoticeMessageReceived(info)
-                        }
+                    var listener: UpdateMessageListener?
+                    for (i in listeners.indices) {
+                        listener = listeners[i]
+                        listener.onNoticeMessageReceived(info)
                     }
                 }
-            } else if (type!!.startsWith("vos") || type == "foto" || type == "sc") {
+            } else if (type.startsWith("vos") || type == "foto" || type == "sc") {
                 if (listeners.size > 0) {
                     val info = UpdateInfo.parse(data)
-                    if (info != null && info.type != null && info.action != null) {
+                    if (info.type != null && info.action != null) {
                         var listener: UpdateMessageListener?
                         for (i in listeners.indices) {
                             listener = listeners[i]

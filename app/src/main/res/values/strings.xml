@@ -135,6 +135,8 @@
     <string name="welke_rol">Welke rol heb je in de auto?</string>
     <string name="welke_taak">in welk deelgebied rijd de auto?</string>
     <string name="automatisch">Automatisch</string>
+    <string name="pref_tail_length_title">aantal punten in de tail</string>
+    <string name="pref_tail_length_sum">geeft aan hoe lang de tail van jezelf kan zijn</string>
 
 
 </resources>

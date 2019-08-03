@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.maps.movement
 
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Location
@@ -37,7 +38,7 @@ import nl.rsdt.japp.service.ServiceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Dingenis Sieger Sinke
@@ -45,8 +46,17 @@ import java.util.*
  * @since 2-8-2016
  * Description...
  */
-class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener {
+class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == JappPreferences.TAIL_LENGTH){
+            tailPoints.maxSize = JappPreferences.tailLength
+            tail?.points = tailPoints
+        }
+    }
 
+
+    private val fastestInterval: Long = 100
+    private val locationInterval: Long = 1500
     private var service: LocationService? = null
 
     private var jotiMap: IJotiMap? = null
@@ -54,6 +64,8 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     private var marker: IMarker? = null
 
     private var tail: IPolyline? = null
+
+    private val tailPoints: TailPoints = TailPoints(JappPreferences.tailLength)
 
     private var bearing: Float = 0.toFloat()
 
@@ -65,8 +77,6 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
     private var snackBarView: View? = null
 
-    private var list: MutableList<LatLng>? = null
-
     private var listener: LocationService.OnResolutionRequiredListener? = null
 
     fun setListener(listener: LocationService.OnResolutionRequiredListener) {
@@ -77,33 +87,36 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         this.snackBarView = snackBarView
     }
 
-    fun newSession(before: ICameraPosition, zoom: Float, aoa: Float): FollowSession? {
+    fun newSession(jotiMap: IJotiMap,before: ICameraPosition, zoom: Float, aoa: Float): FollowSession? {
         if (activeSession != null) {
             activeSession!!.end()
             activeSession = null
         }
-        activeSession = FollowSession(before, zoom, aoa)
+        activeSession = FollowSession(jotiMap,before, zoom, aoa)
         return activeSession
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
-        list = if (savedInstanceState != null) {
+        val list = if (savedInstanceState != null) {
             savedInstanceState.getParcelableArrayList(BUNDLE_KEY)
         } else {
             AppData.getObject<ArrayList<LatLng>>(STORAGE_KEY, object : TypeToken<ArrayList<LatLng>>() {
 
             }.type)
         }
+        if (list != null) {
+            tailPoints.setPoints(list)
+            tail?.points = tailPoints
+        }
     }
 
 
     fun onSaveInstanceState(saveInstanceState: Bundle?) {
-        if (tail != null) {
-            saveInstanceState?.putParcelableArrayList(BUNDLE_KEY, ArrayList(tail!!.points))
-        }
+        saveInstanceState?.putParcelableArrayList(BUNDLE_KEY, tailPoints.toArrayList())
     }
 
     override fun onLocationChanged(l: Location) {
+        Japp.lastLocation = l
         var location = Japp.lastLocation?:l
         var nextLocation = Japp.lastLocation?:l
         do {
@@ -123,18 +136,14 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                  * Animate the marker to the new position
                  */
                 AnimateMarkerTool.animateMarkerToICS(marker, LatLng(location.latitude, location.longitude), LatLngInterpolator.Linear(), 1000)
-                marker!!.setRotation(bearing)
+                marker?.setRotation(bearing)
             } else {
-                marker!!.position = LatLng(location.latitude, location.longitude)
+                marker?.position = LatLng(location.latitude, location.longitude)
             }
-
-            var points: MutableList<LatLng> = tail!!.points
-            if (points.size > 150) {
-                points = points.subList(points.size / 3, points.size)
-            }
-            points.add(LatLng(location.latitude, location.longitude))
-            tail!!.points = points
+            tailPoints.add(LatLng(location.latitude, location.longitude))
+            tail?.points = tailPoints
         }
+
         val refresh = if (ldeelgebied != null) {
             if (!ldeelgebied.containsLocation(location)) {
 
@@ -161,30 +170,40 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                  */
                 FirebaseMessaging.getInstance().subscribeToTopic(deelgebied?.name)
 
-                val color = deelgebied!!.color
-                var coordinates: List<LatLng>
-                try {
-                    coordinates = tail!!.points
-                } catch (e: NullPointerException) {
-                    coordinates = LinkedList()
-                }
 
+                val coordinates: List<LatLng> = tailPoints
                 tail!!.remove()
                 tail = jotiMap!!.addPolyline(
                         PolylineOptions()
                                 .width(3f)
-                                .color(Color.rgb(255 - Color.red(color), 255 - Color.green(color), 255 - Color.blue(color)))
+                                .color(getTailColor()?:Color.BLUE)
                                 .addAll(coordinates))
             }
         }
-        if (marker != null) {
-            /**
-             * Make the marker visible
-             */
-            if (!marker!!.isVisible) {
-                marker!!.isVisible = true
-            }
+        /**
+         * Make the marker visible
+         */
+        if (marker?.isVisible == false) {
+            marker?.isVisible = true
         }
+        updateAutoTaak(location)
+
+        if (activeSession != null) {
+            activeSession!!.onLocationChanged(location)
+        }
+
+        lastLocation = location
+    }
+
+    private fun getTailColor(): Int? {
+        val color = deelgebied?.color
+        return if (color != null)
+            Color.rgb(255 - Color.red(color), 255 - Color.green(color), 255 - Color.blue(color))
+        else
+            null
+    }
+
+    private fun updateAutoTaak(location: Location) {
         if (JappPreferences.autoTaak) {
             val autoApi = Japp.getApi(AutoApi::class.java)
             autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo> {
@@ -193,7 +212,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                 }
 
                 override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
-                    val newTaak = """${deelgebied?.name}${Japp.appResources.getString(R.string.automatisch)}"""
+                    val newTaak = """${deelgebied?.name}${Japp.getString(R.string.automatisch)}"""
                     if (deelgebied != null && newTaak.toLowerCase() != response.body()?.taak?.toLowerCase()) {
                         val body: AutoUpdateTaakPostBody = AutoUpdateTaakPostBody.default
                         body.setTaak(newTaak)
@@ -213,19 +232,15 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
             })
         }
-        if (activeSession != null) {
-            activeSession!!.onLocationChanged(location)
-        }
-
-        lastLocation = location
     }
+
     override fun onBind(binder: LocationService.LocationBinder) {
         val service = binder.instance
         service.setListener(listener)
         service.add(this)
         service.request = LocationRequest()
-                .setInterval(700)
-                .setFastestInterval(100)
+                .setInterval(locationInterval)
+                .setFastestInterval(fastestInterval)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         this.service = service
     }
@@ -256,24 +271,17 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         tail = jotiMap.addPolyline(
                 PolylineOptions()
                         .width(3f)
-                        .color(Color.BLUE))
+                        .color(getTailColor()?:Color.BLUE))
 
-        list?.also { list ->
-            if (!list.isEmpty()) {
-                tail!!.points = list
-                val last: Int
-                last = if (list.size > 1) {
-                    list.size - 1
-                } else {
-                    0
-                }
-                marker!!.position = list[last]
+            if (tailPoints.isNotEmpty()) {
+                tail!!.points = tailPoints
+                val last = tailPoints.size - 1
+                marker!!.position = tailPoints[last]
                 marker!!.isVisible = true
             }
-        }
     }
 
-    inner class FollowSession(private val before: ICameraPosition, zoom: Float, aoa: Float) : LocationSource.OnLocationChangedListener {
+    inner class FollowSession(private val jotiMap: IJotiMap, private val before: ICameraPosition, zoom: Float, aoa: Float) : LocationSource.OnLocationChangedListener {
 
         private var zoom = 19f
 
@@ -286,27 +294,24 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             /**
              * Enable controls.
              */
-            jotiMap!!.uiSettings.setAllGesturesEnabled(true)
-            jotiMap!!.uiSettings.setCompassEnabled(true)
+            jotiMap.uiSettings.setAllGesturesEnabled(true)
+            jotiMap.uiSettings.setCompassEnabled(true)
 
-            jotiMap!!.setOnCameraMoveStartedListener(object : GoogleMap.OnCameraMoveStartedListener {
-                override fun onCameraMoveStarted(i: Int) {
-                    if (i == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                        val position = jotiMap!!.previousCameraPosition
-                        setZoom(position.zoom)
-                        setAngleOfAttack(position.tilt)
-                    }
+            jotiMap.setOnCameraMoveStartedListener(GoogleMap.OnCameraMoveStartedListener { i ->
+                if (i == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                    val position = jotiMap.previousCameraPosition
+                    setZoom(position.zoom)
+                    setAngleOfAttack(position.tilt)
                 }
-
             })
 
         }
 
-        fun setZoom(zoom: Float) {
+        private fun setZoom(zoom: Float) {
             this.zoom = zoom
         }
 
-        fun setAngleOfAttack(aoa: Float) {
+        private fun setAngleOfAttack(aoa: Float) {
             this.aoa = aoa
         }
 
@@ -315,9 +320,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
              * Animate the camera to the new position
              */
             if (JappPreferences.followNorth()) {
-                jotiMap?.cameraToLocation(true, location, zoom, aoa, 0f)
+                jotiMap.cameraToLocation(true, location, zoom, aoa, 0f)
             } else {
-                jotiMap?.cameraToLocation(true, location, zoom, aoa, bearing)
+                jotiMap.cameraToLocation(true, location, zoom, aoa, bearing)
             }
 
         }
@@ -333,12 +338,12 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             /**
              * Disable controls
              */
-            jotiMap!!.uiSettings.setCompassEnabled(false)
+            jotiMap.uiSettings.setCompassEnabled(false)
 
             /**
              * Remove callback
              */
-            jotiMap!!.setOnCameraMoveStartedListener(null)
+            jotiMap.setOnCameraMoveStartedListener(null)
 
             /**
              * Move the camera to the before position
@@ -351,8 +356,8 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
     fun onResume() {
         service?.request = LocationRequest()
-                    .setInterval(700)
-                    .setFastestInterval(100)
+                    .setInterval(locationInterval)
+                    .setFastestInterval(fastestInterval)
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
     }
 
@@ -361,23 +366,18 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     private fun save(background: Boolean) {
-        if (tail != null) {
-            if (background) {
-                AppData.saveObjectAsJsonInBackground(tail!!.points, STORAGE_KEY)
-            } else {
-                AppData.saveObjectAsJson(tail!!.points, STORAGE_KEY)
-            }
+        if (background) {
+            AppData.saveObjectAsJsonInBackground(tailPoints, STORAGE_KEY)
+        } else {
+            AppData.saveObjectAsJson(tailPoints, STORAGE_KEY)
         }
     }
 
     fun onDestroy() {
-            marker?.remove()
+        marker?.remove()
+        tail?.remove()
+        tailPoints.clear()
 
-        if (tail != null) {
-            save(false)
-            tail?.remove()
-            tail = null
-        }
 
         if (jotiMap != null) {
             jotiMap = null
@@ -410,5 +410,166 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
         private val BUNDLE_KEY = "MovementManager"
     }
+}
 
+class TailPoints(maxSize:Int) : List<LatLng>{
+
+    private var list: ArrayList<LatLng> = ArrayList()
+    private var currentFirst = 0
+    internal var maxSize:Int = maxSize
+        set(value) {
+            rearrangeList()
+            if (value < list.size){
+                val toRemove = list.subList(value, list.size)
+                list.removeAll(toRemove)
+            }
+            field = value
+        }
+
+    private fun toListIndex(tailIndex: Int):Int{
+        return (currentFirst + tailIndex) % maxSize
+    }
+
+    private fun toTailIndex(listIndex:Int ): Int{
+        return when {
+            listIndex > currentFirst -> listIndex - currentFirst
+            listIndex < currentFirst -> listIndex + currentFirst
+            else -> 0
+        }
+    }
+
+    private fun incrementCurrentFirst() {
+        currentFirst++
+        if (currentFirst >= maxSize){
+            currentFirst = 0
+        }
+    }
+
+    private fun rearrangeList(){
+        val first = list.subList(currentFirst, list.size)
+        val second = list.subList(0, currentFirst)
+        val result = ArrayList<LatLng>()
+        result.addAll(first)
+        result.addAll(second)
+        currentFirst = 0
+        list = result
+    }
+
+    override fun iterator(): kotlin.collections.Iterator<LatLng> {
+        return Iterator(0)
+    }
+
+    override val size: Int
+        get() = list.size
+
+    override fun contains(element: LatLng): Boolean {
+        return list.contains(element)
+    }
+
+    override fun containsAll(elements: Collection<LatLng>): Boolean {
+        return list.containsAll(elements)
+    }
+
+    override fun get(index: Int): LatLng {
+        return list[toListIndex(index)]
+    }
+
+    override fun indexOf(element: LatLng): Int {
+        return toTailIndex(list.indexOf(element))
+    }
+
+    override fun isEmpty(): Boolean {
+        return list.isEmpty()
+    }
+
+    override fun lastIndexOf(element: LatLng): Int {
+        return toTailIndex(list.lastIndexOf(element))
+    }
+
+
+
+    override fun subList(fromIndex: Int, toIndex: Int): List<LatLng> {
+        val fromIndexList = toListIndex(fromIndex)
+        val toIndexList = toListIndex(toIndex)
+        return when {
+            fromIndexList == toIndexList -> listOf()
+            fromIndexList < toIndexList -> list.subList(fromIndexList, toIndexList)
+            else -> {
+                val result = list.subList(0, toIndexList)
+                result.addAll(list.subList(fromIndexList, maxSize))
+                result
+            }
+        }
+    }
+
+    override fun listIterator(): ListIterator<LatLng> {
+        return Iterator(0)
+    }
+
+    override fun listIterator(index: Int): ListIterator<LatLng> {
+        return Iterator(index)
+    }
+
+    fun toArrayList(): ArrayList<LatLng> {
+        rearrangeList()
+        return ArrayList(list)
+    }
+
+    fun add(element: LatLng): Boolean {
+        return if (list.size < maxSize){
+            list.add(element)
+        }else{
+            list[currentFirst] = element
+            incrementCurrentFirst()
+            true
+        }
+    }
+
+    fun clear() {
+        list.clear()
+        currentFirst = 0
+    }
+
+    fun setPoints(list: ArrayList<LatLng>) {
+        clear()
+        if (list.size <= maxSize) {
+            this.list.addAll(list)
+        }else{
+            val overflow = list.size - maxSize
+            this.list.addAll(list.subList(overflow, list.size))
+        }
+        assert(this.list.size <= maxSize)
+    }
+
+    inner class Iterator(private var currentIndex: Int): ListIterator<LatLng> {
+
+        override fun hasNext(): Boolean {
+            return currentIndex + 1 < size
+        }
+
+        override fun next(): LatLng {
+            val nextE = get(currentIndex)
+            currentIndex++
+            return nextE
+        }
+
+        override fun hasPrevious(): Boolean {
+            return currentIndex - 1 > maxSize
+        }
+
+        override fun nextIndex(): Int {
+            return currentIndex + 1
+        }
+
+        override fun previous(): LatLng {
+            val prevE = get(currentIndex)
+            currentIndex--
+            return prevE
+        }
+
+        override fun previousIndex(): Int {
+            return currentIndex - 1
+        }
+
+    }
 }

@@ -17,15 +17,11 @@ import retrofit2.Callback
 import java.util.*
 
 class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<AutosAdapter.MyViewHolder>() {
-    private var data: Map<String, List<AutoInzittendeInfo>>? = null
+    private var data: Map<String, List<AutoInzittendeInfo>> = HashMap()
     private var eigenaars:Array<String> = emptyArray()
 
-    init {
-        data = HashMap()
-    }
-
     private fun setEigenaars() {
-        val eigenaarsSet = data!!.keys
+        val eigenaarsSet = data.keys
         eigenaars = eigenaarsSet.toTypedArray()
         Arrays.sort(eigenaars)
     }
@@ -74,7 +70,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
         override fun onClick(view: View) {
             val tv = view as Button
             val body = AutoPostBody.default
-            if (tv.text.toString().contains(Japp.appResources.getString(R.string.create_car))) {
+            if (tv.text.toString().contains(Japp.getString(R.string.create_car))) {
                 body.setAutoEigenaar(JappPreferences.accountUsername)
             } else {
                 body.setAutoEigenaar(eigenaar)
@@ -89,12 +85,12 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
                         autoApi.post(body).enqueue(callback)
                     }
                     .create()
-            val automatisch = Japp.appResources.getString(R.string.automatisch)
+            val automatisch = Japp.getString(R.string.automatisch)
             val itemsTaak = listOf(automatisch, "terug naar HB","A", "B", "C", "D", "E", "F", "X").toTypedArray()
             val taakDialog = AlertDialog.Builder(view.context)
                     .setTitle(R.string.welke_taak)
                     .setItems(itemsTaak) { _, whichTaak ->
-                        var taak = itemsTaak[whichTaak]
+                        var taak = itemsTaak[whichTaak]?:"null"
                         JappPreferences.autoTaak = (taak == automatisch)
                         if (JappPreferences.autoTaak){
                             Japp.lastLocation?.let{
@@ -111,17 +107,17 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         if (position == 0) {
-            holder.setEigenaar(Japp.appResources.getString(R.string.create_car))
+            holder.setEigenaar(Japp.getString(R.string.create_car))
             holder.setInzittendeInfos(ArrayList())
             return
         }
         val i = position - 1
         holder.setEigenaar(eigenaars[i])
-        holder.setInzittendeInfos(data!![eigenaars[i]])
+        holder.setInzittendeInfos(data[eigenaars[i]])
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
-        return data!!.size + 1
+        return data.size + 1
     }
 }

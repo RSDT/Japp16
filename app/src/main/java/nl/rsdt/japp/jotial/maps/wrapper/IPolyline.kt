@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 
 interface IPolyline {
 
-    var points: MutableList<LatLng>
+    var points: List<LatLng>
 
     fun remove()
 

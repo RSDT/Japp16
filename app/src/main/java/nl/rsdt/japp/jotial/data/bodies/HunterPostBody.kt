@@ -56,7 +56,7 @@ class HunterPostBody {
                 val builder = HunterPostBody()
 
                 val huntname = JappPreferences.huntname
-                if (!huntname!!.isEmpty()) {
+                if (huntname.isNotEmpty()) {
                     builder.setName(huntname)
                 } else {
                     builder.setName(JappPreferences.accountUsername)

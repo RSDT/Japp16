@@ -48,14 +48,14 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
         stapUitButton = v.findViewById(R.id.stap_uit_button)
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        autosRecyclerView!!.setHasFixedSize(true)
+        autosRecyclerView?.setHasFixedSize(true)
         inzittendenRecyclerView.setHasFixedSize(true)
 
         // use a linear layout manager
         val inzittendeLayoutManager = LinearLayoutManager(activity)
         val autoLayoutManager = LinearLayoutManager(activity)
 
-        autosRecyclerView!!.layoutManager = autoLayoutManager
+        autosRecyclerView?.layoutManager = autoLayoutManager
         inzittendenRecyclerView.layoutManager = inzittendeLayoutManager
 
         // specify an adapter (see also next example)
@@ -69,9 +69,9 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
             }
         })
         inzittendenAdapter = InzittendenAdapter()
-        autosRecyclerView!!.adapter = autosAdapter
+        autosRecyclerView?.adapter = autosAdapter
         inzittendenRecyclerView.adapter = inzittendenAdapter
-        stapUitButton!!.setOnClickListener {
+        stapUitButton?.setOnClickListener {
             val autoApi = Japp.getApi(AutoApi::class.java)
             autoApi.deleteFromCarByName(JappPreferences.accountKey, JappPreferences.accountUsername).enqueue(object : Callback<DeletedInfo> {
                 override fun onResponse(call: Call<DeletedInfo>, response: Response<DeletedInfo>) {
@@ -117,7 +117,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
             if (auto[0].autoEigenaar == JappPreferences.accountUsername) {
                 stapUitButton?.setText(R.string.remove_from_car)
             } else {
-                stapUitButton!!.setText(R.string.get_out_of_car)
+                stapUitButton?.setText(R.string.get_out_of_car)
             }
             val autoApi = Japp.getApi(AutoApi::class.java)
             auto[0].autoEigenaar?.let{autoEigenaar ->

@@ -3,7 +3,6 @@ package nl.rsdt.japp.application.navigation
 import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.navigation.NavigationView
@@ -49,12 +48,12 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
 
     init {
         JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
-        JappPreferences.appPreferences.registerOnSharedPreferenceChangeListener(this)
+        JappPreferences.appPreferences?.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun initialize(activity: MainActivity) {
-        super.initialize(activity)
-        navigationView = activity.findViewById(R.id.nav_view)
+    override fun initialize(mainActivity: MainActivity) {
+        super.initialize(mainActivity)
+        navigationView = mainActivity.findViewById(R.id.nav_view)
         setUsernameText(JappPreferences.accountUsername)
         setRankText(JappPreferences.accountRank)
 
@@ -78,11 +77,11 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
 
     private fun download() {
         val filename = JappPreferences.accountAvatarName
-        if (!filename!!.isEmpty()) {
+        if (filename.isNotEmpty()) {
             try {
                 val task = DownloadDrawableTask(object : DownloadDrawableTask.OnDowloadDrawablesCompletedCallback {
                     override fun onDownloadDrawablesCompleted(drawables: ArrayList<Drawable>) {
-                        if (!drawables.isEmpty()) {
+                        if (drawables.isNotEmpty()) {
                             setAvatarDrawable(drawables[0])
                             AppData.saveDrawableInBackground(drawables[0], ACCOUNT_AVATAR_STORAGE)
                         }
@@ -105,8 +104,8 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
 
     companion object {
 
-        val TAG = "NavigationManager"
+        const val TAG = "NavigationManager"
 
-        val ACCOUNT_AVATAR_STORAGE = "ACCOUNT_AVATAR"
+        const val ACCOUNT_AVATAR_STORAGE = "ACCOUNT_AVATAR"
     }
 }

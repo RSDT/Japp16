@@ -62,7 +62,7 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
             updateView(info)
             if (lastStatusInfo != null) {
                 for (status in info.status) {
-                    for (oldStatus in lastStatusInfo!!.status) {
+                    for (oldStatus in lastStatusInfo?.status?: ArrayList()) {
                         if (status.team == oldStatus.team) {
                             if (status.status != oldStatus.status) {
                                 showNotification(status)

@@ -203,7 +203,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
                 }
 
                 val enabled = JappPreferences.areasEnabled
-                for (area in enabled!!) {
+                for (area in enabled) {
                     val controller = getVosControllerByDeelgebied<VosController>(area)
                     controller?.visiblity = true
                 }
@@ -212,29 +212,31 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
                 //TODO: make this nicer and less hacky
                 if (sgController.clusterManager is ScoutingGroepClusterManager) {
                     val clusterManager = sgController.clusterManager as ScoutingGroepClusterManager?
-                    clusterManager!!.reRender()
+                    clusterManager?.run {
+                        reRender()
+                    }
                 }
             }
             JappPreferences.MAP_TYPE -> if (jotiMap != null) {
-                val value = sharedPreferences.getString(key, GoogleMap.MAP_TYPE_NORMAL.toString())
-                jotiMap!!.setGMapType(Integer.valueOf(value!!))
+                val value = sharedPreferences.getString(key, GoogleMap.MAP_TYPE_NORMAL.toString())?:GoogleMap.MAP_TYPE_NORMAL.toString()
+                jotiMap?.setGMapType(Integer.valueOf(value))
             }
             JappPreferences.MAP_STYLE -> if (jotiMap != null) {
-                val style = Integer.valueOf(sharedPreferences.getString(key, MapStyle.DAY.toString())!!)
+                val style = Integer.valueOf(sharedPreferences.getString(key, MapStyle.DAY.toString())?:MapStyle.DAY.toString())
                 if (style == MapStyle.AUTO) {
 
                 } else {
-                    jotiMap!!.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.instance!!, MapStyle.getAssociatedRaw(style)))
+                    jotiMap?.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.instance!!, MapStyle.getAssociatedRaw(style)))
                 }
             }
             JappPreferences.MAP_CONTROLS -> {
                 val set = sharedPreferences.getStringSet(key, null)
                 if (set != null) {
                     if (jotiMap != null) {
-                        jotiMap!!.uiSettings.setZoomControlsEnabled(set.contains(MapControls.ZOOM.toString()))
-                        jotiMap!!.uiSettings.setCompassEnabled(set.contains(MapControls.COMPASS.toString()))
-                        jotiMap!!.uiSettings.setIndoorLevelPickerEnabled(set.contains(MapControls.LEVEL.toString()))
-                        jotiMap!!.uiSettings.setMapToolbarEnabled(set.contains(MapControls.TOOLBAR.toString()))
+                        jotiMap?.uiSettings?.setZoomControlsEnabled(set.contains(MapControls.ZOOM.toString()))
+                        jotiMap?.uiSettings?.setCompassEnabled(set.contains(MapControls.COMPASS.toString()))
+                        jotiMap?.uiSettings?.setIndoorLevelPickerEnabled(set.contains(MapControls.LEVEL.toString()))
+                        jotiMap?.uiSettings?.setMapToolbarEnabled(set.contains(MapControls.TOOLBAR.toString()))
                     }
                 }
             }
@@ -275,12 +277,10 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         jotiMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(Japp.instance!!, MapStyle.getAssociatedRaw(JappPreferences.mapStyle)))
 
         val controls = JappPreferences.mapControls
-        if (controls != null) {
-            jotiMap.uiSettings.setZoomControlsEnabled(controls.contains(MapControls.ZOOM.toString()))
-            jotiMap.uiSettings.setCompassEnabled(controls.contains(MapControls.COMPASS.toString()))
-            jotiMap.uiSettings.setIndoorLevelPickerEnabled(controls.contains(MapControls.LEVEL.toString()))
-            jotiMap.uiSettings.setMapToolbarEnabled(controls.contains(MapControls.TOOLBAR.toString()))
-        }
+        jotiMap.uiSettings.setZoomControlsEnabled(controls.contains(MapControls.ZOOM.toString()))
+        jotiMap.uiSettings.setCompassEnabled(controls.contains(MapControls.COMPASS.toString()))
+        jotiMap.uiSettings.setIndoorLevelPickerEnabled(controls.contains(MapControls.LEVEL.toString()))
+        jotiMap.uiSettings.setMapToolbarEnabled(controls.contains(MapControls.TOOLBAR.toString()))
 
         /**
          * Checks if this is the first instance of MapManager.
@@ -306,7 +306,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         }
 
         val enabled = JappPreferences.areasEnabled
-        for (area in enabled!!) {
+        for (area in enabled) {
             val controller = getVosControllerByDeelgebied<VosController>(area)
             controller?.visiblity = true
         }
@@ -326,11 +326,9 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
         /**
          * Remove this as a listener for UpdateMessages.
          */
-        Japp.updateManager.remove(this)
+        Japp.updateManager?.remove(this)
 
-        if (jotiMap != null) {
-            jotiMap = null
-        }
+        jotiMap = null
         for (entry in controllers) {
             val controller = entry.value
             controller.onDestroy()

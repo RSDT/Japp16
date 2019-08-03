@@ -16,6 +16,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -36,7 +37,7 @@ class Japp : MultiDexApplication() {
         super.onCreate()
         instance = this
 
-        if (!FirebaseApp.getApps(this).isEmpty()) {
+        if (FirebaseApp.getApps(this).isNotEmpty()) {
             analytics = FirebaseAnalytics.getInstance(this)
         }
 
@@ -62,24 +63,25 @@ class Japp : MultiDexApplication() {
             }
 
         fun getAnalytics(): FirebaseAnalytics? {
-            return instance!!.analytics
+            return instance?.analytics
         }
 
-        val updateManager: MessageManager
-            get() = instance!!.messageManager
+        val updateManager: MessageManager?
+            get() = instance?.messageManager
 
         fun getInterceptor(): Interceptor? {
-            return instance!!.interceptor
+            return instance?.interceptor
         }
 
         fun setInterceptor(value: Interceptor?) {
-            instance!!.interceptor = value
+            instance?.interceptor = value
         }
 
         fun <T> getApi(api: Class<T>): T {
             val client = OkHttpClient.Builder()
-            if (instance!!.interceptor != null) {
-                client.addInterceptor(instance!!.interceptor!!)
+            val interceptor = instance?.interceptor
+            if (interceptor != null) {
+                client.addInterceptor(interceptor)
             }
 
             val retrofit = Retrofit.Builder()
@@ -90,13 +92,17 @@ class Japp : MultiDexApplication() {
             return retrofit.create(api)
         }
 
-        val appResources: Resources
-            get() = instance!!.applicationContext.resources
+        val appResources: Resources?
+            get() = instance?.applicationContext?.resources
 
         fun hasInternetConnection(): Boolean {
             val cm = instance?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
             val info = cm?.activeNetworkInfo
             return info != null && info.isConnectedOrConnecting
+        }
+
+        fun getString(string: Int): String {
+            return appResources?.getString(string)?: "null"
         }
     }
 }

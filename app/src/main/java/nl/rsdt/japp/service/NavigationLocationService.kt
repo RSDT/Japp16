@@ -20,10 +20,10 @@ class NavigationLocationService : Service() {
     init {
         val locationManager = NavigationLocationManager()
         locationManager.setCallback(object : NavigationLocationManager.OnNewLocation {
-            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location?) {
+            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
                 if (JappPreferences.isNavigationPhone) {
                     try {
-                        val mesg = getString(R.string.location_received, location!!.createdBy, location.lat, location.lon)
+                        val mesg = getString(R.string.location_received, location.createdBy, location.lat, location.lon)
                         showToast(mesg, Toast.LENGTH_SHORT)
                         when (JappPreferences.navigationApp()) {
                             JappPreferences.NavigationApp.GoogleMaps -> {

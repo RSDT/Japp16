@@ -74,7 +74,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
                     val menu = activity!!.findViewById<FloatingActionMenu>(R.id.fab_menu)
                     menu.setOnMenuToggleListener { opened ->
                         if (opened) {
-                            current!!.hide()
+                            current?.hide()
                         }
                     }
                     return ViewTarget(menu.menuIconView)

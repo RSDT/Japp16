@@ -22,14 +22,10 @@ class Location {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other == null) {
-            return false
-        }
-        if (other is Location) {
-            val l = other as Location?
-            return l!!.lon == this.lon && l.lat == this.lat
+        return if (other is Location) {
+            other.lon == this.lon && other.lat == this.lat
         } else {
-            return false
+            false
         }
     }
 }

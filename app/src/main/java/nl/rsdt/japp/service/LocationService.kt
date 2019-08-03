@@ -51,8 +51,8 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
     internal var lastUpdate = Calendar.getInstance()
 
     private val locationSettingReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action!!.matches("android.location.PROVIDERS_CHANGED".toRegex())) {
+        override fun onReceive(context: Context, intent: Intent?) {
+            if (intent?.action?.matches("android.location.PROVIDERS_CHANGED".toRegex()) == true) {
                 // Make an action or refresh an already managed state.
                 val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 val gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -86,7 +86,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
 
         val locationManager = NavigationLocationManager()
         locationManager.setCallback(object : NavigationLocationManager.OnNewLocation {
-            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location?) {
+            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
                 if (JappPreferences.isNavigationPhone) {
                     try {
                         val mesg = getString(R.string.location_received, location!!.createdBy, location.lat, location.lon)

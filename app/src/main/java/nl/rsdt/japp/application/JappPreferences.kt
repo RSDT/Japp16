@@ -16,6 +16,7 @@ import java.util.*
  */
 object JappPreferences {
 
+    val TAIL_LENGTH = "pref_tail_length"
     val AUTO_TAAK = "pref_auto_taak"
 
     val FIRST_RUN = "pref_first_run"
@@ -122,8 +123,8 @@ object JappPreferences {
     /**
      * Gets the non-visible release_preferences of Japp.
      */
-    val appPreferences: SharedPreferences
-        get() = Japp.instance!!.getSharedPreferences("nl.rsdt.japp", Context.MODE_PRIVATE)
+    val appPreferences: SharedPreferences?
+        get() = Japp.instance?.getSharedPreferences("nl.rsdt.japp", Context.MODE_PRIVATE)
 
     /**
      * Gets the value indicating if this is the first run.
@@ -132,41 +133,41 @@ object JappPreferences {
      * Sets the value determining if this is the first run.
      */
     var isFirstRun: Boolean
-        get() = appPreferences.getBoolean(FIRST_RUN, true)
-        set(value) = appPreferences.edit().putBoolean(FIRST_RUN, value).apply()
+        get() = appPreferences?.getBoolean(FIRST_RUN, true)?: true
+        set(value) = appPreferences?.edit()?.putBoolean(FIRST_RUN, value)?.apply()?:Unit
 
     /**
      * Gets the username of the active account.
      */
-    val accountUsername: String?
-        get() = visiblePreferences.getString(ACCOUNT_USERNAME, "unknown")
+    val accountUsername: String
+        get() = visiblePreferences.getString(ACCOUNT_USERNAME, "unknown")?: "unknown"
 
     /**
      * Gets the rank of the active account.
      */
-    val accountRank: String?
-        get() = visiblePreferences.getString(ACCOUNT_RANK, "Guest")
+    val accountRank: String
+        get() = visiblePreferences.getString(ACCOUNT_RANK, "Guest")?: "Guest"
 
     val accountId: Int
-        get() = appPreferences.getInt(ACCOUNT_ID, -1)
+        get() = appPreferences?.getInt(ACCOUNT_ID, -1)?:-1
 
     /**
      * Gets the icon that the user has selected to be displayed to the others.
      */
     val accountIcon: Int
-        get() = Integer.valueOf(visiblePreferences.getString(ACCOUNT_ICON, "0")!!)
+        get() = Integer.valueOf(visiblePreferences.getString(ACCOUNT_ICON, "0")?:"0")
 
     /**
      * Gets the API-key associated with the active account.
      */
-    val accountKey: String?
-        get() = visiblePreferences.getString(ACCOUNT_KEY, "")
+    val accountKey: String
+        get() = visiblePreferences.getString(ACCOUNT_KEY, "")?: ""
 
     /**
      * Gets the filename of the avatar on the area348 server of the active account.
      */
-    val accountAvatarName: String?
-        get() = appPreferences.getString(ACCOUNT_AVATAR, "")
+    val accountAvatarName: String
+        get() = appPreferences?.getString(ACCOUNT_AVATAR, "")?:""
 
     /**
      * Gets the value indicating if auto update is enabled.
@@ -179,37 +180,37 @@ object JappPreferences {
         set(value) = visiblePreferences.edit().putBoolean(UPDATES_AUTO, value).apply()
 
     var mapType: Int
-        get() = Integer.valueOf(visiblePreferences.getString(MAP_TYPE, GoogleMap.MAP_TYPE_NORMAL.toString())!!)
+        get() = Integer.valueOf(visiblePreferences.getString(MAP_TYPE, GoogleMap.MAP_TYPE_NORMAL.toString())?:GoogleMap.MAP_TYPE_NORMAL.toString() )
         set(type) = visiblePreferences.edit().putString(MAP_TYPE, type.toString()).apply()
 
     val mapStyle: Int
-        get() = Integer.valueOf(visiblePreferences.getString(MAP_STYLE, MapStyle.DAY.toString())!!)
+        get() = Integer.valueOf(visiblePreferences.getString(MAP_STYLE, MapStyle.DAY.toString())?:MapStyle.DAY.toString())
 
-    val huntname: String?
-        get() = visiblePreferences.getString(MAP_HUNT_NAME, "")
+    val huntname: String
+        get() = visiblePreferences.getString(MAP_HUNT_NAME, "")?:""
 
-    val mapControls: Set<String>?
-        get() = visiblePreferences.getStringSet(MAP_CONTROLS, null)
+    val mapControls: Set<String>
+        get() = visiblePreferences.getStringSet(MAP_CONTROLS, emptySet())?: emptySet()
 
     var followZoom: Float
-        get() = appPreferences.getFloat(FOLLOW_ZOOM, 20f)
-        set(zoom) = appPreferences.edit().putFloat(FOLLOW_ZOOM, zoom).apply()
+        get() = appPreferences?.getFloat(FOLLOW_ZOOM, 20f)?:20f
+        set(zoom) = appPreferences?.edit()?.putFloat(FOLLOW_ZOOM, zoom)?.apply()?:Unit
 
     val followAngleOfAttack: Float
-        get() = appPreferences.getFloat(FOLLOW_AOA, 45f)
+        get() = appPreferences?.getFloat(FOLLOW_AOA, 45f)?:45f
 
     val locationUpdateIntervalInMinutes: Float
-        get() = java.lang.Float.valueOf(visiblePreferences.getString(LOCATION_UPDATE_INTERVAL, "1.0")!!)
+        get() = java.lang.Float.valueOf(visiblePreferences.getString(LOCATION_UPDATE_INTERVAL, "1.0")?:"1.0")
 
     val locationUpdateIntervalInMs: Float
-        get() = java.lang.Float.valueOf(visiblePreferences.getString(LOCATION_UPDATE_INTERVAL, "1.0")!!) * 60f * 1000f
+        get() = java.lang.Float.valueOf(visiblePreferences.getString(LOCATION_UPDATE_INTERVAL, "1.0")?:"1.0") * 60f * 1000f
 
     val hunterUpdateIntervalInMs: Float
-        get() = java.lang.Float.valueOf(visiblePreferences.getString(HUNTER_UPDATE_INTERVAL, "1.0")!!) * 60f * 1000f
+        get() = java.lang.Float.valueOf(visiblePreferences.getString(HUNTER_UPDATE_INTERVAL, "1.0")?:"1.0") * 60f * 1000f
 
-    var fcmToken: String?
-        get() = appPreferences.getString(FCM_TOKEN, "")
-        set(token) = appPreferences.edit().putString(FCM_TOKEN, token).apply()
+    var fcmToken: String
+        get() = appPreferences?.getString(FCM_TOKEN, "")?:""
+        set(token) = appPreferences?.edit()?.putString(FCM_TOKEN, token)?.apply()?:Unit
 
     val isFreshStart: Boolean
         get() = visiblePreferences.getBoolean(DEBUG_FRESH_START, false)
@@ -221,28 +222,28 @@ object JappPreferences {
         get() = visiblePreferences.getBoolean(AUTO_ENLARGMENT, true)
 
     val autoEnlargementInterval: Float
-        get() = java.lang.Float.valueOf(visiblePreferences.getString(AUTO_ENLARGMENT_INTERVAL, "0.1f")!!)
+        get() = java.lang.Float.valueOf(visiblePreferences.getString(AUTO_ENLARGMENT_INTERVAL, "0.1f")?:"0.1f")
 
     val autoEnlargementIntervalInMs: Float
-        get() = java.lang.Float.valueOf(visiblePreferences.getString(AUTO_ENLARGMENT_INTERVAL, "0.2f")!!) * 60f * 1000f
+        get() = java.lang.Float.valueOf(visiblePreferences.getString(AUTO_ENLARGMENT_INTERVAL, "0.2f")?:"0.2f") * 60f * 1000f
 
     val walkSpeed: Float
-        get() = java.lang.Float.parseFloat(visiblePreferences.getString(WALK_SPEED, "6.0f")!!)
+        get() = java.lang.Float.parseFloat(visiblePreferences.getString(WALK_SPEED, "6.0f")?: "6.0f")
 
-    val areasEnabled: Set<String>?
-        get() = visiblePreferences.getStringSet(AREAS, HashSet())
+    val areasEnabled: Set<String>
+        get() = visiblePreferences.getStringSet(AREAS, emptySet())?: emptySet()
 
     val areasEdgesEnabled: Boolean
         get() = visiblePreferences.getBoolean(AREAS_EDGES, true)
 
     val areasEdgesWidth: Int
-        get() = Integer.valueOf(visiblePreferences.getString(AREAS_EDGES_WIDTH, "5")!!)
+        get() = Integer.valueOf(visiblePreferences.getString(AREAS_EDGES_WIDTH, "5")?:"5")
 
     val areasColorEnabled: Boolean
         get() = visiblePreferences.getBoolean(AREAS_COLOR, true)
 
     val areasColorAlpha: Int
-        get() = Integer.valueOf(visiblePreferences.getString(AREAS_COLOR_ALPHA, "25")!!)
+        get() = Integer.valueOf(visiblePreferences.getString(AREAS_COLOR_ALPHA, "25")?:"25")
 
     val getAllHunters: Boolean
         get() = visiblePreferences.getBoolean(HUNTER_ALL, false)
@@ -256,11 +257,13 @@ object JappPreferences {
 
     var autoTaak: Boolean
         get() {
-            return appPreferences.getBoolean(AUTO_TAAK, false)
+            return appPreferences?.getBoolean(AUTO_TAAK, false)?:false
         }
         set(value) {
-           appPreferences.edit().putBoolean(AUTO_TAAK, value).apply()
+           appPreferences?.edit()?.putBoolean(AUTO_TAAK, value)?.apply()?:Unit
         }
+    val tailLength: Int
+        get() = Integer.valueOf(visiblePreferences.getString(TAIL_LENGTH, "100")?:"100")
 
     val isNavigationPhone: Boolean
         get() = visiblePreferences.getBoolean(IS_NAVIGATION_PHONE, false)
@@ -269,7 +272,7 @@ object JappPreferences {
         get() = JappPreferences.RoadManager.valueOf(visiblePreferences.getString(ROAD_MANAGER, "Google")?: "Google")
 
     fun setFollowAoa(aoa: Float) {
-        appPreferences.edit().putFloat(FOLLOW_AOA, aoa).apply()
+        appPreferences?.edit()?.putFloat(FOLLOW_AOA, aoa)?.apply()
     }
 
     fun useOSM(): Boolean {
@@ -281,7 +284,7 @@ object JappPreferences {
     }
 
     fun navigationApp(): NavigationApp {
-        return NavigationApp.fromString(visiblePreferences.getString(NAVIGATION_APP, "Google Maps")!!)
+        return NavigationApp.fromString(visiblePreferences.getString(NAVIGATION_APP, "Google Maps")?:"Google Maps")
     }
 
     fun followNorth(): Boolean {
@@ -290,7 +293,7 @@ object JappPreferences {
 
     fun clear() {
         visiblePreferences.edit().clear().apply()
-        appPreferences.edit().clear().apply()
+        appPreferences?.edit()?.clear()?.apply()
     }
 
     fun loadOldData(): Boolean {
@@ -305,24 +308,24 @@ object JappPreferences {
         return visiblePreferences.getBoolean(ONLY_TODAY, false)
     }
 
-    fun getColorName(team: String?): String? {
-        return visiblePreferences.getString(COLOR_NAME + team, "Zwart")
+    fun getColorName(team: String): String {
+        return visiblePreferences.getString(COLOR_NAME + team, "Zwart")?:"Zwart"
     }
 
-    fun setColorName(team: String, color: String?) {
+    fun setColorName(team: String, color: String) {
         visiblePreferences.edit().putString(COLOR_NAME + team, color).apply()
     }
 
-    fun setColorHex(team: String, hex: String?) {
+    fun setColorHex(team: String, hex: String) {
         var hex = hex
-        if (hex?.startsWith("#") == true) {
+        if (!hex.startsWith("#")) {
             hex = "#$hex"
         }
         visiblePreferences.edit().putString(COLOR_HEX + team, hex).apply()
     }
 
-    fun getColorHex(team: String): String? {
-        return visiblePreferences.getString(COLOR_HEX + team, "#FFFFFF")
+    fun getColorHex(team: String): String {
+        return visiblePreferences.getString(COLOR_HEX + team, "#FFFFFF")?: "#FFFFFF"
     }
     enum class RoadManager{
         MapQuest,

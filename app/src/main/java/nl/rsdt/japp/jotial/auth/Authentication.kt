@@ -42,26 +42,21 @@ class Authentication : Callback<Authentication.KeyObject> {
             pEditor.putString(JappPreferences.ACCOUNT_KEY, key)
             pEditor.apply()
 
-            if (callback != null) {
-                callback!!.onAuthenticationCompleted(AuthenticationResult(key, 200, Japp.appResources.getString(R.string.login_succes)))
-            }
+            callback?.onAuthenticationCompleted(AuthenticationResult(key, 200, Japp.getString(R.string.login_succes)))
         } else {
-            val message: String
-            if (response.code() == 404) {
-                message = Japp.appResources.getString(R.string.wrong_data)
+            val message: String = if (response.code() == 404) {
+                Japp.getString(R.string.wrong_data)
             } else {
-                message = Japp.appResources.getString(R.string.error_on_login)
+                Japp.getString(R.string.error_on_login)
             }
-            if (callback != null) {
-                callback!!.onAuthenticationCompleted(AuthenticationResult("", response.code(), message))
-            }
+
+            callback?.onAuthenticationCompleted(AuthenticationResult("", response.code(), message))
         }
     }
 
     override fun onFailure(call: Call<KeyObject>, t: Throwable) {
-        if (callback != null) {
-            callback!!.onAuthenticationCompleted(AuthenticationResult("", 0, Japp.appResources.getString(R.string.error_on_login)))
-        }
+
+        callback?.onAuthenticationCompleted(AuthenticationResult("", 0, Japp.getString(R.string.error_on_login)))
     }
 
 

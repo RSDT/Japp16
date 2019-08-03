@@ -56,7 +56,7 @@ class ApiUrlBuilder : UrlBuilder {
             super.append("/$arg")
 
             if (appendKey) {
-                super.append("/" + JappPreferences.accountKey!!)
+                super.append("/" + JappPreferences.accountKey)
             }
             return this
         }

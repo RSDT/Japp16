@@ -326,12 +326,12 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                 .visible(false)
         val icon: Bitmap? = null
         val marker = jotiMap.addMarker(Pair(markerOptions, icon))
-        navigationLocationManager!!.setCallback(object : NavigationLocationManager.OnNewLocation {
-            override fun onNewLocation(location: Location?) {
+        navigationLocationManager?.setCallback(object : NavigationLocationManager.OnNewLocation {
+            override fun onNewLocation(location: Location) {
                 val identifier = MarkerIdentifier.Builder()
                 identifier.setType(MarkerIdentifier.TYPE_NAVIGATE_CAR)
 
-                identifier.add("addedBy", location!!.createdBy)
+                identifier.add("addedBy", location.createdBy)
                 identifier.add("createdOn", location.createdOn.toString())
                 marker.title = Gson().toJson(identifier.create())
                 marker.isVisible = true
@@ -347,7 +347,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
     private fun setupDeelgebieden() {
         val enabled = JappPreferences.areasEnabled
-        for (area in enabled!!) {
+        for (area in enabled) {
             if (!areas.containsKey(area)) {
                 setupDeelgebied(Deelgebied.parse(area))
             } else { // vraag me niet hoe maar dit fixed #112
@@ -603,7 +603,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                     menu.close(true)
                     //followButton.setColorNormal(Color.parseColor("#5cd65c"));
                     followButton.labelText = this@JappMapFragment.getString(R.string.stop_following)
-                    session = movementManager!!.newSession(jotiMap!!.previousCameraPosition, JappPreferences.followZoom, JappPreferences.followAngleOfAttack)
+                    session = movementManager!!.newSession(jotiMap!!,jotiMap!!.previousCameraPosition, JappPreferences.followZoom, JappPreferences.followAngleOfAttack)
                 }
             }
 

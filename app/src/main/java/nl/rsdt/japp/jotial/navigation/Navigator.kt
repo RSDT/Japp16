@@ -41,20 +41,18 @@ class Navigator(private val map: IJotiMap?) {
         if (Japp.lastLocation != null && end != null) {
             val r = RouteCalculator(this, context)
             val start = Japp.lastLocation
-            r.execute(LatLng(start!!.latitude, start.longitude), end)
+            if (start != null) {
+                r.execute(LatLng(start.latitude, start.longitude), end)
+            }
         }
     }
 
     fun clear() {
-        if (oldPolyline != null) {
-            oldPolyline!!.remove()
-        }
+        oldPolyline?.remove()
     }
 
     fun setPolyline(newPolyline: Polyline?) {
-        if (oldPolyline != null) {
-            oldPolyline!!.remove()
-        }
+        oldPolyline?.remove()
         if (newPolyline == null) {
             return
         }
@@ -76,10 +74,10 @@ class Navigator(private val map: IJotiMap?) {
     internal class RouteCalculator(private val callback: Navigator, private val context: Context?) : AsyncTask<LatLng, Void, Polyline>() {
         override fun doInBackground(vararg params: LatLng): Polyline {
             val roadManager: RoadManager = when (JappPreferences.roadManager){
-                JappPreferences.RoadManager.MapQuest -> MapQuestRoadManager(Japp.appResources.getString(R.string.map_quest_key))
+                JappPreferences.RoadManager.MapQuest -> MapQuestRoadManager(Japp.getString(R.string.map_quest_key))
                 JappPreferences.RoadManager.Google ->  GoogleRoadManager()
                 JappPreferences.RoadManager.OSRM -> OSRMRoadManager(context)
-                JappPreferences.RoadManager.GraphHopper -> GraphHopperRoadManager(Japp.appResources.getString(R.string.graphhopper_key),false)
+                JappPreferences.RoadManager.GraphHopper -> GraphHopperRoadManager(Japp.getString(R.string.graphhopper_key),false)
             }
 
             val waypoints = ArrayList<GeoPoint>()

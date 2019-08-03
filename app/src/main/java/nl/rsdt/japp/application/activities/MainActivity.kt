@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
         /**
          * Add this as a listener for UpdateMessages.
          */
-        Japp.updateManager.add(this)
+        Japp.updateManager?.add(this)
 
         /**
          * Register a on changed listener to the visible release_preferences.
@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
         /**
          * Remove this as UpdateMessageListener.
          */
-        Japp.updateManager.remove(this)
+        Japp.updateManager?.remove(this)
 
         /**
          * Unregister this as OnSharedPreferenceChangeListener.

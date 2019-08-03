@@ -245,7 +245,13 @@
                     android:editable="false"
                     android:summary="@string/pref_developer_debug_version_sum"
                     android:defaultValue="2.1"/>
-
+                <EditTextPreference
+                    android:inputType="number"
+                    android:defaultValue="150"
+                    android:editable="true"
+                    android:key="pref_tail_length"
+                    android:summary="@string/pref_tail_length_sum"
+                    android:title="@string/pref_tail_length_title" />
 
                 <SwitchPreference
                     android:title="@string/pref_developer_hunter_all_title"

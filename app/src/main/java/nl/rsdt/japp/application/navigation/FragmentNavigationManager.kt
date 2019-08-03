@@ -51,7 +51,7 @@ open class FragmentNavigationManager {
     }
 
     fun hasBackStack(): Boolean {
-        return !backstack.isEmpty()
+        return backstack.isNotEmpty()
     }
 
     open fun initialize(mainActivity: MainActivity) {
@@ -79,27 +79,27 @@ open class FragmentNavigationManager {
     }
 
     private fun switchTo(fragment: String, addToStack: Boolean) {
-        if (currentFragmentTag == null || currentFragmentTag == fragment) return
+        if (currentFragmentTag == fragment) return
 
-        val ft = manager!!.beginTransaction()
+        val ft = manager?.beginTransaction()
 
         when (fragment) {
-            FRAGMENT_HOME -> ft.show(homeFragment)
-            FRAGMENT_MAP -> ft.show(mapFragment)
-            FRAGMENT_CAR -> ft.show(carFragment)
-            FRAGMENT_SETTINGS -> ft.show(preferenceFragment)
-            FRAGMENT_ABOUT -> ft.show(aboutFragment)
+            FRAGMENT_HOME -> ft?.show(homeFragment)
+            FRAGMENT_MAP -> ft?.show(mapFragment)
+            FRAGMENT_CAR -> ft?.show(carFragment)
+            FRAGMENT_SETTINGS -> ft?.show(preferenceFragment)
+            FRAGMENT_ABOUT -> ft?.show(aboutFragment)
         }
 
         when (currentFragmentTag) {
-            FRAGMENT_HOME -> ft.hide(homeFragment)
-            FRAGMENT_MAP -> ft.hide(mapFragment)
-            FRAGMENT_CAR -> ft.hide(carFragment)
-            FRAGMENT_SETTINGS -> ft.hide(preferenceFragment)
-            FRAGMENT_ABOUT -> ft.hide(aboutFragment)
+            FRAGMENT_HOME -> ft?.hide(homeFragment)
+            FRAGMENT_MAP -> ft?.hide(mapFragment)
+            FRAGMENT_CAR -> ft?.hide(carFragment)
+            FRAGMENT_SETTINGS -> ft?.hide(preferenceFragment)
+            FRAGMENT_ABOUT -> ft?.hide(aboutFragment)
         }
 
-        ft.commit()
+        ft?.commit()
         if (addToStack) {
             backstack.add(currentFragmentTag)
         }
@@ -110,15 +110,15 @@ open class FragmentNavigationManager {
 
     fun setupMap(callback: IJotiMap.OnMapReadyCallback) {
         if (mapFragment == null) {//// TODO: 09/08/17 dit is nooit anders krijg je een runtime exception bij de vorige if statement
-            mapFragment = manager!!.findFragmentByTag(FRAGMENT_MAP) as JappMapFragment
+            mapFragment = manager?.findFragmentByTag(FRAGMENT_MAP) as JappMapFragment
         }
 
-        mapFragment!!.getMapAsync(callback)
+        mapFragment?.getMapAsync(callback)
 
     }
 
     fun onBackPressed() {
-        if (!backstack.isEmpty()) {
+        if (backstack.isNotEmpty()) {
             val last = backstack.size - 1
             switchTo(backstack[last], false)
             backstack.removeAt(last)
@@ -126,13 +126,13 @@ open class FragmentNavigationManager {
     }
 
     private fun updateToolbarTitle() {
-        if (currentFragmentTag != null && actionbar != null) {
+        if (actionbar != null) {
             when (currentFragmentTag) {
-                FRAGMENT_HOME -> actionbar!!.setTitle(R.string.home)
-                FRAGMENT_MAP -> actionbar!!.setTitle(R.string.map)
-                FRAGMENT_CAR -> actionbar!!.setTitle(R.string.car)
-                FRAGMENT_SETTINGS -> actionbar!!.setTitle(R.string.settings)
-                FRAGMENT_ABOUT -> actionbar!!.setTitle(R.string.about)
+                FRAGMENT_HOME -> actionbar?.setTitle(R.string.home)
+                FRAGMENT_MAP -> actionbar?.setTitle(R.string.map)
+                FRAGMENT_CAR -> actionbar?.setTitle(R.string.car)
+                FRAGMENT_SETTINGS -> actionbar?.setTitle(R.string.settings)
+                FRAGMENT_ABOUT -> actionbar?.setTitle(R.string.about)
             }
         }
     }
@@ -140,38 +140,38 @@ open class FragmentNavigationManager {
     private fun updateCheckedState() {
 
         when (currentFragmentTag) {
-            FRAGMENT_HOME -> nView!!.menu.findItem(R.id.nav_home).isChecked = true
-            FRAGMENT_MAP -> nView!!.menu.findItem(R.id.nav_map).isChecked = true
-            FRAGMENT_CAR -> nView!!.menu.findItem(R.id.nav_car).isChecked = true
-            FRAGMENT_SETTINGS -> nView!!.menu.findItem(R.id.nav_settings).isChecked = true
-            FRAGMENT_ABOUT -> nView!!.menu.findItem(R.id.nav_about).isChecked = true
+            FRAGMENT_HOME -> nView?.menu?.findItem(R.id.nav_home)?.isChecked = true
+            FRAGMENT_MAP -> nView?.menu?.findItem(R.id.nav_map)?.isChecked = true
+            FRAGMENT_CAR -> nView?.menu?.findItem(R.id.nav_car)?.isChecked = true
+            FRAGMENT_SETTINGS -> nView?.menu?.findItem(R.id.nav_settings)?.isChecked = true
+            FRAGMENT_ABOUT -> nView?.menu?.findItem(R.id.nav_about)?.isChecked = true
         }
     }
 
 
     private fun setupFragments() {
-        val ft = manager!!.beginTransaction()
+        val ft = manager?.beginTransaction()
 
         homeFragment = manager?.findFragmentByTag(HomeFragment.TAG) as HomeFragment?
         if (homeFragment == null) {
             homeFragment = HomeFragment()
-            ft.add(R.id.container, homeFragment, HomeFragment.TAG)
+            ft?.add(R.id.container, homeFragment, HomeFragment.TAG)
         }
-        ft.hide(homeFragment)
+        ft?.hide(homeFragment)
 
         carFragment = manager?.findFragmentByTag(CarFragment.TAG) as CarFragment?
         if (carFragment == null) {
             carFragment = CarFragment()
-            ft.add(R.id.container, carFragment, CarFragment.TAG)
+            ft?.add(R.id.container, carFragment, CarFragment.TAG)
         }
-        ft.hide(carFragment)
+        ft?.hide(carFragment)
 
         mapFragment = manager?.findFragmentByTag(JappMapFragment.TAG) as JappMapFragment?
         if (mapFragment == null) {
             mapFragment = JappMapFragment()
-            ft.add(R.id.container, mapFragment, JappMapFragment.TAG)
+            ft?.add(R.id.container, mapFragment, JappMapFragment.TAG)
         }
-        ft.show(mapFragment)
+        ft?.show(mapFragment)
         currentFragmentTag = FRAGMENT_MAP
         updateToolbarTitle()
         updateCheckedState()
@@ -179,18 +179,18 @@ open class FragmentNavigationManager {
         preferenceFragment = manager?.findFragmentByTag(JappPreferenceFragment.TAG) as JappPreferenceFragment?
         if (preferenceFragment == null) {
             preferenceFragment = JappPreferenceFragment()
-            ft.add(R.id.container, preferenceFragment, JappPreferenceFragment.TAG)
+            ft?.add(R.id.container, preferenceFragment, JappPreferenceFragment.TAG)
         }
-        ft.hide(preferenceFragment)
+        ft?.hide(preferenceFragment)
 
         aboutFragment = manager?.findFragmentByTag(AboutFragment.TAG) as AboutFragment?
         if (aboutFragment == null) {
             aboutFragment = AboutFragment()
-            ft.add(R.id.container, aboutFragment, AboutFragment.TAG)
+            ft?.add(R.id.container, aboutFragment, AboutFragment.TAG)
         }
-        ft.hide(aboutFragment)
+        ft?.hide(aboutFragment)
 
-        ft.commit()
+        ft?.commit()
     }
 
     open fun onDestroy() {

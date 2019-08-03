@@ -34,14 +34,12 @@ class NavigationLocationManager : ChildEventListener, ValueEventListener {
                         val loc = snapshot.child(info!!.autoEigenaar!!).getValue(Location::class.java)
                         if (oldLoc != null && oldLoc != loc || oldLoc == null && loc != null) {
                             oldLoc = loc
-                            if (callback != null) {
-                                callback!!.onNewLocation(loc)
+                            if (loc != null) {
+                                callback?.onNewLocation(loc)
                             }
                         }
                     } else if (response.code() == 404) {
-                        if (callback != null) {
-                            callback!!.onNotInCar()
-                        }
+                        callback?.onNotInCar()
                     }
                 }
 
@@ -81,7 +79,7 @@ class NavigationLocationManager : ChildEventListener, ValueEventListener {
     }
 
     interface OnNewLocation {
-        fun onNewLocation(location: Location?)
+        fun onNewLocation(location: Location)
         fun onNotInCar()
     }
 

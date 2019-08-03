@@ -20,9 +20,9 @@ import java.util.*
  */
 abstract class LocationProviderService<B : Binder> : Service(), LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
 
-    protected var client: GoogleApiClient? = null
+    private var client: GoogleApiClient? = null
 
-    var request: LocationRequest? = LocationRequest()
+    var request: LocationRequest = LocationRequest()
         set(value) {
             field = value
             if (isRequesting && client!!.isConnected) {
@@ -30,12 +30,12 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
             }
         }
 
-    protected var listeners = ArrayList<LocationListener>()
+    private var listeners = ArrayList<LocationListener>()
 
     var lastLocation: Location? = null
         protected set
 
-    protected var isRequesting = false
+    private var isRequesting = false
 
     init {
         buildGoogleApiClient()
@@ -73,9 +73,7 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     override fun onLocationChanged(location: Location) {
         lastLocation = location
-        var listener: LocationListener?
-        for (i in listeners.indices) {
-            listener = listeners[i]
+        for (listener in listeners) {
             listener.onLocationChanged(location)
         }
     }
@@ -127,7 +125,6 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
             client!!.disconnect()
             client = null
         }
-        request = null
     }
 
     fun add(listener: LocationListener) {

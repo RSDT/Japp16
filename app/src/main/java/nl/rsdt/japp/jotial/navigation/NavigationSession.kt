@@ -78,8 +78,8 @@ class NavigationSession(private val targetView: View) : Snackbar.Callback(), IJo
     }
 
     fun end() {
-        jotiMap!!.setMarkerOnClickListener(null)
-        navigator!!.clear()
+        jotiMap?.setMarkerOnClickListener(null)
+        navigator?.clear()
         onDestroy()
     }
 
