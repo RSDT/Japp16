@@ -170,7 +170,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
              * Gets invoked when a UpdateMessage is received.
              */
     override fun onUpdateMessageReceived(info: UpdateInfo?) {
-        if (info == null || info.type == null || info.action == null) return
+        if (info?.type == null || info.action == null) return
         var updatable: MapItemUpdatable<*>? = null
         when (info.type) {
             "hunter" -> updatable = get(HunterController.CONTROLLER_ID)

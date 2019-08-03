@@ -140,34 +140,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             true
         }
 
-        if (JappPreferences.autoTaak) {
-            val autoApi = Japp.getApi(AutoApi::class.java)
-            autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo> {
-                override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
 
-                override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
-                    val newTaak = """${deelgebied?.name} ${Japp.appResources.getString(R.string.automatisch)}"""
-                    if (deelgebied != null && newTaak.toLowerCase() != response.body()?.taak?.toLowerCase()) {
-                        val body: AutoUpdateTaakPostBody = AutoUpdateTaakPostBody.default
-                        body.setTaak(newTaak)
-                        autoApi.updateTaak(body).enqueue(object : Callback<Void> {
-                            override fun onFailure(call: Call<Void>, t: Throwable) {
-                                //TODO("not implemented")
-                            }
-
-                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                                if (response.isSuccessful){
-                                    Snackbar.make(snackBarView!!, """taak upgedate: ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
-                                }
-                            }
-                        })
-                    }
-                }
-
-            })
-        }
         if (refresh) {
             deelgebied = Deelgebied.resolveOnLocation(location)
             if (deelgebied != null && snackBarView != null) {
@@ -201,6 +174,34 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             if (!marker!!.isVisible) {
                 marker!!.isVisible = true
             }
+        }
+        if (JappPreferences.autoTaak) {
+            val autoApi = Japp.getApi(AutoApi::class.java)
+            autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo> {
+                override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
+                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
+                    val newTaak = """${deelgebied?.name}${Japp.appResources.getString(R.string.automatisch)}"""
+                    if (deelgebied != null && newTaak.toLowerCase() != response.body()?.taak?.toLowerCase()) {
+                        val body: AutoUpdateTaakPostBody = AutoUpdateTaakPostBody.default
+                        body.setTaak(newTaak)
+                        autoApi.updateTaak(body).enqueue(object : Callback<Void> {
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                //TODO("not implemented")
+                            }
+
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful){
+                                    Snackbar.make(snackBarView!!, """taak upgedate: ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
+                                }
+                            }
+                        })
+                    }
+                }
+
+            })
         }
         if (activeSession != null) {
             activeSession!!.onLocationChanged(location)
