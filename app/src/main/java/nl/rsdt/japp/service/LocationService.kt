@@ -89,7 +89,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
             override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
                 if (JappPreferences.isNavigationPhone) {
                     try {
-                        val mesg = getString(R.string.location_received, location!!.createdBy, location.lat, location.lon)
+                        val mesg = getString(R.string.location_received, location.createdBy, location.lat, location.lon)
                         showToast(mesg, Toast.LENGTH_LONG)
                         when (JappPreferences.navigationApp()) {
                             JappPreferences.NavigationApp.GoogleMaps -> {

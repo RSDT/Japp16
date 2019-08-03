@@ -434,7 +434,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
             JappPreferences.AREAS -> {
                 if (jotiMap != null) {
                     val enabled = JappPreferences.areasEnabled
-                    for (area in enabled!!) {
+                    for (area in enabled) {
                         if (!areas.containsKey(area)) {
                             setupDeelgebied(Deelgebied.parse(area))
                         }

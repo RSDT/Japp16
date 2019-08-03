@@ -90,7 +90,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
             val taakDialog = AlertDialog.Builder(view.context)
                     .setTitle(R.string.welke_taak)
                     .setItems(itemsTaak) { _, whichTaak ->
-                        var taak = itemsTaak[whichTaak]?:"null"
+                        var taak = itemsTaak[whichTaak]
                         JappPreferences.autoTaak = (taak == automatisch)
                         if (JappPreferences.autoTaak){
                             Japp.lastLocation?.let{

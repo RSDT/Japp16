@@ -65,9 +65,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
     private var tail: IPolyline? = null
 
-    private val tailPoints: TailPoints = TailPoints(JappPreferences.tailLength)
+    private val tailPoints: TailPoints<LatLng> = TailPoints(JappPreferences.tailLength)
 
-    private var bearing: Float = 0.toFloat()
+    private var bearing: Float = 0f
 
     private var lastLocation: Location? = null
 
@@ -130,7 +130,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         val ldeelgebied = deelgebied
         if (marker != null) {
             if (lastLocation != null) {
-                bearing = lastLocation!!.bearingTo(location)
+                bearing = location.bearingTo(lastLocation)
 
                 /**
                  * Animate the marker to the new position
@@ -412,9 +412,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 }
 
-class TailPoints(maxSize:Int) : List<LatLng>{
+class TailPoints<T>(maxSize:Int) : List<T>{
 
-    private var list: ArrayList<LatLng> = ArrayList()
+    private var list: ArrayList<T> = ArrayList()
     private var currentFirst = 0
     internal var maxSize:Int = maxSize
         set(value) {
@@ -448,33 +448,33 @@ class TailPoints(maxSize:Int) : List<LatLng>{
     private fun rearrangeList(){
         val first = list.subList(currentFirst, list.size)
         val second = list.subList(0, currentFirst)
-        val result = ArrayList<LatLng>()
+        val result = ArrayList<T>()
         result.addAll(first)
         result.addAll(second)
         currentFirst = 0
         list = result
     }
 
-    override fun iterator(): kotlin.collections.Iterator<LatLng> {
+    override fun iterator(): kotlin.collections.Iterator<T> {
         return Iterator(0)
     }
 
     override val size: Int
         get() = list.size
 
-    override fun contains(element: LatLng): Boolean {
+    override fun contains(element: T): Boolean {
         return list.contains(element)
     }
 
-    override fun containsAll(elements: Collection<LatLng>): Boolean {
+    override fun containsAll(elements: Collection<T>): Boolean {
         return list.containsAll(elements)
     }
 
-    override fun get(index: Int): LatLng {
+    override fun get(index: Int): T {
         return list[toListIndex(index)]
     }
 
-    override fun indexOf(element: LatLng): Int {
+    override fun indexOf(element: T): Int {
         return toTailIndex(list.indexOf(element))
     }
 
@@ -482,13 +482,13 @@ class TailPoints(maxSize:Int) : List<LatLng>{
         return list.isEmpty()
     }
 
-    override fun lastIndexOf(element: LatLng): Int {
+    override fun lastIndexOf(element: T): Int {
         return toTailIndex(list.lastIndexOf(element))
     }
 
 
 
-    override fun subList(fromIndex: Int, toIndex: Int): List<LatLng> {
+    override fun subList(fromIndex: Int, toIndex: Int): List<T> {
         val fromIndexList = toListIndex(fromIndex)
         val toIndexList = toListIndex(toIndex)
         return when {
@@ -502,21 +502,22 @@ class TailPoints(maxSize:Int) : List<LatLng>{
         }
     }
 
-    override fun listIterator(): ListIterator<LatLng> {
+    override fun listIterator(): ListIterator<T> {
         return Iterator(0)
     }
 
-    override fun listIterator(index: Int): ListIterator<LatLng> {
+    override fun listIterator(index: Int): ListIterator<T> {
         return Iterator(index)
     }
 
-    fun toArrayList(): ArrayList<LatLng> {
+    fun toArrayList(): ArrayList<T> {
         rearrangeList()
         return ArrayList(list)
     }
 
-    fun add(element: LatLng): Boolean {
+    fun add(element: T): Boolean {
         return if (list.size < maxSize){
+            assert(currentFirst == 0) {currentFirst}
             list.add(element)
         }else{
             list[currentFirst] = element
@@ -530,7 +531,7 @@ class TailPoints(maxSize:Int) : List<LatLng>{
         currentFirst = 0
     }
 
-    fun setPoints(list: ArrayList<LatLng>) {
+    fun setPoints(list: ArrayList<T>) {
         clear()
         if (list.size <= maxSize) {
             this.list.addAll(list)
@@ -541,13 +542,13 @@ class TailPoints(maxSize:Int) : List<LatLng>{
         assert(this.list.size <= maxSize)
     }
 
-    inner class Iterator(private var currentIndex: Int): ListIterator<LatLng> {
+    inner class Iterator(private var currentIndex: Int): ListIterator<T> {
 
         override fun hasNext(): Boolean {
             return currentIndex + 1 < size
         }
 
-        override fun next(): LatLng {
+        override fun next(): T {
             val nextE = get(currentIndex)
             currentIndex++
             return nextE
@@ -561,7 +562,7 @@ class TailPoints(maxSize:Int) : List<LatLng>{
             return currentIndex + 1
         }
 
-        override fun previous(): LatLng {
+        override fun previous(): T {
             val prevE = get(currentIndex)
             currentIndex--
             return prevE

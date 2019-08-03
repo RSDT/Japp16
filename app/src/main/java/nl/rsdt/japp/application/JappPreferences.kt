@@ -317,11 +317,11 @@ object JappPreferences {
     }
 
     fun setColorHex(team: String, hex: String) {
-        var hex = hex
+        var hex1 = hex
         if (!hex.startsWith("#")) {
-            hex = "#$hex"
+            hex1 = "#$hex"
         }
-        visiblePreferences.edit().putString(COLOR_HEX + team, hex).apply()
+        visiblePreferences.edit().putString(COLOR_HEX + team, hex1).apply()
     }
 
     fun getColorHex(team: String): String {
