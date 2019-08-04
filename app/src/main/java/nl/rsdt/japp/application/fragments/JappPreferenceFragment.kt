@@ -58,7 +58,8 @@ class JappPreferenceFragment : PreferenceFragment() {
         }
         map.addPreference(type)
         val preference = findPreference(JappPreferences.DEBUG_VERSION_NAME) as EditTextPreference
-        //TODO set version preference value
+        val version = BuildConfig.VERSION_NAME
+        preference.text = version
     }
 
     private fun setupIconChange() {

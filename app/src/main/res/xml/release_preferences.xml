@@ -244,7 +244,7 @@
                     android:key="pref_developer_debug_version_name"
                     android:editable="false"
                     android:summary="@string/pref_developer_debug_version_sum"
-                    android:defaultValue="2.1"/>
+                    android:defaultValue="5.5"/>
                 <EditTextPreference
                     android:inputType="number"
                     android:defaultValue="150"
