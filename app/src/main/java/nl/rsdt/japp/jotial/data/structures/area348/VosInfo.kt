@@ -160,60 +160,59 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
          * @return A int pointing to the associated drawable.
          */
         fun getAssociatedDrawable(info: VosInfo): Int {
-            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(info.team)?:"Zwart")
-            when (info.icon) {
+            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(info.team?:"x"))
+            return when (info.icon) {
                 SightingIcon.DEFAULT -> when (color) {
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.vos_groen_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return R.drawable.vos_rood_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> return R.drawable.vos_paars_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> return R.drawable.vos_oranje_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> return R.drawable.vos_blauw_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> return R.drawable.vos_zwart_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> return R.drawable.vos_turquoise_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> return R.drawable.vos_zwart_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> R.drawable.vos_groen_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> R.drawable.vos_rood_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> R.drawable.vos_paars_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> R.drawable.vos_oranje_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> R.drawable.vos_blauw_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> R.drawable.vos_zwart_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> R.drawable.vos_turquoise_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> R.drawable.vos_zwart_2
                 }
                 SightingIcon.HUNT -> when (color) {
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.vos_groen_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return R.drawable.vos_rood_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> return R.drawable.vos_paars_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> return R.drawable.vos_oranje_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> return R.drawable.vos_blauw_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> return R.drawable.vos_zwart_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> return R.drawable.vos_turquoise_4
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> return R.drawable.vos_zwart_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> R.drawable.vos_groen_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> R.drawable.vos_rood_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> R.drawable.vos_paars_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> R.drawable.vos_oranje_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> R.drawable.vos_blauw_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> R.drawable.vos_zwart_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> R.drawable.vos_turquoise_4
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> R.drawable.vos_zwart_4
                 }
                 SightingIcon.SPOT -> when (color) {
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.vos_groen_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return R.drawable.vos_rood_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> return R.drawable.vos_paars_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> return R.drawable.vos_oranje_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> return R.drawable.vos_blauw_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> return R.drawable.vos_zwart_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> return R.drawable.vos_turquoise_3
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> return R.drawable.vos_zwart_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> R.drawable.vos_groen_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> R.drawable.vos_rood_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> R.drawable.vos_paars_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> R.drawable.vos_oranje_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> R.drawable.vos_blauw_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> R.drawable.vos_zwart_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> R.drawable.vos_turquoise_3
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> R.drawable.vos_zwart_3
                 }
                 SightingIcon.LAST_LOCATION -> when (color) {
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.vos_groen_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return R.drawable.vos_rood_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> return R.drawable.vos_paars_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> return R.drawable.vos_oranje_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> return R.drawable.vos_blauw_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> return R.drawable.vos_zwart_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> return R.drawable.vos_turquoise_1
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> return R.drawable.vos_zwart_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> R.drawable.vos_groen_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> R.drawable.vos_rood_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> R.drawable.vos_paars_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> R.drawable.vos_oranje_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> R.drawable.vos_blauw_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> R.drawable.vos_zwart_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> R.drawable.vos_turquoise_1
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> R.drawable.vos_zwart_1
                 }
                 else -> when (color) {
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.vos_groen_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return R.drawable.vos_rood_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> return R.drawable.vos_paars_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> return R.drawable.vos_oranje_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> return R.drawable.vos_blauw_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> return R.drawable.vos_zwart_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> return R.drawable.vos_turquoise_2
-                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> return R.drawable.vos_zwart_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> R.drawable.vos_groen_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> R.drawable.vos_rood_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> R.drawable.vos_paars_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> R.drawable.vos_oranje_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> R.drawable.vos_blauw_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> R.drawable.vos_zwart_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> R.drawable.vos_turquoise_2
+                    MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> R.drawable.vos_zwart_2
                 }
             }
-            return R.drawable.vos_zwart_1
         }
 
 
@@ -227,7 +226,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
 
         @JvmOverloads
         fun getAssociatedColor(team: String?, alpha: Int = 255): Int {
-            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(team)?:"Zwart")
+            val color = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(JappPreferences.getColorName(team?:"x"))
             when (color) {
                 MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return Color.argb(alpha, 255, 0, 0)
                 MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return Color.argb(alpha, 0, 255, 0)

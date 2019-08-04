@@ -23,10 +23,10 @@ class JappFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Japp.updateManager.onMessage(remoteMessage)
+        Japp.updateManager?.onMessage(remoteMessage)
     }
 
-    override fun onNewToken(token: String?) {
+    override fun onNewToken(token: String) {
         JappPreferences.fcmToken = token
 
         if (!JappPreferences.isFirstRun) {

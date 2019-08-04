@@ -31,7 +31,7 @@ class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>
             v.text = if (inzittendeInfo != null) {
                 """${inzittendeInfo?.gebruikersNaam} - rol:${inzittendeInfo?.rol} - taak:${inzittendeInfo?.taak}"""
             } else {
-                Japp.appResources.getString(R.string.unkown)
+                Japp.appResources?.getString(R.string.unkown)
             }
         }
 
