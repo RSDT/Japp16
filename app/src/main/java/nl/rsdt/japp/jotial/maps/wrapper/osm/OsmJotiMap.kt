@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.maps.wrapper.osm
 import android.graphics.Bitmap
 import android.location.Location
 import android.util.Pair
+import android.view.PixelCopy
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter

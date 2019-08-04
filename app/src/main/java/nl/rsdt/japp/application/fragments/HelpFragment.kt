@@ -23,7 +23,7 @@ class HelpFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val r = inflater.inflate(R.layout.fragment_about, container, false)
+        val r = inflater.inflate(R.layout.fragment_help, container, false)
         val helpTextView: TextView? = r.findViewById(R.id.help_tv)
         helpTextView?.text = HtmlCompat.fromHtml(Japp.getString(R.string.help_text), 0)
         return r
