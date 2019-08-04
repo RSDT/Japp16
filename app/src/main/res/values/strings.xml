@@ -137,6 +137,80 @@
     <string name="automatisch">Automatisch</string>
     <string name="pref_tail_length_title">aantal punten in de tail</string>
     <string name="pref_tail_length_sum">geeft aan hoe lang de tail van jezelf kan zijn</string>
+    <string name="help_text">
+        <![CDATA[
+            <h1>Help</h1><br>
+            <h2>Locatie Tracken</h2>
+            <p>
+            Het doel van deze app is het kunnen tracken van je locatie door HB.<br>
+            Je kunt dit aan/uitzetten in de instellingen onder: Updates -> Locatie Delen <br>
+            Dit kun je  daarna ook zien als melding.
+            Je kunt ook je icoon op de kaart aanpassen in de instellingen: Account -> Icoon.
+            Andere gebruikers zien je dan als een andere auto op de kaart.
+            </p>
+            <h2>Spots/Hunts op de kaart zetten</h2>
+            <p>
+            Let Op: Altijd een hunt melden via telegram. Doe dit via de aparte groep voor je deelgebied
+            of persoonlijk naar het <a href="https://t.me/rhedense_pioniers">homebase account</a>.
+            Nooit naar een persoonlijk account of in de grote groepsapp.<br>
+            <br>
+            Als je de vossen hebt gezien/hebt gehunt dan is het verstandig om dat op de kaart te zetten.
+            Dit doe je door op de grote + te klikken en daarna voor spot of hunt te kiezen.
+            Daarna klik je op de kaart waar je ze gehunt of gespot hebt.
+            </p>
+            <h2>Extra Cirkels</h2>
+            <p>
+            Vanuit je laatste spot groeit er een cirkel waar de vossen ongeveer kunnen lopen.
+            Heb je toch liever een cirkel uit een andere marker dan open je door op de marker te klikken( en voor google maps daarna op de info ballon te klikken)<br>
+            Je verwijderd de cirkel weer door er nog een keer op te klikken. Of door op de refreshknop te klikken.
+            Bij een update worden alle extra cirkels weggehaald. Daarna zul je opnieuw op de marker moeten klikken.
+            Dit is om te voorkomen dat je per ongeluk te veel cirkels opent. En alle cirkels met de refreshknop weg kunt halen.
+            </p>
+            <h2>Navigatie</h2>
+            <p>
+            Met deze app kun je de navigatie besturen van iemand anders die deze app heeft geinstaleerd. Om dit aan te zetten moet je het volgende doen, We gaan er vanuit dat de bestuurder zijn eigen telefoon gebruikt als navigatie.<br>
+            <br>
+            Op de telefoon van de bestuurder:<br>
+            open menu<br>
+            ga naar autos<br>
+            Maak een nieuwe auto aan(bovenste knop)<br>
+            Als je als taak op automatisch zet. Dan update de app de taak zodra je een ander deelgebied ingaat.<br>
+            klik op refresh(rechtsboven) als het goed is zie je nu alleen jezelf in de auto<br>
+            ga naar Instellingen -> Navigatie -> Navigatie App en kies de app die je wil gebruiken om te navigeren<br>
+            ga naar Instellingen -> Navigatie -> Navigatie Telefoon en zet deze aan. <br>
+            zet de telefoon in de houder en hang hem aan de lader.<br>
+            <br>
+            Op  de telefoon van de bijrijders/navigators:<br>
+            ga naar auto menu<br>
+            klik op de naam van je bestuurder<br>
+            Als je als taak op automatisch zet. Dan update de app de taak zodra je een ander deelgebied ingaat.<br>
+            klik op refresh(rechtsboven) als het goed is zie je nu iedereen die in de auto zit.<br>
+            ga naar de kaart<br>
+            klik op de + en daarna navigeer<br>
+            klik op de kaart waar je heen wil navigeren.<br>
+            klik op klaar<br>
+            klik op "op de navigatie navigeren<br>
+            als het goed is springt de navigatie van de bestuurder nu aan of geeft aan dat de hij een nieuwe route wil starten.<br>
+            <br>
+            </p>
+            <h2>FAQ</h2>
+            <p>
+            <h3>Navigatie<h3>
+            <h4>Ik krijg de hele tijd nieuwe locatie gevonden van henk, Wat doet henk fout?</h4><br>
+            Helemaal niks, de app denkt soms dat de oude loactie een nieuwe is. De NavigatieApp blijft naar hetzelfde punt rijden.
+            Oplossing is om ga naar Instellingen -> Navigatie -> Navigatie Telefoon en zet deze uit. Je bijrijders kunnen alleen dan geen navigatie meer aanroepen.<br>
+            <br>
+            <h4>Ik klik op "op de navigatie navigeren" en er gebeurd niks. Wat moet ik doen?</h4><br>
+            controleer of jullie wel in dezefde auto zitten en klik op refresh in het auto menu. kijk daarna of op de telefoon van de bestuurder de instelling Navigatie Telefoon aan staat.
+            <h3>OSM kaart</h3>
+            <h4>Ik zie geen wegen etc. op de kaart</h4>
+            Ga naar instellingen -> Kaart -> Type Osm. En zet deze op een andere kaart: OpenTopo lijkt het meest stabiel te zijn met dit probleem.
+            <h3>Ik heb een bug gevonden in de app of wil graag iets toegevoegd zien.</h3>
+            Meld het via telegram aan Bram of Mattijn.
+            </p>
+         ]]>
+    </string>
+    <string name="help">Help</string>
 
 
 </resources>

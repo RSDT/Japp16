@@ -39,6 +39,8 @@ open class FragmentNavigationManager {
 
     private var aboutFragment: AboutFragment? = null
 
+    private var helpFragment: HelpFragment? = null
+
     fun getFragment(tag: String): Fragment? {
         when (tag) {
             FRAGMENT_HOME -> return homeFragment
@@ -46,6 +48,7 @@ open class FragmentNavigationManager {
             FRAGMENT_MAP -> return mapFragment
             FRAGMENT_SETTINGS -> return preferenceFragment
             FRAGMENT_ABOUT -> return aboutFragment
+            FRAGMENT_HELP -> return helpFragment
         }
         return null
     }
@@ -89,6 +92,7 @@ open class FragmentNavigationManager {
             FRAGMENT_CAR -> ft?.show(carFragment)
             FRAGMENT_SETTINGS -> ft?.show(preferenceFragment)
             FRAGMENT_ABOUT -> ft?.show(aboutFragment)
+            FRAGMENT_HELP -> ft?.show(helpFragment)
         }
 
         when (currentFragmentTag) {
@@ -97,6 +101,7 @@ open class FragmentNavigationManager {
             FRAGMENT_CAR -> ft?.hide(carFragment)
             FRAGMENT_SETTINGS -> ft?.hide(preferenceFragment)
             FRAGMENT_ABOUT -> ft?.hide(aboutFragment)
+            FRAGMENT_HELP -> ft?.hide(helpFragment)
         }
 
         ft?.commit()
@@ -133,6 +138,7 @@ open class FragmentNavigationManager {
                 FRAGMENT_CAR -> actionbar?.setTitle(R.string.car)
                 FRAGMENT_SETTINGS -> actionbar?.setTitle(R.string.settings)
                 FRAGMENT_ABOUT -> actionbar?.setTitle(R.string.about)
+                FRAGMENT_HELP -> actionbar?.setTitle(R.string.help)
             }
         }
     }
@@ -145,6 +151,7 @@ open class FragmentNavigationManager {
             FRAGMENT_CAR -> nView?.menu?.findItem(R.id.nav_car)?.isChecked = true
             FRAGMENT_SETTINGS -> nView?.menu?.findItem(R.id.nav_settings)?.isChecked = true
             FRAGMENT_ABOUT -> nView?.menu?.findItem(R.id.nav_about)?.isChecked = true
+            FRAGMENT_HELP -> nView?.menu?.findItem(R.id.nav_help)?.isChecked = true
         }
     }
 
@@ -190,6 +197,13 @@ open class FragmentNavigationManager {
         }
         ft?.hide(aboutFragment)
 
+        helpFragment = manager?.findFragmentByTag(HelpFragment.TAG) as HelpFragment?
+        if (helpFragment == null) {
+            helpFragment = HelpFragment()
+            ft?.add(R.id.container, helpFragment, HelpFragment.TAG)
+        }
+        ft?.hide(helpFragment)
+
         ft?.commit()
     }
 
@@ -215,6 +229,9 @@ open class FragmentNavigationManager {
         if (aboutFragment != null) {
             aboutFragment = null
         }
+        if (helpFragment != null) {
+            helpFragment = null
+        }
 
 
     }
@@ -230,6 +247,8 @@ open class FragmentNavigationManager {
         val FRAGMENT_ABOUT = "FRAGMENT_ABOUT"
 
         val FRAGMENT_CAR = "FRAGMENT_CAR"
+
+        val FRAGMENT_HELP = "FRAGMENT_HELP"
 
         private val BUNDLE_KEY_FRAGMENT = "BUNDLE_KEY_FRAGMENT"
     }

@@ -244,6 +244,8 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_CAR)
         } else if (id == R.id.nav_about) {
             navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_ABOUT)
+        } else if (id == R.id.nav_help) {
+            navigationManager.switchTo(FragmentNavigationManager.FRAGMENT_HELP)
         } else if (id == R.id.nav_log_out) {
             Authentication.startLoginActivity(this)
         }
