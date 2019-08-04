@@ -180,7 +180,9 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
              * Update the vos status on the home fragment.
              */
             val fragment = navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_HOME) as HomeFragment?
-            fragment?.refresh()
+            if (fragment?.isAdded==true) {
+                fragment.refresh()
+            }
             val carfragment = navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_CAR) as CarFragment?
             carfragment?.refresh()
             return true

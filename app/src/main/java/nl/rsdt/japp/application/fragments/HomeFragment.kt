@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import nl.rsdt.japp.R
+import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.jotial.data.structures.area348.VosStatusInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.apis.official.VosApi
@@ -57,6 +58,7 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
     }
 
     override fun onResponse(call: Call<VosStatusInfo>, response: Response<VosStatusInfo>) {
+
         val info = response.body()
         if (info != null) {
             updateView(info)
@@ -110,8 +112,8 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
         }
 
         val builder = NotificationCompat.Builder(this.activity, VOSSTATUSCHANNEL)
-        builder.setContentTitle(getString(R.string.vos_update_title))
-                .setContentText(getString(R.string.vos_update_body))
+        builder.setContentTitle(Japp.getString(R.string.vos_update_title))
+                .setContentText(Japp.getString(R.string.vos_update_body))
                 .setSmallIcon(R.drawable.fox3)
                 .setStyle(style).priority = NotificationCompat.PRIORITY_HIGH
         val activity = this.activity

@@ -51,14 +51,11 @@ class Japp : MultiDexApplication() {
         var instance: Japp? = null
             private set
         private var _lastLocation :Location? = null
-        private val _lastLocations : Stack<Location> = Stack()
+        private val _lastLocations : Queue<Location> = ArrayDeque()
         var lastLocation: Location?
-            get() {
-                return if (_lastLocations.empty()) _lastLocation
-                else _lastLocations.pop()
-            }
+            get() = _lastLocations.poll()?: _lastLocation
             set(value) {
-                _lastLocations.push(value)
+                _lastLocations.offer(value)
                 _lastLocation = value
             }
 

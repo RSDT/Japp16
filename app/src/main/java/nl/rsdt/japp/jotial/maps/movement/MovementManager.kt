@@ -130,7 +130,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         val ldeelgebied = deelgebied
         if (marker != null) {
             if (lastLocation != null) {
-                bearing = location.bearingTo(lastLocation)
+                bearing = lastLocation!!.bearingTo(location)
 
                 /**
                  * Animate the marker to the new position
@@ -516,6 +516,9 @@ class TailPoints<T>(maxSize:Int) : List<T>{
     }
 
     fun add(element: T): Boolean {
+        if (list.contains(element)){
+            return false
+        }
         return if (list.size < maxSize){
             assert(currentFirst == 0) {currentFirst}
             list.add(element)
