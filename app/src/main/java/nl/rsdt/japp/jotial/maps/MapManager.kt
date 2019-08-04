@@ -160,6 +160,7 @@ class MapManager : Searchable, MessageManager.UpdateMessageListener, SharedPrefe
             "delta" -> return get(DeltaVosController.CONTROLLER_ID)
             "echo" -> return get(EchoVosController.CONTROLLER_ID)
             "foxtrot" -> return get(FoxtrotVosController.CONTROLLER_ID)
+            "xray" -> return get(XrayVosController.CONTROLLER_ID)
         }
         return null
     }

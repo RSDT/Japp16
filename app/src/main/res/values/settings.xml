@@ -294,6 +294,7 @@
         <item>Delta</item>
         <item>Echo</item>
         <item>Foxtrot</item>
+        <item>Xray</item>
     </string-array>
 
     <string-array name="pref_advanced_areas_options_data">
@@ -303,6 +304,7 @@
         <item>delta</item>
         <item>echo</item>
         <item>foxtrot</item>
+        <item>xray</item>
     </string-array>
 
     <string-array name="pref_advanced_areas_options_def">
