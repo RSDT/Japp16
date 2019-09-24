@@ -142,9 +142,7 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<A
         val BUNDLE_ID = "SC"
 
         fun loadAndPutToBundle(bundle: Bundle) {
-            val list = AppData.getObject<ArrayList<ScoutingGroepInfo>>(STORAGE_ID, object : TypeToken<ArrayList<ScoutingGroepInfo>>() {
-
-            }.type)
+            val list = AppData.getObject<ArrayList<ScoutingGroepInfo>>(STORAGE_ID)
             if (list != null && !list.isEmpty()) {
                 bundle.putParcelableArrayList(BUNDLE_ID, list)
             }

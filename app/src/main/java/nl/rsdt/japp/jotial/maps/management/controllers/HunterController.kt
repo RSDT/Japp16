@@ -43,7 +43,7 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
 
     private val runnable: HunterUpdateRunnable
 
-    protected var data: HashMap<String, ArrayList<HunterInfo>>? = HashMap()
+    protected var data: HashMap<String, ArrayList<HunterInfo>> = HashMap()
 
     override val id: String
         get() = CONTROLLER_ID
@@ -78,11 +78,11 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
                         key = keys[i]
                         val list = savedInstanceState.getParcelableArrayList<HunterInfo>(key)
                         if (list != null && !list.isEmpty()) {
-                            data!![key] = list
+                            data[key] = list
                         }
                     }
-                    val result = data?.let { transducer.generate(it) }
-                    result?.let { processResult(it) }
+                    val result = data.let { transducer.generate(it) }
+                    processResult(result)
                 }
             }
         }
@@ -90,7 +90,7 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
 
     override fun onSaveInstanceState(saveInstanceState: Bundle?) {
         val keys = ArrayList<String>()
-        for ((key, value) in data!!) {
+        for ((key, value) in data) {
             saveInstanceState?.putParcelableArrayList(key, value)
             keys.add(key)
         }
@@ -98,11 +98,9 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
     }
 
     override fun searchFor(query: String): IMarker? {
-        var marker: IMarker?
-        for (m in markers!!.indices) {
-            marker = markers!![m]
-
-            if (marker != null) {
+        for (marker in markers) {
+            if (marker.toString().contains(query)){
+                return marker
             }
         }
         return null
@@ -110,18 +108,18 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
 
 
     override fun provide(): MutableList<String> {
-        return ArrayList(data!!.keys)
+        return ArrayList(data.keys)
     }
 
     override fun update(unused: String): Call<HashMap<String, ArrayList<HunterInfo>>> {
         var name = JappPreferences.huntname
-        if (name!!.isEmpty()) {
+        if (name.isEmpty()) {
             name = JappPreferences.accountUsername
         }
 
         val api = Japp.getApi(HunterApi::class.java)
         val getAll = JappPreferences.getAllHunters
-        return if (getAll||name == null) {
+        return if (getAll) {
             api.getAll(JappPreferences.accountKey)
         } else {
             api.getAllExcept(JappPreferences.accountKey, name)
@@ -141,31 +139,21 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
 
     override fun clear() {
         super.clear()
-        data!!.clear()
+        data.clear()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (data != null) {
-            /**
-             * TODO: clearing the data might result in the data clearance in the saved instance state bundle
-             */
-            data!!.clear()
-            data = null
-        }
+        data.clear()
+        handler?.removeCallbacks(runnable)
+        handler = null
 
-        if (handler != null) {
-            handler!!.removeCallbacks(runnable)
-            handler = null
-        }
     }
 
     class HunterTransducer : AbstractTransducer<HashMap<String, ArrayList<HunterInfo>>, HunterTransducer.Result>() {
 
         override fun load(): HashMap<String, ArrayList<HunterInfo>>? {
-            return AppData.getObject<HashMap<String, ArrayList<HunterInfo>>>(STORAGE_ID, object : TypeToken<HashMap<String, ArrayList<HunterInfo>>>() {
-
-            }.type)
+            return AppData.getObject<HashMap<String, ArrayList<HunterInfo>>>(STORAGE_ID)
         }
 
         override fun transduceToBundle(bundle: Bundle) {
@@ -173,7 +161,7 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
         }
 
         override fun generate(data: HashMap<String, ArrayList<HunterInfo>>): Result {
-            if (data == null || data.isEmpty()) return Result()
+            if (data.isEmpty()) return Result()
 
             val result = Result()
             result.bundleId = BUNDLE_ID

@@ -47,10 +47,14 @@ import kotlin.collections.ArrayList
  * Description...
  */
 class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBinder>, LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
+    private val MAX_SIZE_LONG_TAIL = 60
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == JappPreferences.TAIL_LENGTH){
-            tailPoints.maxSize = JappPreferences.tailLength
-            tail?.points = tailPoints
+            smallTailPoints.maxSize = JappPreferences.tailLength
+            smallTail?.points = smallTailPoints
+            hourTailPoints.maxSize = JappPreferences.tailLength
+            hourTail?.points = hourTailPoints
+            hourTailPoints.onremoveCallback = ::addToLongTail
         }
     }
 
@@ -63,13 +67,19 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
     private var marker: IMarker? = null
 
-    private var tail: IPolyline? = null
+    private var smallTail: IPolyline? = null
 
-    private val tailPoints: TailPoints<LatLng> = TailPoints(JappPreferences.tailLength)
+    private val smallTailPoints: TailPoints<LatLng> = TailPoints(JappPreferences.tailLength)
+
+    private var hourTail: IPolyline? = null
+
+    private val hourTailPoints: TailPoints<LatLng> = TailPoints(MAX_SIZE_LONG_TAIL)
 
     private var bearing: Float = 0f
 
     private var lastLocation: Location? = null
+
+    private var lastHourLocationTime: Long = System.currentTimeMillis()
 
     private var activeSession: FollowSession? = null
 
@@ -78,6 +88,14 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     private var snackBarView: View? = null
 
     private var listener: LocationService.OnResolutionRequiredListener? = null
+
+    fun addToLongTail(location: LatLng, addedOn: Long){
+        if (lastHourLocationTime - addedOn > 60 * 60 * 1000){
+            lastHourLocationTime = addedOn
+            hourTailPoints.add(location)
+            hourTail?.points = hourTailPoints
+        }
+    }
 
     fun setListener(listener: LocationService.OnResolutionRequiredListener) {
         this.listener = listener
@@ -97,22 +115,16 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
-        val list = if (savedInstanceState != null) {
-            savedInstanceState.getParcelableArrayList(BUNDLE_KEY)
-        } else {
-            AppData.getObject<ArrayList<LatLng>>(STORAGE_KEY, object : TypeToken<ArrayList<LatLng>>() {
-
-            }.type)
-        }
+        val list: ArrayList<Pair<LatLng,Long>>? = AppData.getObject<ArrayList<Pair<LatLng, Long>>>(STORAGE_KEY)
         if (list != null) {
-            tailPoints.setPoints(list)
-            tail?.points = tailPoints
+            smallTailPoints.setPoints(list)
+            smallTail?.points = smallTailPoints
         }
     }
 
 
     fun onSaveInstanceState(saveInstanceState: Bundle?) {
-        saveInstanceState?.putParcelableArrayList(BUNDLE_KEY, tailPoints.toArrayList())
+        save()
     }
 
     override fun onLocationChanged(l: Location) {
@@ -140,8 +152,8 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             } else {
                 marker?.position = LatLng(location.latitude, location.longitude)
             }
-            tailPoints.add(LatLng(location.latitude, location.longitude))
-            tail?.points = tailPoints
+            smallTailPoints.add(LatLng(location.latitude, location.longitude))
+            smallTail?.points = smallTailPoints
         }
 
         val refresh = if (ldeelgebied != null) {
@@ -171,13 +183,20 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                 FirebaseMessaging.getInstance().subscribeToTopic(deelgebied?.name)
 
 
-                val coordinates: List<LatLng> = tailPoints
-                tail!!.remove()
-                tail = jotiMap!!.addPolyline(
+                val coordinatesSmall: List<LatLng> = smallTailPoints
+                smallTail?.remove()
+                hourTail?.remove()
+                smallTail = jotiMap!!.addPolyline(
                         PolylineOptions()
                                 .width(3f)
                                 .color(getTailColor()?:Color.BLUE)
-                                .addAll(coordinates))
+                                .addAll(coordinatesSmall))
+                val coordinatesHour: List<LatLng> = smallTailPoints
+                hourTail = jotiMap!!.addPolyline(
+                        PolylineOptions()
+                                .width(3f)
+                                .color(getTailColor()?:Color.BLUE)
+                                .addAll(coordinatesHour))
             }
         }
         /**
@@ -268,16 +287,20 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         .flat(true)
                         .title(Gson().toJson(identifier)), BitmapFactory.decodeResource(Japp.instance!!.resources, R.drawable.me)))
 
-        tail = jotiMap.addPolyline(
+        smallTail = jotiMap.addPolyline(
+                PolylineOptions()
+                        .width(3f)
+                        .color(getTailColor()?:Color.BLUE))
+        hourTail = jotiMap.addPolyline(
                 PolylineOptions()
                         .width(3f)
                         .color(getTailColor()?:Color.BLUE))
 
-            if (tailPoints.isNotEmpty()) {
-                tail!!.points = tailPoints
-                val last = tailPoints.size - 1
-                marker!!.position = tailPoints[last]
-                marker!!.isVisible = true
+            if (smallTailPoints.isNotEmpty()) {
+                smallTail!!.points = smallTailPoints
+                val last = smallTailPoints.size - 1
+                marker?.position = smallTailPoints[last]
+                marker?.isVisible = true
             }
     }
 
@@ -365,20 +388,25 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         service?.apply { request = standard }
     }
 
-    private fun save(background: Boolean) {
-        if (background) {
-            AppData.saveObjectAsJsonInBackground(tailPoints, STORAGE_KEY)
-        } else {
-            AppData.saveObjectAsJson(tailPoints, STORAGE_KEY)
-        }
+    private fun save() {
+        val list1 = smallTailPoints.toArrayList()
+        val list2 = hourTailPoints.toArrayList()
+        val list3 = ArrayList<Pair<LatLng, Long>>()
+        list3.addAll(list2)
+        list3.addAll(list1)
+        list3.sortBy { it.second }
+        AppData.saveObjectAsJsonInBackground(list3, STORAGE_KEY)
     }
 
     fun onDestroy() {
         marker?.remove()
-        tail?.remove()
-        tailPoints.clear()
+        smallTail?.remove()
+        smallTail = null
+        smallTailPoints.clear()
 
-
+        hourTail?.remove()
+        hourTailPoints.clear()
+        hourTail = null
         if (jotiMap != null) {
             jotiMap = null
         }
@@ -415,12 +443,17 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 class TailPoints<T>(maxSize:Int) : List<T>{
 
     private var list: ArrayList<T> = ArrayList()
+    private var addedOn: MutableMap<T,Long> = HashMap()
     private var currentFirst = 0
+    var onremoveCallback: (T, Long) -> Unit= {element, timeAdded -> }
     internal var maxSize:Int = maxSize
         set(value) {
             rearrangeList()
             if (value < list.size){
                 val toRemove = list.subList(value, list.size)
+                for (el in toRemove){
+                    addedOn.remove(el)
+                }
                 list.removeAll(toRemove)
             }
             field = value
@@ -486,8 +519,6 @@ class TailPoints<T>(maxSize:Int) : List<T>{
         return toTailIndex(list.lastIndexOf(element))
     }
 
-
-
     override fun subList(fromIndex: Int, toIndex: Int): List<T> {
         val fromIndexList = toListIndex(fromIndex)
         val toIndexList = toListIndex(toIndex)
@@ -510,19 +541,24 @@ class TailPoints<T>(maxSize:Int) : List<T>{
         return Iterator(index)
     }
 
-    fun toArrayList(): ArrayList<T> {
+    fun toArrayList():ArrayList<Pair<T, Long>>{
         rearrangeList()
-        return ArrayList(list)
+        return ArrayList(list.map {Pair(it, addedOn[it]!!)})
     }
 
     fun add(element: T): Boolean {
         if (list.contains(element)){
             return false
         }
+        addedOn[element] = System.currentTimeMillis()
         return if (list.size < maxSize){
             assert(currentFirst == 0) {currentFirst}
             list.add(element)
-        }else{
+
+
+        } else {
+            onremoveCallback(list[currentFirst], addedOn[list[currentFirst]]!!)
+            addedOn.remove(list[currentFirst])
             list[currentFirst] = element
             incrementCurrentFirst()
             true
@@ -531,16 +567,20 @@ class TailPoints<T>(maxSize:Int) : List<T>{
 
     fun clear() {
         list.clear()
+        addedOn.clear()
         currentFirst = 0
     }
 
-    fun setPoints(list: ArrayList<T>) {
+    fun setPoints(list: List<Pair<T,Long>>) {
         clear()
         if (list.size <= maxSize) {
-            this.list.addAll(list)
+            this.list.addAll(list.map { it.first })
+            list.forEach{ addedOn[it.first] = it.second }
         }else{
             val overflow = list.size - maxSize
-            this.list.addAll(list.subList(overflow, list.size))
+            val sublist = list.subList(overflow, list.size)
+            this.list.addAll(sublist.map { it.first })
+            sublist.forEach { addedOn[it.first] = it.second }
         }
         assert(this.list.size <= maxSize)
     }

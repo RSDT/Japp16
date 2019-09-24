@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.R
 import nl.rsdt.japp.jotial.Recreatable
 import nl.rsdt.japp.jotial.io.AppData
@@ -38,9 +37,7 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
         val pins: ArrayList<Pin.Data>? = if (savedInstanceState != null) {
             savedInstanceState.getParcelableArrayList<Pin.Data>(BUNDLE_KEY)
         } else {
-            AppData.getObject<ArrayList<Pin.Data>>(STORAGE_ID, object : TypeToken<ArrayList<Pin.Data>>() {
-
-            }.type)
+            AppData.getObject<ArrayList<Pin.Data>>(STORAGE_ID)
         }
 
         if (pins != null && !pins.isEmpty()) {
@@ -52,7 +49,7 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
         }
     }
 
-    override fun onSaveInstanceState(state: Bundle?) {
+    override fun onSaveInstanceState(saveInstanceState: Bundle?) {
         val list = ArrayList<Pin.Data>()
         var current: Pin?
         for (i in pins!!.indices) {
@@ -63,7 +60,7 @@ class PinningManager : Recreatable, GoogleMap.OnInfoWindowLongClickListener {
             }
 
         }
-        state?.putParcelableArrayList(BUNDLE_KEY, list)
+        saveInstanceState?.putParcelableArrayList(BUNDLE_KEY, list)
     }
 
     fun add(pin: Pin) {

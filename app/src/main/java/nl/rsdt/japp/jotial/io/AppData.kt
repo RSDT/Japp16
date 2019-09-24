@@ -23,7 +23,7 @@ object AppData {
     /**
      * The directory the AppData object should operate in.
      */
-    private var fDir: File? = null
+    public var fDir: File? = null
 
     /**
      * Initializes the AppData object.
@@ -94,7 +94,7 @@ object AppData {
      * @param filename The name of the file where the object is stored.
      * @param type The type of the object.
      */
-    fun <T> getObject(filename: String, type: Type): T? {
+    inline fun <reified T> getObject(filename: String): T? {
         if (!JappPreferences.loadOldData()) {
             return null
         }
@@ -104,7 +104,7 @@ object AppData {
                 if (file.exists()) {
                     val jsonReader = JsonReader(FileReader(file))
                     jsonReader.isLenient = true
-                    return Gson().fromJson<T>(jsonReader, type)
+                    return Gson().fromJson<T>(jsonReader,T::class.java)
                 }
                 return null
             } catch (e: Exception) {

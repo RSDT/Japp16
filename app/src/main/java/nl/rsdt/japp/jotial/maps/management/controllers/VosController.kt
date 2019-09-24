@@ -198,9 +198,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
     class VosTransducer(private val storageId: String, private val bundleId: String) : AbstractTransducer<ArrayList<VosInfo>, VosTransducer.Result>() {
 
         override fun load(): ArrayList<VosInfo>? {
-            return AppData.getObject<ArrayList<VosInfo>>(storageId, object : TypeToken<ArrayList<VosInfo>>() {
-
-            }.type)
+            return AppData.getObject<ArrayList<VosInfo>>(storageId)
         }
 
         override fun transduceToBundle(bundle: Bundle) {
@@ -217,7 +215,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                     firstDate = format.parse(info1.datetime)
                     secondDate = format.parse(info2.datetime)
                 } catch (e: ParseException) {
-                    Log.e(MapItemController.TAG, e.toString(), e)
+                    Log.e(TAG, e.toString(), e)
                 }
 
                 if (firstDate != null && secondDate != null) {

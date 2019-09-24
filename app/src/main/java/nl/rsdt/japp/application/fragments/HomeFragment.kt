@@ -41,7 +41,7 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lastStatusInfo = AppData.getObject<VosStatusInfo>(STORAGE_KEY, VosStatusInfo::class.java)
+        lastStatusInfo = AppData.getObject<VosStatusInfo>(STORAGE_KEY)
         if (lastStatusInfo != null) {
             updateView(lastStatusInfo as VosStatusInfo)
         }
