@@ -114,6 +114,7 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
     }
 
     override fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback?) {
+        this.osmMap.isDrawingCacheEnabled = false
         this.osmMap.isDrawingCacheEnabled = true
         this.osmMap.buildDrawingCache()
         val bm = this.osmMap.drawingCache

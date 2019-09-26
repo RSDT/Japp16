@@ -8,6 +8,7 @@ import android.os.Parcelable
 import android.util.Pair
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
@@ -23,6 +24,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.FotoApi
 import retrofit2.Call
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Dingenis Sieger Sinke
@@ -82,7 +84,8 @@ class FotoOpdrachtController (iJotiMap: IJotiMap): StandardMapItemController<Fot
     class FotoOpdrachtTransducer : AbstractTransducer<ArrayList<FotoOpdrachtInfo>, FotoOpdrachtTransducer.Result>() {
 
         override fun load(): ArrayList<FotoOpdrachtInfo>? {
-            return AppData.getObject<ArrayList<FotoOpdrachtInfo>>(STORAGE_ID)
+            return AppData.getObject<ArrayList<FotoOpdrachtInfo>>(STORAGE_ID,
+                    object : TypeToken<ArrayList<FotoOpdrachtInfo>>() {}.type)
         }
 
         override fun transduceToBundle(bundle: Bundle) {

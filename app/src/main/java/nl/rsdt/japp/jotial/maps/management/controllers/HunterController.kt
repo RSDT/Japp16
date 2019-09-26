@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.structures.area348.FotoOpdrachtInfo
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.management.MapItemController
@@ -153,7 +154,10 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
     class HunterTransducer : AbstractTransducer<HashMap<String, ArrayList<HunterInfo>>, HunterTransducer.Result>() {
 
         override fun load(): HashMap<String, ArrayList<HunterInfo>>? {
-            return AppData.getObject<HashMap<String, ArrayList<HunterInfo>>>(STORAGE_ID)
+            return AppData.getObject<HashMap<String, ArrayList<HunterInfo>>>(
+                    STORAGE_ID,
+                    object : TypeToken<HashMap<String, ArrayList<HunterInfo>>>() {}.type
+                    )
         }
 
         override fun transduceToBundle(bundle: Bundle) {

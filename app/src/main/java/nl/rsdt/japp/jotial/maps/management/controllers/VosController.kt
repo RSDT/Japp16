@@ -35,7 +35,12 @@ import retrofit2.Response
 import java.io.IOException
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.Calendar
+import java.util.Date
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 /**
  * @author Dingenis Sieger Sinke
@@ -198,7 +203,9 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
     class VosTransducer(private val storageId: String, private val bundleId: String) : AbstractTransducer<ArrayList<VosInfo>, VosTransducer.Result>() {
 
         override fun load(): ArrayList<VosInfo>? {
-            return AppData.getObject<ArrayList<VosInfo>>(storageId)
+            return AppData.getObject<ArrayList<VosInfo>>(storageId, object : TypeToken<ArrayList<VosInfo>>() {
+
+            }.type)
         }
 
         override fun transduceToBundle(bundle: Bundle) {

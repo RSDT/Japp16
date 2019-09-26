@@ -87,14 +87,13 @@ object AppData {
         val file = File(fDir, filename)
         return file.delete()
     }
-
     /**
      * Gets a object out of the save.
      *
      * @param filename The name of the file where the object is stored.
      * @param type The type of the object.
      */
-    inline fun <reified T> getObject(filename: String): T? {
+    fun <T> getObject(filename: String, type: Type): T? {
         if (!JappPreferences.loadOldData()) {
             return null
         }
@@ -104,7 +103,7 @@ object AppData {
                 if (file.exists()) {
                     val jsonReader = JsonReader(FileReader(file))
                     jsonReader.isLenient = true
-                    return Gson().fromJson<T>(jsonReader,T::class.java)
+                    return Gson().fromJson<T>(jsonReader, type)
                 }
                 return null
             } catch (e: Exception) {
@@ -116,6 +115,15 @@ object AppData {
         }
 
         return null
+    }
+
+    /**
+     * Gets a object out of the save.
+     *
+     * @param filename The name of the file where the object is stored.
+     */
+    inline fun <reified T> getObject(filename: String): T? {
+        return AppData.getObject(filename, T::class.java)
     }
 
     /**

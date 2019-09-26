@@ -115,7 +115,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
-        val list: ArrayList<Pair<LatLng,Long>>? = AppData.getObject<ArrayList<Pair<LatLng, Long>>>(STORAGE_KEY)
+        val list:ArrayList<Pair<LatLng,Long>>? = AppData.getObject<ArrayList<Pair<LatLng,Long>>>(
+                STORAGE_KEY,
+                object : TypeToken<ArrayList<Pair<LatLng,Long>>>() {}.type)
         if (list != null) {
             smallTailPoints.setPoints(list)
             smallTail?.points = smallTailPoints
