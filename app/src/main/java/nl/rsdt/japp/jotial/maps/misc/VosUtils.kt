@@ -34,11 +34,11 @@ object VosUtils {
         return calculateTimeDifference(Date(), old)
     }
 
-    fun calculateTimeDifferenceFromNow(old: Long): Float {
+    private fun calculateTimeDifferenceFromNow(old: Long): Float {
         return calculateTimeDifference(Date().time, old).toFloat()
     }
 
-    fun calculateRadius(old: Long, speed: Float): Float {
+    private fun calculateRadius(old: Long, speed: Float): Float {
         val diffMs = calculateTimeDifferenceFromNow(old)
         val diffS = diffMs / 1000
         return diffS * (speed / 3.6f)
