@@ -130,13 +130,8 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
         snackbar!!.show()
     }
 
-    override fun onMapClick(latLng: LatLng): Boolean {
-        lastLatLng = latLng
-
-        marker!!.position = latLng
-
+    private fun updateDeelgebied(latLng: LatLng):Boolean{
         var updateMarker = false
-
         if (deelgebied == null) {
             deelgebied = Deelgebied.resolveOnLocation(latLng)
             updateMarker = true
@@ -147,6 +142,15 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
                 updateMarker = true
             }
         }
+        return updateMarker
+    }
+
+    override fun onMapClick(latLng: LatLng): Boolean {
+        lastLatLng = latLng
+
+        marker!!.position = latLng
+
+        val updateMarker = updateDeelgebied(latLng)
 
         if (deelgebied != null && updateMarker) {
             var icon: String? = null
