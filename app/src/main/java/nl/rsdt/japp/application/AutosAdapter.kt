@@ -1,7 +1,6 @@
 package nl.rsdt.japp.application
 
 import android.app.AlertDialog
-import android.text.method.CharacterPickerDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import nl.rsdt.japp.R
 import nl.rsdt.japp.jotial.data.bodies.AutoPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
-
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import retrofit2.Callback
 import java.util.*

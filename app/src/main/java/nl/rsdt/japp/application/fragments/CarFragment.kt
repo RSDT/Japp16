@@ -1,7 +1,6 @@
 package nl.rsdt.japp.application.fragments
 
 import android.app.Fragment
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +9,11 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_login.*
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.AutosAdapter
 import nl.rsdt.japp.application.InzittendenAdapter
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
-import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo
 import nl.rsdt.japp.jotial.net.apis.AutoApi

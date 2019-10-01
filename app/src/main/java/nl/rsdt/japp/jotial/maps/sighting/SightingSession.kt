@@ -21,6 +21,7 @@ import com.google.gson.Gson
 
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
+import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
@@ -130,19 +131,21 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
         snackbar!!.show()
     }
 
-    private fun updateDeelgebied(latLng: LatLng):Boolean{
+    private fun updateDeelgebied(latLng: LatLng, onUpdate: (LatLng) -> Unit){
         var updateMarker = false
-        if (deelgebied == null) {
-            deelgebied = Deelgebied.resolveOnLocation(latLng)
-            updateMarker = true
-        } else {
-            if (!deelgebied!!.containsLocation(latLng)) {
-                deelgebied = null
-                deelgebied = Deelgebied.resolveOnLocation(latLng)
-                updateMarker = true
-            }
-        }
-        return updateMarker
+        val deelgebieden = listOf("A", "B", "C", "D", "E", "F", "X").toTypedArray()
+        val deelgebiedDialog = AlertDialog.Builder(targetView?.context)
+                .setTitle("Welke Vos?")
+                .setItems(deelgebieden) { _, whichDeelgebied ->
+                    val deelgebied = deelgebieden[whichDeelgebied]
+                    val newdeelgebied = Deelgebied.parse(deelgebied)
+                    if (newdeelgebied != this.deelgebied){
+                        this.deelgebied = newdeelgebied
+                        onUpdate(latLng)
+                    }
+                }
+                .create()
+        deelgebiedDialog.show()
     }
 
     override fun onMapClick(latLng: LatLng): Boolean {
@@ -150,31 +153,30 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
 
         marker!!.position = latLng
 
-        val updateMarker = updateDeelgebied(latLng)
+        updateDeelgebied(latLng) {
 
-        if (deelgebied != null && updateMarker) {
-            var icon: String? = null
-            when (type) {
-                SIGHT_HUNT -> {
-                    marker!!.setIcon(deelgebied!!.drawableHunt)
-                    icon = deelgebied!!.drawableHunt.toString()
+            if (deelgebied != null) {
+                var icon: String? = null
+                when (type) {
+                    SIGHT_HUNT -> {
+                        marker!!.setIcon(deelgebied!!.drawableHunt)
+                        icon = deelgebied!!.drawableHunt.toString()
+                    }
+                    SIGHT_SPOT -> {
+                        marker!!.setIcon(deelgebied!!.drawableSpot)
+                        icon = deelgebied!!.drawableSpot.toString()
+                    }
                 }
-                SIGHT_SPOT -> {
-                    marker!!.setIcon(deelgebied!!.drawableSpot)
-                    icon = deelgebied!!.drawableSpot.toString()
-                }
+
+                val identifier = MarkerIdentifier.Builder()
+                        .setType(MarkerIdentifier.TYPE_SIGHTING)
+                        .add("text", type)
+                        .add("icon", icon)
+                        .create()
+                marker!!.title = Gson().toJson(identifier)
             }
 
-            val identifier = MarkerIdentifier.Builder()
-                    .setType(MarkerIdentifier.TYPE_SIGHTING)
-                    .add("text", type)
-                    .add("icon", icon)
-                    .create()
-            marker!!.title = Gson().toJson(identifier)
-        }
-
-        if (!marker!!.isVisible) {
-            marker!!.isVisible = true
+            marker?.isVisible = true
         }
         return false
     }
