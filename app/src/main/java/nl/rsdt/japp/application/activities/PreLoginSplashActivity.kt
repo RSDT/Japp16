@@ -73,6 +73,10 @@ class PreLoginSplashActivity : Activity() {
             })
             thread.run()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
         checkLatestReleaseAndValidate()
     }
 
