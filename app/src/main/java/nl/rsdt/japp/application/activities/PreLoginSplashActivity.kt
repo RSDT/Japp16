@@ -2,22 +2,32 @@ package nl.rsdt.japp.application.activities
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.preference.EditTextPreference
 import android.util.Log
+import com.android.volley.Request as VRequest
+import com.android.volley.Response as VResponse
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.firebase.iid.FirebaseInstanceId
+import nl.rsdt.japp.BuildConfig
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.auth.Authentication
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.apis.AuthApi
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+
 
 /**
  * @author Dingenis Sieger Sinke
@@ -64,8 +74,39 @@ class PreLoginSplashActivity : Activity() {
             })
             thread.run()
         }
-
+        checkLatestRelease()
         validate()
+    }
+
+    private fun checkLatestRelease() {
+        var currentVersionName = BuildConfig.VERSION_NAME
+        val queue = Volley.newRequestQueue(this)
+        val url = "https://api.github.com/repos/rsdt/japp/releases/latest"
+        var dialog = AlertDialog.Builder(this).setCancelable(true)
+        // Request a string response from the provided URL.
+        val stringRequest = StringRequest(VRequest.Method.GET, url,
+                VResponse.Listener<String> { response ->
+                    var json = JSONObject(response)
+                    var newVersionName = json["name"]
+                    if (currentVersionName != newVersionName){
+                        dialog.setTitle("Er is een nieuwe versie van de app: ${newVersionName}")
+                        dialog.setPositiveButton("Naar Download") { dialogInterface: DialogInterface, i: Int ->
+                            var url = "https://github.com/RSDT/Japp16/releases/latest"
+                            var myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            startActivity(myIntent)
+                        }
+                        dialog.create()
+                        dialog.show()
+                    }
+                },
+                VResponse.ErrorListener {
+                    dialog.setTitle("error bij het controleren op updates")
+                    dialog.create()
+                    dialog.show()
+                })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+
     }
 
     fun validate() {
