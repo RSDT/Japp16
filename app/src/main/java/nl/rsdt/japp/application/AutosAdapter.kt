@@ -84,7 +84,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
                     }
                     .create()
             val automatisch = Japp.getString(R.string.automatisch)
-            val itemsTaak = listOf(automatisch, "terug naar HB","A", "B", "C", "D", "E", "F", "X").toTypedArray()
+            val itemsTaak = listOf(/*automatisch,*/ "terug naar HB","A", "B", "C", "D", "E", "F", "X").toTypedArray()
             val taakDialog = AlertDialog.Builder(view.context)
                     .setTitle(R.string.welke_taak)
                     .setItems(itemsTaak) { _, whichTaak ->
