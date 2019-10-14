@@ -6,10 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.preference.EditTextPreference
 import android.util.Log
-import com.android.volley.Request as VRequest
-import com.android.volley.Response as VResponse
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.firebase.iid.FirebaseInstanceId
@@ -27,6 +24,8 @@ import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import com.android.volley.Request as VRequest
+import com.android.volley.Response as VResponse
 
 
 /**
@@ -74,15 +73,15 @@ class PreLoginSplashActivity : Activity() {
             })
             thread.run()
         }
-        checkLatestRelease()
-        validate()
+        checkLatestReleaseAndValidate()
     }
 
-    private fun checkLatestRelease() {
+    private fun checkLatestReleaseAndValidate() {
         var currentVersionName = BuildConfig.VERSION_NAME
         val queue = Volley.newRequestQueue(this)
         val url = "https://api.github.com/repos/rsdt/japp/releases/latest"
-        var dialog = AlertDialog.Builder(this).setCancelable(true)
+        var dialog = AlertDialog.Builder(this)
+        dialog.setNegativeButton("negeren") { dialogInterface: DialogInterface, i: Int -> validate()}
         // Request a string response from the provided URL.
         val stringRequest = StringRequest(VRequest.Method.GET, url,
                 VResponse.Listener<String> { response ->
@@ -94,9 +93,12 @@ class PreLoginSplashActivity : Activity() {
                             var url = "https://github.com/RSDT/Japp16/releases/latest"
                             var myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                             startActivity(myIntent)
+                            //validate()
                         }
                         dialog.create()
                         dialog.show()
+                    }else{
+                        validate()
                     }
                 },
                 VResponse.ErrorListener {
@@ -104,7 +106,7 @@ class PreLoginSplashActivity : Activity() {
                     dialog.create()
                     dialog.show()
                 })
-        // Add the request to the RequestQueue.
+        // Add the request to thpreviewe RequestQueue.
         queue.add(stringRequest)
 
     }
