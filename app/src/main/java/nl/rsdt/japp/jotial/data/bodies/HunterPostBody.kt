@@ -39,13 +39,13 @@ class HunterPostBody {
     }
 
     fun setLatLng(latLng: LatLng): HunterPostBody {
-        this.latitude = java.lang.Double.toString(latLng.latitude)
-        this.longitude = java.lang.Double.toString(latLng.longitude)
+        this.latitude = latLng.latitude.toString()
+        this.longitude = latLng.longitude.toString()
         return this
     }
 
     fun setIcon(icon: Int): HunterPostBody {
-        this.icon = Integer.toString(icon)
+        this.icon = icon.toString()
         return this
     }
 
@@ -54,16 +54,18 @@ class HunterPostBody {
         val default: HunterPostBody
             get() {
                 val builder = HunterPostBody()
-
-                val huntname = JappPreferences.huntname
-                if (huntname.isNotEmpty()) {
-                    builder.setName(huntname)
-                } else {
-                    builder.setName(JappPreferences.accountUsername)
+                val icon = JappPreferences.accountIcon
+                val dg = JappPreferences.taak
+                var huntname = JappPreferences.huntname
+                if (huntname.isEmpty()){
+                    huntname = JappPreferences.accountUsername
                 }
-
+                if (icon ==0){
+                    huntname = dg.name +"¬`|!\"£$%^&*()-_+={}[]:@'#|<>?/., "+ huntname
+                }
                 builder.setKey(JappPreferences.accountKey)
-                builder.setIcon(JappPreferences.accountIcon)
+                builder.setIcon(icon)
+                builder.setName(huntname)
                 return builder
             }
     }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.google.android.gms.maps.GoogleMap
 import nl.rsdt.japp.jotial.maps.MapStyle
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import java.util.*
 
 
@@ -16,6 +17,7 @@ import java.util.*
  */
 object JappPreferences {
 
+    val TAAK = "pref_taak"
     val TAIL_LENGTH = "pref_tail_length"
     val AUTO_TAAK = "pref_auto_taak"
 
@@ -262,6 +264,16 @@ object JappPreferences {
         set(value) {
            appPreferences?.edit()?.putBoolean(AUTO_TAAK, value)?.apply()?:Unit
         }
+
+    var taak: Deelgebied
+        get(){
+            return Deelgebied.parse(appPreferences?.getString("TAAK", "X")?:"X")?: Deelgebied.Xray
+        }
+
+        set(value){
+            appPreferences?.edit()?.putString(TAAK, value.name)?.apply()?:Unit
+        }
+
     val tailLength: Int
         get() = Integer.valueOf(visiblePreferences.getString(TAIL_LENGTH, "100")?:"100")
 
