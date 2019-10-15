@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
             //// TODO: 09/08/17 do stuff
         }
         mapManager.onMapReady(map)
+        mapManager.update()
     }
 
     /**
