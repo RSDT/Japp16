@@ -1,5 +1,6 @@
 package nl.rsdt.japp.application.fragments
 
+import android.app.AlertDialog
 import android.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,8 +15,10 @@ import nl.rsdt.japp.application.AutosAdapter
 import nl.rsdt.japp.application.InzittendenAdapter
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,6 +32,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
     private var autosAdapter: AutosAdapter? = null
     private var inzittendenAdapter: InzittendenAdapter = InzittendenAdapter()
     private var stapUitButton: Button? = null
+    private var updateTaakButton: Button? = null
 
     override fun onResume() {
         super.onResume()
@@ -43,6 +47,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
         inzittendeLayout = v.findViewById(R.id.inzittenden_linear_view)
         val inzittendenRecyclerView = v.findViewById<RecyclerView>(R.id.inzittenden_recycler_view)
         stapUitButton = v.findViewById(R.id.stap_uit_button)
+        updateTaakButton = v.findViewById(R.id.update_taak_button)
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         autosRecyclerView?.setHasFixedSize(true)
@@ -79,6 +84,31 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                     refresh()
                 }
             })
+        }
+        updateTaakButton?.setOnClickListener {
+            val autoApi = Japp.getApi(AutoApi::class.java)
+            val itemsTaak = listOf(/*automatisch,*/ "terug naar HB","A", "B", "C", "D", "E", "F", "X").toTypedArray()
+            val taakDialog = AlertDialog.Builder(view.context)
+                    .setTitle(R.string.welke_taak)
+                    .setItems(itemsTaak) { _, whichTaak ->
+                        val taak = itemsTaak[whichTaak]
+                        val body = AutoUpdateTaakPostBody()
+                        body.setId(JappPreferences.accountId)
+                        body.setSleutel(JappPreferences.accountKey)
+                        body.setTaak(taak)
+                        autoApi.updateTaak(body).enqueue(object: Callback<Void>{
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                refresh()
+                            }
+
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                refresh()
+                            }
+
+                        })
+                    }
+                    .create()
+            taakDialog.show()
         }
         refresh()
         return v

@@ -174,7 +174,6 @@
             open menu<br>
             ga naar autos<br>
             Maak een nieuwe auto aan(bovenste knop)<br>
-            Als je als taak op automatisch zet. Dan update de app de taak zodra je een ander deelgebied ingaat.<br>
             klik op refresh(rechtsboven) als het goed is zie je nu alleen jezelf in de auto<br>
             ga naar Instellingen -> Navigatie -> Navigatie App en kies de app die je wil gebruiken om te navigeren<br>
             ga naar Instellingen -> Navigatie -> Navigatie Telefoon en zet deze aan. <br>
@@ -183,7 +182,6 @@
             Op  de telefoon van de bijrijders/navigators:<br>
             ga naar auto menu<br>
             klik op de naam van je bestuurder<br>
-            Als je als taak op automatisch zet. Dan update de app de taak zodra je een ander deelgebied ingaat.<br>
             klik op refresh(rechtsboven) als het goed is zie je nu iedereen die in de auto zit.<br>
             ga naar de kaart<br>
             klik op de + en daarna navigeer<br>
@@ -211,8 +209,9 @@
          ]]>
     </string>
     <string name="help">Help</string>
-    <string name="pref_prepend_deelgebied_to_name_title">taak/deelgebied voor de huntnaam zetten</string>
+    <string name="pref_prepend_deelgebied_to_name_title">deelgebied voor de huntnaam zetten</string>
     <string name="pref_prepend_deelgebied_to_name_sum">Deze instelling  moet aanstaan om gebruik te maken van de automatische icoon</string>
+    <string name="update_taak">verander deelgebied</string>
 
 
 </resources>

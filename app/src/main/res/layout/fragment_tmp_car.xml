@@ -17,6 +17,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/stap_uit" />
+        <Button
+            android:id="@+id/update_taak_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/update_taak" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/inzittenden_recycler_view"
