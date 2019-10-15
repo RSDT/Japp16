@@ -96,7 +96,6 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
                             }
                         }
                         body.setTaak(taak)
-                        JappPreferences.taak = Deelgebied.parse(taak)?: Deelgebied.Xray
                         rolDialog.show()
                     }
                     .create()

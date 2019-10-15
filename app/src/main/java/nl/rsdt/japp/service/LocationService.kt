@@ -26,8 +26,12 @@ import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.application.activities.MainActivity
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
+import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService
+import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.HunterApi
 import retrofit2.Call
 import retrofit2.Callback
@@ -243,11 +247,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
             }
         }
     }
-
-    private fun sendLocation(location: Location) {
-        val builder = HunterPostBody.default
-        builder.setLatLng(LatLng(location.latitude, location.longitude))
-
+    private fun sendlocation2(location: Location, builder: HunterPostBody){
         val api = Japp.getApi(HunterApi::class.java)
         api.post(builder).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -258,6 +258,33 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
                 Log.e(TAG, t.toString(), t)
             }
         })
+    }
+    private fun sendLocation(location: Location) {
+        val builder = HunterPostBody.default
+        builder.setLatLng(LatLng(location.latitude, location.longitude))
+        if (JappPreferences.accountIcon == 0 && JappPreferences.prependDeelgebied){
+            val api = Japp.getApi(AutoApi::class.java)
+            api.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(
+                    object: Callback<AutoInzittendeInfo?>{
+                        override fun onFailure(call: Call<AutoInzittendeInfo?>, t: Throwable) {
+                            sendlocation2(location, builder)
+                        }
+
+                        override fun onResponse(call: Call<AutoInzittendeInfo?>, response: Response<AutoInzittendeInfo?>) {
+                            if (response.isSuccessful) {
+                                val dg = Deelgebied.parse(response.body()?.taak ?: "X")
+                                        ?: Deelgebied.Xray
+                                builder.prependDeelgebiedToName(dg)
+                            }
+                            sendlocation2(location, builder)
+                        }
+
+                    }
+            )
+
+        }else{
+            sendlocation2(location, builder)
+        }
         lastUpdate = Calendar.getInstance()
         wasSending = true
     }

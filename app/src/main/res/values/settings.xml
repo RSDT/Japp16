@@ -30,22 +30,22 @@
             <string name="pref_account_icon_sum">Het icoon voor jou op de kaart</string>
             <string name="pref_account_icon_def">0</string>
             <string-array name="pref_account_icon">
-                <item>Default</item>
-                <item>1</item>
-                <item>2</item>
-                <item>3</item>
-                <item>4</item>
-                <item>5</item>
-                <item>6</item>
-                <item>7</item>
-                <item>8</item>
-                <item>9</item>
-                <item>10</item>
-                <item>11</item>
-                <item>12</item>
-                <item>13</item>
-                <item>14</item>
-                <item>15</item>
+                <item>aangepast aan de hand van de taak(deelgebied) van de auto</item>
+                <item>standaard rood autotje</item>
+                <item>fiets</item>
+                <item>rode auto die heel hard remt?</item>
+                <item>oude auto</item>
+                <item>rode jeep</item>
+                <item>auto met pinguin</item>
+                <item>zwarte sportauto</item>
+                <item>blauwe gezinsauto</item>
+                <item>blauwe monstertruck</item>
+                <item>blauwe auto</item>
+                <item>vuilniswagen</item>
+                <item>rode kever</item>
+                <item>rode auto</item>
+                <item>groene sportauto</item>
+                <item>lichblauw autotje</item>
             </string-array>
             <string-array name="pref_account_icon_data">
                 <item>0</item>

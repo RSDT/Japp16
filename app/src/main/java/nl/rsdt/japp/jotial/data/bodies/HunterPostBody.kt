@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 
 /**
  * @author Dingenis Sieger Sinke
@@ -49,20 +50,27 @@ class HunterPostBody {
         return this
     }
 
+    fun prependDeelgebiedToName(dg: Deelgebied): HunterPostBody{
+        hunter = hunter?.replace('.', ' ')
+        if (JappPreferences.prependDeelgebied){
+            hunter = "${dg.name}.$hunter"
+        }  else if(icon == "0"){
+            icon = "1"
+        }
+        return this
+    }
     companion object {
 
         val default: HunterPostBody
             get() {
                 val builder = HunterPostBody()
-                val icon = JappPreferences.accountIcon
+                var icon = JappPreferences.accountIcon
                 val dg = JappPreferences.taak
                 var huntname = JappPreferences.huntname
                 if (huntname.isEmpty()){
                     huntname = JappPreferences.accountUsername
                 }
-                if (icon ==0){
-                    huntname = dg.name +"¬`|!\"£$%^&*()-_+={}[]:@'#|<>?/., "+ huntname
-                }
+
                 builder.setKey(JappPreferences.accountKey)
                 builder.setIcon(icon)
                 builder.setName(huntname)

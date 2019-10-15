@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import nl.rsdt.japp.R
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 
 /**
  * @author Dingenis Sieger Sinke
@@ -40,7 +41,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
     var icon: Int = 0
 
     val associatedDrawable: Int
-        get() = getAssociatedDrawable(icon)
+        get() = getAssociatedDrawable(icon, hunter?:"")
 
     init {
         datetime = `in`.readString()
@@ -70,9 +71,12 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
             }
 
 
-        fun getAssociatedDrawable(icon: Int): Int {
+        fun getAssociatedDrawable(icon: Int, hunter:String): Int {
+            val dgName = hunter.split('.')[0]
+            val dg = Deelgebied.parse(dgName)?: Deelgebied.Xray
+
             when (icon) {
-                0 -> return R.drawable.hunter_0
+                0 -> return getDeelgebiedDrawable(dg)
                 1 -> return R.drawable.hunter_1
                 2 -> return R.drawable.hunter_2
                 3 -> return R.drawable.hunter_3
@@ -89,6 +93,19 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 14 -> return R.drawable.hunter_14
                 15 -> return R.drawable.hunter_15
                 else -> return R.drawable.hunter_0
+            }
+        }
+
+        private fun getDeelgebiedDrawable(dg: Deelgebied): Int {
+            when (dg.dgColor){
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> return R.drawable.hunter_groen
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Rood -> return R.drawable.hunter_rood
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Paars -> return R.drawable.hunter_paars
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Oranje -> return R.drawable.hunter_oranje
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Blauw -> return R.drawable.hunter_blauw
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Zwart -> return R.drawable.hunter_zwart
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Turquoise -> return R.drawable.hunter_turquoise
+                MetaColorInfo.ColorNameInfo.DeelgebiedColor.Onbekend -> return R.drawable.hunter_0
             }
         }
 

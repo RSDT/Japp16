@@ -27,6 +27,8 @@ object JappPreferences {
 
     val ACCOUNT_USERNAME = "pref_account_username"
 
+    val PREPEND_DG = "pref_prepend_deelgebied_to_name"
+
     val ACCOUNT_NAME = "pref_account_name"
 
     val ACCOUNT_SURNAME = "pref_account_surname"
@@ -249,6 +251,10 @@ object JappPreferences {
 
     val getAllHunters: Boolean
         get() = visiblePreferences.getBoolean(HUNTER_ALL, false)
+
+    val prependDeelgebied: Boolean
+        get() = visiblePreferences.getBoolean(PREPEND_DG, true)
+
     val osmMapSource: OsmMapType
         get() {
             val value = visiblePreferences.getString(OSM_MAP_TYPE, "Default")?:"Default"

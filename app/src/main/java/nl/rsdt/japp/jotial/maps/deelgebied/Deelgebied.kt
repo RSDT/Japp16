@@ -46,7 +46,7 @@ private constructor(
         val team = this.name.toLowerCase()[0].toString()
         when (key){
             JappPreferences.AREAS_COLOR + team ->{
-                changeColor(JappPreferences.getColorName(team)?:"Zwart")
+                changeColor(JappPreferences.getColorName(team))
                 for (onColorChangListener in onColorChangeListeners ){
                     onColorChangListener.onColorChange(this)
                 }
@@ -57,6 +57,7 @@ private constructor(
     /**
      * The hunt drawable associated with this Deelgebied.
      */
+    lateinit var dgColor: MetaColorInfo.ColorNameInfo.DeelgebiedColor
     /**
      * Gets the hunt drawable associated with this Deelgebied.
      */
@@ -122,7 +123,8 @@ private constructor(
     }
 
     fun changeColor(colorName: String){
-        when (MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(colorName)) {
+        this.dgColor = MetaColorInfo.ColorNameInfo.DeelgebiedColor.valueOf(colorName)
+        when (this.dgColor) {
 
             MetaColorInfo.ColorNameInfo.DeelgebiedColor.Groen -> {
                 this.drawableHunt = R.drawable.vos_groen_4

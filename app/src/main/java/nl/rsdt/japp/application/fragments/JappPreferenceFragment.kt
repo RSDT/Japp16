@@ -5,8 +5,15 @@ import android.preference.*
 import android.view.View
 import nl.rsdt.japp.BuildConfig
 import nl.rsdt.japp.R
+import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
+import nl.rsdt.japp.jotial.net.apis.AutoApi
+import retrofit2.Call
+import retrofit2.Response
+import javax.security.auth.callback.Callback
 
 /**
  * @author Dingenis Sieger Sinke
@@ -64,14 +71,28 @@ class JappPreferenceFragment : PreferenceFragment() {
 
     private fun setupIconChange() {
         val preference = findPreference(JappPreferences.ACCOUNT_ICON)
-        preference.setIcon(HunterInfo.getAssociatedDrawable(JappPreferences.accountIcon))
+        preference.setIcon(HunterInfo.getAssociatedDrawable(JappPreferences.accountIcon, JappPreferences.taak.name))
         preference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, o ->
             val value = Integer.valueOf(o as String)
-            preference.setIcon(HunterInfo.getAssociatedDrawable(value))
+            val api = Japp.getApi(AutoApi::class.java)
+            api.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : retrofit2.Callback<AutoInzittendeInfo?>{
+                override fun onFailure(call: Call<AutoInzittendeInfo?>, t: Throwable) {
+                    preference.setIcon(HunterInfo.getAssociatedDrawable(value, Deelgebied.Xray.name))
+                }
+
+                override fun onResponse(call: Call<AutoInzittendeInfo?>, response: Response<AutoInzittendeInfo?>) {
+                    if (response.isSuccessful){
+                        val dg = Deelgebied.parse(response.body()?.taak?:"X") ?: Deelgebied.Xray
+                        preference.setIcon(HunterInfo.getAssociatedDrawable(value, dg.name))
+                    }else{
+                        preference.setIcon(HunterInfo.getAssociatedDrawable(value, Deelgebied.Xray.name))
+                    }
+                }
+
+            })
             true
         }
     }
-
     companion object {
 
         val TAG = "JappPreferenceFragment"
