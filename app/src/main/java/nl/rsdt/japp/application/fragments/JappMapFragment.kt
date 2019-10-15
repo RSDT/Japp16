@@ -31,6 +31,7 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody
 import nl.rsdt.japp.jotial.data.firebase.Location
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
+import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
@@ -545,6 +546,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                 404 -> Snackbar.make(snackbarView, R.string.wrong_data, Snackbar.LENGTH_LONG).show()
                                                 else -> Snackbar.make(snackbarView, getString(R.string.problem_with_sending, Integer.toString(response.code())), Snackbar.LENGTH_LONG).show()
                                             }
+                                            MapManager.instance.update()
                                         }
 
                                         override fun onFailure(call: Call<Void>, t: Throwable) {
