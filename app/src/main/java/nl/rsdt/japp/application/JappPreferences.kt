@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.google.android.gms.maps.GoogleMap
+import nl.rsdt.japp.jotial.data.bodies.HunterPostBody
 import nl.rsdt.japp.jotial.maps.MapStyle
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import java.util.*

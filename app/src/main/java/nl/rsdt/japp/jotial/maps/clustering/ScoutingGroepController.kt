@@ -108,29 +108,25 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<A
     }
 
 
-    override fun update(mode: String): Call<ArrayList<ScoutingGroepInfo>>? {
+    override fun update(mode: String, callback: Callback<ArrayList<ScoutingGroepInfo>>) {
         val api = Japp.getApi(ScoutingGroepApi::class.java)
         when (mode) {
-            MapItemUpdatable.MODE_ALL -> return api.getAll(JappPreferences.accountKey)
-            MapItemUpdatable.MODE_LATEST -> return api.getAll(JappPreferences.accountKey)
+            MapItemUpdatable.MODE_ALL -> api.getAll(JappPreferences.accountKey).enqueue(callback)
+            MapItemUpdatable.MODE_LATEST -> api.getAll(JappPreferences.accountKey).enqueue(callback)
         }
-        return null
     }
 
     override fun onUpdateInvoked() {
-        val call = update(MapItemUpdatable.MODE_ALL)
-        call?.enqueue(this)
+        update(MapItemUpdatable.MODE_ALL, this)
 
     }
 
     override fun onUpdateMessage(info: UpdateInfo) {
         val call: Call<ArrayList<ScoutingGroepInfo>>?
         when (info.type) {
-            UpdateInfo.ACTION_NEW -> call = update(MapItemUpdatable.MODE_ALL)
-            UpdateInfo.ACTION_UPDATE -> call = update(MapItemUpdatable.MODE_ALL)
-            else -> call = null
+            UpdateInfo.ACTION_NEW -> update(MapItemUpdatable.MODE_ALL, this)
+            UpdateInfo.ACTION_UPDATE -> update(MapItemUpdatable.MODE_ALL, this)
         }
-        call?.enqueue(this)
     }
 
     companion object {

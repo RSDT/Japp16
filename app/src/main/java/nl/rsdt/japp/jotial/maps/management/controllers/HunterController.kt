@@ -15,19 +15,26 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.FotoOpdrachtInfo
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo
 import nl.rsdt.japp.jotial.io.AppData
+import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.management.MapItemController
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.management.transformation.AbstractTransducer
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
+import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.HunterApi
+import okhttp3.Request
 import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * @author Dingenis Sieger Sinke
@@ -112,18 +119,41 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
         return ArrayList(data.keys)
     }
 
-    override fun update(unused: String): Call<HashMap<String, ArrayList<HunterInfo>>> {
-        var name = JappPreferences.huntname
-        if (name.isEmpty()) {
-            name = JappPreferences.accountUsername
+    fun prependDeelgebiedToName(name: String, dg: Deelgebied): String{
+        var hunter = name
+        hunter = hunter.replace('.', ' ')
+        if (JappPreferences.prependDeelgebied){
+            hunter = "${dg.name}.$hunter"
         }
+        return hunter
+    }
 
+    override fun update(unused: String, callback: Callback<HashMap<String, ArrayList<HunterInfo>>>) {
         val api = Japp.getApi(HunterApi::class.java)
         val getAll = JappPreferences.getAllHunters
-        return if (getAll) {
-            api.getAll(JappPreferences.accountKey)
+        if (getAll) {
+            api.getAll(JappPreferences.accountKey).enqueue(callback)
         } else {
-            api.getAllExcept(JappPreferences.accountKey, name)
+
+            val autoApi = Japp.getApi(AutoApi::class.java)
+            autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo?>{
+                override fun onFailure(call: Call<AutoInzittendeInfo?>, t: Throwable) {
+                    api.getAll(JappPreferences.accountKey).enqueue(callback)
+                }
+
+                override fun onResponse(call: Call<AutoInzittendeInfo?>, response: Response<AutoInzittendeInfo?>) {
+                    var name = JappPreferences.huntname
+                    if (name.isEmpty()) {
+                        name = JappPreferences.accountUsername
+                    }
+                    val dg = Deelgebied.parse(response.body()?.taak?:"X")?: Deelgebied.Xray
+                    name = prependDeelgebiedToName(name, dg)
+                    api.getAllExcept(JappPreferences.accountKey, name).enqueue(callback)
+                }
+
+            })
+
+
         }
     }
 

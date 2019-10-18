@@ -84,18 +84,16 @@ abstract class MapItemController<I, O : AbstractTransducer.Result>(protected val
     }
 
     override fun onUpdateInvoked() {
-        val call = update(MapItemUpdatable.MODE_ALL)
-        call?.enqueue(this)
+        val call = update(MapItemUpdatable.MODE_ALL, this)
     }
 
     override fun onUpdateMessage(info: UpdateInfo) {
         val call: Call<I>?
         when (info.action) {
-            UpdateInfo.ACTION_NEW -> call = update(MapItemUpdatable.MODE_ALL)
-            UpdateInfo.ACTION_UPDATE -> call = update(MapItemUpdatable.MODE_ALL)
+            UpdateInfo.ACTION_NEW -> update(MapItemUpdatable.MODE_ALL,this)
+            UpdateInfo.ACTION_UPDATE -> update(MapItemUpdatable.MODE_ALL, this)
             else -> call = null
         }
-        call?.enqueue(this)
     }
 
     override fun onResponse(call: Call<I>, response: Response<I>) {

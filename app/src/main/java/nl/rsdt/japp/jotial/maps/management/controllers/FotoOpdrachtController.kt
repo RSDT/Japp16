@@ -23,6 +23,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.FotoApi
 import retrofit2.Call
+import retrofit2.Callback
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -46,13 +47,12 @@ class FotoOpdrachtController (iJotiMap: IJotiMap): StandardMapItemController<Fot
     override val transducer: FotoOpdrachtTransducer
         get() = FotoOpdrachtTransducer()
 
-    override fun update(mode: String): Call<ArrayList<FotoOpdrachtInfo>>? {
+    override fun update(mode: String, callback: Callback<ArrayList<FotoOpdrachtInfo>>) {
         val api = Japp.getApi(FotoApi::class.java)
         when (mode) {
-            MapItemUpdatable.MODE_ALL -> return api.getAll(JappPreferences.accountKey)
-            MapItemUpdatable.MODE_LATEST -> return api.getAll(JappPreferences.accountKey)
+            MapItemUpdatable.MODE_ALL -> api.getAll(JappPreferences.accountKey).enqueue(callback)
+            MapItemUpdatable.MODE_LATEST -> api.getAll(JappPreferences.accountKey).enqueue(callback)
         }
-        return null
     }
 
     override fun searchFor(query: String): IMarker? {
@@ -119,11 +119,10 @@ class FotoOpdrachtController (iJotiMap: IJotiMap): StandardMapItemController<Fot
                 mOptions.anchor(0.5f, 0.5f)
                 mOptions.position(info.latLng)
                 mOptions.title(Gson().toJson(identifier))
-                val bm: Bitmap
-                if (info.klaar == 1) {
-                    bm = BitmapFactory.decodeResource(Japp.instance!!.resources, R.drawable.camera_20x20_klaar)
+                val bm: Bitmap = if (info.klaar == 1) {
+                    BitmapFactory.decodeResource(Japp.instance!!.resources, R.drawable.camera_20x20_klaar)
                 } else {
-                    bm = BitmapFactory.decodeResource(Japp.instance!!.resources, R.drawable.camera_20x20)
+                    BitmapFactory.decodeResource(Japp.instance!!.resources, R.drawable.camera_20x20)
                 }
                 result.add(Pair(mOptions, bm))
             }

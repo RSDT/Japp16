@@ -65,7 +65,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
         JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun update(mode: String): Call<ArrayList<VosInfo>>? {
+    override fun update(mode: String, callback: Callback<ArrayList<VosInfo>>) {
         val call = object : Call<ArrayList<VosInfo>> {
             private val api = Japp.getApi(VosApi::class.java)
             private val apiCall = api.getAll(JappPreferences.accountKey, team)
@@ -130,10 +130,9 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
             }
         }
         when (mode) {
-            MapItemUpdatable.MODE_ALL -> return call
-            MapItemUpdatable.MODE_LATEST -> return call
+            MapItemUpdatable.MODE_ALL -> call.enqueue(callback)
+            MapItemUpdatable.MODE_LATEST -> call.enqueue(callback)
         }
-        return null
     }
 
     override fun searchFor(query: String): IMarker? {

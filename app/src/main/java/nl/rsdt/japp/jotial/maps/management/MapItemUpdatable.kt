@@ -2,6 +2,7 @@ package nl.rsdt.japp.jotial.maps.management
 
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
 import retrofit2.Call
+import retrofit2.Callback
 
 /**
  * @author Dingenis Sieger Sinke
@@ -11,7 +12,7 @@ import retrofit2.Call
  */
 interface MapItemUpdatable<I> {
 
-    fun update(mode: String): Call<I>?
+    fun update(mode: String, callback: Callback<I>)
 
     fun onUpdateInvoked()
 
