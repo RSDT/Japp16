@@ -5,14 +5,14 @@
     <PreferenceCategory android:title="@string/pref_cat_account">
 
         <EditTextPreference
-            android:editable="false"
+            android:enabled="false"
             android:key="pref_account_username"
             android:summary="@string/pref_account_username_sum"
             android:title="@string/pref_account_username_title" />
 
         <EditTextPreference
             android:defaultValue="@string/pref_account_rank_def"
-            android:editable="false"
+            android:enabled="false"
             android:key="pref_account_rank"
             android:summary="@string/pref_account_rank_sum"
             android:title="@string/pref_account_rank_title" />
@@ -39,6 +39,15 @@
             android:title="@string/pref_prepend_deelgebied_to_name_title"
             android:summary="@string/pref_prepend_deelgebied_to_name_sum"
             android:defaultValue="true" />
+
+        <EditTextPreference
+            android:key="pref_default_koppel"
+            android:title="@string/pref_default_koppel_title"
+            android:summary="@string/pref_default_koppel_sum"
+            android:inputType="number"
+            android:defaultValue="Onbekend"
+            android:dependency="pref_advanced_auto_enlargement"
+            />
 
         <MultiSelectListPreference
             android:dialogTitle="@string/pref_map_controls_dialog_title"
@@ -165,13 +174,13 @@
                     />
 
                 <EditTextPreference
-                    android:key="pref_advanced_auto_enlargement_interval"
-                    android:title="@string/pref_advanced_auto_enlargement_interval_title"
-                    android:summary="@string/pref_advanced_auto_enlargement_interval_sum"
-                    android:inputType="numberDecimal"
-                    android:defaultValue="0.1"
-                    android:dependency="pref_advanced_auto_enlargement"
-                    />
+                android:key="pref_advanced_auto_enlargement_interval"
+                android:title="@string/pref_advanced_auto_enlargement_interval_title"
+                android:summary="@string/pref_advanced_auto_enlargement_interval_sum"
+                android:inputType="numberDecimal"
+                android:defaultValue="0.1"
+                android:dependency="pref_advanced_auto_enlargement"
+                />
 
                 <EditTextPreference
                     android:key="pref_advanced_auto_enlargement_walking_speed"
@@ -210,6 +219,7 @@
                     android:title="@string/pref_advanced_auto_osm"
                     android:summary="@string/pref_advanced_osm_sum"
                     android:defaultValue="true"
+                    android:enabled="false"
                     />
             </PreferenceCategory>
 

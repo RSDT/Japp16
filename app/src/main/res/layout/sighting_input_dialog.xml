@@ -19,6 +19,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!--EditText
+            android:id="@+id/sighting_dialog_info_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/sighting_input_dialog_hint"
+            android:inputType="number" /-->
+
         <ImageView
             android:id="@+id/sighting_dialog_snapshot"
             android:layout_width="match_parent"
@@ -27,12 +34,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/sighting_snapshot" />
 
-        <EditText
-            android:id="@+id/sighting_dialog_info_edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/sighting_input_dialog_hint"
-            android:inputType="textShortMessage|text"></EditText>
+
     </LinearLayout>
 </ScrollView>
 

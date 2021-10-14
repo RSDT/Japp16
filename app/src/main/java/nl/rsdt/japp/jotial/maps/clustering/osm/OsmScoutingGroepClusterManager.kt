@@ -1,6 +1,6 @@
 package nl.rsdt.japp.jotial.maps.clustering.osm
 
-import com.crashlytics.android.Crashlytics
+//import com.crashlytics.android.Crashlytics
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo
 import nl.rsdt.japp.jotial.maps.clustering.ClusterManagerInterface
 import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
@@ -34,7 +34,7 @@ class OsmScoutingGroepClusterManager(jotiMap: OsmJotiMap) : ClusterManagerInterf
             markers.showMarkers()
         } catch(e: ClassCastException){
             System.err.println(e)
-            Crashlytics.log(e.toString())
+            //Crashlytics.log(e.toString())
         }
     }
 

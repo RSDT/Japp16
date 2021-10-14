@@ -1,6 +1,7 @@
 package nl.rsdt.japp.jotial.maps.sighting
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -10,8 +11,10 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -86,6 +89,11 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
     private var deelgebied: Deelgebied? = null
 
     /**
+     * The last koppel that was selected.
+     */
+    private var extra: String = ""
+
+    /**
      * Initializes the SightingSession.
      */
     private fun initialize() {
@@ -105,12 +113,16 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
 
         val inflater = LayoutInflater.from(context)
         @SuppressLint("InflateParams") val view = inflater.inflate(R.layout.sighting_input_dialog, null)
+
         dialog = AlertDialog.Builder(context)
                 .setCancelable(false)
                 .setPositiveButton(R.string.confirm, this)
                 .setNegativeButton(R.string.cancel, this)
                 .setView(view)
                 .create()
+
+        //val et = dialog?.findViewById<EditText>(R.id.sighting_dialog_info_edit)
+        //et?.setText(JappPreferences.defaultKoppel())
     }
 
     override fun onDismissed(snackbar: Snackbar?, event: Int) {
@@ -148,32 +160,48 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
         deelgebiedDialog.show()
     }
 
+    private fun updateExtra(latLng: LatLng, onUpdate: (LatLng) -> Unit){
+        val koppels = listOf(JappPreferences.defaultKoppel(),"Onbekend", "1", "2", "3", "4", "5", "6").toTypedArray()
+        val koppelDialog = AlertDialog.Builder(targetView?.context)
+                .setTitle("Welk Koppel?")
+                .setItems(koppels) { _, whichKoppel ->
+                    val koppel = koppels[whichKoppel]
+                    if (koppel != this.extra){
+                        this.extra = koppel
+                        onUpdate(latLng)
+                    }
+                }
+                .create()
+        koppelDialog.show()
+    }
+
     override fun onMapClick(latLng: LatLng): Boolean {
         lastLatLng = latLng
 
-        marker!!.position = latLng
+        marker?.position = latLng
 
         updateDeelgebied(latLng) {
+            updateExtra(it) {
+                if (deelgebied != null) {
+                    var icon: String? = null
+                    when (type) {
+                        SIGHT_HUNT -> {
+                            marker!!.setIcon(deelgebied!!.drawableHunt)
+                            icon = deelgebied?.drawableHunt.toString()
+                        }
+                        SIGHT_SPOT -> {
+                            marker?.setIcon(deelgebied!!.drawableSpot)
+                            icon = deelgebied?.drawableSpot.toString()
+                        }
+                    }
 
-            if (deelgebied != null) {
-                var icon: String? = null
-                when (type) {
-                    SIGHT_HUNT -> {
-                        marker!!.setIcon(deelgebied!!.drawableHunt)
-                        icon = deelgebied!!.drawableHunt.toString()
-                    }
-                    SIGHT_SPOT -> {
-                        marker!!.setIcon(deelgebied!!.drawableSpot)
-                        icon = deelgebied!!.drawableSpot.toString()
-                    }
+                    val identifier = MarkerIdentifier.Builder()
+                            .setType(MarkerIdentifier.TYPE_SIGHTING)
+                            .add("text", type)
+                            .add("icon", icon)
+                            .create()
+                    marker?.title = Gson().toJson(identifier)
                 }
-
-                val identifier = MarkerIdentifier.Builder()
-                        .setType(MarkerIdentifier.TYPE_SIGHTING)
-                        .add("text", type)
-                        .add("icon", icon)
-                        .create()
-                marker!!.title = Gson().toJson(identifier)
             }
 
             marker?.isVisible = true
@@ -185,7 +213,7 @@ class SightingSession : Snackbar.Callback(), View.OnClickListener, DialogInterfa
     override fun onClick(dialogInterface: DialogInterface, i: Int) {
         when (i) {
             AlertDialog.BUTTON_POSITIVE -> if (callback != null) {
-                callback!!.onSightingCompleted(lastLatLng, deelgebied, (dialog!!.findViewById<View>(R.id.sighting_dialog_info_edit) as TextView).text.toString())
+                callback!!.onSightingCompleted(lastLatLng, deelgebied, this.extra)
                 destroy()
             }
             AlertDialog.BUTTON_NEGATIVE -> {

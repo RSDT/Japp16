@@ -118,6 +118,8 @@ object JappPreferences {
     val COLOR_NAME = "pref_color_name_"
     val COLOR_HEX = "pref_color_hex_"
 
+    val DEFAULT_KOPPEL = "pref_default_koppel"
+
 
     /**
      * Gets the visible release_preferences of Japp.
@@ -346,6 +348,11 @@ object JappPreferences {
     fun getColorHex(team: String): String {
         return visiblePreferences.getString(COLOR_HEX + team, "#FFFFFF")?: "#FFFFFF"
     }
+
+    fun defaultKoppel(): String {
+        return visiblePreferences.getString(DEFAULT_KOPPEL, "onbekend")
+    }
+
     enum class RoadManager{
         MapQuest,
         Google,

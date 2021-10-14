@@ -17,7 +17,6 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.structures.area348.BaseInfo
 import nl.rsdt.japp.jotial.data.structures.area348.VosInfo
 import nl.rsdt.japp.jotial.io.AppData
-import nl.rsdt.japp.jotial.maps.management.MapItemController
 import nl.rsdt.japp.jotial.maps.management.MapItemUpdatable
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.management.StandardMapItemController
@@ -239,10 +238,18 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                  */
                 AppData.saveObjectAsJson(data, storageId)
             }
+            val pOptionsList = mutableMapOf<Int, PolylineOptions>()
+            val pOptions0 = PolylineOptions()
+            val pOptions1 = PolylineOptions()
+            val pOptions2 = PolylineOptions()
+            pOptions0.color(data[0].associatedColor)
+            pOptions0.width(5f)
 
-            val pOptions = PolylineOptions()
-            pOptions.color(data[0].associatedColor)
-            pOptions.width(5f)
+            pOptions1.color(data[0].associatedColor)
+            pOptions1.width(5f)
+
+            pOptions2.color(data[0].associatedColor)
+            pOptions2.width(5f)
 
             var current: VosInfo
 
@@ -297,10 +304,19 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                 mOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                 result.add(Pair(mOptions, bitmap))
 
-                pOptions.add(current.latLng)
+                val key = current.note?.toIntOrNull() ?: 0
+                if (!pOptionsList.containsKey(key)){
+                    pOptionsList[key] = PolylineOptions()
+                    pOptionsList[key]?.color(data[0].associatedColor)
+                    pOptionsList[key]?.width(5f)
+                }
+                pOptionsList[key]?.add(current.latLng)
             }
-            result.add(pOptions)
-
+            for (pOptions in pOptionsList) {
+                if (pOptions.key != 0) {
+                    result.add(pOptions.value)
+                }
+            }
             return result
         }
 
@@ -314,7 +330,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
              * @param in The parcel where the result was written to
              */
             protected constructor(`in`: Parcel) : super(`in`) {
-                items = `in`.createTypedArrayList(VosInfo.CREATOR)
+                items = `in`.createTypedArrayList(VosInfo.CREATOR)!!
             }
 
 
@@ -365,7 +381,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                 val date = VosUtils.parseDate(time ?: "1970-01-01 00:00:00")
                 val diff = date?.let { VosUtils.calculateTimeDifferenceInHoursFromNow(it).toDouble() }
                         ?: 0.0
-                if (diff < 30||true) {
+                if (diff < 30 ) {
                     date?.let { VosUtils.calculateRadius(it, JappPreferences.walkSpeed) } ?: 0f
                 } else {
                     0f
