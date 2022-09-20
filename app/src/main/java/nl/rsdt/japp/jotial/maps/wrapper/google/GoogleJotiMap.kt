@@ -61,6 +61,10 @@ class GoogleJotiMap private constructor(private val view: MapView) : IJotiMap, G
         this.previousRotation = rotation
     }
 
+    override fun followLocation(followLocation: Boolean, keepNorth: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun setInfoWindowAdapter(infoWindowAdapter: CustomInfoWindowAdapter) {
         googleMap!!.setInfoWindowAdapter(infoWindowAdapter)
     }

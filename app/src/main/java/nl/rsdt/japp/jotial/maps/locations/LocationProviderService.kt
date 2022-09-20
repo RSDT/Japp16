@@ -1,10 +1,13 @@
 package nl.rsdt.japp.jotial.maps.locations
 
+import android.Manifest
 import android.app.Service
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Binder
 import android.os.Bundle
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
@@ -22,13 +25,80 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     private var client: GoogleApiClient? = null
 
-    var request: LocationRequest = LocationRequest()
-        set(value) {
-            field = value
-            if (isRequesting && client!!.isConnected) {
-                restartLocationUpdates()
+    private var requests: MutableList<LocationProviderService.LocationRequest> = LinkedList()
+    private fun updateRequest(){
+        if (requests.isEmpty()){
+            client?.let{
+                LocationServices.FusedLocationApi.removeLocationUpdates(it, this)
+                isRequesting = false
+                return
             }
         }
+        var fastestInterval: Long = Long.MAX_VALUE
+        var interval: Long = Long.MAX_VALUE
+        var accuracy = Int.MAX_VALUE
+        for (request in requests){
+            if (request.fastestInterval < fastestInterval){
+                fastestInterval = request.fastestInterval
+            }
+            if (request.interval < interval){
+                interval = request.interval
+            }
+            if (request.accuracy < accuracy){
+                accuracy = request.accuracy
+            }
+        }
+        val request = com.google.android.gms.location.LocationRequest()
+            .setInterval(interval)
+            .setPriority(accuracy)
+            .setFastestInterval(fastestInterval)
+        client?.let{
+            LocationServices.FusedLocationApi.removeLocationUpdates(it, this)
+        }
+
+        client?.let{
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
+            LocationServices.FusedLocationApi.requestLocationUpdates(it, request, this)
+            isRequesting = true
+        }
+    }
+    fun addRequest(request: LocationProviderService.LocationRequest): Boolean{
+        val index = requests.indexOf(request)
+        if (requests[index] === request){
+            return false;
+        }
+        requests.add(request)
+        updateRequest()
+        return true;
+    }
+
+    fun removeRequest(request: LocationProviderService.LocationRequest) : Boolean {
+        val index = requests.indexOf(request)
+        if (requests[index] !== request){
+            return false;
+        }
+        if( requests.remove(request) ){
+            updateRequest()
+            return true;
+        }
+        return false;
+    }
 
     private var listeners = ArrayList<LocationListener>()
 
@@ -52,23 +122,12 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
                 .addApi(LocationServices.API)
                 .build()
         client!!.connect()
+
     }
 
-    @Throws(SecurityException::class)
-    fun startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(client, request, this)
-        isRequesting = true
-    }
-
-
-    fun removeLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(client, this)
-        isRequesting = false
-    }
 
     fun restartLocationUpdates() {
-        removeLocationUpdates()
-        startLocationUpdates()
+        updateRequest()
     }
 
     override fun onLocationChanged(location: Location) {
@@ -79,17 +138,9 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
     }
 
     override fun onConnected(bundle: Bundle?) {
-        startLocationUpdates()
+        updateRequest()
         //// TODO: 20/10/17 quickfix #127 de bug is erin gekomen in df4e994826ede9b014335c573deb30b7b9fd3455
         // checkLocationSettings();
-    }
-
-    fun checkLocationSettings() {
-        val builder = LocationSettingsRequest.Builder()
-                .addLocationRequest(request!!)
-        val result = LocationServices.SettingsApi.checkLocationSettings(client,
-                builder.build())
-        result.setResultCallback(this)
     }
 
     override fun onResult(result: LocationSettingsResult) {
@@ -98,7 +149,7 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
             LocationSettingsStatusCodes.SUCCESS ->
                 // All location settings are satisfied. The client can
                 // initialize location requests here.
-                startLocationUpdates()
+                updateRequest()
             LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
             }
             LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
@@ -121,7 +172,8 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     override fun onDestroy() {
         if (client != null) {
-            removeLocationUpdates()
+            requests.removeAll(requests)
+            updateRequest()
             client!!.disconnect()
             client = null
         }
@@ -134,7 +186,7 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
     fun remove(listener: LocationListener) {
         this.listeners.remove(listener)
     }
-
+    data class LocationRequest(val accuracy: Int, val fastestInterval:Long, val interval :Long)
     companion object {
 
         val TAG = "LocationProviderService"

@@ -3,6 +3,7 @@ package nl.rsdt.japp.application
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.GoogleMap
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody
 import nl.rsdt.japp.jotial.maps.MapStyle
@@ -18,6 +19,7 @@ import java.util.*
  */
 object JappPreferences {
 
+    val GPS_ACCURACY= "pref_gps_accuracy"
     val TAAK = "pref_taak"
     val TAIL_LENGTH = "pref_tail_length"
     val AUTO_TAAK = "pref_auto_taak"
@@ -292,6 +294,15 @@ object JappPreferences {
     val roadManager: RoadManager
         get() = JappPreferences.RoadManager.valueOf(visiblePreferences.getString(ROAD_MANAGER, "Google")?: "Google")
 
+    val gpsAccuracy: Int
+        get() = when(visiblePreferences.getString(GPS_ACCURACY, LocationRequest.PRIORITY_NO_POWER.toString()) ?: LocationRequest.PRIORITY_NO_POWER.toString() ){
+            "Hoog" -> LocationRequest.PRIORITY_HIGH_ACCURACY
+            "gebalanceerd" -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            "low power" -> LocationRequest.PRIORITY_LOW_POWER
+            "no power" -> LocationRequest.PRIORITY_NO_POWER
+            else -> LocationRequest.PRIORITY_NO_POWER
+        }
+
     fun setFollowAoa(aoa: Float) {
         appPreferences?.edit()?.putFloat(FOLLOW_AOA, aoa)?.apply()
     }
@@ -350,7 +361,7 @@ object JappPreferences {
     }
 
     fun defaultKoppel(): String {
-        return visiblePreferences.getString(DEFAULT_KOPPEL, "onbekend")
+        return visiblePreferences.getString(DEFAULT_KOPPEL, "onbekend?") ?: "onbekend?"
     }
 
     enum class RoadManager{

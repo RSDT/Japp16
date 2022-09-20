@@ -53,6 +53,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
     private var listener: OnResolutionRequiredListener? = null
 
     internal var lastUpdate = Calendar.getInstance()
+    private var request: LocationProviderService.LocationRequest? = null
 
     private val locationSettingReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
@@ -72,12 +73,6 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
         }
     }
 
-    val standard: LocationRequest
-        get() = LocationRequest()
-                .setInterval(JappPreferences.locationUpdateIntervalInMs.toLong())
-                .setFastestInterval(JappPreferences.locationUpdateIntervalInMs.toLong())
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-
     fun setListener(listener: OnResolutionRequiredListener?) {
         this.listener = listener
     }
@@ -89,6 +84,8 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
         registerReceiver(locationSettingReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION))
 
         val locationManager = NavigationLocationManager()
+        request = LocationProviderService.LocationRequest(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,60_000,60_000)
+        request?.let {addRequest(it)}
         locationManager.setCallback(object : NavigationLocationManager.OnNewLocation {
             override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
                 if (JappPreferences.isNavigationPhone) {
@@ -228,7 +225,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
     fun handleResolutionResult(code: Int) {
         when (code) {
             Activity.RESULT_OK -> {
-                startLocationUpdates()
+                restartLocationUpdates()
                 val wasSending = JappPreferences.isUpdatingLocationToServer
                 if (!wasSending) {
                     showLocationNotification(getString(R.string.japp_not_sending_location), getString(R.string.turn_on_location_in_app), Color.rgb(244, 66, 66))
@@ -298,9 +295,12 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
                 if (shouldSend) {
                     title = getString(R.string.japp_sends_location)
                     color = Color.rgb(113, 244, 66)
+                    request?.let {removeRequest(it)}
                 } else {
                     title = getString(R.string.japp_not_sending_location)
                     color = Color.rgb(244, 66, 66)
+                    request?.let {removeRequest(it)}
+                    request?.let {addRequest(it)}
                 }
                 showLocationNotification(title, color)
             }

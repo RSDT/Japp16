@@ -59,6 +59,8 @@ interface IJotiMap {
 
     fun setPreviousRotation(rotation: Float)
 
+    fun followLocation(followLocation:Boolean, keepNorth:Boolean)
+
     interface OnMapReadyCallback {
         fun onMapReady(map: IJotiMap)
     }

@@ -25,6 +25,7 @@ import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
+import nl.rsdt.japp.jotial.maps.locations.LocationProviderService
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator
@@ -56,11 +57,17 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             hourTail?.points = hourTailPoints
             hourTailPoints.onremoveCallback = ::addToLongTail
         }
+        if (key == JappPreferences.GPS_ACCURACY){
+            this.gpsAccuracy = JappPreferences.gpsAccuracy
+            request?.let {service?.removeRequest(it)}
+            request = LocationProviderService.LocationRequest(gpsAccuracy,fastestInterval, locationInterval)
+            request?.let {service?.addRequest(it)}
+        }
     }
 
-
-    private val fastestInterval: Long = 100
-    private val locationInterval: Long = 1500
+    private var gpsAccuracy = JappPreferences.gpsAccuracy
+    private val fastestInterval: Long = 5_000
+    private val locationInterval: Long = 60_000
     private var service: LocationService? = null
 
     private var jotiMap: IJotiMap? = null
@@ -86,6 +93,8 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     private var deelgebied: Deelgebied? = null
 
     private var snackBarView: View? = null
+
+    private var request: LocationProviderService.LocationRequest? =  null
 
     private var listener: LocationService.OnResolutionRequiredListener? = null
 
@@ -259,10 +268,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         val service = binder.instance
         service.setListener(listener)
         service.add(this)
-        service.request = LocationRequest()
-                .setInterval(locationInterval)
-                .setFastestInterval(fastestInterval)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        request?.let { service.removeRequest(it) }
+        request = LocationProviderService.LocationRequest(gpsAccuracy, fastestInterval, locationInterval)
+        request?.let {service.addRequest(it)}
         this.service = service
     }
 
@@ -271,7 +279,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun requestLocationSettingRequest() {
-        service?.checkLocationSettings()
+        service?.restartLocationUpdates()
     }
 
     fun onMapReady(jotiMap: IJotiMap) {
@@ -380,14 +388,11 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onResume() {
-        service?.request = LocationRequest()
-                    .setInterval(locationInterval)
-                    .setFastestInterval(fastestInterval)
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        request?.let { service?.addRequest(it) }
     }
 
     fun onPause() {
-        service?.apply { request = standard }
+        request?.let { service?.removeRequest(it) }
     }
 
     private fun save() {

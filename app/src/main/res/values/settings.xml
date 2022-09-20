@@ -67,7 +67,23 @@
             </string-array>
 
         <!-- END CAT -->
-
+    <!-- START GPS CAT -->
+    <string name="pref_gps_cat">GPS </string>
+    <string name="pref_gps_accuracy_title">GPS Nauwkeurigheid</string>
+    <string name="pref_gps_accuracy_sum">GPS Nauwkeurigheid voor de blauwe lijn</string>
+    <string name="pref_gps_accuracy_def">Hoog</string>
+    <string-array name="pref_gps_accuracy_options">
+        <item>Hoog</item>
+        <item>gebalanceerd</item>
+        <item>low power</item>
+        <item>no power</item>
+    </string-array>
+    <string-array name="pref_gps_accuracy_values">
+        <item>100</item>
+        <item>102</item>
+        <item>104</item>
+        <item>105</item>
+    </string-array>
         <!-- START CAT MAP -->
 
             <!--
@@ -314,6 +330,7 @@
         <item>delta</item>
         <item>echo</item>
         <item>foxtrot</item>
+        <item>xray</item>
     </string-array>
 
     <string name="pref_advanced_areas_edges_title">Randen</string>

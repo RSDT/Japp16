@@ -60,7 +60,22 @@
             />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_gps_cat">
+        <SwitchPreference
+            android:key="pref_updates_location"
+            android:title="@string/pref_updates_location_title"
+            android:summary="@string/pref_updates_location_sum"
+            android:defaultValue="true" />
 
+        <ListPreference
+            android:title="@string/pref_gps_accuracy_title"
+            android:key="pref_gps_accuracy"
+            android:summary="@string/pref_gps_accuracy_sum"
+            android:defaultValue="@string/pref_gps_accuracy_def"
+            android:entries="@array/pref_gps_accuracy_options"
+            android:entryValues="@array/pref_gps_accuracy_options"
+            />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cat_navigation">
 
         <ListPreference
@@ -93,11 +108,7 @@
             android:summary="@string/pref_updates_auto_sum"
             android:defaultValue="true" />
 
-        <SwitchPreference
-            android:key="pref_updates_location"
-            android:title="@string/pref_updates_location_title"
-            android:summary="@string/pref_updates_location_sum"
-            android:defaultValue="true" />
+
 
     </PreferenceCategory>
 
