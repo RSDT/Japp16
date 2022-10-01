@@ -84,8 +84,13 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
         registerReceiver(locationSettingReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION))
 
         val locationManager = NavigationLocationManager()
-        request = LocationProviderService.LocationRequest(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,60_000,60_000)
-        request?.let {addRequest(it)}
+        request = LocationProviderService.LocationRequest(
+            accuracy = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,
+            interval = 60_000,
+            fastestInterval = 60_000)
+        if (JappPreferences.isUpdatingLocationToServer) {
+            request?.let { addRequest(it) }
+        }
         locationManager.setCallback(object : NavigationLocationManager.OnNewLocation {
             override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
                 if (JappPreferences.isNavigationPhone) {
@@ -308,6 +313,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
     }
 
     override fun onBind(intent: Intent): IBinder? {
+        //JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
         return binder
     }
 

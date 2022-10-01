@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.location.*
 import nl.rsdt.japp.application.Japp
+import nl.rsdt.japp.application.JappPreferences
 import java.util.*
 
 /**
@@ -27,6 +28,13 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     private var requests: MutableList<LocationProviderService.LocationRequest> = LinkedList()
     private fun updateRequest(){
+        if (client?.isConnected != true){
+            JappPreferences.actualGpsAccuracy = -1
+            JappPreferences.actualGpsInterval = -1
+            JappPreferences.actualGpsFastestInterval = -1
+            isRequesting = false
+            return
+        }
         if (requests.isEmpty()){
             client?.let{
                 LocationServices.FusedLocationApi.removeLocationUpdates(it, this)
@@ -48,10 +56,7 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
                 accuracy = request.accuracy
             }
         }
-        val request = com.google.android.gms.location.LocationRequest()
-            .setInterval(interval)
-            .setPriority(accuracy)
-            .setFastestInterval(fastestInterval)
+
         client?.let{
             LocationServices.FusedLocationApi.removeLocationUpdates(it, this)
         }
@@ -72,15 +77,26 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
+                JappPreferences.actualGpsAccuracy =  -4
+                JappPreferences.actualGpsInterval = -4
+                JappPreferences.actualGpsFastestInterval = -4
                 return
             }
+            JappPreferences.actualGpsAccuracy = accuracy
+            JappPreferences.actualGpsInterval = interval
+            JappPreferences.actualGpsFastestInterval = fastestInterval
+            val request = com.google.android.gms.location.LocationRequest()
+                .setInterval(JappPreferences.actualGpsFastestInterval)
+                .setPriority(JappPreferences.actualGpsAccuracy)
+                .setFastestInterval( JappPreferences.actualGpsFastestInterval)
+
             LocationServices.FusedLocationApi.requestLocationUpdates(it, request, this)
             isRequesting = true
         }
     }
     fun addRequest(request: LocationProviderService.LocationRequest): Boolean{
         val index = requests.indexOf(request)
-        if (requests[index] === request){
+        if (index !=-1 &&requests[index] === request){
             return false;
         }
         requests.add(request)
@@ -90,7 +106,7 @@ abstract class LocationProviderService<B : Binder> : Service(), LocationListener
 
     fun removeRequest(request: LocationProviderService.LocationRequest) : Boolean {
         val index = requests.indexOf(request)
-        if (requests[index] !== request){
+        if (index !=-1 &&requests[index] !== request){
             return false;
         }
         if( requests.remove(request) ){

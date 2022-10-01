@@ -249,6 +249,39 @@
                     android:editable="false"
                     android:summary="@string/pref_developer_account_key_sum"/>
             </PreferenceCategory>
+            <PreferenceCategory android:title="@string/pref_cat_developer_gps">
+                <EditTextPreference
+                    android:title="@string/pref_gps_interval_title"
+                    android:key="pref_gps_interval"
+                    android:summary="@string/pref_gps_interval_sum"
+                    android:defaultValue="@string/pref_gps_interval_def"
+                    />
+                <EditTextPreference
+                    android:title="@string/pref_gps_fastest_interval_title"
+                    android:key="pref_gps_fastest_interval"
+                    android:summary="@string/pref_gps_fastest_interval_sum"
+                    android:defaultValue="@string/pref_gps_fastest_interval_def"
+                    />
+                <EditTextPreference
+                    android:title="@string/pref_developer_actual_gps_accuracy_title"
+                    android:key="pref_developer_actual_gps_accuracy"
+                    android:editable="false"
+                    android:summary="@string/pref_developer_actual_gps_accuracy_sum"
+                    android:defaultValue="-2"
+                    />
+                <EditTextPreference
+                    android:title="@string/pref_developer_actual_gps_interval_title"
+                    android:key="pref_developer_actual_gps_interval"
+                    android:editable="false"
+                    android:summary="@string/pref_developer_actual_gps_interval_sum"
+                    android:defaultValue="-2"/>
+                <EditTextPreference
+                    android:title="@string/pref_developer_actual_gps_fastest_interval_title"
+                    android:key="pref_developer_actual_gps_fastest_interval"
+                    android:editable="false"
+                    android:defaultValue="-2"
+                    android:summary="@string/pref_developer_actual_gps_fastest_interval_sum"/>
+            </PreferenceCategory>
 
 
             <PreferenceCategory android:title="@string/pref_cat_developer_debug">

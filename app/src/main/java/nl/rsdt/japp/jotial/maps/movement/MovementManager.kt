@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Pair
 import android.view.View
 import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.LatLng
@@ -57,17 +56,21 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             hourTail?.points = hourTailPoints
             hourTailPoints.onremoveCallback = ::addToLongTail
         }
-        if (key == JappPreferences.GPS_ACCURACY){
-            this.gpsAccuracy = JappPreferences.gpsAccuracy
+        if (key == JappPreferences.GPS_ACCURACY || key == JappPreferences.GPS_INTERVAL || key == JappPreferences.GPS_FASTEST_INTERVAL){
+            gpsAccuracy = JappPreferences.gpsAccuracy
+            fastestInterval = JappPreferences.gpsFastestInterval
+            locationInterval = JappPreferences.gpsInterval
             request?.let {service?.removeRequest(it)}
-            request = LocationProviderService.LocationRequest(gpsAccuracy,fastestInterval, locationInterval)
+            request = LocationProviderService.LocationRequest(accuracy = gpsAccuracy, fastestInterval = fastestInterval, interval = locationInterval)
             request?.let {service?.addRequest(it)}
         }
+
+
     }
 
     private var gpsAccuracy = JappPreferences.gpsAccuracy
-    private val fastestInterval: Long = 5_000
-    private val locationInterval: Long = 60_000
+    private var fastestInterval: Long = JappPreferences.gpsInterval
+    private var locationInterval: Long = JappPreferences.gpsFastestInterval
     private var service: LocationService? = null
 
     private var jotiMap: IJotiMap? = null
@@ -131,6 +134,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             smallTailPoints.setPoints(list)
             smallTail?.points = smallTailPoints
         }
+        JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
 
@@ -269,7 +273,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         service.setListener(listener)
         service.add(this)
         request?.let { service.removeRequest(it) }
-        request = LocationProviderService.LocationRequest(gpsAccuracy, fastestInterval, locationInterval)
+        request = LocationProviderService.LocationRequest(accuracy = gpsAccuracy, fastestInterval = fastestInterval, interval = locationInterval)
         request?.let {service.addRequest(it)}
         this.service = service
     }
@@ -302,7 +306,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         .width(3f)
                         .color(getTailColor()?:Color.BLUE))
         hourTail = jotiMap.addPolyline(
-                PolylineOptions()
+                 PolylineOptions()
                         .width(3f)
                         .color(getTailColor()?:Color.BLUE))
 

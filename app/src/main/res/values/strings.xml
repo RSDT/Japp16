@@ -209,11 +209,13 @@
          ]]>
     </string>
     <string name="help">Help</string>
-    <string name="pref_prepend_deelgebied_to_name_title">deelgebied voor de huntnaam zetten</string>
-    <string name="pref_prepend_deelgebied_to_name_sum">Deze instelling  moet aanstaan om gebruik te maken van de automatische icoon</string>
     <string name="update_taak">verander deelgebied</string>
-    <string name="pref_default_koppel_title">Koppel</string>
-    <string name="pref_default_koppel_sum">Op welk koppel ben je aan het hunten?</string>
+    <string name="pref_gps_interval_def">60000</string>
+    <string name="pref_gps_interval_title">interval voor de blauwe marker</string>
+    <string name="pref_gps_interval_sum">in ms dus voeg 000 toe achtes de s</string>
+    <string name="pref_gps_fastest_interval_def">5000</string>
+    <string name="pref_gps_fastest_interval_sum">in ms des doe s *1000</string>
+    <string name="pref_gps_fastest_interval_title">fastest interval</string>
 
 
 </resources>
