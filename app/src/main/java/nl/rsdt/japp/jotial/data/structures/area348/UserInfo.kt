@@ -3,7 +3,6 @@ package nl.rsdt.japp.jotial.data.structures.area348
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
-import com.google.firebase.iid.FirebaseInstanceId
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.application.navigation.NavigationManager
@@ -12,7 +11,6 @@ import nl.rsdt.japp.jotial.net.apis.UserApi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
 
 /**
  * @author Dingenis Sieger Sinke
@@ -193,40 +191,6 @@ protected constructor(`in`: Parcel) : Parcelable {
 
                             Log.i("UserInfo", "New UserInfo was collected")
 
-                            /**
-                             * Start a Thread for deleting the InstanceId and deleting avatar.
-                             */
-                            Thread(Runnable {
-                                try {
-                                    /**
-                                     * Resets Instance ID and revokes all tokens.
-                                     */
-                                    /**
-                                     * Resets Instance ID and revokes all tokens.
-                                     */
-                                    FirebaseInstanceId.getInstance().deleteInstanceId()
-
-                                    /**
-                                     * Delete the Avatar.
-                                     */
-
-                                    /**
-                                     * Delete the Avatar.
-                                     */
-                                    AppData.delete(NavigationManager.ACCOUNT_AVATAR_STORAGE)
-                                } catch (e: IOException) {
-                                    Log.e(TAG, e.toString(), e)
-                                }
-
-                                /**
-                                 * Get a new token.
-                                 */
-
-                                /**
-                                 * Get a new token.
-                                 */
-                                FirebaseInstanceId.getInstance().token
-                            }).start()
                         }
                     }
                 }

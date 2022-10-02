@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.firebase.iid.FirebaseInstanceId
 import nl.rsdt.japp.BuildConfig
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
@@ -54,24 +53,6 @@ class PreLoginSplashActivity : Activity() {
              * Clear all the data files
              * */
             AppData.clear()
-
-
-            val thread = Thread(Runnable {
-                try {
-                    /*
-                         * Resets Instance ID and revokes all tokens.
-                         * */
-                    FirebaseInstanceId.getInstance().deleteInstanceId()
-                } catch (e: IOException) {
-                    Log.e(TAG, e.toString(), e)
-                }
-
-                /*
-                     * Get a new token.
-                     * */
-                FirebaseInstanceId.getInstance().token
-            })
-            thread.run()
         }
     }
 

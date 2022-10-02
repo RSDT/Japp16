@@ -6,8 +6,6 @@ import android.location.Location
 import android.net.ConnectivityManager
 import androidx.multidex.MultiDexApplication
 import com.google.android.gms.maps.MapsInitializer
-import com.google.firebase.FirebaseApp
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.API
@@ -27,8 +25,6 @@ import java.util.*
  */
 class Japp : MultiDexApplication() {
 
-    private var analytics: FirebaseAnalytics? = null
-
     private val messageManager = MessageManager()
 
     private var interceptor: Interceptor? = null
@@ -37,9 +33,7 @@ class Japp : MultiDexApplication() {
         super.onCreate()
         instance = this
 
-        if (FirebaseApp.getApps(this).isNotEmpty()) {
-            analytics = FirebaseAnalytics.getInstance(this)
-        }
+
 
         MapsInitializer.initialize(this)
 
@@ -58,10 +52,6 @@ class Japp : MultiDexApplication() {
                 _lastLocations.offer(value)
                 _lastLocation = value
             }
-
-        fun getAnalytics(): FirebaseAnalytics? {
-            return instance?.analytics
-        }
 
         val updateManager: MessageManager?
             get() = instance?.messageManager

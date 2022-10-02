@@ -553,17 +553,6 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                             Snackbar.make(snackbarView, getString(R.string.problem_with_sending, t.toString()), Snackbar.LENGTH_LONG).show()
                                         }
                                     })
-
-                                    /**
-                                     * TODO: send details?
-                                     * Log the spot in firebase.
-                                     */
-
-                                    /**
-                                     * TODO: send details?
-                                     * Log the spot in firebase.
-                                     */
-                                    Japp.getAnalytics()!!.logEvent("EVENT_SPOT", Bundle())
                                 }
                                 session = null
                             }
@@ -814,16 +803,6 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                             }
                                         })
 
-                                        /**
-                                         * TODO: send details?
-                                         * Log the hunt in firebase.
-                                         */
-
-                                        /**
-                                         * TODO: send details?
-                                         * Log the hunt in firebase.
-                                         */
-                                        Japp.getAnalytics()!!.logEvent("EVENT_HUNT", Bundle()) //// TODO: 08/08/17 magic string
                                          }
                             }
                         })

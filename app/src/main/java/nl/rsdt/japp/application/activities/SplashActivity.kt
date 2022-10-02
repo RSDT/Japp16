@@ -7,8 +7,6 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
@@ -56,30 +54,11 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback, EasyPermi
              * Clear all the data files
              * */
             AppData.clear()
-
-
-            val thread = Thread(Runnable {
-                try {
-                    /*
-                         * Resets Instance ID and revokes all tokens.
-                         * */
-                    FirebaseInstanceId.getInstance().deleteInstanceId()
-                } catch (e: IOException) {
-                    Log.e(TAG, e.toString(), e)
-                }
-
-                /*
-                     * Get a new token.
-                     * */
-                FirebaseInstanceId.getInstance().token
-            })
-            thread.run()
         }
 
         /**
          * Subscribe to the updates topic.
          */
-        FirebaseMessaging.getInstance().subscribeToTopic("updates")
 
         if (JappPreferences.shacoEnabled() && (JappPreferences.accountUsername == "David" || JappPreferences.accountUsername == "test")) {
             val player = MediaPlayer.create(this, R.raw.shaco_tank_engine)

@@ -14,7 +14,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.messaging.FirebaseMessaging
+
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.R
@@ -173,11 +173,6 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
         val refresh = if (ldeelgebied != null) {
             if (!ldeelgebied.containsLocation(location)) {
-
-                /**
-                 * Unsubscribe from the current deelgebied messages
-                 */
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(ldeelgebied.name)
                 true
             } else {
                 false
@@ -192,10 +187,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             if (deelgebied != null && snackBarView != null) {
                 Snackbar.make(snackBarView!!, """Welkom in deelgebied ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
 
-                /**
-                 * Subscribe to the new deelgebied messages.
-                 */
-                FirebaseMessaging.getInstance().subscribeToTopic(deelgebied?.name)
+
 
 
                 val coordinatesSmall: List<LatLng> = smallTailPoints
@@ -310,12 +302,12 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         .width(3f)
                         .color(getTailColor()?:Color.BLUE))
 
-            if (smallTailPoints.isNotEmpty()) {
-                smallTail!!.points = smallTailPoints
-                val last = smallTailPoints.size - 1
-                marker?.position = smallTailPoints[last]
-                marker?.isVisible = true
-            }
+        if (smallTailPoints.isNotEmpty()) {
+            smallTail!!.points = smallTailPoints
+            val last = smallTailPoints.size - 1
+            marker?.position = smallTailPoints[last]
+            marker?.isVisible = true
+        }
     }
 
     inner class FollowSession(private val jotiMap: IJotiMap, private val before: ICameraPosition, zoom: Float, aoa: Float) : LocationSource.OnLocationChangedListener {
