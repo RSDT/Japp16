@@ -11,11 +11,7 @@ object AutoSocketHandler {
     @Synchronized
     fun setSocket() {
         mSocket?.let { return }
-        try {
-            mSocket = IO.socket("https://auto.jh-rp.nl")
-        } catch (e: URISyntaxException) {
-
-        }
+        mSocket = IO.socket("https://auto.jh-rp.nl")
     }
 
     @Synchronized

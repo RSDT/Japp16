@@ -65,7 +65,7 @@
             android:key="pref_updates_location"
             android:title="@string/pref_updates_location_title"
             android:summary="@string/pref_updates_location_sum"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
         <ListPreference
             android:title="@string/pref_gps_accuracy_title"
