@@ -161,7 +161,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
     fun showLocationNotification(title: String, description: String, color: Int) {
         val notificationIntent = Intent(this, MainActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val intent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val intent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
         showLocationNotification(title, description, color, intent)
     }
 

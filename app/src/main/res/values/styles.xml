@@ -19,12 +19,12 @@
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_screen</item>
-        <item name="android:colorBackground"></item>
+       <!-- <item name="android:colorBackground">@</item> -->
     </style>
 
     <style name="ShowCaseTheme" parent="ShowcaseView">
-        <item name="sv_backgroundColor">#e51249d9</item>
-        <item name="sv_showcaseColor">#9966ff</item>
+        <item name="sv_backgroundColor">@color/sv_backgroundColor</item>
+        <item name="sv_showcaseColor">@color/sv_showcaseColor</item>
         <item name="sv_buttonText">Oke</item>
         <item name="sv_titleTextAppearance">@style/ShowCaseTitle</item>
         <item name="sv_detailTextAppearance">@style/ShowCaseDetail</item>
@@ -35,7 +35,7 @@
     </style>
 
     <style name="ShowCaseDetail" parent="TextAppearance.ShowcaseView.Detail.Light">
-        <item name="android:textColor">#deffffff</item>
+        <item name="android:textColor">@color/ShowCaseDetailTextColor</item>
     </style>
 
 </resources>

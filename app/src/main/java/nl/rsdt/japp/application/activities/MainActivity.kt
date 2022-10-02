@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
 
     }
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         navigationManager.onSaveInstanceState(savedInstanceState)
         mapManager.onSaveInstanceState(savedInstanceState)
 

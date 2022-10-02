@@ -29,6 +29,7 @@ class JappPreferenceFragment : PreferenceFragment() {
         if (BuildConfig.DEBUG) {
             addPreferencesFromResource(R.xml.debug_preferences)
         }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

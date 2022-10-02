@@ -145,7 +145,7 @@ class FotoOpdrachtController (iJotiMap: IJotiMap): StandardMapItemController<Fot
              * @param in The parcel where the result was written to
              */
             protected constructor(`in`: Parcel) : super(`in`) {
-                items = `in`.createTypedArrayList(FotoOpdrachtInfo.CREATOR)
+                items = `in`.createTypedArrayList(FotoOpdrachtInfo.CREATOR)!!
             }
 
             override fun writeToParcel(dest: Parcel, flags: Int) {

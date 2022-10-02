@@ -37,7 +37,7 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<A
 
     override fun onIntentCreate(bundle: Bundle) {
         if (bundle.containsKey(BUNDLE_ID)) {
-            val localBuffer: ArrayList<ScoutingGroepInfo> = bundle.getParcelableArrayList(BUNDLE_ID)
+            val localBuffer: ArrayList<ScoutingGroepInfo> = bundle.getParcelableArrayList(BUNDLE_ID)!!
             buffer = localBuffer
             if (clusterManager != null) {
                 clusterManager!!.addItems(localBuffer)

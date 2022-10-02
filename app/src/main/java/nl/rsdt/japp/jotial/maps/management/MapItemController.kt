@@ -101,7 +101,7 @@ abstract class MapItemController<I, O : AbstractTransducer.Result>(protected val
             if (body != null){
                 transducer.enqueue(body, this)
             }else{
-                Log.println(Log.ERROR, TAG,response.message())
+                Log.println(Log.ERROR, TAG, "{}".format(response.message()))
             }
     }
 

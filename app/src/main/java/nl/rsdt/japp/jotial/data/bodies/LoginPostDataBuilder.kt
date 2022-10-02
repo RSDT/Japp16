@@ -37,7 +37,7 @@ class LoginPostDataBuilder {
         val map = HashMap<String, String>()
         map["gebruiker"] = user
         map["ww"] = password
-        return JSONObject(map)
+        return JSONObject(map as Map<*, *>?)
     }
 
 }

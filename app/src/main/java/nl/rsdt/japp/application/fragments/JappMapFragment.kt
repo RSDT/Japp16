@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
@@ -46,15 +47,16 @@ import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
 import nl.rsdt.japp.jotial.navigation.NavigationSession
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.VosApi
+import nl.rsdt.japp.service.AutoSocketHandler
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
-import nl.rsdt.japp.service.AutoSocketHandler
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.util.*
 
 /**

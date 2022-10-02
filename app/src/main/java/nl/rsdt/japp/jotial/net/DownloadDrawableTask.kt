@@ -23,7 +23,7 @@ class DownloadDrawableTask(private val callback: OnDowloadDrawablesCompletedCall
             if (url != null) {
                 try {
                     val `is` = url.content as InputStream
-                    drawables.add(Drawable.createFromStream(`is`, url.file))
+                    drawables.add(Drawable.createFromStream(`is`, url.file)!!)
                 } catch (e: Exception) {
                     Log.e("UserInfo", e.toString(), e)
                 }
