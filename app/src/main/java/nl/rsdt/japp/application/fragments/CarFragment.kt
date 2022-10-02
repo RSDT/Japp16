@@ -87,7 +87,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                     val cars = response.body()!!
                     for (e in cars.keys){
                         for (inzittend in cars[e]!!){
-                            if (inzittend.gebruikersNaam == JappPreferences.accountKey){
+                            if (inzittend.gebruikersNaam == JappPreferences.accountUsername){
                                 eigenaar = e
                             }
                         }
