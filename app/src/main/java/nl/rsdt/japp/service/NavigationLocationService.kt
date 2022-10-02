@@ -12,67 +12,69 @@ import android.widget.Toast
 
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.JappPreferences
+import nl.rsdt.japp.jotial.data.nav.Location
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
 
-class NavigationLocationService : Service() {
-    internal var binder: Binder = NavigationLocationBinder()
+class NavigationLocationService : Service(), NavigationLocationManager.OnNewLocation{
+    private var binder: Binder = NavigationLocationBinder()
 
     init {
         val locationManager = NavigationLocationManager()
-        locationManager.setCallback(object : NavigationLocationManager.OnNewLocation {
-            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
-                if (JappPreferences.isNavigationPhone) {
-                    try {
-                        val mesg = getString(R.string.location_received, location.createdBy, location.lat, location.lon)
-                        showToast(mesg, Toast.LENGTH_SHORT)
-                        when (JappPreferences.navigationApp()) {
-                            JappPreferences.NavigationApp.GoogleMaps -> {
-                                val uristr = getString(R.string.google_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
-                                val gmmIntentUri = Uri.parse(uristr)
-                                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                                mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                mapIntent.setPackage("com.google.android.apps.maps")
-                                startActivity(mapIntent)
-                            }
-                            JappPreferences.NavigationApp.Waze -> {
-                                val uri = getString(R.string.waze_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
-                                val wazeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-                                wazeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(wazeIntent)
-                            }
-                            JappPreferences.NavigationApp.OSMAnd -> {
-                                val osmUri = getString(R.string.osmand_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
-                                val osmIntent = Intent(Intent.ACTION_VIEW, Uri.parse(osmUri))
-                                osmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(osmIntent)
-                            }
-                            JappPreferences.NavigationApp.OSMAndWalk -> {
-                                val osmuriwalk = getString(R.string.osmandwalk_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
-                                val osmWalkIntent = Intent(Intent.ACTION_VIEW, Uri.parse(osmuriwalk))
-                                osmWalkIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(osmWalkIntent)
-                            }
-                            JappPreferences.NavigationApp.Geo -> {
-                                val geoUri = getString(R.string.geo_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
-                                val geoIntent = Intent(Intent.ACTION_VIEW, Uri.parse(geoUri))
-                                geoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(geoIntent)
-                            }
-                        }
-                    } catch (e: ActivityNotFoundException) {
-                        println(e.toString())
-                        val mesg = getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString())
-                        showToast(mesg, Toast.LENGTH_SHORT)
+        locationManager.setCallback(this)
+    }
+    override fun onCreate(){
+        AutoSocketHandler.setSocket()
+        AutoSocketHandler.establishConnection()
+    }
+    override fun onNewLocation(location: Location) {
+        if (JappPreferences.isNavigationPhone) {
+            try {
+                val mesg = getString(R.string.location_received, location.username, location.lat, location.lon)
+                showToast(mesg, Toast.LENGTH_SHORT)
+                when (JappPreferences.navigationApp()) {
+                    JappPreferences.NavigationApp.GoogleMaps -> {
+                        val uristr = getString(R.string.google_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
+                        val gmmIntentUri = Uri.parse(uristr)
+                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                        mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        mapIntent.setPackage("com.google.android.apps.maps")
+                        startActivity(mapIntent)
                     }
-
+                    JappPreferences.NavigationApp.Waze -> {
+                        val uri = getString(R.string.waze_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
+                        val wazeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                        wazeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(wazeIntent)
+                    }
+                    JappPreferences.NavigationApp.OSMAnd -> {
+                        val osmUri = getString(R.string.osmand_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
+                        val osmIntent = Intent(Intent.ACTION_VIEW, Uri.parse(osmUri))
+                        osmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(osmIntent)
+                    }
+                    JappPreferences.NavigationApp.OSMAndWalk -> {
+                        val osmuriwalk = getString(R.string.osmandwalk_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
+                        val osmWalkIntent = Intent(Intent.ACTION_VIEW, Uri.parse(osmuriwalk))
+                        osmWalkIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(osmWalkIntent)
+                    }
+                    JappPreferences.NavigationApp.Geo -> {
+                        val geoUri = getString(R.string.geo_uri, java.lang.Double.toString(location.lat), java.lang.Double.toString(location.lon))
+                        val geoIntent = Intent(Intent.ACTION_VIEW, Uri.parse(geoUri))
+                        geoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(geoIntent)
+                    }
                 }
-            }
-
-            override fun onNotInCar() {
-                val mesg = getString(R.string.fout_not_in_car)
+            } catch (e: ActivityNotFoundException) {
+                println(e.toString())
+                val mesg = getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString())
                 showToast(mesg, Toast.LENGTH_SHORT)
             }
-        })
+        }
+    }
+    override fun onNotInCar() {
+        val mesg = getString(R.string.fout_not_in_car)
+        showToast(mesg, Toast.LENGTH_SHORT)
     }
 
     override fun onBind(intent: Intent): IBinder? {

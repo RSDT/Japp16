@@ -1,6 +1,6 @@
 package nl.rsdt.japp.application
 
-import android.content.SharedPreferences
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,9 +12,7 @@ import java.util.*
 
 class InzittendenAdapter : RecyclerView.Adapter<InzittendenAdapter.MyViewHolder>(){
 
-
     private var data: List<AutoInzittendeInfo> = ArrayList()
-
 
     fun setData(newData: List<AutoInzittendeInfo>) {
         this.data = newData

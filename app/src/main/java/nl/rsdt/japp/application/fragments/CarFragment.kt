@@ -16,14 +16,17 @@ import nl.rsdt.japp.application.InzittendenAdapter
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
+import nl.rsdt.japp.jotial.data.nav.Join
+import nl.rsdt.japp.jotial.data.nav.Leave
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo
-import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.AutoApi
+import nl.rsdt.japp.service.AutoSocketHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo>>> {
@@ -75,20 +78,46 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
         inzittendenRecyclerView.adapter = inzittendenAdapter
         stapUitButton?.setOnClickListener {
             val autoApi = Japp.getApi(AutoApi::class.java)
-            autoApi.deleteFromCarByName(JappPreferences.accountKey, JappPreferences.accountUsername).enqueue(object : Callback<DeletedInfo> {
-                override fun onResponse(call: Call<DeletedInfo>, response: Response<DeletedInfo>) {
-                    refresh()
+            autoApi.getAllCars(JappPreferences.accountKey).enqueue(object : Callback<HashMap<String, List<AutoInzittendeInfo>>> {
+                override fun onResponse(
+                    call: Call<HashMap<String, List<AutoInzittendeInfo>>>,
+                    response: Response<HashMap<String, List<AutoInzittendeInfo>>>
+                ) {
+                    var eigenaar:String? = null
+                    val cars = response.body()!!
+                    for (e in cars.keys){
+                        for (inzittend in cars[e]!!){
+                            if (inzittend.gebruikersNaam == JappPreferences.accountKey){
+                                eigenaar = e
+                            }
+                        }
+                    }
+                    autoApi.deleteFromCarByName(JappPreferences.accountKey, JappPreferences.accountUsername).enqueue(object : Callback<DeletedInfo> {
+                        override fun onResponse(call: Call<DeletedInfo>, response: Response<DeletedInfo>) {
+                            val mSocket = AutoSocketHandler.getSocket()
+                            mSocket.emit("leave", Leave(JappPreferences.accountUsername, eigenaar!!))
+                            refresh()
+                        }
+
+                        override fun onFailure(call: Call<DeletedInfo>, t: Throwable) {
+                            refresh()
+                        }
+                    })
                 }
 
-                override fun onFailure(call: Call<DeletedInfo>, t: Throwable) {
-                    refresh()
+                override fun onFailure(
+                    call: Call<HashMap<String, List<AutoInzittendeInfo>>>,
+                    t: Throwable
+                ) {
+                    TODO("Not yet implemented")
                 }
+
             })
         }
         updateTaakButton?.setOnClickListener {
             val autoApi = Japp.getApi(AutoApi::class.java)
             val itemsTaak = listOf(/*automatisch,*/ "terug naar HB","A", "B", "C", "D", "E", "F", "X").toTypedArray()
-            val taakDialog = AlertDialog.Builder(view.context)
+            val taakDialog = AlertDialog.Builder(view?.context)
                     .setTitle(R.string.welke_taak)
                     .setItems(itemsTaak) { _, whichTaak ->
                         val taak = itemsTaak[whichTaak]
@@ -151,6 +180,8 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                 autoApi.getCarByName(JappPreferences.accountKey, autoEigenaar).enqueue(object : Callback<ArrayList<AutoInzittendeInfo>>{
                     override fun onResponse(call: Call<ArrayList<AutoInzittendeInfo>>, response: Response<ArrayList<AutoInzittendeInfo>>) {
                         val data = response.body()
+                        val autoSocket = AutoSocketHandler.getSocket()
+                        autoSocket.emit("join", Join(JappPreferences.accountUsername, autoEigenaar))
                         if (response.isSuccessful && data != null){
                             inzittendenAdapter.setData(data)
                             inzittendenAdapter.notifyDataSetChanged()
@@ -187,4 +218,4 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
     companion object {
         val TAG = "CarFragment"
     }
-}// Required empty public constructor
+}

@@ -14,7 +14,6 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.UiThread
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.gms.common.api.Status
@@ -23,13 +22,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody
-import nl.rsdt.japp.jotial.data.firebase.Location
+import nl.rsdt.japp.jotial.data.nav.Location
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
@@ -50,6 +48,7 @@ import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.VosApi
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
+import nl.rsdt.japp.service.AutoSocketHandler
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -332,7 +331,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                 val identifier = MarkerIdentifier.Builder()
                 identifier.setType(MarkerIdentifier.TYPE_NAVIGATE_CAR)
 
-                identifier.add("addedBy", location.createdBy)
+                identifier.add("addedBy", location.username)
                 identifier.add("createdOn", location.createdOn.toString())
                 marker.title = Gson().toJson(identifier.create())
                 marker.isVisible = true
@@ -735,9 +734,9 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                         if (response.code() == 200) {
                                                             val autoInfo = response.body()
                                                             if (autoInfo != null) {
-                                                                val database = FirebaseDatabase.getInstance()
-                                                                val ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar)
-                                                                ref.setValue(Location(navigateTo, JappPreferences.accountUsername))
+                                                                val mSocket = AutoSocketHandler.getSocket()
+                                                                val auto  = autoInfo.autoEigenaar!!
+                                                                mSocket.emit("location", Location(navigateTo, auto, JappPreferences.accountUsername))
                                                             }
                                                         }
                                                         if (response.code() == 404) {

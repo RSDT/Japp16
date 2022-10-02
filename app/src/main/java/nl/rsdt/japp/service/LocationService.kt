@@ -17,7 +17,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.common.api.Status
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationSettingsResult
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.google.android.gms.maps.model.LatLng
@@ -27,7 +26,6 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.application.activities.MainActivity
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
-import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService
@@ -92,10 +90,10 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
             request?.let { addRequest(it) }
         }
         locationManager.setCallback(object : NavigationLocationManager.OnNewLocation {
-            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.firebase.Location) {
+            override fun onNewLocation(location: nl.rsdt.japp.jotial.data.nav.Location) {
                 if (JappPreferences.isNavigationPhone) {
                     try {
-                        val mesg = getString(R.string.location_received, location.createdBy, location.lat, location.lon)
+                        val mesg = getString(R.string.location_received, location.username, location.lat, location.lon)
                         showToast(mesg, Toast.LENGTH_LONG)
                         when (JappPreferences.navigationApp()) {
                             JappPreferences.NavigationApp.GoogleMaps -> {
