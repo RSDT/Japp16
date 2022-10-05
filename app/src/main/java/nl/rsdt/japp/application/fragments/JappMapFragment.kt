@@ -337,7 +337,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                 identifier.add("createdOn", location.createdOn.toString())
                 marker.title = Gson().toJson(identifier.create())
                 marker.isVisible = true
-                marker.position = LatLng(location.lat, location.lon)
+                marker.position = LatLng(location.latitude, location.longitude)
             }
 
             override fun onNotInCar() {
@@ -725,9 +725,8 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                         if (response.code() == 200) {
                                                             val autoInfo = response.body()
                                                             if (autoInfo != null) {
-                                                                val mSocket = AutoSocketHandler.getSocket()
                                                                 val auto  = autoInfo.autoEigenaar!!
-                                                                mSocket.emit("location", Location(navigateTo, auto, JappPreferences.accountUsername))
+                                                                AutoSocketHandler.location(Location(navigateTo, auto, JappPreferences.accountUsername))
                                                             }
                                                         }
                                                         if (response.code() == 404) {

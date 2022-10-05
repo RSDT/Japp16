@@ -12,7 +12,6 @@ import nl.rsdt.japp.application.JappPreferences
  * Description...
  */
 class VosPostBody {
-
     @SerializedName("SLEUTEL")
     private var sleutel: String? = null
 

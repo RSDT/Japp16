@@ -94,8 +94,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                     }
                     autoApi.deleteFromCarByName(JappPreferences.accountKey, JappPreferences.accountUsername).enqueue(object : Callback<DeletedInfo> {
                         override fun onResponse(call: Call<DeletedInfo>, response: Response<DeletedInfo>) {
-                            val mSocket = AutoSocketHandler.getSocket()
-                            mSocket.emit("leave", Leave(JappPreferences.accountUsername, eigenaar!!))
+                            AutoSocketHandler.leave(Leave(JappPreferences.accountUsername, eigenaar!!))
                             refresh()
                         }
 
@@ -180,8 +179,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                 autoApi.getCarByName(JappPreferences.accountKey, autoEigenaar).enqueue(object : Callback<ArrayList<AutoInzittendeInfo>>{
                     override fun onResponse(call: Call<ArrayList<AutoInzittendeInfo>>, response: Response<ArrayList<AutoInzittendeInfo>>) {
                         val data = response.body()
-                        val autoSocket = AutoSocketHandler.getSocket()
-                        autoSocket.emit("join", Join(JappPreferences.accountUsername, autoEigenaar))
+                        AutoSocketHandler.join(Join(JappPreferences.accountUsername, autoEigenaar))
                         if (response.isSuccessful && data != null){
                             inzittendenAdapter.setData(data)
                             inzittendenAdapter.notifyDataSetChanged()

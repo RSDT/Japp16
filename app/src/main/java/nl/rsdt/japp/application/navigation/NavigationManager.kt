@@ -87,7 +87,7 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
                         }
                     }
                 })
-                task.execute(URL(API.SITE_2016_ROOT + "/img/avatar/" + filename))
+                task.execute(URL(API.SITE_ROOT + "/img/avatar/" + filename))
             } catch (e: Exception) {
                 Log.e(TAG, e.toString(), e)
             }

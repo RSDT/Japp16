@@ -17,18 +17,16 @@ import retrofit2.Response
 class NavigationLocationManager {
     private var callback: OnNewLocation? = null
     private var oldLoc: Location? = null
-    private val mSocket = AutoSocketHandler.getSocket()
+    private val mSocketHandler: AutoSocketHandler.NavToHandler
     init {
         // args[0] is the data from the server
 // Change "as Int" according to the data type
 // Example "as String" or write nothing
 // Logging the data is optional
-       mSocket.on("location") { args ->
-            if (args[0] != null) {
-                val location = args[0] as Location
-                update(location)
-            }
+        mSocketHandler = AutoSocketHandler.NavToHandler {
+            update(it)
         }
+        AutoSocketHandler.registerNavToHandler(mSocketHandler)
     }
 
     private fun update(location: Location) {

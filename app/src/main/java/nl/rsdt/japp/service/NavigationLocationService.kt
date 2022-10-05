@@ -23,8 +23,7 @@ class NavigationLocationService : Service(), NavigationLocationManager.OnNewLoca
         locationManager.setCallback(this)
     }
     override fun onCreate(){
-        AutoSocketHandler.setSocket()
-        AutoSocketHandler.establishConnection()
+        AutoSocketHandler.init()
     }
     override fun onNewLocation(location: Location) {
         if (JappPreferences.isNavigationPhone) {

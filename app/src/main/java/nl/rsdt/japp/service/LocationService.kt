@@ -1,6 +1,8 @@
 package nl.rsdt.japp.service
 
+import android.R.id
 import android.app.Activity
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
@@ -35,6 +37,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+
 
 /**
  * @author Dingenis Sieger Sinke
@@ -166,6 +169,9 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
     }
 
     fun showLocationNotification(title: String, description: String, color: Int, intent: PendingIntent) {
+        
+
+        val importance = NotificationManager.IMPORTANCE_LOW
         val notification = NotificationCompat.Builder(this, LOCATION_NOTIFICATION_CHANNEL)
                 .setContentTitle(title)
                 .setContentText(description)

@@ -9,12 +9,15 @@ class Location(navigateTo: LatLng, auto: String ,username: String) {
     private var auto: String
     var username: String
     var createdOn: Long
-    var lat: Double = 0.toDouble()
-    var lon: Double = 0.toDouble()
-
+    var latitude: Double = 0.toDouble()
+    var longitude: Double = 0.toDouble()
+    val lat: Double
+        get() = latitude
+    val lon: Double
+        get() = longitude
     init {
-        this.lat = navigateTo.latitude
-        this.lon = navigateTo.longitude
+        this.latitude = navigateTo.latitude
+        this.longitude = navigateTo.longitude
         this.username = username
         this.auto = auto
         createdOn = System.currentTimeMillis()
@@ -22,7 +25,7 @@ class Location(navigateTo: LatLng, auto: String ,username: String) {
 
     override fun equals(other: Any?): Boolean {
         return if (other is Location) {
-            other.lon == this.lon && other.lat == this.lat
+            other.longitude == this.longitude && other.latitude == this.latitude
         } else {
             false
         }
@@ -30,8 +33,8 @@ class Location(navigateTo: LatLng, auto: String ,username: String) {
 
     override fun hashCode(): Int {
         var result = auto.hashCode()
-        result = 31 * result + lat.hashCode()
-        result = 31 * result + lon.hashCode()
+        result = 31 * result + latitude.hashCode()
+        result = 31 * result + longitude.hashCode()
         return result
     }
 

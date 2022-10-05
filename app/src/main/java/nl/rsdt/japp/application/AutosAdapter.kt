@@ -83,8 +83,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
                         body.setRol(rol)
                         val autoApi = Japp.getApi(AutoApi::class.java)
                         autoApi.post(body).enqueue(callback)
-                        val mSocket = AutoSocketHandler.getSocket()
-                        mSocket.emit("join", Join(JappPreferences.accountUsername, eigenaar))
+                        AutoSocketHandler.join(Join(JappPreferences.accountUsername, eigenaar))
                     }
                     .create()
             val automatisch = Japp.getString(R.string.automatisch)
