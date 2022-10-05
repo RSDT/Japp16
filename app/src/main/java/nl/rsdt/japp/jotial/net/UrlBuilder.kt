@@ -1,5 +1,6 @@
 package nl.rsdt.japp.jotial.net
 
+import org.acra.ktx.sendWithAcra
 import java.net.URL
 
 /**
@@ -21,6 +22,7 @@ open class UrlBuilder {
         try {
             return URL(url)
         } catch (e: Exception) {
+            e.sendWithAcra()
             return null
         }
 

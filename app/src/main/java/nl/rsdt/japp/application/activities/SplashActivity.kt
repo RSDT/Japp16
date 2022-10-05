@@ -17,6 +17,7 @@ import nl.rsdt.japp.jotial.maps.MapStorage
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.MetaApi
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
+import org.acra.ktx.sendWithAcra
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.PermissionRequest
@@ -87,6 +88,7 @@ class SplashActivity : Activity(), MapStorage.OnMapDataLoadedCallback, EasyPermi
 
             override fun onFailure(call: Call<MetaColorInfo>, t: Throwable) {
                 Log.e(TAG, t.toString())
+                t.sendWithAcra()
             }
         })
         val intent = intent

@@ -14,6 +14,7 @@ import nl.rsdt.japp.R
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.nav.Location
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
+import org.acra.ktx.sendWithAcra
 
 class NavigationLocationService : Service(), NavigationLocationManager.OnNewLocation{
     private var binder: Binder = NavigationLocationBinder()
@@ -66,6 +67,7 @@ class NavigationLocationService : Service(), NavigationLocationManager.OnNewLoca
                 }
             } catch (e: ActivityNotFoundException) {
                 println(e.toString())
+                e.sendWithAcra()
                 val mesg = getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString())
                 showToast(mesg, Toast.LENGTH_SHORT)
             }

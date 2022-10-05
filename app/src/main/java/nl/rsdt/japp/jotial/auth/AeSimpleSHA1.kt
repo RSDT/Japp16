@@ -2,6 +2,7 @@ package nl.rsdt.japp.jotial.auth
 
 
 import android.util.Log
+import org.acra.ktx.sendWithAcra
 
 import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
@@ -40,6 +41,7 @@ object AeSimpleSHA1 {
             return SHA1(text)
         } catch (e: Exception) {
             Log.e("AeSImpleSHA1", e.localizedMessage, e)
+            e.sendWithAcra()
         }
 
         return "error-in-trySHA1"

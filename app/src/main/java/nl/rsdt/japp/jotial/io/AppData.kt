@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
+import org.acra.ktx.sendWithAcra
 import java.io.*
 import java.lang.reflect.Type
 
@@ -107,6 +108,7 @@ object AppData {
                 }
                 return null
             } catch (e: Exception) {
+                e.sendWithAcra()
                 Log.e("AppData", e.toString(), e)
             }
 
@@ -137,6 +139,7 @@ object AppData {
             return BitmapDrawable(Japp.appResources, BitmapFactory.decodeStream(FileInputStream(file)))
         } catch (e: Exception) {
             Log.e("AppData", e.toString(), e)
+            e.sendWithAcra()
         }
 
         return null
@@ -186,6 +189,7 @@ object AppData {
                 fileWriter.close()
             } catch (e: Exception) {
                 Log.e("AppData", "Error occured", e)
+                e.sendWithAcra()
             }
 
         }
@@ -227,6 +231,7 @@ object AppData {
                 fos.close()
             } catch (e: IOException) {
                 e.printStackTrace()
+                e.sendWithAcra()
             }
 
         }

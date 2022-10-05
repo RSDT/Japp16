@@ -8,6 +8,7 @@ import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.application.activities.LoginActivity
 import nl.rsdt.japp.jotial.net.apis.AuthApi
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -55,7 +56,7 @@ class Authentication : Callback<Authentication.KeyObject> {
     }
 
     override fun onFailure(call: Call<KeyObject>, t: Throwable) {
-
+        t.sendWithAcra()
         callback?.onAuthenticationCompleted(AuthenticationResult("", 0, Japp.getString(R.string.error_on_login)))
     }
 

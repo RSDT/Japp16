@@ -12,6 +12,7 @@ import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
+import org.acra.ktx.sendWithAcra
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
@@ -59,6 +60,7 @@ class OsmMarker(markerOptionsPair: Pair<MarkerOptions, Bitmap?>, private val osm
                 Gson().fromJson(markerOptions.title, MarkerIdentifier::class.java)?:null
             } catch (e: Exception) {
                 Log.e("OsmMarker", e.toString())
+                e.sendWithAcra()
                 null
             }
 

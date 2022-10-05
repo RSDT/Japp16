@@ -12,6 +12,7 @@ import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
+import org.acra.ktx.sendWithAcra
 
 /**
  * Created by mattijn on 08/08/17.
@@ -25,6 +26,7 @@ class GoogleMarker(private val googleMarker: com.google.android.gms.maps.model.M
                     Gson().fromJson(title, MarkerIdentifier::class.java)?:null
                 } catch (e: Exception) {
                     Log.e("GoogleMarker", e.toString())
+                    e.sendWithAcra()
                     null
                 }
             }

@@ -39,6 +39,7 @@ import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
 import nl.rsdt.japp.service.cloud.messaging.MessageManager
 import org.acra.ACRA
+import org.acra.ktx.sendWithAcra
 import org.acra.log.ACRALog
 import retrofit2.Call
 import retrofit2.Callback
@@ -140,7 +141,8 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
                     }
 
                     override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-
+                        t.sendWithAcra()
+                        Log.e(TAG, t.toString())
                     }
                 })
             }
@@ -238,7 +240,7 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
 
                     override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
                         Log.e(TAG, t.message?:"error")
-                        ACRA.errorReporter.handleException(t)
+                        t.sendWithAcra()
                     }
                 })
             }

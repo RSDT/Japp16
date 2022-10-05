@@ -35,6 +35,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IPolyline
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -234,7 +235,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             val autoApi = Japp.getApi(AutoApi::class.java)
             autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo> {
                 override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    t.sendWithAcra()
                 }
 
                 override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
@@ -244,7 +245,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         body.setTaak(newTaak)
                         autoApi.updateTaak(body).enqueue(object : Callback<Void> {
                             override fun onFailure(call: Call<Void>, t: Throwable) {
-                                //TODO("not implemented")
+                                t.sendWithAcra()
                             }
 
                             override fun onResponse(call: Call<Void>, response: Response<Void>) {

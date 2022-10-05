@@ -33,6 +33,7 @@ import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.locations.LocationProviderService
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.HunterApi
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -134,6 +135,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
                         }
                     } catch (e: ActivityNotFoundException) {
                         println(e.toString())
+                        e.sendWithAcra()
                         val mesg = getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString())
                         showToast(mesg, Toast.LENGTH_SHORT)
                     }
@@ -262,6 +264,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e(TAG, t.toString(), t)
+                t.sendWithAcra()
             }
         })
     }
@@ -273,6 +276,7 @@ class LocationService : LocationProviderService<Binder>(), SharedPreferences.OnS
             api.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(
                     object: Callback<AutoInzittendeInfo?>{
                         override fun onFailure(call: Call<AutoInzittendeInfo?>, t: Throwable) {
+                            t.sendWithAcra()
                             sendlocation2(location, builder)
                         }
 

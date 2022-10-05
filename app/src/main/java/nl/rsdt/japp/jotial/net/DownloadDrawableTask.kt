@@ -3,6 +3,7 @@ package nl.rsdt.japp.jotial.net
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.util.Log
+import org.acra.ktx.sendWithAcra
 import java.io.InputStream
 import java.net.URL
 import java.util.*
@@ -25,7 +26,9 @@ class DownloadDrawableTask(private val callback: OnDowloadDrawablesCompletedCall
                     val `is` = url.content as InputStream
                     drawables.add(Drawable.createFromStream(`is`, url.file)!!)
                 } catch (e: Exception) {
+
                     Log.e("UserInfo", e.toString(), e)
+                    e.sendWithAcra()
                 }
 
             }

@@ -1,6 +1,7 @@
 package nl.rsdt.japp.jotial.maps.misc
 
 import android.util.Log
+import org.acra.ktx.sendWithAcra
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,6 +57,7 @@ object VosUtils {
             date = format.parse(value)
         } catch (e: ParseException) {
             Log.e("VosUtils", e.toString(), e)
+            e.sendWithAcra()
         }
 
         return date
@@ -68,6 +70,7 @@ object VosUtils {
             date = format.parse(old)
         } catch (e: ParseException) {
             Log.e("VosUtils", e.toString(), e)
+            e.sendWithAcra()
         }
 
         return date?.let { calculateRadius(it, speed) } ?: 500f

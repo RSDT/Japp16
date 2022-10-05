@@ -50,6 +50,7 @@ import nl.rsdt.japp.jotial.net.apis.VosApi
 import nl.rsdt.japp.service.AutoSocketHandler
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
+import org.acra.ktx.sendWithAcra
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -270,6 +271,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                             REQUEST_CHECK_SETTINGS)
                 } catch (e: IntentSender.SendIntentException) {
                     // Ignore the error.
+                    e.sendWithAcra()
                 }
             }
 
@@ -551,6 +553,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                         }
 
                                         override fun onFailure(call: Call<Void>, t: Throwable) {
+                                            t.sendWithAcra()
                                             val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
                                             Snackbar.make(snackbarView, getString(R.string.problem_with_sending, t.toString()), Snackbar.LENGTH_LONG).show()
                                         }
@@ -710,6 +713,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                 }
                                             } catch (e: ActivityNotFoundException) {
                                                 println(e.toString())
+                                                e.sendWithAcra()
                                                 val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
                                                 Snackbar.make(snackbarView,
                                                         getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString()),
@@ -736,7 +740,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                     }
 
                                                     override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-
+                                                        t.sendWithAcra()
                                                     }
                                                 })
                                             }
@@ -800,7 +804,8 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
                                             override fun onFailure(call: Call<Void>, t: Throwable) {
                                                 val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                                Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()), Snackbar.LENGTH_LONG).show()//// TODO: 08/08/17 magic string
+                                                Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()), Snackbar.LENGTH_LONG).show()
+                                                t.sendWithAcra()
                                             }
                                         })
 

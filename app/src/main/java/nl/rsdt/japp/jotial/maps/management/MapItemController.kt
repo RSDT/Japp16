@@ -20,6 +20,8 @@ import nl.rsdt.japp.jotial.maps.management.transformation.async.AsyncTransduceTa
 import nl.rsdt.japp.jotial.maps.searching.Searchable
 import nl.rsdt.japp.jotial.maps.wrapper.*
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
+import org.acra.ACRA
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -98,14 +100,16 @@ abstract class MapItemController<I, O : AbstractTransducer.Result>(protected val
 
     override fun onResponse(call: Call<I>, response: Response<I>) {
         val body = response.body()
-            if (body != null){
-                transducer.enqueue(body, this)
-            }else{
-                Log.println(Log.ERROR, TAG, "{}".format(response.message()))
-            }
+        if (body != null){
+            transducer.enqueue(body, this)
+        }else{
+            Log.println(Log.ERROR, TAG, response.message())
+            ACRA.errorReporter.handleException(null)
+        }
     }
 
     override fun onFailure(call: Call<I>, t: Throwable) {
+        t.sendWithAcra()
         Log.e(TAG, t.toString(), t)
     }
 

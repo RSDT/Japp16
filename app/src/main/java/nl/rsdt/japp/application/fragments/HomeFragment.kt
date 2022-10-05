@@ -17,6 +17,7 @@ import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.jotial.data.structures.area348.VosStatusInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.apis.official.VosApi
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -144,6 +145,7 @@ class HomeFragment : Fragment(), Callback<VosStatusInfo> {
 
     override fun onFailure(call: Call<VosStatusInfo>, t: Throwable) {
         Log.e(TAG, t.toString(), t)
+        t.sendWithAcra()
     }
 
     companion object {

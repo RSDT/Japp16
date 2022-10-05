@@ -16,6 +16,7 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.auth.Authentication
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.apis.AuthApi
+import org.acra.ACRA
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -133,6 +134,7 @@ class PreLoginSplashActivity : Activity() {
                             .create()
                             .show()
                 }
+                ACRA.errorReporter.handleException(t)
                 Log.e(TAG, t.toString(), t)
             }
         })

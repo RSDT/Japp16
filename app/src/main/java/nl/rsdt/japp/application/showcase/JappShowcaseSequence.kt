@@ -11,6 +11,7 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.activities.MainActivity
+import org.acra.ktx.sendWithAcra
 
 /**
  * @author Dingenis Sieger Sinke
@@ -44,6 +45,7 @@ class JappShowcaseSequence(mainActivity: MainActivity) : ShowcaseSequence<MainAc
 
                     } catch (e: Exception) {
                         Log.e("ShowcaseSequence", e.toString(), e)
+                        e.sendWithAcra()
                     }
 
                     return null

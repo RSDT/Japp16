@@ -28,6 +28,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.VosApi
 import okhttp3.Request
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -92,6 +93,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                                         delete.add(info)
                                     }
                                 } catch (e: ParseException) {
+                                    e.sendWithAcra()
                                     throw RuntimeException(e)
                                 }
 
@@ -102,6 +104,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                     }
 
                     override fun onFailure(call: Call<ArrayList<VosInfo>>, t: Throwable) {
+                        t.sendWithAcra()
                         callback.onFailure(call, t)
                     }
                 }
@@ -221,6 +224,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                     secondDate = format.parse(info2.datetime)
                 } catch (e: ParseException) {
                     Log.e(TAG, e.toString(), e)
+                    e.sendWithAcra()
                 }
 
                 if (firstDate != null && secondDate != null) {
@@ -388,6 +392,7 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
                 }
             } catch(e: Exception){
                 Log.e(TAG, e.toString())
+                e.sendWithAcra()
                 0f
             }
         }
@@ -425,13 +430,13 @@ abstract class VosController(jotiMap: IJotiMap) : StandardMapItemController<VosI
             try {
                 marker.setOnClickListener(null)
             }catch (e:java.lang.Exception){
-
+                e.sendWithAcra()
             }
             isOpen = false
             try {
                 handler.removeCallbacks(this)
             }catch (e:java.lang.Exception){
-
+                e.sendWithAcra()
             }
             circle?.remove()
 

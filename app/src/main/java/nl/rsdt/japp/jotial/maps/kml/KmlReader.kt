@@ -8,6 +8,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.MetaInfo
 import nl.rsdt.japp.jotial.net.apis.MetaApi
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.acra.ktx.sendWithAcra
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import retrofit2.Call
@@ -28,7 +29,7 @@ class KmlReader : Callback<MetaInfo> {
     }
 
     override fun onFailure(call: Call<MetaInfo>, t: Throwable) {
-
+        t.sendWithAcra()
     }
 
     interface Callback {
@@ -49,6 +50,7 @@ class KmlReader : Callback<MetaInfo> {
                                 .build()
                         client.newCall(req).enqueue(object : okhttp3.Callback {
                             override fun onFailure(call: okhttp3.Call, e: IOException) {
+                                e.sendWithAcra()
                                 callback.onException(e)
                             }
 
@@ -61,9 +63,11 @@ class KmlReader : Callback<MetaInfo> {
                                         callback.onSucces(file)
                                     } catch (e: XmlPullParserException) {
                                         e.printStackTrace()
+                                        e.sendWithAcra()
                                         callback.onException(e)
                                     } catch (e: IOException) {
                                         e.printStackTrace()
+                                        e.sendWithAcra()
                                         callback.onException(e)
                                     }
 
@@ -76,6 +80,7 @@ class KmlReader : Callback<MetaInfo> {
                         try {
                             callback.onException(Exception(response.errorBody()!!.string()))
                         } catch (e: IOException) {
+                            e.sendWithAcra()
                             callback.onException(e)
                         }
 
@@ -83,7 +88,7 @@ class KmlReader : Callback<MetaInfo> {
                 }
 
                 override fun onFailure(call: Call<MetaInfo>, t: Throwable) {
-
+                    t.sendWithAcra()
                 }
             })
         }

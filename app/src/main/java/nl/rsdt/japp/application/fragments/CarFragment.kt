@@ -3,6 +3,7 @@ package nl.rsdt.japp.application.fragments
 import android.app.AlertDialog
 import android.app.Fragment
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.DeletedInfo
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.service.AutoSocketHandler
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -70,6 +72,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                t.sendWithAcra()
                 refresh()
             }
         })
@@ -99,6 +102,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                         }
 
                         override fun onFailure(call: Call<DeletedInfo>, t: Throwable) {
+                            t.sendWithAcra()
                             refresh()
                         }
                     })
@@ -108,7 +112,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                     call: Call<HashMap<String, List<AutoInzittendeInfo>>>,
                     t: Throwable
                 ) {
-                    TODO("Not yet implemented")
+                    t.sendWithAcra()
                 }
 
             })
@@ -126,6 +130,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                         body.setTaak(taak)
                         autoApi.updateTaak(body).enqueue(object: Callback<Void>{
                             override fun onFailure(call: Call<Void>, t: Throwable) {
+                                t.sendWithAcra()
                                 refresh()
                             }
 
@@ -194,6 +199,7 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
                     }
 
                     override fun onFailure(call: Call<ArrayList<AutoInzittendeInfo>>, t: Throwable) {
+                        t.sendWithAcra()
                         inzittendenAdapter.setData(auto)
                         inzittendenAdapter.notifyDataSetChanged()
                         autosRecyclerView?.visibility = View.GONE
@@ -211,7 +217,8 @@ class CarFragment : Fragment(), Callback<HashMap<String, List<AutoInzittendeInfo
     }
 
     override fun onFailure(call: Call<HashMap<String, List<AutoInzittendeInfo>>>, t: Throwable) {
-
+        Log.e(TAG, t.toString())
+        t.sendWithAcra()
     }
     companion object {
         val TAG = "CarFragment"

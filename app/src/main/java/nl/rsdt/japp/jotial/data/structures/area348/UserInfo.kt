@@ -8,6 +8,9 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.application.navigation.NavigationManager
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.apis.UserApi
+import org.acra.ACRA
+import org.acra.ktx.sendWithAcra
+import org.acra.log.ACRALog
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -188,7 +191,7 @@ protected constructor(`in`: Parcel) : Parcelable {
                             appEditor?.putBoolean(JappPreferences.ACCOUNT_ACTIVE, intActiveToBooleanActive(info.actief))
                             appEditor?.putString(JappPreferences.ACCOUNT_AVATAR, info.avatar)
                             appEditor?.apply()
-
+                            ACRA.errorReporter.putCustomData("username", info.gebruikersnaam!!)
                             Log.i("UserInfo", "New UserInfo was collected")
 
                         }
@@ -197,6 +200,7 @@ protected constructor(`in`: Parcel) : Parcelable {
 
                 override fun onFailure(call: Call<UserInfo>, t: Throwable) {
                     Log.e(TAG, t.toString(), t)
+                    t.sendWithAcra()
                 }
             })
         }

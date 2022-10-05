@@ -1,11 +1,13 @@
 package nl.rsdt.japp.jotial.maps
 
+import android.util.Log
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.nav.Location
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.service.AutoSocketHandler
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,7 +50,8 @@ class NavigationLocationManager {
                 }
 
                 override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-                    throw RuntimeException(t)
+                    t.sendWithAcra()
+                    Log.e(TAG, t.toString())
                 }
             })
         }
@@ -65,5 +68,6 @@ class NavigationLocationManager {
 
     companion object {
         val FDB_NAME = "autos"
+        val TAG = "NavigationLocationManager"
     }
 }
