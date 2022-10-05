@@ -63,7 +63,7 @@ object AutoSocketHandler {
         val socket = getSocket()
         val gson = Gson()
         val jsonString = gson.toJson(resend)
-        socket.emit("leave", jsonString)
+        socket.emit("resend", jsonString)
     }
     @Synchronized
     fun leave(leave: Leave){

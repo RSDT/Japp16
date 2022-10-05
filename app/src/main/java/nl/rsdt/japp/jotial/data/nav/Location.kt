@@ -6,11 +6,11 @@ import com.google.android.gms.maps.model.LatLng
  */
 
 class Location(navigateTo: LatLng, auto: String ,username: String) {
-    private var auto: String
-    var username: String
-    var createdOn: Long
-    var latitude: Double = 0.toDouble()
-    var longitude: Double = 0.toDouble()
+    val auto: String
+    val username: String
+    val createdOn: Long
+    val latitude: Double
+    val longitude: Double
     val lat: Double
         get() = latitude
     val lon: Double

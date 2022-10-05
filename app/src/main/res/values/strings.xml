@@ -77,7 +77,7 @@
     <string name="unkown">onbekend</string>
     <string name="login_succes">Succesvol ingelogd!</string>
     <string name="error_on_login">Er is een fout opgetreden tijdens het inloggen</string>
-    <string name="Open_nav_in_other_app">Open navigatie in externe app</string>
+    <string name="Open_nav_in_other_app">Open navigatie in externe app\n\n * Zorg dat de Japp open staat.\n\n * Je kan de locatie opnieuw verzenden door op de pijltjes rechtsbovenin te klikken.</string>
     <string name="swipe_or_cancle">Markeer een positie op de kaart. Swipe dit weg om te annuleren</string>
     <string name="select_valid_location">Selecteer een geldige locatie!</string>
     <string name="done">Klaar!</string>

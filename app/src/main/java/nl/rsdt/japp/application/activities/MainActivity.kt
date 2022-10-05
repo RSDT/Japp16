@@ -4,8 +4,10 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -22,14 +24,25 @@ import nl.rsdt.japp.application.fragments.JappMapFragment
 import nl.rsdt.japp.application.navigation.FragmentNavigationManager
 import nl.rsdt.japp.application.navigation.NavigationManager
 import nl.rsdt.japp.jotial.auth.Authentication
+import nl.rsdt.japp.jotial.data.nav.Join
+import nl.rsdt.japp.jotial.data.nav.Location
+import nl.rsdt.japp.jotial.data.nav.Resend
+import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter
 import nl.rsdt.japp.jotial.maps.wrapper.IJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap
+import nl.rsdt.japp.jotial.net.apis.AutoApi
+import nl.rsdt.japp.service.AutoSocketHandler
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
 import nl.rsdt.japp.service.cloud.messaging.MessageManager
+import org.acra.ACRA
+import org.acra.log.ACRALog
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener, MessageManager.UpdateMessageListener {
 
@@ -111,6 +124,27 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
         navigationManager.onSaveInstanceState(savedInstanceState)
         mapManager.onSaveInstanceState(savedInstanceState)
 
+            val id = JappPreferences.accountId
+            if (id >= 0) {
+                val autoApi = Japp.getApi(AutoApi::class.java)
+                autoApi.getInfoById(JappPreferences.accountKey, id).enqueue(object :
+                    Callback<AutoInzittendeInfo> {
+                    override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
+                        if (response.code() == 200) {
+                            val autoInfo = response.body()
+                            if (autoInfo != null) {
+                                val auto  = autoInfo.autoEigenaar!!
+                                AutoSocketHandler.join(Join(JappPreferences.accountUsername, auto))
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
+
+                    }
+                })
+            }
+
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState)
     }
@@ -186,6 +220,28 @@ class MainActivity : AppCompatActivity(), IJotiMap.OnMapReadyCallback, Navigatio
             }
             val carfragment = navigationManager.getFragment(FragmentNavigationManager.FRAGMENT_CAR) as CarFragment?
             carfragment?.refresh()
+            val id = JappPreferences.accountId
+            if (id >= 0) {
+                val autoApi = Japp.getApi(AutoApi::class.java)
+                autoApi.getInfoById(JappPreferences.accountKey, id).enqueue(object :
+                    Callback<AutoInzittendeInfo> {
+                    override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
+                        if (response.code() == 200) {
+                            val autoInfo = response.body()
+                            if (autoInfo != null) {
+                                val auto  = autoInfo.autoEigenaar!!
+                                AutoSocketHandler.join(Join(JappPreferences.accountUsername, auto))
+                                AutoSocketHandler.resend(Resend(auto))
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
+                        Log.e(TAG, t.message?:"error")
+                        ACRA.errorReporter.handleException(t)
+                    }
+                })
+            }
             return true
         }
         return super.onOptionsItemSelected(item)
