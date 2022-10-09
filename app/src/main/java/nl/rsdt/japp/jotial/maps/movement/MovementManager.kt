@@ -8,14 +8,13 @@ import android.os.Bundle
 import android.util.Pair
 import android.view.View
 import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.messaging.FirebaseMessaging
+
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import nl.rsdt.japp.R
@@ -25,6 +24,7 @@ import nl.rsdt.japp.jotial.data.bodies.AutoUpdateTaakPostBody
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
+import nl.rsdt.japp.jotial.maps.locations.LocationProviderService
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
 import nl.rsdt.japp.jotial.maps.misc.AnimateMarkerTool
 import nl.rsdt.japp.jotial.maps.misc.LatLngInterpolator
@@ -35,6 +35,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IPolyline
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -56,11 +57,21 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             hourTail?.points = hourTailPoints
             hourTailPoints.onremoveCallback = ::addToLongTail
         }
+        if (key == JappPreferences.GPS_ACCURACY || key == JappPreferences.GPS_INTERVAL || key == JappPreferences.GPS_FASTEST_INTERVAL){
+            gpsAccuracy = JappPreferences.gpsAccuracy
+            fastestInterval = JappPreferences.gpsFastestInterval
+            locationInterval = JappPreferences.gpsInterval
+            request?.let {service?.removeRequest(it)}
+            request = LocationProviderService.LocationRequest(accuracy = gpsAccuracy, fastestInterval = fastestInterval, interval = locationInterval)
+            request?.let {service?.addRequest(it)}
+        }
+
+
     }
 
-
-    private val fastestInterval: Long = 100
-    private val locationInterval: Long = 1500
+    private var gpsAccuracy = JappPreferences.gpsAccuracy
+    private var fastestInterval: Long = JappPreferences.gpsInterval
+    private var locationInterval: Long = JappPreferences.gpsFastestInterval
     private var service: LocationService? = null
 
     private var jotiMap: IJotiMap? = null
@@ -86,6 +97,8 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     private var deelgebied: Deelgebied? = null
 
     private var snackBarView: View? = null
+
+    private var request: LocationProviderService.LocationRequest? =  null
 
     private var listener: LocationService.OnResolutionRequiredListener? = null
 
@@ -122,6 +135,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             smallTailPoints.setPoints(list)
             smallTail?.points = smallTailPoints
         }
+        JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
 
@@ -160,11 +174,6 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
 
         val refresh = if (ldeelgebied != null) {
             if (!ldeelgebied.containsLocation(location)) {
-
-                /**
-                 * Unsubscribe from the current deelgebied messages
-                 */
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(ldeelgebied.name)
                 true
             } else {
                 false
@@ -179,10 +188,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             if (deelgebied != null && snackBarView != null) {
                 Snackbar.make(snackBarView!!, """Welkom in deelgebied ${deelgebied?.name}""", Snackbar.LENGTH_LONG).show()
 
-                /**
-                 * Subscribe to the new deelgebied messages.
-                 */
-                FirebaseMessaging.getInstance().subscribeToTopic(deelgebied?.name)
+
 
 
                 val coordinatesSmall: List<LatLng> = smallTailPoints
@@ -229,7 +235,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
             val autoApi = Japp.getApi(AutoApi::class.java)
             autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo> {
                 override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    t.sendWithAcra()
                 }
 
                 override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
@@ -239,7 +245,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         body.setTaak(newTaak)
                         autoApi.updateTaak(body).enqueue(object : Callback<Void> {
                             override fun onFailure(call: Call<Void>, t: Throwable) {
-                                //TODO("not implemented")
+                                t.sendWithAcra()
                             }
 
                             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -259,10 +265,9 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
         val service = binder.instance
         service.setListener(listener)
         service.add(this)
-        service.request = LocationRequest()
-                .setInterval(locationInterval)
-                .setFastestInterval(fastestInterval)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        request?.let { service.removeRequest(it) }
+        request = LocationProviderService.LocationRequest(accuracy = gpsAccuracy, fastestInterval = fastestInterval, interval = locationInterval)
+        request?.let {service.addRequest(it)}
         this.service = service
     }
 
@@ -271,7 +276,7 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun requestLocationSettingRequest() {
-        service?.checkLocationSettings()
+        service?.restartLocationUpdates()
     }
 
     fun onMapReady(jotiMap: IJotiMap) {
@@ -294,16 +299,16 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
                         .width(3f)
                         .color(getTailColor()?:Color.BLUE))
         hourTail = jotiMap.addPolyline(
-                PolylineOptions()
+                 PolylineOptions()
                         .width(3f)
                         .color(getTailColor()?:Color.BLUE))
 
-            if (smallTailPoints.isNotEmpty()) {
-                smallTail!!.points = smallTailPoints
-                val last = smallTailPoints.size - 1
-                marker?.position = smallTailPoints[last]
-                marker?.isVisible = true
-            }
+        if (smallTailPoints.isNotEmpty()) {
+            smallTail!!.points = smallTailPoints
+            val last = smallTailPoints.size - 1
+            marker?.position = smallTailPoints[last]
+            marker?.isVisible = true
+        }
     }
 
     inner class FollowSession(private val jotiMap: IJotiMap, private val before: ICameraPosition, zoom: Float, aoa: Float) : LocationSource.OnLocationChangedListener {
@@ -380,14 +385,11 @@ class MovementManager : ServiceManager.OnBindCallback<LocationService.LocationBi
     }
 
     fun onResume() {
-        service?.request = LocationRequest()
-                    .setInterval(locationInterval)
-                    .setFastestInterval(fastestInterval)
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        request?.let { service?.addRequest(it) }
     }
 
     fun onPause() {
-        service?.apply { request = standard }
+        request?.let { service?.removeRequest(it) }
     }
 
     private fun save() {

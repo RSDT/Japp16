@@ -4,6 +4,7 @@ package nl.rsdt.japp.jotial.maps.clustering.osm
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo
 import nl.rsdt.japp.jotial.maps.clustering.ClusterManagerInterface
 import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
+import org.acra.ktx.sendWithAcra
 import java.util.*
 
 /**
@@ -34,6 +35,7 @@ class OsmScoutingGroepClusterManager(jotiMap: OsmJotiMap) : ClusterManagerInterf
             markers.showMarkers()
         } catch(e: ClassCastException){
             System.err.println(e)
+            e.sendWithAcra()
             //Crashlytics.log(e.toString())
         }
     }

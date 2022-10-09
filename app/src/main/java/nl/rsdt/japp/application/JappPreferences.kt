@@ -3,6 +3,8 @@ package nl.rsdt.japp.application
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.util.Log
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.GoogleMap
 import nl.rsdt.japp.jotial.data.bodies.HunterPostBody
 import nl.rsdt.japp.jotial.maps.MapStyle
@@ -17,6 +19,13 @@ import java.util.*
  * Class for release_preferences
  */
 object JappPreferences {
+
+
+
+    val TAG = "JappPreferences"
+    val GPS_ACCURACY= "pref_gps_accuracy"
+    val GPS_INTERVAL = "pref_gps_interval"
+    val GPS_FASTEST_INTERVAL = "pref_gps_fastest_interval"
 
     val TAAK = "pref_taak"
     val TAIL_LENGTH = "pref_tail_length"
@@ -80,45 +89,49 @@ object JappPreferences {
 
     val AUTO_ENLARGMENT = "pref_advanced_auto_enlargement"
 
-    val AUTO_ENLARGMENT_INTERVAL = "pref_advanced_auto_enlargement_interval"
+    const val AUTO_ENLARGMENT_INTERVAL = "pref_advanced_auto_enlargement_interval"
 
-    val WALK_SPEED = "pref_advanced_auto_enlargement_walking_speed"
+    const val WALK_SPEED = "pref_advanced_auto_enlargement_walking_speed"
 
-    val AREAS = "pref_advanced_areas"
+    const val AREAS = "pref_advanced_areas"
 
-    val AREAS_EDGES = "pref_advanced_areas_edges"
+    const val AREAS_EDGES = "pref_advanced_areas_edges"
 
-    val AREAS_EDGES_WIDTH = "pref_advanced_areas_edges_width"
+    const val AREAS_EDGES_WIDTH = "pref_advanced_areas_edges_width"
 
-    val AREAS_COLOR = "pref_advanced_areas_color"
+    const val AREAS_COLOR = "pref_advanced_areas_color"
 
-    val AREAS_COLOR_ALPHA = "pref_advanced_areas_color_alpha"
+    const val AREAS_COLOR_ALPHA = "pref_advanced_areas_color_alpha"
 
-    val USE_OSM = "pref_advanced_osm"
+    const val USE_OSM = "pref_advanced_osm"
 
-    val SHACO_ENABLED = "pref_developer_random_shaco"
+    const val SHACO_ENABLED = "pref_developer_random_shaco"
 
-    val NAVIGATION_APP = "pref_navigation_app"
+    const val NAVIGATION_APP = "pref_navigation_app"
 
-    val NAVIGATION_FOLLOW_NORTH = "pref_navigation_follow_north"
+    const val NAVIGATION_FOLLOW_NORTH = "pref_navigation_follow_north"
 
-    val IS_NAVIGATION_PHONE = "pref_navigation_phone"
+    const val IS_NAVIGATION_PHONE = "pref_navigation_phone"
 
-    val HUNTER_ALL = "pref_developer_hunter_all"
+    const val HUNTER_ALL = "pref_developer_hunter_all"
 
-    val LOAD_OLD_DATA = "pref_developer_load_old_data"
+    const val LOAD_OLD_DATA = "pref_developer_load_old_data"
 
-    val OSM_MAP_TYPE = "pref_map_osm_source"
+    const val OSM_MAP_TYPE = "pref_map_osm_source"
 
-    val FILL_CIRCLES = "pref_advanced_circles_color"
+    const val FILL_CIRCLES = "pref_advanced_circles_color"
 
-    val ROAD_MANAGER = "pref_navigation_road_manager"
+    const val ROAD_MANAGER = "pref_navigation_road_manager"
 
-    val ONLY_TODAY = "pref_advanced_only_today"
-    val COLOR_NAME = "pref_color_name_"
-    val COLOR_HEX = "pref_color_hex_"
+    const val ONLY_TODAY = "pref_advanced_only_today"
+    const val COLOR_NAME = "pref_color_name_"
+    const val COLOR_HEX = "pref_color_hex_"
 
-    val DEFAULT_KOPPEL = "pref_default_koppel"
+    const val DEFAULT_KOPPEL = "pref_default_koppel"
+
+    const val ACTUAL_GPS_ACCURACY = "pref_developer_actual_gps_accuracy"
+    const val ACTUAL_GPS_INTERVAL = "pref_developer_actual_gps_interval"
+    const val ACTUAL_GPS_FASTEST_INTERVAL = "pref_developer_actual_gps_fastest_interval"
 
 
     /**
@@ -292,113 +305,155 @@ object JappPreferences {
     val roadManager: RoadManager
         get() = JappPreferences.RoadManager.valueOf(visiblePreferences.getString(ROAD_MANAGER, "Google")?: "Google")
 
-    fun setFollowAoa(aoa: Float) {
-        appPreferences?.edit()?.putFloat(FOLLOW_AOA, aoa)?.apply()
-    }
-
-    fun useOSM(): Boolean {
-        return visiblePreferences.getBoolean(USE_OSM, true)
-    }
-
-    fun shacoEnabled(): Boolean {
-        return visiblePreferences.getBoolean(SHACO_ENABLED, false)
-    }
-
-    fun navigationApp(): NavigationApp {
-        return NavigationApp.fromString(visiblePreferences.getString(NAVIGATION_APP, "Google Maps")?:"Google Maps")
-    }
-
-    fun followNorth(): Boolean {
-        return visiblePreferences.getBoolean(NAVIGATION_FOLLOW_NORTH, false)
-    }
-
-    fun clear() {
-        visiblePreferences.edit().clear().apply()
-        appPreferences?.edit()?.clear()?.apply()
-    }
-
-    fun loadOldData(): Boolean {
-        return visiblePreferences.getBoolean(LOAD_OLD_DATA, true)
-    }
-
-    fun fillCircles(): Boolean {
-        return visiblePreferences.getBoolean(FILL_CIRCLES, true)
-    }
-
-    fun onlyToday(): Boolean {
-        return visiblePreferences.getBoolean(ONLY_TODAY, false)
-    }
-
-    fun getColorName(team: String): String {
-        return visiblePreferences.getString(COLOR_NAME + team, "Zwart")?:"Zwart"
-    }
-
-    fun setColorName(team: String, color: String) {
-        visiblePreferences.edit().putString(COLOR_NAME + team, color).apply()
-    }
-
-    fun setColorHex(team: String, hex: String) {
-        var hex1 = hex
-        if (!hex.startsWith("#")) {
-            hex1 = "#$hex"
+    val gpsAccuracy: Int
+        get() = when(visiblePreferences.getString(GPS_ACCURACY, LocationRequest.PRIORITY_NO_POWER.toString()) ?: LocationRequest.PRIORITY_NO_POWER.toString() ){
+            "Hoog" -> LocationRequest.PRIORITY_HIGH_ACCURACY
+            "gebalanceerd" -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            "low power" -> LocationRequest.PRIORITY_LOW_POWER
+            "no power" -> LocationRequest.PRIORITY_NO_POWER
+            else -> LocationRequest.PRIORITY_NO_POWER
         }
-        visiblePreferences.edit().putString(COLOR_HEX + team, hex1).apply()
-    }
+    val gpsInterval: Long
+        get()  {
+            return (visiblePreferences.getString(GPS_INTERVAL, "-1") ?: "-1").toLong()
+        }
 
-    fun getColorHex(team: String): String {
-        return visiblePreferences.getString(COLOR_HEX + team, "#FFFFFF")?: "#FFFFFF"
-    }
+    val gpsFastestInterval: Long
+        get() {
+            return (visiblePreferences.getString(GPS_FASTEST_INTERVAL, "-1")?: "-1").toLong()
+        }
 
-    fun defaultKoppel(): String {
-        return visiblePreferences.getString(DEFAULT_KOPPEL, "onbekend")
-    }
+        var actualGpsAccuracy: Int
+        get() {
+            return Integer.valueOf(visiblePreferences.getString(ACTUAL_GPS_ACCURACY, "-1") ?: "-1")
+        }
+        set(value) {
+            Log.i(TAG, "set actualGpsAccuracy value")
+            visiblePreferences.edit().putString(ACTUAL_GPS_ACCURACY, value.toString())?.apply()?:Unit
+        }
 
-    enum class RoadManager{
-        MapQuest,
-        Google,
-        OSRM,
-        GraphHopper,
-    }
-    enum class OsmMapType {
-        Default,
-        OpenTopo,
-        Mapnik,
-        HikeBike,
-        Public_Transport,
-        Base_NL,
-        Fiets_NL,
-        Road_NL,
-        OpenSeaMap,
-        CloudMade_Small,
-        CloudMade_Normal,
-        USGS_Topo,
-        USGS_Sat,
-        ChartBundle_ENRH,
-        ChartBundle_ENRL,
-        ChartBundle_WAC
-    }
+        var actualGpsInterval: Long
+        get() {
+            return (visiblePreferences.getString(ACTUAL_GPS_INTERVAL, "-3")?:"-3").toLong()
+        }
+        set(value) {
+            visiblePreferences.edit().putString(ACTUAL_GPS_INTERVAL, value.toString()).apply()
+        }
 
-    enum class NavigationApp {
-        GoogleMaps, Waze, OSMAnd, OSMAndWalk, Geo;
+        var actualGpsFastestInterval: Long
+        get() {
+            return (visiblePreferences.getString(ACTUAL_GPS_FASTEST_INTERVAL, "-3")?: "-3").toLong()
+        }
+        set(value) {
+            visiblePreferences.edit().putString(ACTUAL_GPS_FASTEST_INTERVAL, value.toString()).apply()
+        }
+
+        fun setFollowAoa(aoa: Float) {
+            appPreferences?.edit()?.putFloat(FOLLOW_AOA, aoa)?.apply()
+        }
+
+        fun useOSM(): Boolean {
+            return visiblePreferences.getBoolean(USE_OSM, true)
+        }
+
+        fun shacoEnabled(): Boolean {
+            return visiblePreferences.getBoolean(SHACO_ENABLED, false)
+        }
+
+        fun navigationApp(): NavigationApp {
+            return NavigationApp.fromString(visiblePreferences.getString(NAVIGATION_APP, "Google Maps")?:"Google Maps")
+        }
+
+        fun followNorth(): Boolean {
+            return visiblePreferences.getBoolean(NAVIGATION_FOLLOW_NORTH, false)
+        }
+
+        fun clear() {
+            visiblePreferences.edit().clear().apply()
+            appPreferences?.edit()?.clear()?.apply()
+        }
+
+        fun loadOldData(): Boolean {
+            return visiblePreferences.getBoolean(LOAD_OLD_DATA, true)
+        }
+
+        fun fillCircles(): Boolean {
+            return visiblePreferences.getBoolean(FILL_CIRCLES, true)
+        }
+
+        fun onlyToday(): Boolean {
+            return visiblePreferences.getBoolean(ONLY_TODAY, false)
+        }
+
+        fun getColorName(team: String): String {
+            return visiblePreferences.getString(COLOR_NAME + team, "Zwart")?:"Zwart"
+        }
+
+        fun setColorName(team: String, color: String) {
+            visiblePreferences.edit().putString(COLOR_NAME + team, color).apply()
+        }
+
+        fun setColorHex(team: String, hex: String) {
+            var hex1 = hex
+            if (!hex.startsWith("#")) {
+                hex1 = "#$hex"
+            }
+            visiblePreferences.edit().putString(COLOR_HEX + team, hex1).apply()
+        }
+
+        fun getColorHex(team: String): String {
+            return visiblePreferences.getString(COLOR_HEX + team, "#FFFFFF")?: "#FFFFFF"
+        }
+
+        fun defaultKoppel(): String {
+            return visiblePreferences.getString(DEFAULT_KOPPEL, "onbekend?") ?: "onbekend?"
+        }
+
+        enum class RoadManager{
+            MapQuest,
+            Google,
+            OSRM,
+            GraphHopper,
+        }
+        enum class OsmMapType {
+            Default,
+            OpenTopo,
+            Mapnik,
+            HikeBike,
+            Public_Transport,
+            Base_NL,
+            Fiets_NL,
+            Road_NL,
+            OpenSeaMap,
+            CloudMade_Small,
+            CloudMade_Normal,
+            USGS_Topo,
+            USGS_Sat,
+            ChartBundle_ENRH,
+            ChartBundle_ENRL,
+            ChartBundle_WAC
+        }
+
+        enum class NavigationApp {
+            GoogleMaps, Waze, OSMAnd, OSMAndWalk, Geo;
 
 
-        companion object {
-            fun fromString(appName: String): NavigationApp {
-                return if (appName == "Waze") {
-                    Waze
-                } else if (appName == "Google Maps") {
-                    GoogleMaps
-                } else if (appName == "OsmAnd") {
-                    OSMAnd
-                } else if (appName == "Geo") {
-                    OSMAnd
-                } else if (appName == "OsmAndWalk") {
-                    OSMAndWalk
-                } else {
-                    GoogleMaps //default google maps
+            companion object {
+                fun fromString(appName: String): NavigationApp {
+                    return if (appName == "Waze") {
+                        Waze
+                    } else if (appName == "Google Maps") {
+                        GoogleMaps
+                    } else if (appName == "OsmAnd") {
+                        OSMAnd
+                    } else if (appName == "Geo") {
+                        OSMAnd
+                    } else if (appName == "OsmAndWalk") {
+                        OSMAndWalk
+                    } else {
+                        GoogleMaps //default google maps
+                    }
                 }
             }
         }
     }
-
-}

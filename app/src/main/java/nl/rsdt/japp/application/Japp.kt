@@ -6,8 +6,6 @@ import android.location.Location
 import android.net.ConnectivityManager
 import androidx.multidex.MultiDexApplication
 import com.google.android.gms.maps.MapsInitializer
-import com.google.firebase.FirebaseApp
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.API
@@ -16,7 +14,12 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.LocalDateTime
+import org.acra.BuildConfig
+import org.acra.config.httpSender
+import org.acra.data.StringFormat
+import org.acra.ktx.initAcra
+import org.acra.sender.HttpSender
+
 import java.util.*
 
 /**
@@ -27,19 +30,29 @@ import java.util.*
  */
 class Japp : MultiDexApplication() {
 
-    private var analytics: FirebaseAnalytics? = null
-
     private val messageManager = MessageManager()
 
     private var interceptor: Interceptor? = null
+    override fun attachBaseContext(base:Context) {
+        super.attachBaseContext(base)
+        initAcra {
+            //core configuration:
+            buildConfigClass = BuildConfig::class.java
+            reportFormat = StringFormat.JSON
+            httpSender {
+                uri = "https://acra.jh-rp.nl/report" /*best guess, you may need to adjust this*/
+                basicAuthLogin = "1cJs5ZsKxrieVERq"
+                basicAuthPassword = "iqhgoPezPJyAEmBS"
+                httpMethod = HttpSender.Method.POST
 
+            }
+        }
+    }
     override fun onCreate() {
         super.onCreate()
         instance = this
 
-        if (FirebaseApp.getApps(this).isNotEmpty()) {
-            analytics = FirebaseAnalytics.getInstance(this)
-        }
+
 
         MapsInitializer.initialize(this)
 
@@ -58,10 +71,6 @@ class Japp : MultiDexApplication() {
                 _lastLocations.offer(value)
                 _lastLocation = value
             }
-
-        fun getAnalytics(): FirebaseAnalytics? {
-            return instance?.analytics
-        }
 
         val updateManager: MessageManager?
             get() = instance?.messageManager

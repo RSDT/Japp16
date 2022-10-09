@@ -11,6 +11,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.data.structures.area348.HunterInfo
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.AutoApi
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Response
 import javax.security.auth.callback.Callback
@@ -29,6 +30,7 @@ class JappPreferenceFragment : PreferenceFragment() {
         if (BuildConfig.DEBUG) {
             addPreferencesFromResource(R.xml.debug_preferences)
         }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,6 +80,7 @@ class JappPreferenceFragment : PreferenceFragment() {
             api.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : retrofit2.Callback<AutoInzittendeInfo?>{
                 override fun onFailure(call: Call<AutoInzittendeInfo?>, t: Throwable) {
                     preference.setIcon(HunterInfo.getAssociatedDrawable(value, Deelgebied.Xray.name))
+                    t.sendWithAcra()
                 }
 
                 override fun onResponse(call: Call<AutoInzittendeInfo?>, response: Response<AutoInzittendeInfo?>) {

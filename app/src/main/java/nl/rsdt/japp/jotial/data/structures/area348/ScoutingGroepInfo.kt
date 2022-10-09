@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.google.gson.stream.JsonReader
 import com.google.maps.android.clustering.ClusterItem
+import org.acra.ktx.sendWithAcra
 
 /**
  * @author Dingenis Sieger Sinke
@@ -89,6 +90,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable, ClusterItem {
                 return Gson().fromJson<ScoutingGroepInfo>(jsonReader, ScoutingGroepInfo::class.java)
             } catch (e: JsonParseException) {
                 Log.e("ScoutingGroepInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null
@@ -107,6 +109,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable, ClusterItem {
                 return Gson().fromJson<Array<ScoutingGroepInfo>>(jsonReader, Array<ScoutingGroepInfo>::class.java)
             } catch (e: JsonParseException) {
                 Log.e("ScoutingGroepInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null

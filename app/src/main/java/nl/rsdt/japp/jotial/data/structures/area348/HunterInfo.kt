@@ -10,6 +10,7 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import nl.rsdt.japp.R
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
+import org.acra.ktx.sendWithAcra
 
 /**
  * @author Dingenis Sieger Sinke
@@ -122,6 +123,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 return Gson().fromJson<HunterInfo>(jsonReader, HunterInfo::class.java)
             } catch (e: JsonParseException) {
                 Log.e("HunterInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null
@@ -140,6 +142,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 return Gson().fromJson<Array<HunterInfo>>(jsonReader, Array<HunterInfo>::class.java)
             } catch (e: JsonParseException) {
                 Log.e("HunterInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null
@@ -166,6 +169,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 return buffer
             } catch (e: JsonParseException) {
                 Log.e("HunterInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return emptyArray()

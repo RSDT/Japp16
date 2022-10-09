@@ -15,6 +15,7 @@ import nl.rsdt.japp.jotial.data.structures.area348.MetaColorInfo
 import nl.rsdt.japp.jotial.maps.kml.KmlDeelgebied
 import nl.rsdt.japp.jotial.maps.kml.KmlFile
 import nl.rsdt.japp.jotial.maps.kml.KmlReader
+import org.acra.ktx.sendWithAcra
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -250,6 +251,7 @@ private constructor(
         fun initialize(resources: Resources) {
             KmlReader.parseFromMeta(object : KmlReader.Callback {
                 override fun onException(e: Throwable) {
+                    e.sendWithAcra()
                     Log.e(Deelgebied.TAG, e.toString())
                     val gebieden = all()
                     var current: Deelgebied
@@ -283,6 +285,7 @@ private constructor(
                                 }
                             } catch (err: IOException) {
                                 Log.e("Deelgebied", "Error occurred while reading stream", err)
+                                e.sendWithAcra()
                             }
 
                             val data = total.toString()
@@ -391,6 +394,7 @@ private constructor(
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
+
                 e.printStackTrace();
             }
         }*/

@@ -11,10 +11,10 @@ object API {
     /**
      * The root of the Area348 V2 API
      */
-    val API_V2_ROOT = "http://jotihunt-api-v3.area348.nl"
+    val API_V2_ROOT = "https://jotihunt-api-v3.area348.nl"
 
     val API_V1_ROOT = "http://jotihunt-api.area348.nl"
 
-    val SITE_2016_ROOT = "http://jotihunt2017.area348.nl"
+    val SITE_ROOT = "https://jotihunt.area348.nl"
 
 }

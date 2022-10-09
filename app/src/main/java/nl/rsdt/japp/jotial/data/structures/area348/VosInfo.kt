@@ -13,6 +13,7 @@ import com.google.gson.stream.JsonReader
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.maps.sighting.SightingIcon
+import org.acra.ktx.sendWithAcra
 
 /**
  * @author Dingenis Sieger Sinke
@@ -130,6 +131,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 return Gson().fromJson<VosInfo>(jsonReader, VosInfo::class.java)
             } catch (e: JsonParseException) {
                 Log.e("VosInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null
@@ -148,6 +150,7 @@ protected constructor(`in`: Parcel) : BaseInfo(`in`), Parcelable {
                 return Gson().fromJson<Array<VosInfo>>(jsonReader, Array<VosInfo>::class.java)
             } catch (e: JsonParseException) {
                 Log.e("VosInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null

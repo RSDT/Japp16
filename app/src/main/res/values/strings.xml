@@ -77,7 +77,7 @@
     <string name="unkown">onbekend</string>
     <string name="login_succes">Succesvol ingelogd!</string>
     <string name="error_on_login">Er is een fout opgetreden tijdens het inloggen</string>
-    <string name="Open_nav_in_other_app">Open navigatie in externe app</string>
+    <string name="Open_nav_in_other_app">Open navigatie in externe app\n\n * Zorg dat de Japp open staat.\n\n * Je kan de locatie opnieuw verzenden door op de pijltjes rechtsbovenin te klikken.</string>
     <string name="swipe_or_cancle">Markeer een positie op de kaart. Swipe dit weg om te annuleren</string>
     <string name="select_valid_location">Selecteer een geldige locatie!</string>
     <string name="done">Klaar!</string>
@@ -209,11 +209,13 @@
          ]]>
     </string>
     <string name="help">Help</string>
-    <string name="pref_prepend_deelgebied_to_name_title">deelgebied voor de huntnaam zetten</string>
-    <string name="pref_prepend_deelgebied_to_name_sum">Deze instelling  moet aanstaan om gebruik te maken van de automatische icoon</string>
     <string name="update_taak">verander deelgebied</string>
-    <string name="pref_default_koppel_title">Koppel</string>
-    <string name="pref_default_koppel_sum">Op welk koppel ben je aan het hunten?</string>
+    <string name="pref_gps_interval_def">60000</string>
+    <string name="pref_gps_interval_title">interval voor de blauwe marker</string>
+    <string name="pref_gps_interval_sum">in ms dus voeg 000 toe achtes de s</string>
+    <string name="pref_gps_fastest_interval_def">5000</string>
+    <string name="pref_gps_fastest_interval_sum">in ms des doe s *1000</string>
+    <string name="pref_gps_fastest_interval_title">fastest interval</string>
 
 
 </resources>

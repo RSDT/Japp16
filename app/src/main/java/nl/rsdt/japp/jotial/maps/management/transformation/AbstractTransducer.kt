@@ -126,9 +126,9 @@ abstract class AbstractTransducer<I, O : AbstractTransducer.Result> {
             val bitmapList = `in`.createTypedArrayList(Bitmap.CREATOR)
             val markers = ArrayList<Pair<MarkerOptions, Bitmap?>>()
 
-            polylines = `in`.createTypedArrayList(PolylineOptions.CREATOR)
-            polygons = `in`.createTypedArrayList(PolygonOptions.CREATOR)
-            circles = `in`.createTypedArrayList(CircleOptions.CREATOR)
+            polylines = `in`.createTypedArrayList(PolylineOptions.CREATOR)!!
+            polygons = `in`.createTypedArrayList(PolygonOptions.CREATOR)!!
+            circles = `in`.createTypedArrayList(CircleOptions.CREATOR)!!
             if (bitmapList!!.size != optionsList!!.size) {
                 throw RuntimeException("optionlist and bitmapList are not equal in size")
             }

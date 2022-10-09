@@ -27,7 +27,7 @@ abstract class StandardMapItemController<I : Parcelable, O : AbstractTransducer.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState?.containsKey(bundleId)== true) {
-            this.items = savedInstanceState.getParcelableArrayList(bundleId)
+            this.items = savedInstanceState.getParcelableArrayList(bundleId)!!
             val result = transducer.generate(items)
             processResult(result)
         }

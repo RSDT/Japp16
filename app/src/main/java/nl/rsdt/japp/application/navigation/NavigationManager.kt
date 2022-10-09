@@ -12,6 +12,7 @@ import nl.rsdt.japp.application.activities.MainActivity
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.API
 import nl.rsdt.japp.jotial.net.DownloadDrawableTask
+import org.acra.ktx.sendWithAcra
 import java.net.URL
 import java.util.ArrayList
 
@@ -87,9 +88,10 @@ class NavigationManager : FragmentNavigationManager(), SharedPreferences.OnShare
                         }
                     }
                 })
-                task.execute(URL(API.SITE_2016_ROOT + "/img/avatar/" + filename))
+                task.execute(URL(API.SITE_ROOT + "/img/avatar/" + filename))
             } catch (e: Exception) {
                 Log.e(TAG, e.toString(), e)
+                e.sendWithAcra()
             }
 
         }

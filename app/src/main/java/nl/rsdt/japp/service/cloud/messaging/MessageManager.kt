@@ -1,6 +1,6 @@
 package nl.rsdt.japp.service.cloud.messaging
 
-import com.google.firebase.messaging.RemoteMessage
+import nl.rsdt.japp.service.cloud.RemoteMessage
 import nl.rsdt.japp.service.cloud.data.MessageType
 import nl.rsdt.japp.service.cloud.data.NoticeInfo
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
@@ -39,7 +39,7 @@ class MessageManager {
     fun onMessage(message: RemoteMessage) {
         if (message.data != null && !message.data.isEmpty()) {
             val data = message.data
-            val type = data["type"]?: ""
+            val type = data["type"] ?: ""
             if (type == MessageType.NOTICE) {
                 if (listeners.size > 0) {
                     val info = NoticeInfo.parse(data)

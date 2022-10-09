@@ -28,6 +28,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.IMarker
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.HunterApi
 import okhttp3.Request
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -138,6 +139,7 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
             val autoApi = Japp.getApi(AutoApi::class.java)
             autoApi.getInfoById(JappPreferences.accountKey, JappPreferences.accountId).enqueue(object : Callback<AutoInzittendeInfo?>{
                 override fun onFailure(call: Call<AutoInzittendeInfo?>, t: Throwable) {
+                    t.sendWithAcra()
                     api.getAll(JappPreferences.accountKey).enqueue(callback)
                 }
 
@@ -220,6 +222,7 @@ class HunterController (jotiMap: IJotiMap): MapItemController<HashMap<String, Ar
                         secondDate = format.parse(info2?.datetime)
                     } catch (e: ParseException) {
                         Log.e(MapItemController.TAG, e.toString(), e)
+                        e.sendWithAcra()
                     }
 
                     if (firstDate != null && secondDate != null) {

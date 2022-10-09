@@ -8,9 +8,11 @@ import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import nl.rsdt.japp.R
 import nl.rsdt.japp.jotial.data.bodies.AutoPostBody
+import nl.rsdt.japp.jotial.data.nav.Join
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.net.apis.AutoApi
+import nl.rsdt.japp.service.AutoSocketHandler
 import retrofit2.Callback
 import java.util.*
 
@@ -81,6 +83,7 @@ class AutosAdapter(private val callback: Callback<Void>) : RecyclerView.Adapter<
                         body.setRol(rol)
                         val autoApi = Japp.getApi(AutoApi::class.java)
                         autoApi.post(body).enqueue(callback)
+                        AutoSocketHandler.join(Join(JappPreferences.accountUsername, eigenaar))
                     }
                     .create()
             val automatisch = Japp.getString(R.string.automatisch)

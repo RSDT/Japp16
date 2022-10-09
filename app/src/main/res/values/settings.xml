@@ -67,7 +67,23 @@
             </string-array>
 
         <!-- END CAT -->
-
+    <!-- START GPS CAT -->
+    <string name="pref_gps_cat">GPS </string>
+    <string name="pref_gps_accuracy_title">GPS Nauwkeurigheid</string>
+    <string name="pref_gps_accuracy_sum">GPS Nauwkeurigheid voor de blauwe lijn</string>
+    <string name="pref_gps_accuracy_def">Hoog</string>
+    <string-array name="pref_gps_accuracy_options">
+        <item>Hoog</item>
+        <item>gebalanceerd</item>
+        <item>low power</item>
+        <item>no power</item>
+    </string-array>
+    <string-array name="pref_gps_accuracy_values">
+        <item>100</item>
+        <item>102</item>
+        <item>104</item>
+        <item>105</item>
+    </string-array>
         <!-- START CAT MAP -->
 
             <!--
@@ -314,6 +330,7 @@
         <item>delta</item>
         <item>echo</item>
         <item>foxtrot</item>
+        <item>xray</item>
     </string-array>
 
     <string name="pref_advanced_areas_edges_title">Randen</string>
@@ -391,4 +408,16 @@
 
     <!-- END SCREEN -->
 
+    <string name="pref_default_koppel_title">Koppel</string>
+    <string name="pref_default_koppel_sum">Op welk koppel ben je aan het hunten?</string>
+    <string name="pref_cat_developer_gps">Huidige GPS instellingen</string>
+    <string name="pref_developer_actual_gps_accuracy_title">Huidige nauwkeurigheid</string>
+    <string name="pref_developer_actual_gps_accuracy_sum">100-hoog,102-balanced,104-low power,105-no power</string>
+    <string name="pref_prepend_deelgebied_to_name_title">deelgebied voor de huntnaam zetten</string>
+    <string name="pref_prepend_deelgebied_to_name_sum">Deze instelling  moet aanstaan om gebruik te maken van de automatische icoon</string>
+
+    <string name="pref_developer_actual_gps_interval_title">actual interval</string>
+    <string name="pref_developer_actual_gps_interval_sum">De echte waarde van de interval</string>
+    <string name="pref_developer_actual_gps_fastest_interval_title">actual fastest interval</string>
+    <string name="pref_developer_actual_gps_fastest_interval_sum" />
 </resources>

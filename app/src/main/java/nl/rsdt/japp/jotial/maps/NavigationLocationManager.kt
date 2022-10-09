@@ -1,11 +1,13 @@
 package nl.rsdt.japp.jotial.maps
 
-import com.google.firebase.database.*
+import android.util.Log
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
-import nl.rsdt.japp.jotial.data.firebase.Location
+import nl.rsdt.japp.jotial.data.nav.Location
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.net.apis.AutoApi
+import nl.rsdt.japp.service.AutoSocketHandler
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -14,16 +16,22 @@ import retrofit2.Response
  * Created by mattijn on 30/09/17.
  */
 
-class NavigationLocationManager : ChildEventListener, ValueEventListener {
+class NavigationLocationManager {
     private var callback: OnNewLocation? = null
     private var oldLoc: Location? = null
-
+    private val mSocketHandler: AutoSocketHandler.NavToHandler
     init {
-        val reference = FirebaseDatabase.getInstance().reference.child(FDB_NAME)
-        reference.addValueEventListener(this)
+        // args[0] is the data from the server
+// Change "as Int" according to the data type
+// Example "as String" or write nothing
+// Logging the data is optional
+        mSocketHandler = AutoSocketHandler.NavToHandler {
+            update(it)
+        }
+        AutoSocketHandler.registerNavToHandler(mSocketHandler)
     }
 
-    private fun update(snapshot: DataSnapshot, child: String?) {
+    private fun update(location: Location) {
         val id = JappPreferences.accountId
         if (id >= 0) {
             val api = Japp.getApi(AutoApi::class.java)
@@ -31,12 +39,10 @@ class NavigationLocationManager : ChildEventListener, ValueEventListener {
                 override fun onResponse(call: Call<AutoInzittendeInfo>, response: Response<AutoInzittendeInfo>) {
                     if (response.code() == 200) {
                         val info = response.body()
-                        val loc = snapshot.child(info!!.autoEigenaar!!).getValue(Location::class.java)
-                        if (oldLoc != null && oldLoc != loc || oldLoc == null && loc != null) {
-                            oldLoc = loc
-                            if (loc != null) {
-                                callback?.onNewLocation(loc)
-                            }
+                        if (oldLoc != null && oldLoc != location || oldLoc == null) {
+                            oldLoc = location
+                            callback?.onNewLocation(location)
+
                         }
                     } else if (response.code() == 404) {
                         callback?.onNotInCar()
@@ -44,34 +50,11 @@ class NavigationLocationManager : ChildEventListener, ValueEventListener {
                 }
 
                 override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-                    throw RuntimeException(t)
+                    t.sendWithAcra()
+                    Log.e(TAG, t.toString())
                 }
             })
         }
-    }
-
-    override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-        update(dataSnapshot, s)
-    }
-
-    override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-        update(dataSnapshot, s)
-    }
-
-    override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-
-    }
-
-    override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-
-    }
-
-    override fun onDataChange(dataSnapshot: DataSnapshot) {
-        update(dataSnapshot, dataSnapshot.key)
-    }
-
-    override fun onCancelled(databaseError: DatabaseError) {
-        throw databaseError.toException()
     }
 
     fun setCallback(callback: OnNewLocation) {
@@ -85,5 +68,6 @@ class NavigationLocationManager : ChildEventListener, ValueEventListener {
 
     companion object {
         val FDB_NAME = "autos"
+        val TAG = "NavigationLocationManager"
     }
 }

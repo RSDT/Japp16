@@ -6,6 +6,7 @@ import android.util.Pair
 import android.view.PixelCopy
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
+import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.jotial.maps.window.CustomInfoWindowAdapter
 import nl.rsdt.japp.jotial.maps.wrapper.*
 import org.osmdroid.events.MapEventsReceiver
@@ -15,6 +16,8 @@ import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.*
 
 
@@ -26,6 +29,7 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
 ) : IJotiMap {
 
     private var eventsOverlay: MapEventsOverlay? = null
+    private val locationOverlay: MyLocationNewOverlay
 
     override val uiSettings: IUiSettings
         get() = OsmUiSettings(osmMap)
@@ -46,6 +50,18 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
             }
         })
         osmMap.overlays.add(0, eventsOverlay)
+        val gpsMyLocationProvider = GpsMyLocationProvider(Japp.instance)
+        locationOverlay = MyLocationNewOverlay(gpsMyLocationProvider, osmMap);
+        locationOverlay.enableMyLocation()
+        osmMap.overlays.add(locationOverlay)
+    }
+
+    override fun followLocation(followLocation:Boolean, keepNorth:Boolean){
+        if (followLocation) {
+            locationOverlay.enableFollowLocation()
+        } else{
+            locationOverlay.disableFollowLocation()
+        }
     }
 
     override fun setPreviousCameraPosition(latitude: Double, longitude: Double) {
@@ -114,8 +130,7 @@ class OsmJotiMap private constructor(val osmMap: MapView //todo fix type
     }
 
     override fun snapshot(snapshotReadyCallback: IJotiMap.SnapshotReadyCallback?) {
-        this.osmMap.isDrawingCacheEnabled = false
-        this.osmMap.isDrawingCacheEnabled = true
+        this.osmMap.setDrawingCacheEnabled(true)
         this.osmMap.buildDrawingCache()
         val bm = this.osmMap.drawingCache
         snapshotReadyCallback?.onSnapshotReady(bm)

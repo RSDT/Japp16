@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.firebase.iid.FirebaseInstanceId
 import nl.rsdt.japp.BuildConfig
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
@@ -17,6 +16,7 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.auth.Authentication
 import nl.rsdt.japp.jotial.io.AppData
 import nl.rsdt.japp.jotial.net.apis.AuthApi
+import org.acra.ACRA
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -54,24 +54,6 @@ class PreLoginSplashActivity : Activity() {
              * Clear all the data files
              * */
             AppData.clear()
-
-
-            val thread = Thread(Runnable {
-                try {
-                    /*
-                         * Resets Instance ID and revokes all tokens.
-                         * */
-                    FirebaseInstanceId.getInstance().deleteInstanceId()
-                } catch (e: IOException) {
-                    Log.e(TAG, e.toString(), e)
-                }
-
-                /*
-                     * Get a new token.
-                     * */
-                FirebaseInstanceId.getInstance().token
-            })
-            thread.run()
         }
     }
 
@@ -152,6 +134,7 @@ class PreLoginSplashActivity : Activity() {
                             .create()
                             .show()
                 }
+                ACRA.errorReporter.handleException(t)
                 Log.e(TAG, t.toString(), t)
             }
         })

@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException
 import com.google.gson.stream.JsonReader
 
 import nl.rsdt.japp.R
+import org.acra.ktx.sendWithAcra
 
 /**
  * @author Dingenis Sieger Sinke
@@ -84,6 +85,7 @@ class FotoOpdrachtInfo protected constructor(`in`: Parcel) : BaseInfo(`in`), Par
                 return Gson().fromJson<FotoOpdrachtInfo>(jsonReader, FotoOpdrachtInfo::class.java)
             } catch (e: JsonParseException) {
                 Log.e("FotoOpdrachtInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null
@@ -102,6 +104,7 @@ class FotoOpdrachtInfo protected constructor(`in`: Parcel) : BaseInfo(`in`), Par
                 return Gson().fromJson<Array<FotoOpdrachtInfo>>(jsonReader, Array<FotoOpdrachtInfo>::class.java)
             } catch (e: JsonParseException) {
                 Log.e("FotoOpdrachtInfo", e.message, e)
+                e.sendWithAcra()
             }
 
             return null

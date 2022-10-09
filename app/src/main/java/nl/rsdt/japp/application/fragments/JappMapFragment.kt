@@ -10,11 +10,11 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.UiThread
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.gms.common.api.Status
@@ -23,13 +23,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 import nl.rsdt.japp.R
 import nl.rsdt.japp.application.Japp
 import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.bodies.VosPostBody
-import nl.rsdt.japp.jotial.data.firebase.Location
+import nl.rsdt.japp.jotial.data.nav.Location
 import nl.rsdt.japp.jotial.data.structures.area348.AutoInzittendeInfo
 import nl.rsdt.japp.jotial.maps.MapManager
 import nl.rsdt.japp.jotial.maps.NavigationLocationManager
@@ -48,14 +47,17 @@ import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
 import nl.rsdt.japp.jotial.navigation.NavigationSession
 import nl.rsdt.japp.jotial.net.apis.AutoApi
 import nl.rsdt.japp.jotial.net.apis.VosApi
+import nl.rsdt.japp.service.AutoSocketHandler
 import nl.rsdt.japp.service.LocationService
 import nl.rsdt.japp.service.ServiceManager
+import org.acra.ktx.sendWithAcra
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.util.*
 
 /**
@@ -92,7 +94,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
 
         pinningManager.intialize(activity)
         pinningManager.onCreate(savedInstanceState)
@@ -172,6 +174,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         setupFollowButton(v)
         setupNavigationButton(v)
         jotiMap = OsmJotiMap.getJotiMapInstance(osmView)
+        Configuration.getInstance().load(activity, PreferenceManager.getDefaultSharedPreferences(activity))
         return v
     }
 
@@ -269,6 +272,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                             REQUEST_CHECK_SETTINGS)
                 } catch (e: IntentSender.SendIntentException) {
                     // Ignore the error.
+                    e.sendWithAcra()
                 }
             }
 
@@ -332,11 +336,11 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                 val identifier = MarkerIdentifier.Builder()
                 identifier.setType(MarkerIdentifier.TYPE_NAVIGATE_CAR)
 
-                identifier.add("addedBy", location.createdBy)
+                identifier.add("addedBy", location.username)
                 identifier.add("createdOn", location.createdOn.toString())
                 marker.title = Gson().toJson(identifier.create())
                 marker.isVisible = true
-                marker.position = LatLng(location.lat, location.lon)
+                marker.position = LatLng(location.latitude, location.longitude)
             }
 
             override fun onNotInCar() {
@@ -550,21 +554,11 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                         }
 
                                         override fun onFailure(call: Call<Void>, t: Throwable) {
+                                            t.sendWithAcra()
                                             val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
                                             Snackbar.make(snackbarView, getString(R.string.problem_with_sending, t.toString()), Snackbar.LENGTH_LONG).show()
                                         }
                                     })
-
-                                    /**
-                                     * TODO: send details?
-                                     * Log the spot in firebase.
-                                     */
-
-                                    /**
-                                     * TODO: send details?
-                                     * Log the spot in firebase.
-                                     */
-                                    Japp.getAnalytics()!!.logEvent("EVENT_SPOT", Bundle())
                                 }
                                 session = null
                             }
@@ -720,6 +714,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                 }
                                             } catch (e: ActivityNotFoundException) {
                                                 println(e.toString())
+                                                e.sendWithAcra()
                                                 val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
                                                 Snackbar.make(snackbarView,
                                                         getString(R.string.navigation_app_not_installed, JappPreferences.navigationApp().toString()),
@@ -735,9 +730,8 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                         if (response.code() == 200) {
                                                             val autoInfo = response.body()
                                                             if (autoInfo != null) {
-                                                                val database = FirebaseDatabase.getInstance()
-                                                                val ref = database.getReference(NavigationLocationManager.FDB_NAME + "/" + autoInfo.autoEigenaar)
-                                                                ref.setValue(Location(navigateTo, JappPreferences.accountUsername))
+                                                                val auto  = autoInfo.autoEigenaar!!
+                                                                AutoSocketHandler.location(Location(navigateTo, auto, JappPreferences.accountUsername))
                                                             }
                                                         }
                                                         if (response.code() == 404) {
@@ -747,7 +741,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
                                                     }
 
                                                     override fun onFailure(call: Call<AutoInzittendeInfo>, t: Throwable) {
-
+                                                        t.sendWithAcra()
                                                     }
                                                 })
                                             }
@@ -811,20 +805,11 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
 
                                             override fun onFailure(call: Call<Void>, t: Throwable) {
                                                 val snackbarView = this@JappMapFragment.activity.findViewById<View>(R.id.container)
-                                                Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()), Snackbar.LENGTH_LONG).show()//// TODO: 08/08/17 magic string
+                                                Snackbar.make(snackbarView, getString(R.string.problem_sending, t.toString()), Snackbar.LENGTH_LONG).show()
+                                                t.sendWithAcra()
                                             }
                                         })
 
-                                        /**
-                                         * TODO: send details?
-                                         * Log the hunt in firebase.
-                                         */
-
-                                        /**
-                                         * TODO: send details?
-                                         * Log the hunt in firebase.
-                                         */
-                                        Japp.getAnalytics()!!.logEvent("EVENT_HUNT", Bundle()) //// TODO: 08/08/17 magic string
                                          }
                             }
                         })

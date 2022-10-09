@@ -16,6 +16,7 @@ import nl.rsdt.japp.jotial.maps.wrapper.google.GoogleJotiMap
 import nl.rsdt.japp.jotial.maps.wrapper.osm.OsmJotiMap
 import nl.rsdt.japp.jotial.net.apis.ScoutingGroepApi
 import nl.rsdt.japp.service.cloud.data.UpdateInfo
+import org.acra.ktx.sendWithAcra
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,7 +38,7 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<A
 
     override fun onIntentCreate(bundle: Bundle) {
         if (bundle.containsKey(BUNDLE_ID)) {
-            val localBuffer: ArrayList<ScoutingGroepInfo> = bundle.getParcelableArrayList(BUNDLE_ID)
+            val localBuffer: ArrayList<ScoutingGroepInfo> = bundle.getParcelableArrayList(BUNDLE_ID)!!
             buffer = localBuffer
             if (clusterManager != null) {
                 clusterManager!!.addItems(localBuffer)
@@ -105,6 +106,7 @@ class ScoutingGroepController : Recreatable, IntentCreatable, MapItemUpdatable<A
 
     override fun onFailure(call: Call<ArrayList<ScoutingGroepInfo>>, t: Throwable) {
         Log.e(TAG, t.toString(), t)
+        t.sendWithAcra()
     }
 
 
