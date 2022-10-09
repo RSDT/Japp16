@@ -94,7 +94,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
 
         pinningManager.intialize(activity)
         pinningManager.onCreate(savedInstanceState)
@@ -174,6 +174,7 @@ class JappMapFragment : Fragment(), IJotiMap.OnMapReadyCallback, SharedPreferenc
         setupFollowButton(v)
         setupNavigationButton(v)
         jotiMap = OsmJotiMap.getJotiMapInstance(osmView)
+        Configuration.getInstance().load(activity, PreferenceManager.getDefaultSharedPreferences(activity))
         return v
     }
 
