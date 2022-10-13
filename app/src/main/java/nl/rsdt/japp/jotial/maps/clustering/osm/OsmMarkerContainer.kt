@@ -74,13 +74,14 @@ class OsmMarkerContainer(private val map: OsmJotiMap) : SharedPreferences.OnShar
                 return true
             }
         })
-        this.add(Deelgebied.parse(info.team!!), (marker as OsmMarker).osmMarker)
+
+        this.add(Deelgebied.parse(info.team), (marker as OsmMarker).osmMarker)
         return marker
     }
 
-    private fun add(key: Deelgebied?, osmMarker: Marker) {
+    private fun add(key: Deelgebied, osmMarker: Marker) {
         if (!markers.containsKey(key)) {
-            markers[key!!] = RadiusMarkerClusterer(Japp.instance!!.applicationContext)
+            markers[key] = RadiusMarkerClusterer(Japp.instance?.applicationContext)
             map.osmMap.overlays.add(markers[key])
         }
         markers[key]!!.add(osmMarker)

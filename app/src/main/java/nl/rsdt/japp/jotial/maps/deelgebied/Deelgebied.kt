@@ -400,17 +400,22 @@ private constructor(
         }*/
         }
 
-        fun parse(name: String): Deelgebied? {
+        fun parse(name: String?): Deelgebied {
+
             waitUntilInitzialized()
-            when (name.toLowerCase()) {
-                "alpha", "Alpha", "a", "A" -> return Alpha
-                "bravo", "Bravo", "b", "B" -> return Bravo
-                "charlie", "Charlie", "c", "C" -> return Charlie
-                "delta", "Delta", "d", "D" -> return Delta
-                "echo", "Echo", "e", "E" -> return Echo
-                "foxtrot", "Foxtrot", "f", "F" -> return Foxtrot
-                "xray", "Xray", "X-ray", "x-ray", "x", "X" -> return Xray
-                else -> return null
+            return if (name == null){
+                Xray
+            }else{
+                when (name.lowercase(Locale.ROOT)) {
+                    "alpha", "Alpha", "a", "A" -> Alpha
+                    "bravo", "Bravo", "b", "B" -> Bravo
+                    "charlie", "Charlie", "c", "C" -> Charlie
+                    "delta", "Delta", "d", "D" -> Delta
+                    "echo", "Echo", "e", "E" -> Echo
+                    "foxtrot", "Foxtrot", "f", "F" -> Foxtrot
+                    "xray", "Xray", "X-ray", "x-ray", "x", "X" -> Xray
+                    else -> Xray
+                }
             }
         }
     }
