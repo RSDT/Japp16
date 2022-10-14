@@ -16,8 +16,8 @@ android {
         applicationId "nl.rsdt.japp"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 106
-        versionName "v22"
+        versionCode 107
+        versionName "v22.0.1"
         multiDexEnabled true
 
     }
@@ -37,6 +37,14 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
+
+    buildToolsVersion = '29.0.1'
+
+
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
