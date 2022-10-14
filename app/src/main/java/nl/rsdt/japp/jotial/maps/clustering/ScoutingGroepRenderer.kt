@@ -13,6 +13,7 @@ import nl.rsdt.japp.application.JappPreferences
 import nl.rsdt.japp.jotial.data.structures.area348.ScoutingGroepInfo
 import nl.rsdt.japp.jotial.maps.deelgebied.Deelgebied
 import nl.rsdt.japp.jotial.maps.management.MarkerIdentifier
+import java.util.*
 
 /**
  * @author Dingenis Sieger Sinke
@@ -25,8 +26,8 @@ class ScoutingGroepRenderer(context: Context, map: GoogleMap, clusterManager: Cl
     override fun onBeforeClusterItemRendered(item: ScoutingGroepInfo?, markerOptions: MarkerOptions?) {
         markerOptions!!.visible(false)
         val enabled = JappPreferences.areasEnabled
-        for (area in enabled!!) {
-            if (item!!.team!!.toLowerCase() == area.substring(0, 1)) {
+        for (area in enabled) {
+            if (item!!.team!!.lowercase(Locale.ROOT) == area.substring(0, 1)) {
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.scouting_groep_icon_30x22))
                 markerOptions.anchor(0.5f, 0.5f)
 
@@ -51,7 +52,7 @@ class ScoutingGroepRenderer(context: Context, map: GoogleMap, clusterManager: Cl
         val deelgebied = Deelgebied.resolveOnLocation(cluster.position)
         if (deelgebied != null) {
             val enabled = JappPreferences.areasEnabled
-            if (!enabled!!.contains(deelgebied.name)) {
+            if (!enabled.contains(deelgebied.name)) {
                 markerOptions.visible(false)
             }
         }
@@ -68,7 +69,7 @@ class ScoutingGroepRenderer(context: Context, map: GoogleMap, clusterManager: Cl
         val deelgebied = Deelgebied.resolveOnLocation(cluster.position)
         if (deelgebied != null) {
             val enabled = JappPreferences.areasEnabled
-            if (!enabled!!.contains(deelgebied.name)) {
+            if (!enabled.contains(deelgebied.name)) {
                 return false
             }
         }

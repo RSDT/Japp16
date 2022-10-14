@@ -3,7 +3,9 @@ package nl.rsdt.japp.jotial.maps.clustering.osm
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.util.Log
 import android.util.Pair
+import androidx.core.graphics.alpha
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -34,7 +36,25 @@ class OsmMarkerContainer(private val map: OsmJotiMap) : SharedPreferences.OnShar
         markers = HashMap()
         JappPreferences.visiblePreferences.registerOnSharedPreferenceChangeListener(this)
     }
-
+    private fun create_circle(info: ScoutingGroepInfo) : ICircle{
+        val team:String  = if (info.team != null) {
+            info.team!!
+        } else {
+            "X"
+        }
+        val  fillColorHex = JappPreferences.getColorHex(team.lowercase()).uppercase()
+        Log.i(TAG, fillColorHex)
+        val alpha = 80
+        val color = Color.parseColor(fillColorHex)
+        val red = Color.red(color)
+        val green = Color.green(color)
+        val blue = Color.blue(color)
+        Color.alpha(alpha)
+        return map.addCircle(CircleOptions()
+            .center(LatLng(info.position.latitude, info.position.longitude))
+            .radius(500.0)
+            .fillColor(Color.argb(50, red, green, blue)))
+    }
     fun add(info: ScoutingGroepInfo): IMarker {
         val options = MarkerOptions()
         val bm = BitmapFactory.decodeResource(Japp.appResources, R.drawable.scouting_groep_icon_30x22)
@@ -56,10 +76,7 @@ class OsmMarkerContainer(private val map: OsmJotiMap) : SharedPreferences.OnShar
             var visible = false
             override fun OnClick(m: IMarker): Boolean {
                 if (circle == null) {
-                    circle = map.addCircle(CircleOptions()
-                            .center(LatLng(info.position.latitude, info.position.longitude))
-                            .radius(500.0)
-                            .fillColor(Color.argb(80, 200, 200, 200)))
+                    circle = create_circle(info)
                     visible = true
                 } else {
                     visible = if (visible) {
@@ -110,5 +127,9 @@ class OsmMarkerContainer(private val map: OsmJotiMap) : SharedPreferences.OnShar
         if (key == JappPreferences.AREAS) {
             showMarkers()
         }
+
+    }
+    companion object{
+        val TAG = "OsmMarkerContainer"
     }
 }
