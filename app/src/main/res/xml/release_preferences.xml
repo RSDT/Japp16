@@ -45,7 +45,7 @@
             android:title="@string/pref_default_koppel_title"
             android:summary="@string/pref_default_koppel_sum"
             android:inputType="number"
-            android:defaultValue="Onbekend"
+            android:defaultValue="1"
             android:dependency="pref_advanced_auto_enlargement"
             />
 

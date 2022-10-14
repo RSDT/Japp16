@@ -210,7 +210,7 @@
     </string>
     <string name="help">Help</string>
     <string name="update_taak">verander deelgebied</string>
-    <string name="pref_gps_interval_def">60000</string>
+    <string name="pref_gps_interval_def">10000</string>
     <string name="pref_gps_interval_title">interval voor de blauwe marker</string>
     <string name="pref_gps_interval_sum">in ms dus voeg 000 toe achtes de s</string>
     <string name="pref_gps_fastest_interval_def">5000</string>
