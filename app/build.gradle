@@ -45,14 +45,6 @@ android {
     buildToolsVersion = '29.0.1'
 
 
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
-    }
-
-
-    buildToolsVersion = '29.0.1'
-
-
 }
 
 repositories {
