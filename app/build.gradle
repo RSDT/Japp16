@@ -9,15 +9,15 @@ apply plugin: 'kotlin-android-extensions'
 
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 31
     //buildToolsVersion '28.0.2'
 
     defaultConfig {
         applicationId "nl.rsdt.japp"
         minSdkVersion 23
-        targetSdkVersion 33
-        versionCode 106
-        versionName "v22"
+        targetSdkVersion 31
+        versionCode 107
+        versionName "v23"
         multiDexEnabled true
 
     }

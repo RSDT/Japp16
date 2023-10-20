@@ -74,10 +74,10 @@ class Navigator(private val map: IJotiMap?) {
     internal class RouteCalculator(private val callback: Navigator, private val context: Context?) : AsyncTask<LatLng, Void, Polyline>() {
         override fun doInBackground(vararg params: LatLng): Polyline {
             val roadManager: RoadManager = when (JappPreferences.roadManager){
-                JappPreferences.RoadManager.MapQuest -> MapQuestRoadManager(Japp.getString(R.string.map_quest_key))
+                JappPreferences.RoadManager.MapQuest -> OSRMRoadManager(context)//MapQuestRoadManager(Japp.getString(R.string.map_quest_key))
                 JappPreferences.RoadManager.Google ->  GoogleRoadManager()
                 JappPreferences.RoadManager.OSRM -> OSRMRoadManager(context)
-                JappPreferences.RoadManager.GraphHopper -> GraphHopperRoadManager(Japp.getString(R.string.graphhopper_key),false)
+                JappPreferences.RoadManager.GraphHopper -> OSRMRoadManager(context)//GraphHopperRoadManager(Japp.getString(R.string.graphhopper_key),false)
             }
 
             val waypoints = ArrayList<GeoPoint>()
