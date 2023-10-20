@@ -64,6 +64,7 @@
         <SwitchPreference
             android:key="pref_updates_location"
             android:title="@string/pref_updates_location_title"
+            android:enabled="false"
             android:summary="@string/pref_updates_location_sum"
             android:defaultValue="false" />
 
